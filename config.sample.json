@@ -1,0 +1,8 @@
+{
+	"debug_mode": true,
+	"use_https": false,
+	"ssl_cert_file": "",
+	"ssl_key_file": "",
+	"client_id": "",
+	"client_secret": ""
+}
