@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"golang.org/x/oauth2"
+	"log"
 	"net/http"
 )
 
@@ -22,7 +23,7 @@ func NewTwitterSrv(conf *TwitterConf) *TwitterSrv {
 		RedirectURL:  callbackURL,
 		ClientID:     conf.ClientID,
 		ClientSecret: conf.ClientSecret,
-		Scopes:       []string{"tweet.read", "users.read", "offline.access"},
+		Scopes:       []string{"tweet.read", "users.read"},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  authorizeURL,
 			TokenURL: accessTokenURL,
@@ -38,6 +39,7 @@ func signInByTwitter(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
 }
 
 func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
+	log.Println("receive call back from twitter")
 	code := r.URL.Query().Get("code")
 	ctx := context.Background()
 	token, err := ts.oauth2Config.Exchange(ctx, code)
