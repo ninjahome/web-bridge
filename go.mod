@@ -1,6 +1,6 @@
 module github.com/ninjahome/web-bridge
 
-go 1.21.5
+go 1.20.6
 
 require (
 	github.com/hopwesley/fdlimit v1.0.0
