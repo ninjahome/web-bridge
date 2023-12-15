@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	callbackURL    = "https://bridge.simplenets.org:8443/tw_callback"
+	callbackURL    = "https://bridge.simplenets.org/tw_callback"
 	authorizeURL   = "https://twitter.com/i/oauth2/authorize"
 	accessTokenURL = "https://api.twitter.com/2/oauth2/token"
 )
