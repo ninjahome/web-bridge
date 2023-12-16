@@ -1,6 +1,7 @@
 package server
 
 import (
+	"html/template"
 	"net/http"
 )
 
@@ -32,3 +33,7 @@ type Conf struct {
 	*SrvConf
 	*TwitterConf
 }
+
+var templates = template.Must(template.ParseFiles(
+	"assets/html/*.html",
+))
