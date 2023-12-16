@@ -85,6 +85,9 @@ func exchangeWithCodeVerifier(ctx context.Context, conf *oauth2.Config, code str
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	auth := conf.ClientID + ":" + conf.ClientSecret
+	basicAuth := base64.StdEncoding.EncodeToString([]byte(auth))
+	req.Header.Set("Authorization", "Basic "+basicAuth)
 
 	// Send the request
 	httpClient := &http.Client{}
@@ -94,7 +97,6 @@ func exchangeWithCodeVerifier(ctx context.Context, conf *oauth2.Config, code str
 	}
 	defer resp.Body.Close()
 
-	// Parse the response
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status code: %v", resp.Status)
 	}
