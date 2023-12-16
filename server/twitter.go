@@ -6,12 +6,14 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"golang.org/x/oauth2"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 const (
@@ -49,6 +51,8 @@ func randomBytesInHex(count int) (string, error) {
 	return hex.EncodeToString(buf), nil
 }
 
+var tmpVerifierCode = ""
+
 func signInByTwitter(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
 	codeVerifier, verifierErr := randomBytesInHex(32) // 64 character string here
 	if verifierErr != nil {
@@ -56,11 +60,47 @@ func signInByTwitter(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
 	}
 	sha2 := sha256.New()
 	io.WriteString(sha2, codeVerifier)
+	tmpVerifierCode = codeVerifier
 	codeChallenge := base64.RawURLEncoding.EncodeToString(sha2.Sum(nil))
 	state, _ := randomBytesInHex(24)
-	oauthUrl := ts.oauth2Config.AuthCodeURL(state, oauth2.SetAuthURLParam("code_verifier", codeVerifier)) + "&code_challenge=" + url.QueryEscape(codeChallenge) + "&code_challenge_method=S256"
+	oauthUrl := ts.oauth2Config.AuthCodeURL(state) + "&code_challenge=" + url.QueryEscape(codeChallenge) + "&code_challenge_method=S256"
 	//fmt.Printf("Go to the following link in your browser then type the \"code\" parameter here:\n%s\n", url)
 	http.Redirect(w, r, oauthUrl, http.StatusTemporaryRedirect)
+}
+
+func exchangeWithCodeVerifier(ctx context.Context, conf *oauth2.Config, code string, codeVerifier string) (*oauth2.Token, error) {
+	// Prepare the request URL and body
+	values := url.Values{}
+	values.Add("client_id", conf.ClientID)
+	values.Add("grant_type", "authorization_code")
+	values.Add("code", code)
+	values.Add("redirect_uri", conf.RedirectURL)
+	values.Add("code_verifier", codeVerifier)
+
+	req, err := http.NewRequestWithContext(ctx, "POST", conf.Endpoint.TokenURL, strings.NewReader(values.Encode()))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	// Send the request
+	httpClient := &http.Client{}
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Parse the response
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %v", resp.Status)
+	}
+	var token oauth2.Token
+	if err := json.NewDecoder(resp.Body).Decode(&token); err != nil {
+		return nil, err
+	}
+
+	return &token, nil
 }
 
 func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
@@ -72,7 +112,9 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 	fmt.Println("error")
 	fmt.Println(err2, "state", state)
 	ctx := context.Background()
-	token, err := ts.oauth2Config.Exchange(ctx, code)
+
+	token, err := exchangeWithCodeVerifier(ctx, ts.oauth2Config, code, tmpVerifierCode)
+	//ts.oauth2Config.Exchange(ctx, code)
 	if err != nil {
 		log.Println("exchange err:", err)
 		return
