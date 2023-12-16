@@ -61,6 +61,7 @@ func signInByTwitter(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
 	sha2 := sha256.New()
 	io.WriteString(sha2, codeVerifier)
 	tmpVerifierCode = codeVerifier
+	fmt.Println("tmpVerifierCode:", tmpVerifierCode)
 	codeChallenge := base64.RawURLEncoding.EncodeToString(sha2.Sum(nil))
 	state, _ := randomBytesInHex(24)
 	oauthUrl := ts.oauth2Config.AuthCodeURL(state) + "&code_challenge=" + url.QueryEscape(codeChallenge) + "&code_challenge_method=S256"
@@ -136,6 +137,7 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 	defer response.Body.Close()
 	fmt.Println(response)
 }
+
 func (ts *TwitterSrv) saveRefreshToken(refreshToken, state string) error {
 	return nil
 }
