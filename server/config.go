@@ -19,6 +19,7 @@ type LogicAction func(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 var logicRouter = map[string]LogicAction{
 	"/signInByTwitter": signInByTwitter,
 	"/tw_callback":     twitterSignCallBack,
+	"/main":            showMainPage,
 }
 
 type SrvConf struct {

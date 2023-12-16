@@ -157,6 +157,11 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 		log.Println("tmpl Execute err:", err)
 		return
 	}
+
+	http.Redirect(w, r, "/main", http.StatusFound)
+}
+func showMainPage(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
+
 }
 
 type TwitterAPIResponse struct {
