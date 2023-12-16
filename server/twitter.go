@@ -48,8 +48,8 @@ func randomBytesInHex(count int) (string, error) {
 
 	return hex.EncodeToString(buf), nil
 }
+
 func signInByTwitter(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
-	//url := ts.oauth2Config.AuthCodeURL(state)
 	codeVerifier, verifierErr := randomBytesInHex(32) // 64 character string here
 	if verifierErr != nil {
 		return
@@ -58,9 +58,9 @@ func signInByTwitter(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
 	io.WriteString(sha2, codeVerifier)
 	codeChallenge := base64.RawURLEncoding.EncodeToString(sha2.Sum(nil))
 	state, _ := randomBytesInHex(24)
-	url := ts.oauth2Config.AuthCodeURL(state) + "&code_challenge=" + url.QueryEscape(codeChallenge) + "&code_challenge_method=S256"
+	oauthUrl := ts.oauth2Config.AuthCodeURL(state, oauth2.SetAuthURLParam("code_verifier", codeVerifier)) + "&code_challenge=" + url.QueryEscape(codeChallenge) + "&code_challenge_method=S256"
 	//fmt.Printf("Go to the following link in your browser then type the \"code\" parameter here:\n%s\n", url)
-	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
+	http.Redirect(w, r, oauthUrl, http.StatusTemporaryRedirect)
 }
 
 func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
@@ -74,18 +74,19 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 	ctx := context.Background()
 	token, err := ts.oauth2Config.Exchange(ctx, code)
 	if err != nil {
+		log.Println("exchange err:", err)
 		return
 	}
 	fmt.Println(token, token.RefreshToken)
 
-	// Save the refresh token in the database.
 	if err := ts.saveRefreshToken(token.RefreshToken, state); err != nil {
 		return
 	}
 
 	client := ts.oauth2Config.Client(context.Background(), token)
-	response, err := client.Get("https://api.twitter.com/2/users/me")
-	if err != nil {
+	response, err3 := client.Get("https://api.twitter.com/2/users/me")
+	if err3 != nil {
+		log.Println(" client.Get err:", err3)
 		return
 	}
 	defer response.Body.Close()
