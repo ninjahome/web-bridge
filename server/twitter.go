@@ -137,15 +137,30 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 		return
 	}
 	defer response.Body.Close()
-	//fmt.Println("response=>\n", response)
-	var result map[string]interface{}
-	if err := json.NewDecoder(response.Body).Decode(&result); err != nil {
+
+	// ... inside your callback function
+	var apiResponse TwitterAPIResponse
+	if err := json.NewDecoder(response.Body).Decode(&apiResponse); err != nil {
 		log.Println("Error decoding response:", err)
 		return
 	}
 
+	result := apiResponse.Data
+
 	// Print the decoded response
-	fmt.Println("Response:", result)
+	fmt.Printf("User ID: %s\n", result.ID)
+	fmt.Printf("Name: %s\n", result.Name)
+	fmt.Printf("Username: %s\n", result.Username)
+}
+
+type TwitterAPIResponse struct {
+	Data TwitterResponse `json:"data"`
+}
+
+type TwitterResponse struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Username string `json:"username"`
 }
 
 func (ts *TwitterSrv) saveRefreshToken(refreshToken, state string) error {
