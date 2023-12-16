@@ -137,7 +137,7 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 		return
 	}
 	defer response.Body.Close()
-	fmt.Println(response)
+	fmt.Println("response=>\n", response)
 }
 
 func (ts *TwitterSrv) saveRefreshToken(refreshToken, state string) error {
