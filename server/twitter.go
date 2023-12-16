@@ -76,6 +76,12 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		return
 	}
+	fmt.Println(token, token.RefreshToken)
+
+	// Save the refresh token in the database.
+	if err := ts.saveRefreshToken(token.RefreshToken, state); err != nil {
+		return
+	}
 
 	client := ts.oauth2Config.Client(context.Background(), token)
 	response, err := client.Get("https://api.twitter.com/2/users/me")
@@ -83,5 +89,17 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 		return
 	}
 	defer response.Body.Close()
-	fmt.Println(w, response)
+	fmt.Println(response)
+}
+func (ts *TwitterSrv) saveRefreshToken(refreshToken, state string) error {
+
+}
+func refreshAccessToken(ts *TwitterSrv, refreshToken string) (*oauth2.Token, error) {
+	ctx := context.Background()
+	tokenSource := ts.oauth2Config.TokenSource(ctx, &oauth2.Token{RefreshToken: refreshToken})
+	newToken, err := tokenSource.Token()
+	if err != nil {
+		return nil, err
+	}
+	return newToken, nil
 }
