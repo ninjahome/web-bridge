@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"golang.org/x/oauth2"
+	"html/template"
 	"io"
 	"log"
 	"net/http"
@@ -151,6 +152,18 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 	fmt.Printf("User ID: %s\n", result.ID)
 	fmt.Printf("Name: %s\n", result.Name)
 	fmt.Printf("Username: %s\n", result.Username)
+
+	tmpl, err := template.ParseFiles("html/main.html")
+	if err != nil {
+		log.Println("Error loading template:", err)
+		return
+	}
+
+	err = tmpl.Execute(w, result)
+	if err != nil {
+		log.Println("tmpl Execute err:", err)
+		return
+	}
 }
 
 type TwitterAPIResponse struct {
