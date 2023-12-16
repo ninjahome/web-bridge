@@ -92,7 +92,7 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 	fmt.Println(response)
 }
 func (ts *TwitterSrv) saveRefreshToken(refreshToken, state string) error {
-
+	return nil
 }
 func refreshAccessToken(ts *TwitterSrv, refreshToken string) (*oauth2.Token, error) {
 	ctx := context.Background()
