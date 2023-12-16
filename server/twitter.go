@@ -19,8 +19,9 @@ import (
 const (
 	callbackURL = "https://bridge.simplenets.org/tw_callback"
 	//callbackURL    = "http//127.0.0.1/tw_callback"
-	authorizeURL   = "https://twitter.com/i/oauth2/authorize"
-	accessTokenURL = "https://api.twitter.com/2/oauth2/token"
+	authorizeURL = "https://twitter.com/i/oauth2/authorize"
+	//accessTokenURL = "https://api.twitter.com/2/oauth2/token"
+	accessTokenURL = "https://api.twitter.com/oauth2/token"
 )
 
 type TwitterSrv struct {
@@ -32,7 +33,7 @@ func NewTwitterSrv(conf *TwitterConf) *TwitterSrv {
 		RedirectURL:  callbackURL,
 		ClientID:     conf.ClientID,
 		ClientSecret: conf.ClientSecret,
-		Scopes:       []string{"tweet.read", "users.read", "offline.access"},
+		Scopes:       []string{"tweet.read", "tweet.write", "users.read", "offline.access"},
 		Endpoint: oauth2.Endpoint{
 			AuthURL:  authorizeURL,
 			TokenURL: accessTokenURL,
