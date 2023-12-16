@@ -137,7 +137,15 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 		return
 	}
 	defer response.Body.Close()
-	fmt.Println("response=>\n", response)
+	//fmt.Println("response=>\n", response)
+	var result map[string]interface{}
+	if err := json.NewDecoder(response.Body).Decode(&result); err != nil {
+		log.Println("Error decoding response:", err)
+		return
+	}
+
+	// Print the decoded response
+	fmt.Println("Response:", result)
 }
 
 func (ts *TwitterSrv) saveRefreshToken(refreshToken, state string) error {
