@@ -3,6 +3,9 @@ package server
 import (
 	"html/template"
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 var simpleRouterMap = map[string]string{
@@ -34,6 +37,20 @@ type Conf struct {
 	*TwitterConf
 }
 
-var templates = template.Must(template.ParseFiles(
-	"assets/html/*.html",
-))
+var templates = parseTemplates("assets/html")
+
+func parseTemplates(path string) *template.Template {
+	fs, err := os.ReadDir(path)
+	if err != nil {
+		panic(err)
+	}
+
+	var files []string
+	for _, f := range fs {
+		if strings.HasSuffix(f.Name(), ".html") {
+			files = append(files, filepath.Join(path, f.Name()))
+		}
+	}
+
+	return template.Must(template.ParseFiles(files...))
+}
