@@ -11,7 +11,7 @@ import (
 func main() {
 	ctx := context.Background()
 
-	client, err := firestore.NewClient(ctx, "dessage-twitter", option.WithCredentialsFile("dessage-c3b5c95267fb.json"))
+	client, err := firestore.NewClient(ctx, "dessage", option.WithCredentialsFile("dessage-c3b5c95267fb.json"))
 	if err != nil {
 		log.Fatalf("Failed to create Firestore client: %v", err)
 	}
