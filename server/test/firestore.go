@@ -17,7 +17,7 @@ func main() {
 	}
 	defer client.Close()
 
-	_, _, err = client.Collection("twitter-user").Add(ctx, map[string]interface{}{
+	_, err = client.Collection("twitter-user").Doc("Ada").Set(ctx, map[string]interface{}{
 		"id":       "Ada",
 		"name":     "Lovelace",
 		"username": "1815",

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/hopwesley/fdlimit"
 	"github.com/ninjahome/web-bridge/server"
+	"github.com/ninjahome/web-bridge/util"
 	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
@@ -87,6 +88,7 @@ func initConfig() *server.Conf {
 	if err = json.Unmarshal(bts, &cf); err != nil {
 		panic(err)
 	}
+	util.SetLogLevel(cf.Log)
 	return cf
 }
 

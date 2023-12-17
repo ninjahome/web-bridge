@@ -4,5 +4,7 @@
 	"ssl_cert_file": "",
 	"ssl_key_file": "",
 	"client_id": "",
-	"client_secret": ""
+	"client_secret": "",
+	"project_id": "dessage",
+	"key_file_path": "dessage-c3b5c95267fb.json"
 }

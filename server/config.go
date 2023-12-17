@@ -8,19 +8,22 @@ import (
 	"strings"
 )
 
-var simpleRouterMap = map[string]string{
-	"/":         "html/index.html",
-	"/index":    "html/index.html",
-	"/register": "html/create_wallet.html",
-}
+var (
+	logicRouter = map[string]LogicAction{
+		"/signInByTwitter": signInByTwitter,
+		"/tw_callback":     twitterSignCallBack,
+		"/main":            showMainPage,
+	}
+	simpleRouterMap = map[string]string{
+		"/":         "html/index.html",
+		"/index":    "html/index.html",
+		"/register": "html/create_wallet.html",
+	}
+
+	htmlTemplateManager *template.Template
+)
 
 type LogicAction func(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
-
-var logicRouter = map[string]LogicAction{
-	"/signInByTwitter": signInByTwitter,
-	"/tw_callback":     twitterSignCallBack,
-	"/main":            showMainPage,
-}
 
 type SrvConf struct {
 	DebugMode   bool   `json:"debug_mode"`
@@ -33,12 +36,17 @@ type TwitterConf struct {
 	ClientSecret string `json:"client_secret"`
 }
 
-type Conf struct {
-	*SrvConf
-	*TwitterConf
+type FileStoreConf struct {
+	ProjectID   string `json:"project_id"`
+	KeyFilePath string `json:"key_file_path"`
 }
 
-var templates = parseTemplates("assets/html")
+type Conf struct {
+	Log string `json:"log"`
+	*SrvConf
+	*TwitterConf
+	*FileStoreConf
+}
 
 func parseTemplates(path string) *template.Template {
 	fs, err := os.ReadDir(path)

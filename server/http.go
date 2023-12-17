@@ -26,10 +26,8 @@ func NewMainService(cfg *Conf) *MainService {
 
 	twSrv := NewTwitterSrv(cfg.TwitterConf)
 	for route, twService := range logicRouter {
-		log.Println(route, twService)
 		var r, s = route, twService
 		http.HandleFunc(r, func(writer http.ResponseWriter, request *http.Request) {
-			log.Println(r, s, request.URL.Path)
 			s(twSrv, writer, request)
 		})
 	}

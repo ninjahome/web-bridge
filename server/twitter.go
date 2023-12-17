@@ -17,8 +17,7 @@ import (
 )
 
 const (
-	callbackURL = "https://bridge.simplenets.org/tw_callback"
-	//callbackURL    = "http//127.0.0.1/tw_callback"
+	callbackURL    = "https://bridge.simplenets.org/tw_callback"
 	authorizeURL   = "https://twitter.com/i/oauth2/authorize"
 	accessTokenURL = "https://api.twitter.com/2/oauth2/token"
 )
@@ -38,6 +37,7 @@ func NewTwitterSrv(conf *TwitterConf) *TwitterSrv {
 			TokenURL: accessTokenURL,
 		},
 	}
+	htmlTemplateManager = parseTemplates("assets/html")
 
 	return &TwitterSrv{oauth2Config: oauth2Config}
 }
@@ -45,7 +45,7 @@ func randomBytesInHex(count int) (string, error) {
 	buf := make([]byte, count)
 	_, err := io.ReadFull(rand.Reader, buf)
 	if err != nil {
-		return "", fmt.Errorf("Could not generate %d random bytes: %v", count, err)
+		return "", fmt.Errorf("could not generate %d random bytes: %v", count, err)
 	}
 
 	return hex.EncodeToString(buf), nil
@@ -78,8 +78,6 @@ func exchangeWithCodeVerifier(ctx context.Context, conf *oauth2.Config, code str
 	values.Add("redirect_uri", conf.RedirectURL)
 	values.Add("code_verifier", codeVerifier)
 	queryStr := strings.NewReader(values.Encode())
-	fmt.Println("queryStr:", queryStr)
-	fmt.Println("TokenURL:", conf.Endpoint.TokenURL)
 	req, err := http.NewRequestWithContext(ctx, "POST", conf.Endpoint.TokenURL, queryStr)
 	if err != nil {
 		return nil, err
@@ -152,7 +150,7 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 	fmt.Printf("Name: %s\n", result.Name)
 	fmt.Printf("Username: %s\n", result.Username)
 
-	err = templates.ExecuteTemplate(w, "main.html", result)
+	err = htmlTemplateManager.ExecuteTemplate(w, "main.html", result)
 	if err != nil {
 		log.Println("tmpl Execute err:", err)
 		return
@@ -162,16 +160,6 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 }
 func showMainPage(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
 
-}
-
-type TwitterAPIResponse struct {
-	Data TwitterResponse `json:"data"`
-}
-
-type TwitterResponse struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Username string `json:"username"`
 }
 
 func (ts *TwitterSrv) saveRefreshToken(refreshToken, state string) error {

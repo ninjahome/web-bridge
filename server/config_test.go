@@ -18,8 +18,12 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			ClientID:     "",
 			ClientSecret: "",
 		},
+		&FileStoreConf{
+			ProjectID:   DefaultProjectID,
+			KeyFilePath: "dessage-c3b5c95267fb.json",
+		},
 	}
 
 	bts, _ := json.MarshalIndent(cfg, "", "\t")
-	_ = os.WriteFile("config.json.sample", bts, 0644)
+	_ = os.WriteFile("../config.sample.json", bts, 0644)
 }
