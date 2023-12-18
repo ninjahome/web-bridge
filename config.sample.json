@@ -1,4 +1,5 @@
 {
+	"log": "debug",
 	"debug_mode": true,
 	"use_https": false,
 	"ssl_cert_file": "",

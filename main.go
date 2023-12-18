@@ -89,6 +89,7 @@ func initConfig() *server.Conf {
 		panic(err)
 	}
 	util.SetLogLevel(cf.Log)
+	fmt.Println(cf.String())
 	return cf
 }
 

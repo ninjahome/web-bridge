@@ -148,7 +148,7 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 	}
 
 	result := apiResponse.Data
-	err = SMInst().Set(r, w, sessionKeyForUser, result)
+	err = SMInst().Set(r, w, sessionKeyForUser, result.String())
 	if err != nil {
 		util.LogInst().Err(err).Msgf("save twitter info failed:%v", result)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -159,12 +159,13 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 }
 
 func showMainPage(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
-	result, err := SMInst().Get(sessionKeyForUser, r)
+	resultStr, err := SMInst().Get(sessionKeyForUser, r)
 	if err != nil {
 		util.LogInst().Err(err).Msg("no twitter user info found")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	result := TWUsrInfoMust(resultStr.(string))
 	err = htmlTemplateManager.ExecuteTemplate(w, "main.html", result)
 	if err != nil {
 		util.LogInst().Err(err).Msg("show main page failed")

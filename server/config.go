@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"os"
@@ -31,9 +32,27 @@ type SrvConf struct {
 	SSLCertFile string `json:"ssl_cert_file"`
 	SSLKeyFile  string `json:"ssl_key_file"`
 }
+
+func (c *SrvConf) String() string {
+	s := "\n------server config------"
+	s += "\ndebug mode:" + fmt.Sprintf("%t", c.DebugMode)
+	s += "\nuse https:" + fmt.Sprintf("%t", c.UseHttps)
+	s += "\nssl cert file:" + c.SSLCertFile
+	s += "\nssl key file:" + c.SSLKeyFile
+	s += "\n-------------------------"
+	return s
+}
+
 type TwitterConf struct {
 	ClientID     string `json:"client_id"`
 	ClientSecret string `json:"client_secret"`
+}
+
+func (c *TwitterConf) String() string {
+	s := "\n------twitter config------"
+	s += "\nclient id:" + c.ClientID
+	s += "\n--------------------------"
+	return s
 }
 
 type FileStoreConf struct {
@@ -41,11 +60,29 @@ type FileStoreConf struct {
 	KeyFilePath string `json:"key_file_path"`
 }
 
+func (c *FileStoreConf) String() string {
+	s := "\n------twitter config------"
+	s += "\nproject id:" + c.ProjectID
+	s += "\nkey path :" + c.KeyFilePath
+	s += "\n--------------------------"
+	return s
+}
+
 type Conf struct {
 	Log string `json:"log"`
 	*SrvConf
 	*TwitterConf
 	*FileStoreConf
+}
+
+func (c *Conf) String() any {
+	var s = "\n=======================system config==========================="
+	s += "\nlog level:" + c.Log
+	s += "\n" + c.SrvConf.String()
+	s += "\n" + c.TwitterConf.String()
+	s += "\n" + c.FileStoreConf.String()
+	s += "\n=============================================================="
+	return s
 }
 
 func parseTemplates(path string) *template.Template {

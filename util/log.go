@@ -39,6 +39,11 @@ func LogInst() *zerolog.Logger {
 
 func SetLogLevel(ll string) {
 	logLevel = ll
-	logLvl, _ := zerolog.ParseLevel(logLevel)
+	logLvl, err := zerolog.ParseLevel(logLevel)
+	if err != nil {
+		fmt.Println("set log level err:", err)
+		return
+	}
 	zerolog.SetGlobalLevel(logLvl)
+	fmt.Println("set log level success:", ll)
 }
