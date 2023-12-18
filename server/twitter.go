@@ -122,10 +122,15 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 	ctx := context.Background()
 
 	codeVerifier, err := SMInst().Get(verifierCodeKey, r)
-	token, err := exchangeWithCodeVerifier(ctx, ts.oauth2Config, code, codeVerifier.(string))
 	if err != nil {
-		util.LogInst().Err(err).Msgf("exchange err:%s", err)
+		util.LogInst().Err(err).Msg("get verifier code failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	token, errToken := exchangeWithCodeVerifier(ctx, ts.oauth2Config, code, codeVerifier.(string))
+	if errToken != nil {
+		util.LogInst().Err(errToken).Msgf("exchange err:%s", errToken)
+		http.Error(w, errToken.Error(), http.StatusInternalServerError)
 		return
 	}
 
