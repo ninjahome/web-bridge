@@ -28,6 +28,7 @@ func newSM() *SessionManager {
 		Path:     "/",
 		MaxAge:   0,
 		HttpOnly: true,
+		Secure:   true,
 	}
 	return &SessionManager{
 		store: store,
