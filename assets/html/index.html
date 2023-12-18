@@ -1,230 +1,216 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            // 检测 MetaMask 提供者
-            const provider = new ethers.providers.Web3Provider(
-                window.ethereum,
-                "any"
-            );
-            // 如果检测到提供者，则启动应用
-            if (provider) {
-                startApp(provider);
-            } else {
-                alert("请安装 MetaMask！");
-                console.log("请安装 MetaMask！");
-            }
-        });
-
-        function requestAccount(provider){
-            provider
-                .send("eth_requestAccounts")
-                .then((accounts) => {
-                    document.getElementById("metamask_address").innerText = accounts[0]
-                    // 在这里使用用户的钱包地址进行后续操作
-                })
-                .catch((error) => {
-                    // 用户拒绝了连接请求或发生了其他错误
-                    console.error(error);
-                });
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web3 Social Identity Login</title>
+    <style>
+        .container {
+            text-align: center;
+            padding: 20px;
         }
-        async function startApp(provider) {
-            requestAccount(provider);
-            // 监听网络变化事件
-            provider.on("network", (newNetwork, oldNetwork) => {
-                // 获取新的网络名称
-                const networkName = newNetwork.name;
-                console.log("networkName:" + JSON.stringify(newNetwork));
-                document.getElementById("metamask_chain").innerText = networkName;
-            });
-            const openMetamask = document.getElementById("open_metamask");
-            openMetamask.addEventListener("click", async () => {
-                requestAccount(provider);
-                // 获取当前网络的信息
-                const network = await provider.getNetwork();
-                document.getElementById("metamask_chain").innerText = network.name;
-            });
-
-            const signButton = document.getElementById("metamask_sign");
-            signButton.addEventListener("click", async () => {
-                // 请求签名
-                const sign_data =  document.getElementById("metamask_sign_msg").value
-                const signature = await requestSignature(provider, sign_data);
-                // 处理签名结果
-                handleSignature(signature);
-            });
-
-            const metamaskSwitchChain = document.getElementById(
-                "metamask_switch_chain"
-            );
-            metamaskSwitchChain.addEventListener("click", async () => {
-                toSwitch(1);
-            });
-
-            //监听网络变化
-            // window[sessionStorage.getItem("ethereumType") || "ethereum"].on(
-            //   "chainChanged",
-            //   async (chainId) => {
-            //     // const network = await provider.getNetwork();
-            //     document.getElementById("metamask_chain").innerText = chainId;
-            //   }
-            // );
-
-            //监听钱包地址切换
-            window[sessionStorage.getItem("ethereumType") || "ethereum"].on(
-                "accountsChanged",
-                (accounts) => {
-                    if (accounts[0]) {
-                        document.getElementById("metamask_address").innerText =
-                            accounts[0];
-                        console.log("=========钱包切换=======");
-                    } else {
-                        console.log("钱包断开================");
-                        // 断开了
-                    }
-                }
-            );
+        .button {
+            display: inline-block;
+            margin-top: 10px;
         }
-
-        function handleSignature(signature) {
-            if (signature) {
-                // 在这里处理签名成功的情况
-                document.getElementById("meatmask_sign_result").innerText = signature;
-                console.log("签名成功:", signature);
-            } else {
-                // 在这里处理签名失败的情况
-                console.log("签名失败");
-            }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.6;
         }
-        async function addChain() {
-            try {
-                // infoChain 获取要添加的链的 {chainId，chainName，nativeCurrency，rpcUrls，blockExplorerUrls}
-                // const res = {chainId,chainName,nativeCurrency,rpcUrls,blockExplorerUrls}
-                const res = {
-                    chainId: 1,
-                    chainName: "",
-                    nativeCurrency: { suisse: { symbol: "" } },
-                    rpcUrl: "",
-                    scanUrl: "",
-                };
-                await window[
-                sessionStorage.getItem("ethereumType") || "ethereum"
-                    ].request({
-                    method: "wallet_addEthereumChain",
-                    params: [
-                        {
-                            chainId: "0x" + res.chainId.toString(16),
-                            chainName: res.chainName,
-                            nativeCurrency: {
-                                name: res.suisse.symbol,
-                                symbol: res.suisse.symbol,
-                                decimals: 18,
-                            },
-                            rpcUrls: [res.rpcUrl],
-                            blockExplorerUrls: [res.scanUrl],
-                        },
-                    ],
-                });
-            } catch (error) {
-                console.log(error);
-                throw error;
-            }
+        .success {
+            color: green;
         }
-
-        async function chainIdJudgment(chainId) {
-            try {
-                let eth_chainId = await window[
-                sessionStorage.getItem("ethereumType") || "ethereum"
-                    ].request({ method: "eth_chainId" }); //16进制
-
-                // 将16进制转为10进制
-                eth_chainId = parseInt(eth_chainId, 16);
-                if (eth_chainId !== chainId) {
-                    toSwitch(chainId);
-                } else {
-                    return true;
-                }
-            } catch (error) {
-                console.log(error);
-                return false;
-            }
-        }
-
-        /**
-         * 切换到指定网络
-         * @param {*} chainId 要切换的链id
-         */
-        async function toSwitch(chainId) {
-            try {
-                window[sessionStorage.getItem("ethereumType") || "ethereum"] &&
-                (await window[
-                sessionStorage.getItem("ethereumType") || "ethereum"
-                    ].request(
-                    {
-                        method: "wallet_switchEthereumChain",
-                        params: [{ chainId: "0x" + chainId.toString(16) }],
-                    },
-                    (err, result) => {
-                        console.log(err, "添加失败");
-                        if (err) {
-                            Message({
-                                message: err.message,
-                                type: "error",
-                            });
-                            return false;
-                        }
-                        return true;
-                    }
-                ));
-            } catch (error) {
-                console.log(err, "添加失败");
-                return false;
-            }
-        }
-
-        async function requestSignature(provider, message) {
-            try {
-                // 请求用户签名
-                const signature = await provider.getSigner().signMessage(message);
-                return signature;
-            } catch (error) {
-                console.error("签名请求失败:", error);
-                return null;
-            }
-        }
-    </script>
+    </style>
 </head>
 <body>
-<!-- <input id="open_wallet" type="button" value="打开钱包" />
-<br />
-<span>钱包地址：</span>
-<span id="ninja_address"></span>
-<br />
-<input id="sign_msg" placeholder="请输入签名信息" />
-<input id="sign" type="button" value="签名" />
-<br />
-签名结果：<span id="ninja_sign_result"></span>
-<br />
-<hr /> -->
-<br />
-MetaMask:
-<br />
-<button id="open_metamask">链接metamask钱包</button>
-<br />
-<span id="metamask_address"></span>
-<br />
-当前网络： <span id="metamask_chain"></span>
-<br />
-<button id="metamask_switch_chain">切换网络</button>
-<br />
-<input id="metamask_sign_msg" placeholder="请输入签名信息" />
-<button id="metamask_sign">签名</button>
-<span id="meatmask_sign_result"></span>
-<br />
+<div id="downloadMetaMask" style="text-align: center; display: none;">
+    <button class="button" onclick="downloadMetaMask()">下载MetaMask钱包</button>
+</div>
+<div id="container" class="container">
+    <h1>WEB3社交身份登录</h1>
+    <div id="metamaskSection" style="text-align: center;">
+        <p id="metamaskMessage">链接MetaMask钱包</p>
+        <button class="button" id="metamaskButton" onclick="connectMetaMask()">MetaMask</button>
+    </div>
+    <div>
+        <p id="arbitrumStatus">本服务运行在arbitrum One网络</p>
+        <button class="button" id="switchArbitrum" onclick="switchArbitrum()" style="display: none;">切换到arbitrum One</button>
+<!--        <button class="button" id="addArbitrum" onclick="addArbitrumLlamaNodes()" style="display: inline-block;">添加arbitrum One</button>-->
+    </div>
+    <div>
+        <p>以Web3身份授权登录</p>
+        <button class="button" onclick="web3Login()">Web3登录</button>
+    </div>
+</div>
+
+<script>
+
+    class SignInParam{
+        constructor(address, timeMill,sig) {
+            this.address = address;
+            this.signTim = timeMill;
+            // this.signature = sig;
+        }
+    }
+
+    let __signInParamObj = null;
+    window.onload = async function() {
+        if (typeof window.ethereum === 'undefined') {
+            document.getElementById('container').classList.add('disabled');
+            document.getElementById('downloadMetaMask').style.display = 'block';
+        } else {
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if (accounts.length > 0) {
+                    displayMetaMaskConnected(accounts[0]);
+                }
+
+                window.ethereum.on('accountsChanged', function (accounts) {
+                    // 当用户切换账户时触发
+                    if (accounts.length > 0) {
+                        displayMetaMaskConnected(accounts[0]);
+                    } else {
+                        // 用户断开连接时的逻辑
+                        resetMetaMaskStatus();
+                    }
+                });
+                window.ethereum.on('chainChanged', handleChainChanged);
+                handleChainChanged(await window.ethereum.request({ method: 'eth_chainId' }));
+            } catch (error) {
+                console.error("Error checking MetaMask status:", error);
+            }
+        }
+    };
+
+    function connectMetaMask() {
+        if (window.ethereum) {
+            window.ethereum.request({ method: 'eth_requestAccounts' })
+                .then(accounts => {
+                    if (accounts.length > 0) {
+                        displayMetaMaskConnected(accounts[0]);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error connecting to MetaMask:", error);
+                });
+        } else {
+            alert("MetaMask is not installed!");
+        }
+    }
+
+    function displayMetaMaskConnected(account) {
+        if (!__signInParamObj){
+            __signInParamObj = new SignInParam(account, null)
+        }
+        __signInParamObj.address = account;
+        document.getElementById('metamaskMessage').innerHTML = `社交身份ID: ${account} <span class="success">✓</span>`;
+        document.getElementById('metamaskButton').style.display = 'none';
+    }
+
+    function resetMetaMaskStatus() {
+        document.getElementById('metamaskMessage').innerHTML = "链接MetaMask钱包";
+        document.getElementById('metamaskButton').style.display = 'inline-block';
+    }
+
+    function downloadMetaMask() {
+        window.open('https://metamask.io/download/', '_blank');
+    }
+
+    function switchArbitrum() {
+        if (window.ethereum) {
+            window.ethereum.request({
+                method: 'wallet_switchEthereumChain',
+                params: [{ chainId: arbitrumOneNetworkID }],
+            }).catch(async (switchError) => {
+                // 检测错误代码，判断是否是因为未知链ID导致的错误
+                if (switchError.code === 4902) {
+                    try {
+                        await addArbitrumLlamaNodes();
+                    } catch (addError) {
+                        console.error('Failed to add the Arbitrum network', addError);
+                    }
+                } else {
+                    // 其他错误处理
+                    console.error(switchError);
+                }
+            });
+        }
+    }
+
+    function handleChainChanged(chainId) {
+        if (chainId === arbitrumOneNetworkID) {
+            document.getElementById('switchArbitrum').style.display = 'none';
+            document.getElementById('arbitrumStatus').innerHTML = `arbitrum One 网络 <span class="success">✓</span>`;
+        } else {
+            document.getElementById('switchArbitrum').style.display = 'inline-block';
+            document.getElementById('arbitrumStatus').innerHTML = '本服务运行在arbitrum One网络';
+        }
+    }
+
+    async function web3Login() {
+        if (!__signInParamObj) {
+            console.log("no account selected")
+            return;
+        }
+        __signInParamObj.signTim = (new Date()).getTime();
+        // __signInParamObj.signature = null;
+        const message = JSON.stringify(__signInParamObj);
+        console.log("message to sign =>", message)
+        const signature = await window.ethereum.request({
+            method: 'personal_sign',
+            params: [message, __signInParamObj.address],
+        });
+        // 输出签名的结果
+        console.log('签名结果:', signature);
+    }
+
+    function toHex(number) {
+        return '0x' + number.toString(16);
+    }
+
+    // MetaMask文档提供的添加网络的方法
+    async function addArbitrumLlamaNodes() {
+        try {
+            // 请求MetaMask添加新的网络
+            await ethereum.request({
+                method: 'wallet_addEthereumChain',
+                params: [ArbitrumGoerliParam],
+            });
+        } catch (addError) {
+            console.error('Failed to add the network', addError);
+        }
+    }
+
+    const arbitrumOneNetworkID = toHex(421613)
+
+    const ArbitrumMainParam = {
+        chainId:  toHex(42161), // 将Chain ID转换为16进制字符串
+        chainName: 'Arbitrum LlamaNodes',
+        nativeCurrency: {
+            name: 'ETH', // 此字段为示例，根据实际情况填写
+            symbol: 'ETH', // 通常情况下是ETH，但是根据您的链可能有所不同
+            decimals: 18
+        },
+        rpcUrls: ['https://arbitrum.llamarpc.com'],
+        blockExplorerUrls: ['https://arbiscan.io'],
+    }
+
+
+    const ArbitrumGoerliParam = {
+        chainId: toHex(421613), // 将Chain ID转换为16进制字符串
+        chainName: 'Arbitrum Goerli',
+        nativeCurrency: {
+            name: 'AETH', // 此字段为示例，根据实际情况填写
+            symbol: 'AETH', // 通常情况下是ETH，但是根据您的链可能有所不同
+            decimals: 18
+        },
+        rpcUrls: ['https://endpoints.omniatech.io/v1/arbitrum/goerli/public'],
+        blockExplorerUrls: ['https://goerli.arbiscan.io'],
+    }
+
+    // const usingTestNetwork
+</script>
 </body>
 </html>
+<!--https://bridge.arbitrum.io/?l2ChainId=421613-->
