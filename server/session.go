@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/gorilla/sessions"
-	"github.com/ninjahome/web-bridge/util"
 	"net/http"
 	"sync"
 )
@@ -24,11 +23,7 @@ func SMInst() *SessionManager {
 }
 
 func newSM() *SessionManager {
-	secretKey, err := util.RandomBytesInHex(32)
-	if err != nil {
-		panic(err)
-	}
-	var store = sessions.NewCookieStore([]byte(secretKey))
+	var store = sessions.NewCookieStore([]byte(_globalCfg.SessionKey))
 	store.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   0,
@@ -45,7 +40,6 @@ func (sm *SessionManager) Get(key string, r *http.Request) (any, error) {
 		return nil, err
 	}
 
-	// 从会话中获取值
 	data := session.Values[key]
 	return data, nil
 }

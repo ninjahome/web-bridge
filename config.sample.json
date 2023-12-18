@@ -4,6 +4,7 @@
 	"use_https": false,
 	"ssl_cert_file": "",
 	"ssl_key_file": "",
+	"session_key": "",
 	"client_id": "",
 	"client_secret": "",
 	"project_id": "dessage",

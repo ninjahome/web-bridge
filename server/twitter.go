@@ -28,7 +28,8 @@ type TwitterSrv struct {
 	oauth2Config *oauth2.Config
 }
 
-func NewTwitterSrv(conf *TwitterConf) *TwitterSrv {
+func NewTwitterSrv() *TwitterSrv {
+	conf := _globalCfg.TwitterConf
 	var oauth2Config = &oauth2.Config{
 		RedirectURL:  callbackURL,
 		ClientID:     conf.ClientID,
@@ -39,7 +40,7 @@ func NewTwitterSrv(conf *TwitterConf) *TwitterSrv {
 			TokenURL: accessTokenURL,
 		},
 	}
-	htmlTemplateManager = parseTemplates("assets/html")
+	htmlTemplateManager = util.ParseTemplates("assets/html")
 
 	return &TwitterSrv{oauth2Config: oauth2Config}
 }

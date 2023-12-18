@@ -2,11 +2,9 @@ package server
 
 import (
 	"fmt"
+	"github.com/ninjahome/web-bridge/util"
 	"html/template"
 	"net/http"
-	"os"
-	"path/filepath"
-	"strings"
 )
 
 var (
@@ -22,7 +20,8 @@ var (
 		"/register": "html/create_wallet.html",
 	}
 
-	htmlTemplateManager *template.Template
+	htmlTemplateManager *template.Template //TODO::refactor to a struct
+	_globalCfg          *SysConf
 )
 
 type LogicAction func(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
@@ -32,6 +31,7 @@ type SrvConf struct {
 	UseHttps    bool   `json:"use_https"`
 	SSLCertFile string `json:"ssl_cert_file"`
 	SSLKeyFile  string `json:"ssl_key_file"`
+	SessionKey  string `json:"session_key"`
 }
 
 func (c *SrvConf) String() string {
@@ -69,14 +69,14 @@ func (c *FileStoreConf) String() string {
 	return s
 }
 
-type Conf struct {
+type SysConf struct {
 	Log string `json:"log"`
 	*SrvConf
 	*TwitterConf
 	*FileStoreConf
 }
 
-func (c *Conf) String() any {
+func (c *SysConf) String() any {
 	var s = "\n=======================system config==========================="
 	s += "\nlog level:" + c.Log
 	s += "\n" + c.SrvConf.String()
@@ -86,18 +86,8 @@ func (c *Conf) String() any {
 	return s
 }
 
-func parseTemplates(path string) *template.Template {
-	fs, err := os.ReadDir(path)
-	if err != nil {
-		panic(err)
-	}
-
-	var files []string
-	for _, f := range fs {
-		if strings.HasSuffix(f.Name(), ".html") {
-			files = append(files, filepath.Join(path, f.Name()))
-		}
-	}
-
-	return template.Must(template.ParseFiles(files...))
+func InitConf(c *SysConf) {
+	_globalCfg = c
+	util.SetLogLevel(c.Log)
+	fmt.Println(c.String())
 }

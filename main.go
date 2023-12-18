@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/hopwesley/fdlimit"
 	"github.com/ninjahome/web-bridge/server"
-	"github.com/ninjahome/web-bridge/util"
 	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
@@ -68,8 +67,8 @@ func mainRun(_ *cobra.Command, _ []string) {
 		panic(err)
 	}
 
-	cf := initConfig()
-	var basisSrv = server.NewMainService(cf)
+	initConfig()
+	var basisSrv = server.NewMainService()
 	go func() {
 		basisSrv.Start()
 	}()
@@ -77,8 +76,8 @@ func mainRun(_ *cobra.Command, _ []string) {
 	waitShutdownSignal()
 }
 
-func initConfig() *server.Conf {
-	cf := new(server.Conf)
+func initConfig() {
+	cf := new(server.SysConf)
 
 	bts, err := os.ReadFile(ConfigFIleName)
 	if err != nil {
@@ -88,9 +87,8 @@ func initConfig() *server.Conf {
 	if err = json.Unmarshal(bts, &cf); err != nil {
 		panic(err)
 	}
-	util.SetLogLevel(cf.Log)
-	fmt.Println(cf.String())
-	return cf
+
+	server.InitConf(cf)
 }
 
 func waitShutdownSignal() {

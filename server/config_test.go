@@ -3,18 +3,20 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ninjahome/web-bridge/util"
 	"os"
 	"testing"
 )
 
 func TestCreateDefaultConfigFile(t *testing.T) {
-	cfg := &Conf{
+	cfg := &SysConf{
 		Log: "debug",
 		SrvConf: &SrvConf{
 			DebugMode:   true,
 			UseHttps:    false,
 			SSLCertFile: "",
 			SSLKeyFile:  "",
+			SessionKey:  "",
 		},
 		TwitterConf: &TwitterConf{
 			ClientID:     "",
@@ -43,4 +45,11 @@ func TestSignParam(t *testing.T) {
 
 	retErr := obj.Verify(message, signedMessage)
 	fmt.Println("verify result :", retErr)
+}
+func TestGenASessionKey(t *testing.T) {
+	secretKey, err := util.RandomBytesInHex(16)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(secretKey)
 }
