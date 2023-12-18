@@ -18,6 +18,7 @@ var (
 	simpleRouterMap = map[string]string{
 		"/":         "html/index.html",
 		"/index":    "html/index.html",
+		"/signPage": "html/sign_twitter.html",
 		"/register": "html/create_wallet.html",
 	}
 
