@@ -5,11 +5,95 @@
     <title>Ninja User Info</title>
     <script src="/assets/js/utils.js"></script>
     <script src="/assets/js/database.js"></script>
+    <style>
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .left-side {
+            display: flex;
+            flex-direction: column;
+            width: 360px;
+            background-color: #f2f2f2;
+        }
+
+        .left-upper {
+            height: 360px;
+            background-color: #d9d9d9;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: start; /* 从顶部开始排列 */
+            align-items: center; /* 水平居中 */
+            overflow: hidden; /* 隐藏溢出的内容 */
+        }
+
+        .left-upper img {
+            max-width: 100%; /* 限制宽度，确保不会溢出 */
+            max-height: 120px; /* 限制图片的最大高度 */
+            margin-bottom: 10px; /* 图片与下方内容的间隔 */
+        }
+
+        .field {
+            text-align: center; /* 字段文本居中 */
+            width: 100%; /* 字段宽度与容器相同 */
+            margin-bottom: 5px; /* 字段之间的间隔 */
+        }
+
+        .field-label {
+            font-weight: bold;
+        }
+
+        .field-value {
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
 
+<div class="container">
+    <div class="left-side">
+        <div class="left-upper">
+            <!-- 图片占位符 -->
+            <img src="/assets/file/logo.png" alt="Logo">
+
+            <!-- Web3 ID -->
+            <div class="field">
+                <div class="field-label">Web3 ID:</div>
+                <div class="field-value"  id="basic-web3-id">0x123...</div>
+            </div>
+
+            <!-- Balance -->
+            <div class="field">
+                <div class="field-label">Balance:</div>
+                <div class="field-value" id="basic-web3-balance">0.0 ETH</div>
+            </div>
+
+            <!-- Twitter -->
+            <div class="field">
+                <div class="field-label">Twitter:</div>
+                <div class="field-value" id="basic-web3-balance">@username</div>
+            </div>
+        </div>
+        <div class="left-lower">
+            <!-- 左边下部内容 -->
+            <p>这里是左边下部分，占据剩余空间。</p>
+        </div>
+    </div>
+    <div class="right-side">
+        <!-- 右边内容 -->
+        <p>这里是右边部分，占据剩余空间。</p>
+    </div>
+</div>
+
+
 <script>
+
     document.addEventListener("DOMContentLoaded", initMainPage) ;
+    window.addEventListener('popstate', function () {
+        clearSessionStorage();
+    });
 
     let __global_current_ninja_user = null;
     function initMainPage(){
@@ -21,8 +105,12 @@
             window.location.href = "/";
         }
         __global_current_ninja_user = savedUserInfo;
+        fullFillBasicInfo();
     }
-
+    function fullFillBasicInfo(){
+        document.getElementById('basic-web3-id').innerText = __global_current_ninja_user.eth_addr;
+    }
 </script>
+
 </body>
 </html>

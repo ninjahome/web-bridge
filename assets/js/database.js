@@ -32,4 +32,6 @@ function getDataFromSessionDB(key){
     const storedValue = sessionStorage.getItem(key);
     return storedValue ? JSON.parse(storedValue) : null;
 }
-
+function clearSessionStorage() {
+    sessionStorage.clear();
+}
