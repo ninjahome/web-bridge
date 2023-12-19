@@ -49,6 +49,33 @@
             font-style: italic;
         }
     </style>
+
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", initMainPage) ;
+        let __global_current_ninja_user = null;
+        function initMainPage(){
+            checkSessionKeyData();
+            window.addEventListener('popstate', function () {
+                clearSessionStorage();
+            });
+            window.addEventListener('replaceState', function () {
+                clearSessionStorage();
+            });
+        }
+        function checkSessionKeyData(){
+            const savedUserInfo = getDataFromSessionDB(sesDbKeyForNjUserData())
+            if (!savedUserInfo){
+                window.location.href = "/";
+            }
+            __global_current_ninja_user = savedUserInfo;
+            fullFillBasicInfo();
+        }
+        function fullFillBasicInfo(){
+            document.getElementById('basic-web3-id').innerText = __global_current_ninja_user.eth_addr;
+        }
+    </script>
 </head>
 <body>
 
@@ -88,29 +115,6 @@
 </div>
 
 
-<script>
-
-    document.addEventListener("DOMContentLoaded", initMainPage) ;
-    window.addEventListener('popstate', function () {
-        clearSessionStorage();
-    });
-
-    let __global_current_ninja_user = null;
-    function initMainPage(){
-        checkSessionKeyData();
-    }
-    function checkSessionKeyData(){
-        const savedUserInfo = getDataFromSessionDB(sesDbKeyForNjUserData())
-        if (!savedUserInfo){
-            window.location.href = "/";
-        }
-        __global_current_ninja_user = savedUserInfo;
-        fullFillBasicInfo();
-    }
-    function fullFillBasicInfo(){
-        document.getElementById('basic-web3-id').innerText = __global_current_ninja_user.eth_addr;
-    }
-</script>
 
 </body>
 </html>
