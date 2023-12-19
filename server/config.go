@@ -3,17 +3,21 @@ package server
 import (
 	"fmt"
 	"github.com/ninjahome/web-bridge/util"
+	"golang.org/x/oauth2"
 	"html/template"
 	"net/http"
 )
 
 var (
-	logicRouter = map[string]LogicAction{
-		"/signInByTwitter": signInByTwitter,
-		"/tw_callback":     twitterSignCallBack,
-		"/main":            showMainPage,
+	cfgActionRouter = map[string]LogicAction{
+		"/signInByTwitter":   signInByTwitter,
+		"/tw_callback":       twitterSignCallBack,
+		"/signUpSuccessByTw": showTwSignResultPage,
+		"/main":              showMainPage,
+		"/signInByEth":       signInByEth,
 	}
-	simpleRouterMap = map[string]string{
+
+	cfgHtmlFileRouter = map[string]string{
 		"/":         "html/index.html",
 		"/index":    "html/index.html",
 		"/signPage": "html/sign_twitter.html",
@@ -24,7 +28,14 @@ var (
 	_globalCfg          *SysConf
 )
 
-type LogicAction func(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
+const (
+	callbackURL    = "https://bridge.simplenets.org/tw_callback"
+	authorizeURL   = "https://twitter.com/i/oauth2/authorize"
+	accessTokenURL = "https://api.twitter.com/2/oauth2/token"
+	accessUserURL  = "https://api.twitter.com/2/users/me"
+)
+
+type LogicAction func(w http.ResponseWriter, r *http.Request)
 
 type SrvConf struct {
 	DebugMode   bool   `json:"debug_mode"`
@@ -74,6 +85,7 @@ type SysConf struct {
 	*SrvConf
 	*TwitterConf
 	*FileStoreConf
+	twOauthCfg *oauth2.Config
 }
 
 func (c *SysConf) String() any {
@@ -90,4 +102,21 @@ func InitConf(c *SysConf) {
 	_globalCfg = c
 	util.SetLogLevel(c.Log)
 	fmt.Println(c.String())
+
+	_ = DbInst()
+
+	conf := _globalCfg.TwitterConf
+	var oauth2Config = &oauth2.Config{
+		RedirectURL:  callbackURL,
+		ClientID:     conf.ClientID,
+		ClientSecret: conf.ClientSecret,
+		Scopes:       []string{"tweet.read", "tweet.write", "follows.read", "follows.write", "users.read", "offline.access"},
+		Endpoint: oauth2.Endpoint{
+			AuthURL:  authorizeURL,
+			TokenURL: accessTokenURL,
+		},
+	}
+
+	_globalCfg.twOauthCfg = oauth2Config
+	htmlTemplateManager = util.ParseTemplates("assets/html")
 }

@@ -2,35 +2,60 @@ package server
 
 import (
 	"fmt"
+	"github.com/ninjahome/web-bridge/util"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 	"time"
 )
 
-const staticFileDir = "assets" // 静态文件目录
+const (
+	staticFileDir = "assets"
+)
 
 type MainService struct {
-	twSrv *TwitterSrv
 }
 
+func httpRecover(url string) {
+	if r := recover(); r != nil {
+		stack := debug.Stack()
+		util.LogInst().Error().Str("method", url).
+			Str("panic", fmt.Sprintf("%v", r)).
+			Str("stack", string(stack)).
+			Msg("api service failed")
+	}
+}
 func NewMainService() *MainService {
-	twSrv := NewTwitterSrv()
-	bh := &MainService{twSrv: twSrv}
+	bh := &MainService{}
 
 	http.Handle("/"+staticFileDir+"/", http.StripPrefix("/"+staticFileDir+"/", http.HandlerFunc(bh.assetsRouter)))
-	for route, fileName := range simpleRouterMap {
+
+	for route, fileName := range cfgHtmlFileRouter {
 		http.HandleFunc(route, bh.simpleRouter(fileName))
 	}
 
-	for route, twService := range logicRouter {
-		var r, s = route, twService
-		http.HandleFunc(r, func(writer http.ResponseWriter, request *http.Request) {
-			s(twSrv, writer, request)
+	for route, twService := range cfgActionRouter {
+		var url, action = route, twService
+		http.HandleFunc(url, func(writer http.ResponseWriter, request *http.Request) {
+			defer httpRecover(url)
+			if request.Method != http.MethodPost && request.Method != http.MethodGet {
+				http.Error(writer, "", http.StatusMethodNotAllowed)
+				return
+			}
+
+			if request.ContentLength > util.MaxReqContentLen {
+				err := fmt.Errorf("content length too large (%d>%d)", request.ContentLength, util.MaxReqContentLen)
+				http.Error(writer, err.Error(), http.StatusRequestEntityTooLarge)
+				return
+			}
+
+			action(writer, request)
 		})
 	}
+
 	return bh
 }
 
@@ -55,7 +80,6 @@ func (bh *MainService) simpleRouter(fileName string) func(http.ResponseWriter, *
 }
 
 func (bh *MainService) assetsRouter(writer http.ResponseWriter, request *http.Request) {
-	// 获取文件路径
 	realUrlPath := request.URL.Path
 	if strings.HasSuffix(realUrlPath, ".map") {
 		realUrlPath = strings.TrimSuffix(realUrlPath, ".map")

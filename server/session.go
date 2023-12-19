@@ -6,20 +6,25 @@ import (
 	"sync"
 )
 
-var _instance *SessionManager
-var logOnce sync.Once
+var _sesInst *SessionManager
+var sessionOnce sync.Once
 
-const SessionNameTwitter = "session-name-for-twitter"
+const (
+	SessionNameSystem   = "session-name-for-ninja"
+	sessionKeyForTwUser = "twitter-user-info"
+	sessionKeyForNJUser = "ninja-user-info"
+	verifierCodeKey     = "code_verifier"
+)
 
 type SessionManager struct {
 	store *sessions.CookieStore
 }
 
 func SMInst() *SessionManager {
-	logOnce.Do(func() {
-		_instance = newSM()
+	sessionOnce.Do(func() {
+		_sesInst = newSM()
 	})
-	return _instance
+	return _sesInst
 }
 
 func newSM() *SessionManager {
@@ -36,7 +41,7 @@ func newSM() *SessionManager {
 }
 
 func (sm *SessionManager) Get(key string, r *http.Request) (any, error) {
-	session, err := sm.store.Get(r, SessionNameTwitter)
+	session, err := sm.store.Get(r, SessionNameSystem)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +51,7 @@ func (sm *SessionManager) Get(key string, r *http.Request) (any, error) {
 }
 
 func (sm *SessionManager) Set(r *http.Request, w http.ResponseWriter, key string, val any) error {
-	session, err := sm.store.Get(r, SessionNameTwitter)
+	session, err := sm.store.Get(r, SessionNameSystem)
 	if err != nil {
 		return err
 	}

@@ -23,7 +23,7 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			ClientSecret: "",
 		},
 		FileStoreConf: &FileStoreConf{
-			ProjectID:   DefaultProjectID,
+			ProjectID:   DefaultTwitterProjectID,
 			KeyFilePath: "dessage-c3b5c95267fb.json",
 		},
 	}
@@ -34,7 +34,7 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 
 func TestSignParam(t *testing.T) {
 	message := `{"address":"0x2ba4e30628742e55e98e4a5253b510f5f2c60219","signTim":1702880038532}`
-	obj := &SignInParam{}
+	obj := &SignInObj{}
 
 	err := json.Unmarshal([]byte(message), obj)
 	if err != nil {
@@ -43,7 +43,7 @@ func TestSignParam(t *testing.T) {
 	fmt.Println(obj)
 	signedMessage := "0x227caaf479a4fcc890694919d81dfbd3eb234137c93362f71411c7172584bcd1765d2924135fa15934f0f1543f1524a86de15d62b6383d737bd77eec334233ed1b"
 
-	retErr := obj.Verify(message, signedMessage)
+	retErr := util.Verify(obj.EthAddr, message, signedMessage)
 	fmt.Println("verify result :", retErr)
 }
 func TestGenASessionKey(t *testing.T) {

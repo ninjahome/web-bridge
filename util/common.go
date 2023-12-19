@@ -1,14 +1,34 @@
 package util
 
 import (
+	"bytes"
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"html/template"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+)
+
+import (
+	"errors"
+)
+
+const (
+	MaxReqContentLen = 1024 * 1024 * 5
+)
+
+var (
+	ErrSignInvalid      = errors.New("invalid signature")
+	ErrSignNoAddr       = errors.New("no public address found")
+	ErrSignNotMatch     = errors.New("signature address not match")
+	ErrHttpEmptyRequest = errors.New("empty http post")
 )
 
 func RandomBytesInHex(count int) (string, error) {
@@ -35,4 +55,47 @@ func ParseTemplates(path string) *template.Template {
 	}
 
 	return template.Must(template.ParseFiles(files...))
+}
+
+func Verify(address, message, signedMessage string) error {
+	sig := common.FromHex(signedMessage)
+
+	// 在以太坊中，签名是65字节，最后一个字节是V值（27或28），但在Geth内部需要将其减少到0或1
+	if sig[64] != 27 && sig[64] != 28 {
+		return ErrSignInvalid
+	}
+	sig[64] -= 27
+
+	// 使用恢复方法来获取公钥
+	pubKey, err := crypto.SigToPub(signHash(message), sig)
+	if err != nil {
+		return ErrSignNoAddr
+	}
+
+	// 将公钥转换为以太坊地址
+	recoveredAddr := crypto.PubkeyToAddress(*pubKey)
+	addressOrig := strings.ToLower(address)
+	addressSigned := strings.ToLower(recoveredAddr.Hex())
+	if addressOrig != addressSigned {
+		return ErrSignNotMatch
+	}
+	return nil
+}
+
+func signHash(data string) []byte {
+	msg := fmt.Sprintf("\x19Ethereum Signed Message:\n%d%s", len(data), data)
+	return crypto.Keccak256([]byte(msg))
+}
+
+func ReadRequest(request *http.Request, obj any) error {
+	body := io.LimitReader(request.Body, MaxReqContentLen)
+	var b bytes.Buffer
+	n, err := b.ReadFrom(body)
+	if err != nil && n != 0 {
+		return err
+	}
+	if n == 0 {
+		return ErrHttpEmptyRequest
+	}
+	return json.Unmarshal(b.Bytes(), obj)
 }

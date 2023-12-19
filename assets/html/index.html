@@ -2,215 +2,159 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web3 Social Identity Login</title>
-    <style>
-        .container {
-            text-align: center;
-            padding: 20px;
-        }
-        .button {
-            display: inline-block;
-            margin-top: 10px;
-        }
-        .disabled {
-            pointer-events: none;
-            opacity: 0.6;
-        }
-        .success {
-            color: green;
-        }
-    </style>
+    <title>Login Page</title>
+    <script src="/assets/js/utils.js"></script>
 </head>
 <body>
-<div id="downloadMetaMask" style="text-align: center; display: none;">
-    <button class="button" onclick="downloadMetaMask()">下载MetaMask钱包</button>
-</div>
-<div id="container" class="container">
-    <h1>WEB3社交身份登录</h1>
-    <div id="metamaskSection" style="text-align: center;">
-        <p id="metamaskMessage">链接MetaMask钱包</p>
-        <button class="button" id="metamaskButton" onclick="connectMetaMask()">MetaMask</button>
+<div class="container">
+    <!-- 信息展示部分 -->
+    <div class="info-section">
+        <img src="/assets/file/logo.png" alt="Dessage Logo" class="logo">
+        <div class="product-name">Dessage</div>
+        <div class="product-description">A dapp powered by Ninja Protocol and Blockchain.</div>
     </div>
-    <div>
-        <p id="arbitrumStatus">本服务运行在arbitrum One网络</p>
-        <button class="button" id="switchArbitrum" onclick="switchArbitrum()" style="display: none;">切换到arbitrum One</button>
-<!--        <button class="button" id="addArbitrum" onclick="addArbitrumLlamaNodes()" style="display: inline-block;">添加arbitrum One</button>-->
+
+    <!-- 登录部分 -->
+    <div class="login-section">
+        <div class="web3-id-label" id="web3-id-label">Web3 ID: <span id="web3-id">Your Blockchain Address</span></div>
+        <div id="metamask-div">
+            <button class="metamask-button" id="metamask-button" onclick="connectToMetamask()">Connect with Metamask
+            </button>
+        </div>
+        <div id="sign-in-div">
+            <button class="sign-in-button" id="sign-in-button"
+                    onclick="signInByEth()">Sign In
+            </button>
+        </div>
     </div>
-    <div>
-        <p>以Web3身份授权登录</p>
-        <button class="button" onclick="web3Login()">Web3登录</button>
-    </div>
+    <div id="error-div" style="display: none"><span id="error-txt"></span></div>
 </div>
 
 <script>
-
-    class SignInParam{
-        constructor(address, timeMill,sig) {
-            this.address = address;
-            this.signTim = timeMill;
-            // this.signature = sig;
-        }
-    }
-
-    let __signInParamObj = null;
-    window.onload = async function() {
-        if (typeof window.ethereum === 'undefined') {
-            document.getElementById('container').classList.add('disabled');
-            document.getElementById('downloadMetaMask').style.display = 'block';
-        } else {
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-                if (accounts.length > 0) {
-                    displayMetaMaskConnected(accounts[0]);
-                }
-
-                window.ethereum.on('accountsChanged', function (accounts) {
-                    // 当用户切换账户时触发
-                    if (accounts.length > 0) {
-                        displayMetaMaskConnected(accounts[0]);
-                    } else {
-                        // 用户断开连接时的逻辑
-                        resetMetaMaskStatus();
-                    }
-                });
-                window.ethereum.on('chainChanged', handleChainChanged);
-                handleChainChanged(await window.ethereum.request({ method: 'eth_chainId' }));
-            } catch (error) {
-                console.error("Error checking MetaMask status:", error);
-            }
-        }
-    };
-
-    function connectMetaMask() {
-        if (window.ethereum) {
-            window.ethereum.request({ method: 'eth_requestAccounts' })
-                .then(accounts => {
-                    if (accounts.length > 0) {
-                        displayMetaMaskConnected(accounts[0]);
-                    }
-                })
-                .catch(error => {
-                    console.error("Error connecting to MetaMask:", error);
-                });
-        } else {
-            alert("MetaMask is not installed!");
-        }
-    }
-
-    function displayMetaMaskConnected(account) {
-        if (!__signInParamObj){
-            __signInParamObj = new SignInParam(account, null)
-        }
-        __signInParamObj.address = account;
-        document.getElementById('metamaskMessage').innerHTML = `社交身份ID: ${account} <span class="success">✓</span>`;
-        document.getElementById('metamaskButton').style.display = 'none';
-    }
-
-    function resetMetaMaskStatus() {
-        document.getElementById('metamaskMessage').innerHTML = "链接MetaMask钱包";
-        document.getElementById('metamaskButton').style.display = 'inline-block';
-    }
-
-    function downloadMetaMask() {
-        window.open('https://metamask.io/download/', '_blank');
-    }
-
-    function switchArbitrum() {
-        if (window.ethereum) {
-            window.ethereum.request({
-                method: 'wallet_switchEthereumChain',
-                params: [{ chainId: arbitrumOneNetworkID }],
-            }).catch(async (switchError) => {
-                // 检测错误代码，判断是否是因为未知链ID导致的错误
-                if (switchError.code === 4902) {
-                    try {
-                        await addArbitrumLlamaNodes();
-                    } catch (addError) {
-                        console.error('Failed to add the Arbitrum network', addError);
-                    }
-                } else {
-                    // 其他错误处理
-                    console.error(switchError);
-                }
-            });
-        }
-    }
-
-    function handleChainChanged(chainId) {
-        if (chainId === arbitrumOneNetworkID) {
-            document.getElementById('switchArbitrum').style.display = 'none';
-            document.getElementById('arbitrumStatus').innerHTML = `arbitrum One 网络 <span class="success">✓</span>`;
-        } else {
-            document.getElementById('switchArbitrum').style.display = 'inline-block';
-            document.getElementById('arbitrumStatus').innerHTML = '本服务运行在arbitrum One网络';
-        }
-    }
-
-    async function web3Login() {
-        if (!__signInParamObj) {
-            console.log("no account selected")
+    function showError(txt) {
+        if (!txt || txt.length === 0) {
+            document.getElementById("error-txt").textContent = '';
+            document.getElementById("error-div").style.display = 'none';
             return;
         }
-        __signInParamObj.signTim = (new Date()).getTime();
-        // __signInParamObj.signature = null;
-        const message = JSON.stringify(__signInParamObj);
-        console.log("message to sign =>", message)
-        const signature = await window.ethereum.request({
-            method: 'personal_sign',
-            params: [message, __signInParamObj.address],
+        document.getElementById("error-txt").textContent = txt;
+        document.getElementById("error-div").style.display = 'block';
+    }
+
+    function showSignBtn(web3ID) {
+        const web3IdLabel = document.getElementById("web3-id-label");
+        const signInDiv = document.getElementById("sign-in-div");
+        const metamaskDiv = document.getElementById("metamask-div");
+        const web3Id = document.getElementById("web3-id");
+        if (!web3ID) {
+            web3IdLabel.style.display = 'none';
+            signInDiv.style.display = 'none';
+            metamaskDiv.style.display = 'block';
+            return;
+        }
+        web3IdLabel.style.display = 'block';
+        signInDiv.style.display = 'block';
+        metamaskDiv.style.display = 'none';
+        web3Id.textContent = web3ID;
+    }
+
+    document.addEventListener("DOMContentLoaded", initElmStatus);
+    let metamaskObj = null;
+
+    async function initElmStatus() {
+        if (typeof window.ethereum === 'undefined') {
+            showSignBtn(null);
+            return;
+        }
+        metamaskObj = window.ethereum;
+        metamaskObj.on('accountsChanged', function (accounts) {
+            if (accounts.length > 0) {
+                showSignBtn(accounts[0]);
+                return;
+            }
+            showSignBtn(null);
         });
-        // 输出签名的结果
-        console.log('签名结果:', signature);
-    }
 
-    function toHex(number) {
-        return '0x' + number.toString(16);
-    }
-
-    // MetaMask文档提供的添加网络的方法
-    async function addArbitrumLlamaNodes() {
         try {
-            // 请求MetaMask添加新的网络
-            await ethereum.request({
-                method: 'wallet_addEthereumChain',
-                params: [ArbitrumGoerliParam],
-            });
-        } catch (addError) {
-            console.error('Failed to add the network', addError);
+            const accounts = await metamaskObj.request({method: 'eth_accounts'})
+            if (accounts.length === 0) {
+                showSignBtn(null);
+                return
+            }
+            showSignBtn(accounts[0]);
+        } catch (err) {
+            console.error("Error checking MetaMask status:", err);
+            showError(err);
         }
     }
 
-    const arbitrumOneNetworkID = toHex(421613)
-
-    const ArbitrumMainParam = {
-        chainId:  toHex(42161), // 将Chain ID转换为16进制字符串
-        chainName: 'Arbitrum LlamaNodes',
-        nativeCurrency: {
-            name: 'ETH', // 此字段为示例，根据实际情况填写
-            symbol: 'ETH', // 通常情况下是ETH，但是根据您的链可能有所不同
-            decimals: 18
-        },
-        rpcUrls: ['https://arbitrum.llamarpc.com'],
-        blockExplorerUrls: ['https://arbiscan.io'],
+    async function connectToMetamask() {
+        if (!metamaskObj) {
+            window.open('https://metamask.io/download/', '_blank');
+            return;
+        }
+        try {
+            await metamaskObj.request({method: "eth_requestAccounts"})
+            window.location.reload();
+        } catch (error) {
+            console.error("Metamask login failed:", error);
+            showError(error);
+        }
     }
 
-
-    const ArbitrumGoerliParam = {
-        chainId: toHex(421613), // 将Chain ID转换为16进制字符串
-        chainName: 'Arbitrum Goerli',
-        nativeCurrency: {
-            name: 'AETH', // 此字段为示例，根据实际情况填写
-            symbol: 'AETH', // 通常情况下是ETH，但是根据您的链可能有所不同
-            decimals: 18
-        },
-        rpcUrls: ['https://endpoints.omniatech.io/v1/arbitrum/goerli/public'],
-        blockExplorerUrls: ['https://goerli.arbiscan.io'],
+    class SignParam {
+        constructor(ethAddr) {
+            this.eth_addr = ethAddr;
+            this.sign_time = (new Date()).getTime();
+        }
     }
 
-    // const usingTestNetwork
+    class SignDataForPost {
+        constructor(msg, sig) {
+            this.message = msg;
+            this.signature = sig;
+        }
+    }
+
+    async function signInByEth() {
+        showError(null);
+        const web3Id = document.getElementById("web3-id").textContent;
+        if (web3Id.length < 20) {
+            showError("no valid web3 id selected");
+            return;
+        }
+
+        const signParam = new SignParam(web3Id)
+        const message = JSON.stringify(signParam);
+        try {
+            const signature = await metamaskObj.request({
+                method: 'personal_sign',
+                params: [message, web3Id],
+            })
+
+            console.log("message:=>", message);
+            console.log("signature:=>", signature);
+            showWaiting("signing in......", 15)
+
+            const obj = new SignDataForPost(message, signature)
+            PostToSrvByJson('/signInByEth', obj).then(response => {
+                console.log("sign in by eth success", response);
+                if (response) {
+                    window.location.href = response;
+                }
+            }).catch(err => {
+                showError(err.toString());
+            }).finally(r => {
+                hideLoading();
+            })
+
+        } catch (err) {
+            showError("sign in err:\n"+err.message);
+            hideLoading();
+        }
+    }
+
 </script>
 </body>
 </html>
-<!--https://bridge.arbitrum.io/?l2ChainId=421613-->

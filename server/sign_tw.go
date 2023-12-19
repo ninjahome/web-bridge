@@ -14,38 +14,7 @@ import (
 	"strings"
 )
 
-const (
-	callbackURL    = "https://bridge.simplenets.org/tw_callback"
-	authorizeURL   = "https://twitter.com/i/oauth2/authorize"
-	accessTokenURL = "https://api.twitter.com/2/oauth2/token"
-	accessUserURL  = "https://api.twitter.com/2/users/me"
-
-	sessionKeyForUser = "twitter-user-info"
-	verifierCodeKey   = "code_verifier"
-)
-
-type TwitterSrv struct {
-	oauth2Config *oauth2.Config
-}
-
-func NewTwitterSrv() *TwitterSrv {
-	conf := _globalCfg.TwitterConf
-	var oauth2Config = &oauth2.Config{
-		RedirectURL:  callbackURL,
-		ClientID:     conf.ClientID,
-		ClientSecret: conf.ClientSecret,
-		Scopes:       []string{"tweet.read", "tweet.write", "follows.read", "follows.write", "users.read", "offline.access"},
-		Endpoint: oauth2.Endpoint{
-			AuthURL:  authorizeURL,
-			TokenURL: accessTokenURL,
-		},
-	}
-	htmlTemplateManager = util.ParseTemplates("assets/html")
-
-	return &TwitterSrv{oauth2Config: oauth2Config}
-}
-
-func signInByTwitter(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
+func signInByTwitter(w http.ResponseWriter, r *http.Request) {
 	codeVerifier, verifierErr := util.RandomBytesInHex(32) // 64 character string here
 	if verifierErr != nil {
 		return
@@ -64,10 +33,10 @@ func signInByTwitter(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	util.LogInst().Debug().Str("codeVerifier", codeVerifier).Send()
+	//util.LogInst().Debug().Str("codeVerifier", codeVerifier).Send()
 	codeChallenge := base64.RawURLEncoding.EncodeToString(sha2.Sum(nil))
 	state, _ := util.RandomBytesInHex(24)
-	oauthUrl := ts.oauth2Config.AuthCodeURL(state) + "&code_challenge=" + url.QueryEscape(codeChallenge) + "&code_challenge_method=S256"
+	oauthUrl := _globalCfg.twOauthCfg.AuthCodeURL(state) + "&code_challenge=" + url.QueryEscape(codeChallenge) + "&code_challenge_method=S256"
 	http.Redirect(w, r, oauthUrl, http.StatusTemporaryRedirect)
 }
 
@@ -109,7 +78,7 @@ func exchangeWithCodeVerifier(ctx context.Context, conf *oauth2.Config, code str
 	return &token, nil
 }
 
-func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
+func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 	util.LogInst().Info().Msg("call back from twitter")
 
 	errStr := r.URL.Query().Get("error")
@@ -128,16 +97,16 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	token, errToken := exchangeWithCodeVerifier(ctx, ts.oauth2Config, code, codeVerifier.(string))
+	token, errToken := exchangeWithCodeVerifier(ctx, _globalCfg.twOauthCfg, code, codeVerifier.(string))
 	if errToken != nil {
 		util.LogInst().Err(errToken).Msgf("exchange err:%s", errToken)
 		http.Error(w, errToken.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	ts.saveRefreshToken(token.RefreshToken, state)
+	saveRefreshToken(token.RefreshToken, state)
 
-	client := ts.oauth2Config.Client(context.Background(), token)
+	client := _globalCfg.twOauthCfg.Client(context.Background(), token)
 	response, err3 := client.Get(accessUserURL)
 	if err3 != nil {
 		util.LogInst().Err(err).Msgf("create client err:%s", err3)
@@ -154,38 +123,39 @@ func twitterSignCallBack(ts *TwitterSrv, w http.ResponseWriter, r *http.Request)
 	}
 
 	result := apiResponse.Data
-	err = SMInst().Set(r, w, sessionKeyForUser, result.String())
+	err = SMInst().Set(r, w, sessionKeyForTwUser, result.String())
 	if err != nil {
 		util.LogInst().Err(err).Msgf("save twitter info failed:%v", result)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	http.Redirect(w, r, "/main", http.StatusFound)
+	http.Redirect(w, r, "/signUpSuccessByTw", http.StatusFound)
 }
 
-func showMainPage(ts *TwitterSrv, w http.ResponseWriter, r *http.Request) {
-	resultStr, err := SMInst().Get(sessionKeyForUser, r)
+func saveRefreshToken(refreshToken string, state string) {
+	//TODO::
+}
+
+func showTwSignResultPage(w http.ResponseWriter, r *http.Request) {
+	resultStr, err := SMInst().Get(sessionKeyForTwUser, r)
 	if err != nil {
 		util.LogInst().Err(err).Msg("no twitter user info found")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	result := TWUsrInfoMust(resultStr.(string))
-	err = htmlTemplateManager.ExecuteTemplate(w, "main.html", result)
+	err = htmlTemplateManager.ExecuteTemplate(w, "signUpSuccess.html", result)
 	if err != nil {
-		util.LogInst().Err(err).Msg("show main page failed")
+		util.LogInst().Err(err).Msg("show sign up by twitter page failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
 
-func (ts *TwitterSrv) saveRefreshToken(refreshToken, state string) {
-}
-
-func refreshAccessToken(ts *TwitterSrv, refreshToken string) (*oauth2.Token, error) {
+func refreshAccessToken(refreshToken string) (*oauth2.Token, error) {
 	ctx := context.Background()
-	tokenSource := ts.oauth2Config.TokenSource(ctx, &oauth2.Token{RefreshToken: refreshToken})
+	tokenSource := _globalCfg.twOauthCfg.TokenSource(ctx, &oauth2.Token{RefreshToken: refreshToken})
 	newToken, err := tokenSource.Token()
 	if err != nil {
 		return nil, err
