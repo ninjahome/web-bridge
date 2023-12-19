@@ -3,21 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Ninja User Info</title>
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/database.js"></script>
 </head>
 <body>
-<script>
-    // 假设数据以 JSON 形式嵌入在这里
-    var userInfo = {
-        Address: "{{.Address}}",
-        EthAddr: "{{.EthAddr}}",
-        CreateAt: {{.CreateAt}},
-    TwID: "{{.TwID}}"
-    };
 
-    document.addEventListener("DOMContentLoaded", function() {
-        // 页面加载完成后打印数据
-        console.log("Ninja User Info:", userInfo);
-    });
+<script>
+    document.addEventListener("DOMContentLoaded", initMainPage) ;
+
+    let __global_current_ninja_user = null;
+    function initMainPage(){
+        checkSessionKeyData();
+    }
+    function checkSessionKeyData(){
+        const savedUserInfo = getDataFromSessionDB(sesDbKeyForNjUserData())
+        if (!savedUserInfo){
+            window.location.href = "/";
+        }
+        __global_current_ninja_user = savedUserInfo;
+    }
+
 </script>
 </body>
 </html>

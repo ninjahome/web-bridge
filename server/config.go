@@ -13,12 +13,12 @@ var (
 		"/signInByTwitter":   signInByTwitter,
 		"/tw_callback":       twitterSignCallBack,
 		"/signUpSuccessByTw": showTwSignResultPage,
-		"/main":              showMainPage,
 		"/signInByEth":       signInByEth,
 	}
 
 	cfgHtmlFileRouter = map[string]string{
 		"/":         "html/index.html",
+		"/main":     "html/main.html",
 		"/index":    "html/index.html",
 		"/signPage": "html/sign_twitter.html",
 		"/register": "html/create_wallet.html",

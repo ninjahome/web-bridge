@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
     <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/database.js"></script>
 </head>
 <body>
 <div class="container">
@@ -103,13 +104,6 @@
         }
     }
 
-    class SignParam {
-        constructor(ethAddr) {
-            this.eth_addr = ethAddr;
-            this.sign_time = (new Date()).getTime();
-        }
-    }
-
     class SignDataForPost {
         constructor(msg, sig) {
             this.message = msg;
@@ -125,7 +119,7 @@
             return;
         }
 
-        const signParam = new SignParam(web3Id)
+        const signParam = new SignData(web3Id)
         const message = JSON.stringify(signParam);
         try {
             const signature = await metamaskObj.request({
@@ -136,19 +130,23 @@
             console.log("message:=>", message);
             console.log("signature:=>", signature);
             showWaiting("signing in......", 15)
-
             const obj = new SignDataForPost(message, signature)
             PostToSrvByJson('/signInByEth', obj).then(response => {
                 console.log("sign in by eth success", response);
-                if (response) {
-                    window.location.href = response;
+                hideLoading();
+                if (!response) {
+                    showError("failed to load ninja user data");
+                    return
                 }
+                const ninjaObj = JSON.parse(response)
+                console.log("got ninja object:", ninjaObj);
+                setDataFromSessionDB(sesDbKeyForSignData(signParam.eth_addr), signParam);
+                setDataFromSessionDB(sesDbKeyForNjUserData(), ninjaObj);
+                window.location.href = "/main";
             }).catch(err => {
                 showError(err.toString());
-            }).finally(r => {
                 hideLoading();
             })
-
         } catch (err) {
             showError("sign in err:\n"+err.message);
             hideLoading();

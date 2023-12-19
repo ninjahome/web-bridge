@@ -107,6 +107,11 @@ func (nu *NinjaUsrInfo) String() string {
 	return string(bts)
 }
 
+func (nu *NinjaUsrInfo) RawData() []byte {
+	bts, _ := json.Marshal(nu)
+	return bts
+}
+
 func NJUsrInfoMust(str string) *NinjaUsrInfo {
 	nu := &NinjaUsrInfo{}
 	err := json.Unmarshal([]byte(str), nu)

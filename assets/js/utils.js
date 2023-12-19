@@ -99,7 +99,7 @@ function showWaiting(message, timeout) {
 }
 
 function hideLoading() {
-    const loadingFrame = document.querySelector('iframe[src="loading.html"]');
+    const loadingFrame = document.querySelector('iframe[src="/assets/html/loading.html"]');
     if (loadingFrame) {
         document.body.removeChild(loadingFrame);
     }

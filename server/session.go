@@ -10,10 +10,10 @@ var _sesInst *SessionManager
 var sessionOnce sync.Once
 
 const (
-	SessionNameSystem   = "session-name-for-ninja"
-	sessionKeyForTwUser = "twitter-user-info"
-	sessionKeyForNJUser = "ninja-user-info"
-	verifierCodeKey     = "code_verifier"
+	SessionNameSystem     = "session-name-for-ninja"
+	sesKeyForTwUserSignUp = "twitter-user-info-for-sign-up"
+	sesKeyForNJUserSignIN = "ninja-user-sign-in-data"
+	sesKeyForVerifierCode = "code_verifier"
 )
 
 type SessionManager struct {
@@ -57,5 +57,14 @@ func (sm *SessionManager) Set(r *http.Request, w http.ResponseWriter, key string
 	}
 
 	session.Values[key] = val
+	return session.Save(r, w)
+}
+
+func (sm *SessionManager) Del(key string, r *http.Request, w http.ResponseWriter) error {
+	session, err := sm.store.Get(r, SessionNameSystem)
+	if err != nil {
+		return nil
+	}
+	session.Values[key] = nil
 	return session.Save(r, w)
 }

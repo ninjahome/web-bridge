@@ -26,7 +26,7 @@ func signInByTwitter(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = SMInst().Set(r, w, verifierCodeKey, codeVerifier)
+	err = SMInst().Set(r, w, sesKeyForVerifierCode, codeVerifier)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save verifier code failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -91,7 +91,7 @@ func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 	state := r.URL.Query().Get("state")
 	ctx := context.Background()
 
-	codeVerifier, err := SMInst().Get(verifierCodeKey, r)
+	codeVerifier, err := SMInst().Get(sesKeyForVerifierCode, r)
 	if err != nil {
 		util.LogInst().Err(err).Msg("get verifier code failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -123,7 +123,7 @@ func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 	}
 
 	result := apiResponse.Data
-	err = SMInst().Set(r, w, sessionKeyForTwUser, result.String())
+	err = SMInst().Set(r, w, sesKeyForTwUserSignUp, result.String())
 	if err != nil {
 		util.LogInst().Err(err).Msgf("save twitter info failed:%v", result)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -138,12 +138,13 @@ func saveRefreshToken(refreshToken string, state string) {
 }
 
 func showTwSignResultPage(w http.ResponseWriter, r *http.Request) {
-	resultStr, err := SMInst().Get(sessionKeyForTwUser, r)
+	resultStr, err := SMInst().Get(sesKeyForTwUserSignUp, r)
 	if err != nil {
 		util.LogInst().Err(err).Msg("no twitter user info found")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	_ = SMInst().Del(sesKeyForTwUserSignUp, r, w)
 	result := TWUsrInfoMust(resultStr.(string))
 	err = htmlTemplateManager.ExecuteTemplate(w, "signUpSuccess.html", result)
 	if err != nil {

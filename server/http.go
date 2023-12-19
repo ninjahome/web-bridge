@@ -41,6 +41,7 @@ func NewMainService() *MainService {
 		var url, action = route, twService
 		http.HandleFunc(url, func(writer http.ResponseWriter, request *http.Request) {
 			defer httpRecover(url)
+			util.LogInst().Debug().Str("url", url).Send()
 			if request.Method != http.MethodPost && request.Method != http.MethodGet {
 				http.Error(writer, "", http.StatusMethodNotAllowed)
 				return
