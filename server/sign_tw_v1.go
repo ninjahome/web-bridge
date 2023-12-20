@@ -327,7 +327,7 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	userdata := &TWUserInfo{}
-	err = json.Unmarshal(param.PayLoad.([]byte), userdata)
+	err = json.Unmarshal([]byte(param.PayLoad.(string)), userdata)
 	if err != nil {
 		util.LogInst().Err(err).Msg("parse twitter data failed")
 		http.Error(w, err.Error(), http.StatusBadRequest)
