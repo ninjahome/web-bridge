@@ -123,14 +123,20 @@
             return
         }
         metamaskObj = window.ethereum;
-        const curAccId = await metamaskObj.request({method: 'eth_chainId'})
-        if (curAccId !== __global_current_ninja_user) {
-            showDialog("error", "请打开metamask并确切换到：" + __global_current_ninja_user);
-            return;
-        }
-        const bindParam = new Web3BindingData(__global_current_ninja_user, twitterObj.id_str, _bindingDate)
-        const message = JSON.stringify(bindParam);
         try {
+            const accounts = await metamaskObj.request({method: 'eth_accounts'})
+            if (accounts.length === 0) {
+                showDialog("tips", "请登录metamask")
+                return
+            }
+            const curAccId = accounts[0]
+            if (curAccId !== __global_current_ninja_user) {
+                showDialog("error", "请打开metamask并确切换到：" + __global_current_ninja_user);
+                return;
+            }
+
+            const bindParam = new Web3BindingData(__global_current_ninja_user, twitterObj.id_str, _bindingDate)
+            const message = JSON.stringify(bindParam);
             const signature = await metamaskObj.request({
                 method: 'personal_sign',
                 params: [message, __global_current_ninja_user],
@@ -144,10 +150,10 @@
                 window.location.href = "/main";
             }).catch(err => {
                 hideLoading();
-                showDialog("error","bind failed:"+err.toString())
+                showDialog("error", "bind failed:" + err.toString())
             })
         } catch (err) {
-            showDialog("error","bind failed:"+err.toString())
+            showDialog("error", "bind failed:" + err.toString())
         }
     }
 
