@@ -145,3 +145,11 @@ const __globalMetaMaskNetworkParam = new Map([
         blockExplorerUrls: ['https://sepolia-explorer.arbitrum.io'],
     }]
 ]);
+
+class SignDataForPost {
+    constructor(msg, sig,payload) {
+        this.message = msg;
+        this.signature = sig;
+        this.payload = payload;
+    }
+}

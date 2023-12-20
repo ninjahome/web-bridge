@@ -33,6 +33,18 @@
 </div>
 
 <script>
+
+    class SignInData {
+        constructor(ethAddr, signTim) {
+            this.eth_addr = ethAddr;
+            if (!signTim) {
+                this.sign_time = (new Date()).getTime();
+            } else {
+                this.sign_time = signTim;
+            }
+        }
+    }
+
     function showError(txt) {
         if (!txt || txt.length === 0) {
             document.getElementById("error-txt").textContent = '';
@@ -104,12 +116,7 @@
         }
     }
 
-    class SignDataForPost {
-        constructor(msg, sig) {
-            this.message = msg;
-            this.signature = sig;
-        }
-    }
+
 
     async function signInByEth() {
         showError(null);
@@ -119,7 +126,7 @@
             return;
         }
 
-        const signParam = new SignData(web3Id)
+        const signParam = new SignInData(web3Id)
         const message = JSON.stringify(signParam);
         try {
             const signature = await metamaskObj.request({
@@ -128,7 +135,7 @@
             })
 
             showWaiting("signing in......", 15)
-            const obj = new SignDataForPost(message, signature)
+            const obj = new SignDataForPost(message, signature, null)
             PostToSrvByJson('/signInByEth', obj).then(response => {
                 console.log("sign in by eth success", response);
                 hideLoading();
@@ -137,7 +144,7 @@
                     return
                 }
                 const ninjaObj = JSON.parse(response)
-                console.log("got ninja object:", ninjaObj);
+                // console.log("got ninja object:", ninjaObj);
                 setDataFromSessionDB(sesDbKeyForSignData(signParam.eth_addr), signParam);
                 setDataFromSessionDB(sesDbKeyForNjUserData(), ninjaObj);
                 window.location.href = "/main";

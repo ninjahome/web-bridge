@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	Web3IDProfile          = "Web3 ID:"
 	sesKeyForNjUserId      = "twitter-signup-ninja-user-id"
 	sesKeyForAccessToken   = "twitter-access-key-v1"
 	callbackURL            = "https://bridge.simplenets.org/tw_callback"
@@ -180,10 +181,6 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 			Name:                 userData.Name,
 			ScreenName:           userData.ScreenName,
 			Description:          userData.Description,
-			Verified:             userData.Verified,
-			FollowersCount:       userData.FollowersCount,
-			FriendsCount:         userData.FriendsCount,
-			CreatedAt:            userData.CreatedAt,
 			ProfileImageUrlHttps: userData.ProfileImageUrlHttps,
 		},
 	}
@@ -308,4 +305,74 @@ type VerifiedTwitterUser struct {
 	URL                            string `json:"url"`
 	UtcOffset                      int    `json:"utc_offset"`
 	Verified                       bool   `json:"verified"`
+}
+
+type Web3BindingData struct {
+	EthAddr  string `json:"eth_addr"`
+	TwID     string `json:"tw_id"`
+	BindTime int64  `json:"bind_time"`
+}
+
+func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
+	param := &SignDataByEth{}
+	err := util.ReadRequest(r, param)
+	if err != nil {
+		util.LogInst().Err(err).Msg("no sign data by eth found")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if param.PayLoad == nil {
+		util.LogInst().Err(err).Msg("lost payload in sign data")
+		http.Error(w, "lost payload in sign data", http.StatusBadRequest)
+		return
+	}
+	userdata := &TWUserInfo{}
+	err = json.Unmarshal(param.PayLoad.([]byte), userdata)
+	if err != nil {
+		util.LogInst().Err(err).Msg("parse twitter data failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	data := &Web3BindingData{}
+	err = json.Unmarshal([]byte(param.Message), data)
+	if err != nil {
+		util.LogInst().Err(err).Msg("parse sign data failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	err = util.Verify(data.EthAddr, param.Message, param.Signature)
+	if err != nil {
+		util.LogInst().Err(err).Msg("binding data verify signature failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	util.LogInst().Info().Str("eth-addr", data.EthAddr).
+		Str("twitter-id", data.TwID).
+		Int64("bind-time", data.BindTime).Msg("sign data success")
+
+	bindDataToStore := &Web3Binding{
+		TwitterID: data.TwID,
+		EthAddr:   data.EthAddr,
+		SignUpAt:  data.BindTime,
+		Signature: param.Signature,
+	}
+	err = DbInst().BindingWeb3ID(bindDataToStore, userdata)
+	if err != nil {
+		util.LogInst().Err(err).Msg("save binding data  failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	token, err := getAccessTokenFromSession(r)
+	if err != nil {
+		util.LogInst().Err(err).Msg("no user access token found")
+	}
+	err = updateTwitterBio(token, userdata.Description+Web3IDProfile+data.EthAddr)
+	if err != nil {
+		util.LogInst().Err(err).Msg("update user's bio failed")
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(data.TwID))
 }

@@ -4,6 +4,7 @@ import (
 	"cloud.google.com/go/firestore"
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/ninjahome/web-bridge/util"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
@@ -16,8 +17,8 @@ const (
 	DefaultTwitterProjectID = "dessage"
 	DefaultDBTimeOut        = 10 * time.Second
 	DBTableNJUser           = "ninja-user"
-	DBTableUsrLog           = "ninja-user"
 	DBTableTWUser           = "twitter-user"
+	DBTableWeb3Bindings     = "twitter-eth-binding"
 )
 
 /*******************************************************************************************************
@@ -95,16 +96,18 @@ type TwAPIResponse struct {
 	EthAddr     string      `json:"eth_addr"`
 	SignUpAt    int64       `json:"sign_up_at"`
 }
+type Web3Binding struct {
+	TwitterID string `json:"twitter_id"`
+	EthAddr   string `json:"eth_addr"`
+	SignUpAt  int64  `json:"sign_up_at"`
+	Signature string `json:"signature"`
+}
 
 type TWUserInfo struct {
 	ID                   string `json:"id_str"`
 	Name                 string `json:"name"`
 	ScreenName           string `json:"screen_name"`
 	Description          string `json:"description"`
-	Verified             bool   `json:"verified"`
-	FollowersCount       int    `json:"followers_count"`
-	FriendsCount         int    `json:"friends_count"`
-	CreatedAt            string `json:"created_at"`
 	ProfileImageUrlHttps string `json:"profile_image_url_https"`
 }
 
@@ -188,4 +191,56 @@ func (dm *DbManager) NjUserSignIn(ethAddr string) *NinjaUsrInfo {
 
 	util.LogInst().Debug().Str("eth-addr", ethAddr).Msg("firestore create ninja user success")
 	return nu
+}
+
+func (dm *DbManager) BindingWeb3ID(bindData *Web3Binding, twMeta *TWUserInfo) error {
+	var ethAddr = bindData.EthAddr
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+
+	/*check nj user basic data*/
+	njUserDoc := dm.fileCli.Collection(DBTableNJUser).Doc(ethAddr)
+	doc, err := njUserDoc.Get(opCtx)
+	if err != nil {
+		util.LogInst().Err(err).Str("eth-addr", ethAddr).Msg("no nj user sign in data")
+		return err
+	}
+	nu := &NinjaUsrInfo{}
+	err = doc.DataTo(nu)
+	if err != nil {
+		util.LogInst().Err(err).Str("eth-addr", ethAddr).Msg("parse nj user failed")
+		return err
+	}
+	if len(nu.TwID) > 0 {
+		util.LogInst().Err(err).Str("eth-addr", ethAddr).
+			Str("twitter-id", nu.TwID).Msg("duplicate web3 binding")
+		return fmt.Errorf("duplicate web3 binding")
+	}
+
+	/*set meta binding  data*/
+	twitterDoc := dm.fileCli.Collection(DBTableTWUser).Doc(twMeta.ID)
+	_, err = twitterDoc.Set(opCtx, twMeta)
+	if err != nil {
+		util.LogInst().Err(err).Str("twitter-id", twMeta.ID).Msg("update twitter meta failed")
+		return err
+	}
+
+	bindDoc := dm.fileCli.Collection(DBTableWeb3Bindings).Doc(ethAddr)
+	_, err = bindDoc.Set(opCtx, bindData)
+	if err != nil {
+		util.LogInst().Err(err).Str("eth-addr", ethAddr).
+			Str("twitter-id", twMeta.ID).Msg("update web3 binding failed")
+		return err
+	}
+
+	/*update nj user basic data*/
+	nu.TwID = bindData.TwitterID
+	_, err = njUserDoc.Set(opCtx, nu)
+	if err != nil {
+		util.LogInst().Err(err).Str("eth-addr", ethAddr).
+			Str("twitter-id", nu.TwID).Msg("update nj user failed")
+		return err
+	}
+
+	return nil
 }

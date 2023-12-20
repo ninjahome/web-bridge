@@ -1,14 +1,3 @@
-class SignData {
-    constructor(ethAddr, signTim) {
-        this.eth_addr = ethAddr;
-        if (!signTim) {
-            this.sign_time = (new Date()).getTime();
-        } else {
-            this.sign_time = signTim;
-        }
-    }
-}
-
 class NinjaUserBasicInfo{
     constructor(addr, ethAddr, twId, createAt) {
         this.address =addr;
