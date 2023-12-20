@@ -38,8 +38,7 @@ func (ut *userAccessToken) GetToken() *oauth1.Token {
 }
 
 func (ut *userAccessToken) string() string {
-	bts, _ := json.Marshal(ut)
-	return string(bts)
+	return ut.oauthToken + ":" + ut.oauthTokenSecret + ":" + ut.userId + ":" + ut.screenName
 }
 func getAccessTokenFromSession(r *http.Request) (*userAccessToken, error) {
 	bts, err := SMInst().Get(sesKeyForAccessToken, r)
