@@ -134,6 +134,10 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	err = updateTwitterBio(token, "web3 id:"+ethAddr.(string))
+	if err != nil {
+		util.LogInst().Err(err).Msg("updateTwitterBio failed")
+	}
 	result, err := fetchTwitterUserInfo(token)
 	if err != nil {
 		util.LogInst().Err(err).Msg("get user basic info failed")
@@ -142,10 +146,7 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 	}
 	result.EthAddr = ethAddr.(string)
 	result.SignUpAt = time.Now().UnixMilli()
-	err = updateTwitterBio(token, "web3 id:"+result.EthAddr)
-	if err != nil {
-		util.LogInst().Err(err).Msg("updateTwitterBio failed")
-	}
+
 	err = htmlTemplateManager.ExecuteTemplate(w, "signUpSuccess.html", result)
 	if err != nil {
 		util.LogInst().Err(err).Msg("show sign up by twitter page failed")
