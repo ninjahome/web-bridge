@@ -24,22 +24,37 @@ const (
 )
 
 type userAccessToken struct {
-	oauthToken       string
-	oauthTokenSecret string
-	userId           string
-	screenName       string
+	OauthToken       string
+	OauthTokenSecret string
+	UserId           string
+	ScreenName       string
+}
+
+func parseUserToken(values url.Values) *userAccessToken {
+	accessToken := values.Get("oauth_token")
+	accessSecret := values.Get("oauth_token_secret")
+	userID := values.Get("user_id")
+	screenName := values.Get("screen_name")
+	return &userAccessToken{
+		OauthToken:       accessToken,
+		OauthTokenSecret: accessSecret,
+		UserId:           userID,
+		ScreenName:       screenName,
+	}
 }
 
 func (ut *userAccessToken) GetToken() *oauth1.Token {
 	return &oauth1.Token{
-		Token:       ut.oauthToken,
-		TokenSecret: ut.oauthTokenSecret,
+		Token:       ut.OauthToken,
+		TokenSecret: ut.OauthTokenSecret,
 	}
 }
 
-func (ut *userAccessToken) string() string {
-	return ut.oauthToken + ":" + ut.oauthTokenSecret + ":" + ut.userId + ":" + ut.screenName
+func (ut *userAccessToken) String() string {
+	bts, _ := json.Marshal(ut)
+	return string(bts)
 }
+
 func getAccessTokenFromSession(r *http.Request) (*userAccessToken, error) {
 	bts, err := SMInst().Get(sesKeyForAccessToken, r)
 	if err != nil {
@@ -98,18 +113,6 @@ func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, authorizeURL, http.StatusTemporaryRedirect)
 }
 
-func parseUserToken(values url.Values) *userAccessToken {
-	accessToken := values.Get("oauth_token")
-	accessSecret := values.Get("oauth_token_secret")
-	userID := values.Get("user_id")
-	screenName := values.Get("screen_name")
-	return &userAccessToken{
-		oauthToken:       accessToken,
-		oauthTokenSecret: accessSecret,
-		userId:           userID,
-		screenName:       screenName,
-	}
-}
 func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 	oauth1Config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	requestSecret, _ := SMInst().Get(sesKeyForRequestSecret, r)
@@ -145,8 +148,7 @@ func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := parseUserToken(values)
-	bts, _ := json.Marshal(token)
-	_ = SMInst().Set(r, w, sesKeyForAccessToken, bts)
+	_ = SMInst().Set(r, w, sesKeyForAccessToken, token.string())
 	http.Redirect(w, r, "/signUpSuccessByTw", http.StatusFound)
 }
 
@@ -215,7 +217,7 @@ func fetchTwitterUserInfo(ut *userAccessToken) (*TwAPIResponse, error) {
 	util.LogInst().Debug().Msg(ut.string())
 	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 
-	userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?user_id=%s", ut.userId)
+	userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?user_id=%s", ut.UserId)
 
 	resp, err := httpClient.Get(userInfoURL)
 	if err != nil {
