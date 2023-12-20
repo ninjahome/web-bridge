@@ -217,7 +217,8 @@ func fetchTwitterUserInfo(ut *userAccessToken) (*TwAPIResponse, error) {
 	util.LogInst().Debug().Msg(ut.string())
 	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 
-	userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?user_id=%s", ut.UserId)
+	userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?screen_name=%s", ut.ScreenName)
+	//userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?user_id=%s", ut.UserId)
 
 	resp, err := httpClient.Get(userInfoURL)
 	if err != nil {
