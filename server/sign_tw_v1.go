@@ -11,65 +11,64 @@ import (
 )
 
 const (
-	callbackURL      = "https://bridge.simplenets.org/tw_callback"
-	accessUserProUrl = "https://api.twitter.com/1.1/account/update_profile.json"
+	callbackURL            = "https://bridge.simplenets.org/tw_callback"
+	accessUserProUrl       = "https://api.twitter.com/1.1/account/update_profile.json"
+	sesKeyForRequestSecret = "ses-key-for-request-secret"
 )
 
 func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
-	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
+	oauth1Config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
+	oauth1Token := oauth1.NewToken("", "")
+	httpClient := oauth1Config.Client(oauth1.NoContext, oauth1Token)
+
 	requestTokenURL := "https://api.twitter.com/oauth/request_token"
-	authorizeURL := "https://api.twitter.com/oauth/authorize"
-
-	// 创建一个OAuth1的HTTP客户端
-	httpClient := config.Client(oauth1.NoContext, nil)
-
-	// Step 1: 获取请求令牌
-	resp, err := httpClient.PostForm(requestTokenURL, url.Values{
-		"oauth_callback": {callbackURL},
-	})
+	response, err := httpClient.PostForm(requestTokenURL, nil)
 	if err != nil {
-		util.LogInst().Err(err).Msg("httpClient.PostForm failed")
+		util.LogInst().Err(err).Msg("Failed to get request token")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	defer resp.Body.Close()
+	defer response.Body.Close()
 
-	// 解析响应以获取请求令牌
-	bodyBytes, err := io.ReadAll(resp.Body)
+	bodyBytes, err := io.ReadAll(response.Body)
 	if err != nil {
-		util.LogInst().Err(err).Msg("read PostForm failed")
+		util.LogInst().Err(err).Msg("Failed to read response body")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	bodyString := string(bodyBytes)
 	values, err := url.ParseQuery(bodyString)
 	if err != nil {
-		util.LogInst().Err(err).Msg("ParseQuery resp  Body failed")
+		util.LogInst().Err(err).Msg("Failed to parse query from response body")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	requestToken := values.Get("oauth_token")
 
-	// Step 2: 重定向用户到Twitter进行授权
-	authURL := fmt.Sprintf("%s?oauth_token=%s", authorizeURL, requestToken)
-	http.Redirect(w, r, authURL, http.StatusTemporaryRedirect)
+	requestToken := values.Get("oauth_token")
+	requestSecret := values.Get("oauth_token_secret")
+
+	_ = SMInst().Set(r, w, sesKeyForRequestSecret, requestSecret)
+	authorizeURL := fmt.Sprintf("https://api.twitter.com/oauth/authorize?oauth_token=%s", requestToken)
+	http.Redirect(w, r, authorizeURL, http.StatusTemporaryRedirect)
 }
 
 func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
-	config := oauth1.NewConfig("consumerKey", "consumerSecret")
-	accessTokenURL := "https://api.twitter.com/oauth/access_token"
+	oauth1Config := oauth1.NewConfig("consumerKey", "consumerSecret")
+	requestSecret, _ := SMInst().Get(sesKeyForRequestSecret, r)
 
 	requestToken := r.URL.Query().Get("oauth_token")
 	verifier := r.URL.Query().Get("oauth_verifier")
 
-	// Step 3: Exchange request token and verifier for an access token
-	accessToken, accessSecret, err := config.AccessToken(accessTokenURL, requestToken, verifier)
+	accessToken, accessSecret, err := oauth1Config.AccessToken(requestToken, requestSecret.(string), verifier)
 	if err != nil {
 		util.LogInst().Err(err).Msg("config.AccessToken failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	token := oauth1.NewToken(accessToken, accessSecret)
+
 	err = updateTwitterBio(token, "web player")
 	if err != nil {
 		util.LogInst().Err(err).Msg("updateTwitterBio failed")
