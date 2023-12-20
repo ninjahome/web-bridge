@@ -16,11 +16,10 @@ import (
 )
 
 const (
-	callbackURLV2      = "https://bridge.simplenets.org/tw_callbackV2"
-	authorizeURLV2     = "https://twitter.com/i/oauth2/authorize"
-	accessTokenURLV2   = "https://api.twitter.com/2/oauth2/token"
-	accessUserURLV2    = "https://api.twitter.com/2/users/me?user.fields=profile_image_url,description"
-	accessUserProUrlV2 = "https://api.twitter.com/1.1/account/update_profile.json"
+	callbackURLV2    = "https://bridge.simplenets.org/tw_callbackV2"
+	authorizeURLV2   = "https://twitter.com/i/oauth2/authorize"
+	accessTokenURLV2 = "https://api.twitter.com/2/oauth2/token"
+	accessUserURLV2  = "https://api.twitter.com/2/users/me?user.fields=profile_image_url,description"
 )
 
 type stateParam struct {
