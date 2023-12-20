@@ -89,14 +89,14 @@
     const twitterObj = {{ .TwitterData }};
     function setupBasicInfos(){
         document.getElementById("profile-image").innerHTML = `
-                <img src="${twitterObj.ProfileImageUrlHttps}" alt="Profile Image">
+                <img src="${twitterObj.profile_image_url_https}" alt="Profile Image">
             `;
-        document.getElementById("profile-name").innerText = twitterObj.Name;
-        document.getElementById("profile-screen-name").innerText = `@${twitterObj.ScreenName}`;
-        document.getElementById("profile-description").innerText = twitterObj.Description;
-        document.getElementById("profile-followers").innerText = `关注者: ${twitterObj.FollowersCount}`;
-        document.getElementById("profile-following").innerText = `正在关注: ${twitterObj.FriendsCount}`;
-        document.getElementById("profile-created-at").innerText = `加入时间: ${twitterObj.CreatedAt}`;
+        document.getElementById("profile-name").innerText = twitterObj.name;
+        document.getElementById("profile-screen-name").innerText = `@${twitterObj.screen_name}`;
+        document.getElementById("profile-description").innerText = twitterObj.description;
+        document.getElementById("profile-followers").innerText = `关注者: ${twitterObj.followers_count}`;
+        document.getElementById("profile-following").innerText = `正在关注: ${twitterObj.friends_count}`;
+        document.getElementById("profile-created-at").innerText = `加入时间: ${twitterObj.created_at}`;
 
         document.getElementById("eth-address").textContent = "{{ .EthAddr }}";
         document.getElementById("signup-time").textContent = new Date({{ .SignUpAt }} ).toLocaleDateString();;
