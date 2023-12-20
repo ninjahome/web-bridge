@@ -165,13 +165,8 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	util.LogInst().Debug().Msg(token.string())
 
-	err = updateTwitterBio(token, "web3 id:"+ethAddr.(string))
-	if err != nil {
-		util.LogInst().Err(err).Msg("updateTwitterBio failed")
-	}
-	result, err := fetchTwitterUserInfo(token)
+	result, err := verifyTwitterCredentials(token) //fetchTwitterUserInfo(token)//verifyTwitterCredentials
 	if err != nil {
 		util.LogInst().Err(err).Msg("get user basic info failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -214,13 +209,39 @@ func updateTwitterBio(ut *userAccessToken, newBio string) error {
 
 func fetchTwitterUserInfo(ut *userAccessToken) (*TwAPIResponse, error) {
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
+
 	util.LogInst().Debug().Msg(ut.string())
+
 	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 
 	userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?screen_name=%s", ut.ScreenName)
 	//userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?user_id=%s", ut.UserId)
 
 	resp, err := httpClient.Get(userInfoURL)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("twitter API responded with status: %s", resp.Status)
+	}
+
+	var user TwAPIResponse
+	if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+func verifyTwitterCredentials(ut *userAccessToken) (*TwAPIResponse, error) {
+	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
+	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
+
+	verifyCredentialsURL := "https://api.twitter.com/1.1/account/verify_credentials.json"
+
+	resp, err := httpClient.Get(verifyCredentialsURL)
 	if err != nil {
 		return nil, err
 	}
