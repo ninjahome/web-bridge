@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	Web3IDProfile          = "Web3 ID:"
+	Web3IDProfile          = "Ninja Protocol Web3 ID:"
 	sesKeyForNjUserId      = "twitter-signup-ninja-user-id"
 	sesKeyForAccessToken   = "twitter-access-key-v1"
 	callbackURL            = "https://bridge.simplenets.org/tw_callback"
@@ -341,6 +341,7 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	err = util.Verify(data.EthAddr, param.Message, param.Signature)
 	if err != nil {
 		util.LogInst().Err(err).Msg("binding data verify signature failed")
@@ -368,10 +369,13 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		util.LogInst().Err(err).Msg("no user access token found")
 	}
-	err = updateTwitterBio(token, userdata.Description+Web3IDProfile+data.EthAddr)
-	if err != nil {
-		util.LogInst().Err(err).Msg("update user's bio failed")
+	if false == strings.Contains(userdata.Description, Web3IDProfile) {
+		err = updateTwitterBio(token, userdata.Description+Web3IDProfile+data.EthAddr)
+		if err != nil {
+			util.LogInst().Err(err).Msg("update user's bio failed")
+		}
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(data.TwID))

@@ -150,6 +150,6 @@ class SignDataForPost {
     constructor(msg, sig,payload) {
         this.message = msg;
         this.signature = sig;
-        this.payload = payload;
+        this.pay_load = payload;
     }
 }
