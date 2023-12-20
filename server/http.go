@@ -28,6 +28,7 @@ func httpRecover(url string) {
 			Msg("api service failed")
 	}
 }
+
 func NewMainService() *MainService {
 	bh := &MainService{}
 
@@ -64,12 +65,12 @@ func (bh *MainService) Start() {
 	cfg := _globalCfg
 	if cfg.UseHttps {
 		if cfg.SSLCertFile == "" || cfg.SSLKeyFile == "" {
-			panic("HTTPS 服务器需要指定证书文件和私钥文件")
+			panic("HTTPS needs ssl key and cert files")
 		}
-		fmt.Print("HTTPS模式")
+		fmt.Print("HTTPS Mode")
 		panic(http.ListenAndServeTLS(":443", cfg.SSLCertFile, cfg.SSLKeyFile, nil))
 	} else {
-		fmt.Print("简单模式")
+		fmt.Print("Simple HTTP")
 		panic(http.ListenAndServe(":80", nil))
 	}
 }
@@ -91,7 +92,6 @@ func (bh *MainService) assetsRouter(writer http.ResponseWriter, request *http.Re
 func (bh *MainService) assetsStaticFile(writer http.ResponseWriter, request *http.Request, fileName string) {
 	fPath := filepath.Join(staticFileDir, fileName)
 
-	// 获取文件状态
 	fileInfo, err := os.Stat(fPath)
 	if err != nil {
 		if os.IsNotExist(err) {

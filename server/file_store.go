@@ -65,6 +65,7 @@ func newDb() *DbManager {
 type TwitterAPIResponse struct {
 	TwitterData *TWUserInfo `json:"data"`
 	EthAddr     string      `json:"eth_addr"`
+	SignUpAt    int64       `json:"sign_up_at"`
 }
 
 type TWUserInfo struct {
@@ -72,7 +73,7 @@ type TWUserInfo struct {
 	Name            string `json:"name"`
 	Username        string `json:"username"`
 	ProfileImageURL string `json:"profile_image_url"`
-	SignUpAt        int64  `json:"sign_up_at"`
+	Bio             string `json:"description"`
 }
 
 func (t *TWUserInfo) String() string {

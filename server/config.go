@@ -11,7 +11,9 @@ import (
 var (
 	cfgActionRouter = map[string]LogicAction{
 		"/signUpByTwitter":   signUpByTwitter,
+		"/signUpByTwitterV2": signUpByTwitterV2,
 		"/tw_callback":       twitterSignCallBack,
+		"/tw_callbackV2":     twitterSignCallBackV2,
 		"/signUpSuccessByTw": showTwSignResultPage,
 		"/signInByEth":       signInByEth,
 	}
@@ -26,13 +28,6 @@ var (
 
 	htmlTemplateManager *template.Template //TODO::refactor to a struct
 	_globalCfg          *SysConf
-)
-
-const (
-	callbackURL    = "https://bridge.simplenets.org/tw_callback"
-	authorizeURL   = "https://twitter.com/i/oauth2/authorize"
-	accessTokenURL = "https://api.twitter.com/2/oauth2/token"
-	accessUserURL  = "https://api.twitter.com/2/users/me?user.fields=profile_image_url"
 )
 
 type LogicAction func(w http.ResponseWriter, r *http.Request)
@@ -56,8 +51,10 @@ func (c *SrvConf) String() string {
 }
 
 type TwitterConf struct {
-	ClientID     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
+	ClientID       string `json:"client_id"`
+	ClientSecret   string `json:"client_secret"`
+	ConsumerKey    string `json:"consumer_key"`
+	ConsumerSecret string `json:"consumer_secret"`
 }
 
 func (c *TwitterConf) String() string {
@@ -107,13 +104,13 @@ func InitConf(c *SysConf) {
 
 	conf := _globalCfg.TwitterConf
 	var oauth2Config = &oauth2.Config{
-		RedirectURL:  callbackURL,
+		RedirectURL:  callbackURLV2,
 		ClientID:     conf.ClientID,
 		ClientSecret: conf.ClientSecret,
 		Scopes:       []string{"tweet.read", "tweet.write", "follows.read", "follows.write", "users.read", "offline.access"},
 		Endpoint: oauth2.Endpoint{
-			AuthURL:  authorizeURL,
-			TokenURL: accessTokenURL,
+			AuthURL:  authorizeURLV2,
+			TokenURL: accessTokenURLV2,
 		},
 	}
 

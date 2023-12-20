@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	cloud.google.com/go/firestore v1.14.0
+	github.com/dghubble/oauth1 v0.7.2
 	github.com/ethereum/go-ethereum v1.13.5
 	github.com/gorilla/sessions v1.2.2
 	github.com/hopwesley/fdlimit v1.0.0

@@ -12,6 +12,15 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
+)
+
+const (
+	callbackURLV2      = "https://bridge.simplenets.org/tw_callbackV2"
+	authorizeURLV2     = "https://twitter.com/i/oauth2/authorize"
+	accessTokenURLV2   = "https://api.twitter.com/2/oauth2/token"
+	accessUserURLV2    = "https://api.twitter.com/2/users/me?user.fields=profile_image_url,description"
+	accessUserProUrlV2 = "https://api.twitter.com/1.1/account/update_profile.json"
 )
 
 type stateParam struct {
@@ -31,7 +40,7 @@ func parseStateParam(str string) *stateParam {
 	return &stateParam{ethAddr: strArr[0], stateNo: strArr[1]}
 }
 
-func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
+func signUpByTwitterV2(w http.ResponseWriter, r *http.Request) {
 
 	ethAddr := r.URL.Query().Get("eth_addr")
 	if ethAddr == "" {
@@ -112,7 +121,7 @@ func twitterActionWithAccessToken(token *oauth2.Token, accUrl string, result any
 	return nil
 }
 
-func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
+func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request) {
 	util.LogInst().Info().Msg("call back from twitter")
 
 	errStr := r.URL.Query().Get("error")
@@ -182,13 +191,14 @@ func showTwSignResultPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var result = &TwitterAPIResponse{}
-	err = twitterActionWithAccessToken(token, accessUserURL, result)
+	err = twitterActionWithAccessToken(token, accessUserURLV2, result)
 	if err != nil {
 		util.LogInst().Err(err).Msgf("get twitter info failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	result.EthAddr = state.ethAddr
+	result.SignUpAt = time.Now().UnixMilli()
 	err = htmlTemplateManager.ExecuteTemplate(w, "signUpSuccess.html", result)
 	if err != nil {
 		util.LogInst().Err(err).Msg("show sign up by twitter page failed")

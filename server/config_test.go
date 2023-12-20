@@ -19,8 +19,10 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			SessionKey:  "",
 		},
 		TwitterConf: &TwitterConf{
-			ClientID:     "",
-			ClientSecret: "",
+			ClientID:       "",
+			ClientSecret:   "",
+			ConsumerKey:    "",
+			ConsumerSecret: "",
 		},
 		FileStoreConf: &FileStoreConf{
 			ProjectID:   DefaultTwitterProjectID,
