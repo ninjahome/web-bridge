@@ -166,14 +166,27 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result, err := verifyTwitterCredentials(token) //fetchTwitterUserInfo(token)//verifyTwitterCredentials
+	userData, err := verifyTwitterCredentials(token) //fetchTwitterUserInfo(token)//verifyTwitterCredentials
 	if err != nil {
 		util.LogInst().Err(err).Msg("get user basic info failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	result.EthAddr = ethAddr.(string)
-	result.SignUpAt = time.Now().UnixMilli()
+	result := &TwAPIResponse{
+		EthAddr:  ethAddr.(string),
+		SignUpAt: time.Now().UnixMilli(),
+		TwitterData: &TWUserInfo{
+			ID:                   userData.IDStr,
+			Name:                 userData.Name,
+			ScreenName:           userData.ScreenName,
+			Description:          userData.Description,
+			Verified:             userData.Verified,
+			FollowersCount:       userData.FollowersCount,
+			FriendsCount:         userData.FriendsCount,
+			CreatedAt:            userData.CreatedAt,
+			ProfileImageUrlHttps: userData.ProfileImageUrlHttps,
+		},
+	}
 
 	err = htmlTemplateManager.ExecuteTemplate(w, "signUpSuccess.html", result)
 	if err != nil {
@@ -235,11 +248,11 @@ func fetchTwitterUserInfo(ut *userAccessToken) (*TwAPIResponse, error) {
 	return &user, nil
 }
 
-func verifyTwitterCredentials(ut *userAccessToken) (*TwAPIResponse, error) {
+func verifyTwitterCredentials(ut *userAccessToken) (*VerifiedTwitterUser, error) {
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 
-	verifyCredentialsURL := "https://api.twitter.com/1.1/account/verify_credentials.json"
+	verifyCredentialsURL := "https://api.twitter.com/1.1/account/verify_credentials.json?skip_status=true"
 
 	resp, err := httpClient.Get(verifyCredentialsURL)
 	if err != nil {
@@ -251,10 +264,48 @@ func verifyTwitterCredentials(ut *userAccessToken) (*TwAPIResponse, error) {
 		return nil, fmt.Errorf("twitter API responded with status: %s", resp.Status)
 	}
 
-	var user TwAPIResponse
-	if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
+	var verifiedUser VerifiedTwitterUser
+	if err := json.NewDecoder(resp.Body).Decode(&verifiedUser); err != nil {
 		return nil, err
 	}
 
-	return &user, nil
+	return &verifiedUser, nil
+}
+
+type VerifiedTwitterUser struct {
+	ContributorsEnabled            bool   `json:"contributors_enabled"`
+	CreatedAt                      string `json:"created_at"`
+	DefaultProfile                 bool   `json:"default_profile"`
+	DefaultProfileImage            bool   `json:"default_profile_image"`
+	Description                    string `json:"description"`
+	FavouritesCount                int    `json:"favourites_count"`
+	FollowersCount                 int    `json:"followers_count"`
+	FriendsCount                   int    `json:"friends_count"`
+	GeoEnabled                     bool   `json:"geo_enabled"`
+	ID                             int64  `json:"id"`
+	IDStr                          string `json:"id_str"`
+	IsTranslator                   bool   `json:"is_translator"`
+	Lang                           string `json:"lang"`
+	ListedCount                    int    `json:"listed_count"`
+	Location                       string `json:"location"`
+	Name                           string `json:"name"`
+	ProfileBackgroundColor         string `json:"profile_background_color"`
+	ProfileBackgroundImageUrl      string `json:"profile_background_image_url"`
+	ProfileBackgroundImageUrlHttps string `json:"profile_background_image_url_https"`
+	ProfileBackgroundTile          bool   `json:"profile_background_tile"`
+	ProfileImageUrl                string `json:"profile_image_url"`
+	ProfileImageUrlHttps           string `json:"profile_image_url_https"`
+	ProfileLinkColor               string `json:"profile_link_color"`
+	ProfileSidebarBorderColor      string `json:"profile_sidebar_border_color"`
+	ProfileSidebarFillColor        string `json:"profile_sidebar_fill_color"`
+	ProfileTextColor               string `json:"profile_text_color"`
+	ProfileUseBackgroundImage      bool   `json:"profile_use_background_image"`
+	Protected                      bool   `json:"protected"`
+	ScreenName                     string `json:"screen_name"`
+	ShowAllInlineMedia             bool   `json:"show_all_inline_media"`
+	StatusesCount                  int    `json:"statuses_count"`
+	TimeZone                       string `json:"time_zone"`
+	URL                            string `json:"url"`
+	UtcOffset                      int    `json:"utc_offset"`
+	Verified                       bool   `json:"verified"`
 }

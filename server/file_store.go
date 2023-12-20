@@ -105,7 +105,7 @@ type TWUserInfo struct {
 	FollowersCount       int    `json:"followers_count"`
 	FriendsCount         int    `json:"friends_count"`
 	CreatedAt            string `json:"created_at"`
-	ProfileImageURLHTTPS string `json:"profile_image_url_https"`
+	ProfileImageUrlHttps string `json:"profile_image_url_https"`
 }
 
 func (t *TWUserInfo) String() string {
