@@ -82,6 +82,11 @@ func (ut *userAccessToken) GetToken() *oauth1.Token {
 	}
 }
 
+func (ut *userAccessToken) string() string {
+	bts, _ := json.Marshal(ut)
+	return string(bts)
+}
+
 func parseUserToken(values url.Values) *userAccessToken {
 	accessToken := values.Get("oauth_token")
 	accessSecret := values.Get("oauth_token_secret")
@@ -204,9 +209,11 @@ func updateTwitterBio(ut *userAccessToken, newBio string) error {
 
 func fetchTwitterUserInfo(ut *userAccessToken) (*TwAPIResponse, error) {
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
+	util.LogInst().Debug().Msg(ut.string())
 	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 
-	userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?user_id=%s", ut.userId)
+	userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?screen_name=%s", ut.screenName)
+	//userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?user_id=%s", ut.userId)
 
 	resp, err := httpClient.Get(userInfoURL)
 	if err != nil {
