@@ -48,7 +48,6 @@ func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
 
 	requestToken := values.Get("oauth_token")
 	requestSecret := values.Get("oauth_token_secret")
-	util.LogInst().Debug().Str("requestToken", requestToken).Str("requestSecret", requestSecret).Send()
 
 	_ = SMInst().Set(r, w, sesKeyForRequestSecret, requestSecret)
 	authorizeURL := fmt.Sprintf("https://api.twitter.com/oauth/authorize?oauth_token=%s", requestToken)
@@ -56,7 +55,7 @@ func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
 }
 
 func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
-	oauth1Config := oauth1.NewConfig("consumerKey", "consumerSecret")
+	oauth1Config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	requestSecret, _ := SMInst().Get(sesKeyForRequestSecret, r)
 
 	requestToken := r.URL.Query().Get("oauth_token")
@@ -70,7 +69,7 @@ func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := oauth1.NewToken(accessToken, accessSecret)
-
+	util.LogInst().Debug().Str("accessToken", accessToken).Str("accessSecret", accessSecret).Send()
 	err = updateTwitterBio(token, "web player")
 	if err != nil {
 		util.LogInst().Err(err).Msg("updateTwitterBio failed")
