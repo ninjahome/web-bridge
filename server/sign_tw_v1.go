@@ -60,13 +60,40 @@ func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 
 	requestToken := r.URL.Query().Get("oauth_token")
 	verifier := r.URL.Query().Get("oauth_verifier")
+	util.LogInst().Debug().Str("requestToken", requestToken).Str("verifier", verifier).
+		Str("requestSecret", requestSecret.(string)).Send()
 
-	accessToken, accessSecret, err := oauth1Config.AccessToken(requestToken, requestSecret.(string), verifier)
+	accessTokenURL := "https://api.twitter.com/oauth/access_token"
+	params := url.Values{
+		"oauth_token":    {requestToken},
+		"oauth_verifier": {verifier},
+	}
+	httpClient := oauth1Config.Client(oauth1.NoContext, oauth1.NewToken(requestToken, requestSecret.(string)))
+	resp, err := httpClient.PostForm(accessTokenURL, params)
 	if err != nil {
-		util.LogInst().Err(err).Msg("config.AccessToken failed")
+		util.LogInst().Err(err).Msg("Failed to request access token")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	defer resp.Body.Close()
+	// 解析响应体以获取访问令牌和访问令牌秘密
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		util.LogInst().Err(err).Msg("Failed to read response body")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	bodyString := string(bodyBytes)
+	values, err := url.ParseQuery(bodyString)
+	if err != nil {
+		util.LogInst().Err(err).Msg("Failed to parse response body")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	accessToken := values.Get("oauth_token")
+	accessSecret := values.Get("oauth_token_secret")
 
 	token := oauth1.NewToken(accessToken, accessSecret)
 	util.LogInst().Debug().Str("accessToken", accessToken).Str("accessSecret", accessSecret).Send()
