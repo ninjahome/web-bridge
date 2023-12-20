@@ -97,12 +97,16 @@ func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 
 	bodyString := string(bodyBytes)
 	values, err := url.ParseQuery(bodyString)
+
 	if err != nil {
 		util.LogInst().Err(err).Msg("Failed to parse response body")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	for k, v := range values {
+		bts, _ := json.Marshal(v)
+		util.LogInst().Debug().Str("key", k).Str("value", string(bts)).Send()
+	}
 	accessToken := values.Get("oauth_token")
 	accessSecret := values.Get("oauth_token_secret")
 	token := oauth1.NewToken(accessToken, accessSecret)
