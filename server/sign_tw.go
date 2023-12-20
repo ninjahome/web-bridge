@@ -14,33 +14,51 @@ import (
 	"strings"
 )
 
-func signInByTwitter(w http.ResponseWriter, r *http.Request) {
-	codeVerifier, verifierErr := util.RandomBytesInHex(32) // 64 character string here
-	if verifierErr != nil {
+type stateParam struct {
+	ethAddr string
+	stateNo string
+}
+
+func (sp *stateParam) String() string {
+	return sp.ethAddr + "_" + sp.stateNo
+}
+
+func parseStateParam(str string) *stateParam {
+	var strArr = strings.Split(str, "_")
+	if len(strArr) != 2 {
+		return nil
+	}
+	return &stateParam{ethAddr: strArr[0], stateNo: strArr[1]}
+}
+
+func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
+
+	ethAddr := r.URL.Query().Get("eth_addr")
+	if ethAddr == "" {
+		http.Error(w, "eth_addr parameter is required", http.StatusBadRequest)
 		return
 	}
+	codeVerifier := util.RandomBytesInHex(32)
+
 	sha2 := sha256.New()
-	_, err := io.WriteString(sha2, codeVerifier)
-	if err != nil {
-		util.LogInst().Err(err).Msg("creating verifier code failed")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	err = SMInst().Set(r, w, sesKeyForVerifierCode, codeVerifier)
-	if err != nil {
-		util.LogInst().Err(err).Msg("save verifier code failed")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	_, _ = io.WriteString(sha2, codeVerifier)
+	codeChallenge := base64.RawURLEncoding.EncodeToString(sha2.Sum(nil))
+
+	state := stateParam{ethAddr: ethAddr, stateNo: util.RandomBytesInHex(24)}
+	var stateStr = state.String()
+	var err1, err2 = SMInst().Set(r, w, sesKeyForState, stateStr), SMInst().Set(r, w, sesKeyForVerifierCode, codeVerifier)
+	if err1 != nil || err2 != nil {
+		util.LogInst().Err(err1).Err(err2).Msg("session set error for twitter signIn")
+		http.Error(w, "sign up error for session", http.StatusInternalServerError)
 		return
 	}
 
-	//util.LogInst().Debug().Str("codeVerifier", codeVerifier).Send()
-	codeChallenge := base64.RawURLEncoding.EncodeToString(sha2.Sum(nil))
-	state, _ := util.RandomBytesInHex(24)
-	oauthUrl := _globalCfg.twOauthCfg.AuthCodeURL(state) + "&code_challenge=" + url.QueryEscape(codeChallenge) + "&code_challenge_method=S256"
+	oauthUrl := _globalCfg.twOauthCfg.AuthCodeURL(stateStr) + "&code_challenge=" + url.QueryEscape(codeChallenge) + "&code_challenge_method=S256"
 	http.Redirect(w, r, oauthUrl, http.StatusTemporaryRedirect)
 }
 
-func exchangeWithCodeVerifier(ctx context.Context, conf *oauth2.Config, code string, codeVerifier string) (*oauth2.Token, error) {
+func exchangeWithCodeVerifier(conf *oauth2.Config, code string, codeVerifier string) (*oauth2.Token, error) {
+	ctx := context.Background()
 	values := url.Values{}
 	values.Add("client_id", conf.ClientID)
 	values.Add("grant_type", "authorization_code")
@@ -78,18 +96,46 @@ func exchangeWithCodeVerifier(ctx context.Context, conf *oauth2.Config, code str
 	return &token, nil
 }
 
+func twitterActionWithAccessToken(token *oauth2.Token, accUrl string, result any) error {
+	client := _globalCfg.twOauthCfg.Client(context.Background(), token)
+	response, err := client.Get(accUrl)
+	if err != nil {
+		util.LogInst().Err(err).Msgf("create client err")
+		return err
+	}
+	defer response.Body.Close()
+
+	if err := json.NewDecoder(response.Body).Decode(result); err != nil {
+		util.LogInst().Err(err).Msgf("parse twitter call back data  err:%s", err)
+		return err
+	}
+	return nil
+}
+
 func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 	util.LogInst().Info().Msg("call back from twitter")
 
 	errStr := r.URL.Query().Get("error")
 	if len(errStr) > 0 {
-		util.LogInst().Warn().Msgf("twitter call back has err:%s", errStr)
+		util.LogInst().Warn().Msgf("twitter call back has err")
 		http.Error(w, errStr, http.StatusInternalServerError)
 		return
 	}
-	code := r.URL.Query().Get("code")
+
+	originalState, err := SMInst().Get(sesKeyForState, r)
+	if err != nil {
+		util.LogInst().Err(err).Msg("failed to get state when twitter user call back")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	state := r.URL.Query().Get("state")
-	ctx := context.Background()
+	if state != originalState {
+		util.LogInst().Warn().Msg("invalid state in twitter sign up call back")
+		http.Error(w, "invalid state in twitter sign up call back", http.StatusInternalServerError)
+		return
+	}
+
+	code := r.URL.Query().Get("code")
 
 	codeVerifier, err := SMInst().Get(sesKeyForVerifierCode, r)
 	if err != nil {
@@ -97,55 +143,52 @@ func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	token, errToken := exchangeWithCodeVerifier(ctx, _globalCfg.twOauthCfg, code, codeVerifier.(string))
+	token, errToken := exchangeWithCodeVerifier(_globalCfg.twOauthCfg, code, codeVerifier.(string))
 	if errToken != nil {
 		util.LogInst().Err(errToken).Msgf("exchange err:%s", errToken)
 		http.Error(w, errToken.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	saveRefreshToken(token.RefreshToken, state)
-
-	client := _globalCfg.twOauthCfg.Client(context.Background(), token)
-	response, err3 := client.Get(accessUserURL)
-	if err3 != nil {
-		util.LogInst().Err(err).Msgf("create client err:%s", err3)
-		http.Error(w, err3.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer response.Body.Close()
-
-	var apiResponse TwitterAPIResponse
-	if err := json.NewDecoder(response.Body).Decode(&apiResponse); err != nil {
-		util.LogInst().Err(err).Msgf("parse twitter call back data  err:%s", err)
-		http.Error(w, err3.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	result := apiResponse.Data
-	err = SMInst().Set(r, w, sesKeyForTwUserSignUp, result.String())
+	bts, _ := json.Marshal(token)
+	err = SMInst().Set(r, w, sesKeyForTWUserAccessToken, bts)
 	if err != nil {
-		util.LogInst().Err(err).Msgf("save twitter info failed:%v", result)
+		util.LogInst().Err(err).Msgf("save twitter acccess token failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	http.Redirect(w, r, "/signUpSuccessByTw", http.StatusFound)
 }
 
-func saveRefreshToken(refreshToken string, state string) {
-	//TODO::
-}
-
 func showTwSignResultPage(w http.ResponseWriter, r *http.Request) {
-	resultStr, err := SMInst().Get(sesKeyForTwUserSignUp, r)
+	stateStr, _ := SMInst().Get(sesKeyForState, r)
+	state := parseStateParam(stateStr.(string))
+	if state == nil {
+		util.LogInst().Warn().Msg("state lost for twitter sign up session")
+		http.Error(w, "state lost for twitter sign up session", http.StatusInternalServerError)
+		return
+	}
+	bts, err := SMInst().Get(sesKeyForTWUserAccessToken, r)
 	if err != nil {
-		util.LogInst().Err(err).Msg("no twitter user info found")
+		util.LogInst().Err(err).Msg("no valid access token in current session")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	_ = SMInst().Del(sesKeyForTwUserSignUp, r, w)
-	result := TWUsrInfoMust(resultStr.(string))
+	token := &oauth2.Token{}
+	if err := json.Unmarshal(bts.([]byte), token); err != nil {
+		util.LogInst().Err(err).Msg("unmarshal access token in current session")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var result = &TwitterAPIResponse{}
+	err = twitterActionWithAccessToken(token, accessUserURL, result)
+	if err != nil {
+		util.LogInst().Err(err).Msgf("get twitter info failed")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	result.EthAddr = state.ethAddr
 	err = htmlTemplateManager.ExecuteTemplate(w, "signUpSuccess.html", result)
 	if err != nil {
 		util.LogInst().Err(err).Msg("show sign up by twitter page failed")

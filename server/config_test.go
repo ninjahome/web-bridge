@@ -47,9 +47,6 @@ func TestSignParam(t *testing.T) {
 	fmt.Println("verify result :", retErr)
 }
 func TestGenASessionKey(t *testing.T) {
-	secretKey, err := util.RandomBytesInHex(16)
-	if err != nil {
-		panic(err)
-	}
+	secretKey := util.RandomBytesInHex(16)
 	fmt.Println(secretKey)
 }

@@ -63,16 +63,16 @@ func newDb() *DbManager {
  ******************************************************************************************************/
 
 type TwitterAPIResponse struct {
-	Data TWUserInfo `json:"data"`
+	TwitterData *TWUserInfo `json:"data"`
+	EthAddr     string      `json:"eth_addr"`
 }
 
 type TWUserInfo struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
-	Username     string `json:"username"`
-	State        string `json:"state"`
-	SignUpAt     int64  `json:"sign_up_at"`
-	RefreshToken string `json:"refresh_token"`
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	Username        string `json:"username"`
+	ProfileImageURL string `json:"profile_image_url"`
+	SignUpAt        int64  `json:"sign_up_at"`
 }
 
 func (t *TWUserInfo) String() string {

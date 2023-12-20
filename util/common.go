@@ -31,14 +31,18 @@ var (
 	ErrHttpEmptyRequest = errors.New("empty http post")
 )
 
-func RandomBytesInHex(count int) (string, error) {
+func RandomBytesInHex(count int) string {
 	buf := make([]byte, count)
 	_, err := io.ReadFull(rand.Reader, buf)
 	if err != nil {
-		return "", fmt.Errorf("could not generate %d random bytes: %v", count, err)
+		return ""
 	}
+	return hex.EncodeToString(buf)
+}
 
-	return hex.EncodeToString(buf), nil
+func toJSON(v interface{}) string {
+	js, _ := json.Marshal(v)
+	return string(js)
 }
 
 func ParseTemplates(path string) *template.Template {
@@ -53,8 +57,8 @@ func ParseTemplates(path string) *template.Template {
 			files = append(files, filepath.Join(path, f.Name()))
 		}
 	}
-
-	return template.Must(template.ParseFiles(files...))
+	tmpl := template.New("").Funcs(template.FuncMap{"json": toJSON})
+	return template.Must(tmpl.ParseFiles(files...))
 }
 
 func Verify(address, message, signedMessage string) error {

@@ -104,3 +104,44 @@ function hideLoading() {
         document.body.removeChild(loadingFrame);
     }
 }
+function toHex(number) {
+    return '0x' + number.toString(16);
+}
+
+
+const __globalTargetChainNetworkID = toHex(421613);
+const __globalMetaMaskNetworkParam = new Map([
+    [toHex(42161), {
+        chainId:  toHex(42161),
+        chainName: 'Arbitrum LlamaNodes',
+        nativeCurrency: {
+            name: 'ETH',
+            symbol: 'ETH',
+            decimals: 18
+        },
+        rpcUrls: ['https://arbitrum.llamarpc.com'],
+        blockExplorerUrls: ['https://arbiscan.io'],
+    }],
+    [toHex(421613), {
+        chainId: toHex(421613),
+        chainName: 'Arbitrum Goerli',
+        nativeCurrency: {
+            name: 'AETH',
+            symbol: 'AETH',
+            decimals: 18
+        },
+        rpcUrls: ['https://endpoints.omniatech.io/v1/arbitrum/goerli/public'],
+        blockExplorerUrls: ['https://goerli.arbiscan.io'],
+    }],
+    [toHex(421614), {
+        chainId: toHex(421614),
+        chainName: 'Arbitrum Sepolia',
+        nativeCurrency: {
+            name: 'ETH',
+            symbol: 'ETH',
+            decimals: 18
+        },
+        rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
+        blockExplorerUrls: ['https://sepolia-explorer.arbitrum.io'],
+    }]
+]);

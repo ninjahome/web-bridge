@@ -10,7 +10,7 @@ import (
 
 var (
 	cfgActionRouter = map[string]LogicAction{
-		"/signInByTwitter":   signInByTwitter,
+		"/signUpByTwitter":   signUpByTwitter,
 		"/tw_callback":       twitterSignCallBack,
 		"/signUpSuccessByTw": showTwSignResultPage,
 		"/signInByEth":       signInByEth,
@@ -32,7 +32,7 @@ const (
 	callbackURL    = "https://bridge.simplenets.org/tw_callback"
 	authorizeURL   = "https://twitter.com/i/oauth2/authorize"
 	accessTokenURL = "https://api.twitter.com/2/oauth2/token"
-	accessUserURL  = "https://api.twitter.com/2/users/me"
+	accessUserURL  = "https://api.twitter.com/2/users/me?user.fields=profile_image_url"
 )
 
 type LogicAction func(w http.ResponseWriter, r *http.Request)

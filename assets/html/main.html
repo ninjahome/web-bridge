@@ -14,12 +14,16 @@
         .left-side {
             display: flex;
             flex-direction: column;
-            width: 360px;
+            min-width: 200px; /* 最小宽度设置为200px */
+            max-width: 320px; /* 最小宽度设置为200px */
+            width: 20%; /* 占据屏幕宽度的20% */
             background-color: #f2f2f2;
         }
 
         .left-upper {
-            height: 360px;
+            height: 40%;
+            max-height: 360px;
+            min-height: 240px;
             background-color: #d9d9d9;
             padding: 20px;
             display: flex;
@@ -49,33 +53,6 @@
             font-style: italic;
         }
     </style>
-
-
-    <script>
-
-        document.addEventListener("DOMContentLoaded", initMainPage) ;
-        let __global_current_ninja_user = null;
-        function initMainPage(){
-            checkSessionKeyData();
-            window.addEventListener('popstate', function () {
-                clearSessionStorage();
-            });
-            window.addEventListener('replaceState', function () {
-                clearSessionStorage();
-            });
-        }
-        function checkSessionKeyData(){
-            const savedUserInfo = getDataFromSessionDB(sesDbKeyForNjUserData())
-            if (!savedUserInfo){
-                window.location.href = "/";
-            }
-            __global_current_ninja_user = savedUserInfo;
-            fullFillBasicInfo();
-        }
-        function fullFillBasicInfo(){
-            document.getElementById('basic-web3-id').innerText = __global_current_ninja_user.eth_addr;
-        }
-    </script>
 </head>
 <body>
 
@@ -88,19 +65,27 @@
             <!-- Web3 ID -->
             <div class="field">
                 <div class="field-label">Web3 ID:</div>
-                <div class="field-value"  id="basic-web3-id">0x123...</div>
+                <div class="field-value" id="basic-web3-id">0x123...</div>
             </div>
 
             <!-- Balance -->
             <div class="field">
                 <div class="field-label">Balance:</div>
                 <div class="field-value" id="basic-web3-balance">0.0 ETH</div>
+                <div>
+                    <button class="change-chain-id-button" id="change-chain-id-button"
+                            onclick="switchToWorkChain()">Switch To Arbitrum</button>
+                </div>
             </div>
 
             <!-- Twitter -->
             <div class="field">
                 <div class="field-label">Twitter:</div>
-                <div class="field-value" id="basic-web3-balance">@username</div>
+                <div class="field-value" id="basic-twitter-id">@username</div>
+                <div>
+                    <button class="sign-up-by-twitter-button" id="sign-up-by-twitter-button"
+                            onclick="signUpByTwitter()">Bridge Twitter</button>
+                </div>
             </div>
         </div>
         <div class="left-lower">
@@ -115,6 +100,113 @@
 </div>
 
 
+<script>
+    let __global_current_ninja_user = null;
+    let metamaskObj = null;
 
+    document.addEventListener("DOMContentLoaded", initMainPage);
+
+    function initMainPage() {
+        checkSystemEnvironment();
+        window.addEventListener('popstate', clearSessionStorage);
+        window.addEventListener('replaceState', clearSessionStorage);
+        setupBasicInfo();
+    }
+
+    function checkSystemEnvironment() {
+        const savedUserInfo = getDataFromSessionDB(sesDbKeyForNjUserData())
+        if (!savedUserInfo) {
+            window.location.href = "/";
+            return
+        }
+        if (typeof window.ethereum === 'undefined') {
+            window.location.href = "/";
+            return
+        }
+        __global_current_ninja_user = savedUserInfo;
+        metamaskObj = window.ethereum;
+        metamaskObj.on('accountsChanged', metamaskAccountChanged);
+        metamaskObj.on('chainChanged', metamaskChainChanged);
+        metamaskObj.request({method: 'eth_chainId'}).then(chainID=>{
+            metamaskChainChanged(chainID);
+        })
+    }
+
+    async function metamaskChainChanged(chainId) {
+        const chainBtn = document.getElementById('change-chain-id-button')
+        const chainBalance = document.getElementById('basic-web3-balance')
+        if (__globalTargetChainNetworkID === chainId) {
+            chainBtn.style.display = 'none';
+            chainBalance.style.display = 'inline-block';
+            chainBalance.innerText = await metamaskAccBalance()
+            return;
+        }
+        chainBalance.style.display = 'none';
+        chainBtn.style.display = 'inline-block';
+    }
+
+    async function metamaskAccBalance() {
+        const balance = await metamaskObj.request({
+            method: 'eth_getBalance',
+            params: [__global_current_ninja_user.eth_addr, 'latest'],
+        });
+        if (balance === 0){
+            return "0.00 eth";
+        }
+        if (balance < 10**12){
+            return "< 0.000001 eth"
+        }
+        return parseFloat((balance / 10**18).toFixed(6)) + ' eth';
+    }
+
+    function metamaskAccountChanged(accounts) {
+        if (accounts.length === 0) {
+            window.location.href = "/";
+            return;
+        }
+        //TODO::what's right logic
+        window.location.href = "/";
+    }
+
+     function setupBasicInfo() {
+        const twBtn = document.getElementById('sign-up-by-twitter-button')
+        const twIdLbl = document.getElementById('basic-twitter-id')
+         document.getElementById('basic-web3-id').innerText = __global_current_ninja_user.eth_addr;
+        if (!__global_current_ninja_user.tw_id) {
+            twIdLbl.style.display = 'none';
+            twBtn.style.display = 'inline-block';
+        } else {
+            twBtn.style.display = 'none';
+            twIdLbl.style.display = 'inline-block';
+        }
+    }
+
+    function switchToWorkChain() {
+        metamaskObj.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: __globalTargetChainNetworkID }],
+        }).catch((switchError) => {
+            if (switchError.code !== 4902) {
+                showDialog("error","failed switching to arbitrum network");
+                return;
+            }
+
+            const arbParam = __globalMetaMaskNetworkParam.get(__globalTargetChainNetworkID);
+            metamaskObj.request({
+                method: 'wallet_addEthereumChain',
+                params: [arbParam],
+            }).then(r=>{
+                console.log(r);
+            }).catch(err=>{
+                showDialog("error","add to network failed:"+err.toString());
+            });
+        });
+    }
+
+    function signUpByTwitter() {
+        window.open("/signUpByTwitter?eth_addr="+__global_current_ninja_user.eth_addr, '_blank');
+        // window.location.href = "/signUpByTwitter?eth_addr="+__global_current_ninja_user.eth_addr;
+    }
+</script>
 </body>
 </html>

@@ -127,8 +127,6 @@
                 params: [message, web3Id],
             })
 
-            console.log("message:=>", message);
-            console.log("signature:=>", signature);
             showWaiting("signing in......", 15)
             const obj = new SignDataForPost(message, signature)
             PostToSrvByJson('/signInByEth', obj).then(response => {

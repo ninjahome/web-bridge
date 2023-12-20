@@ -8,5 +8,12 @@
 <p>ID: {{.ID}}</p>
 <p>Name: {{.Name}}</p>
 <p>Username: {{.Username}}</p>
+<script>
+    const twitterData = {{ .TwitterData | json }};
+    const ethAddr = "{{ .EthAddr }}";
+
+    console.log("Twitter Data:", twitterData);
+    console.log("Ethereum Address:", ethAddr);
+</script>
 </body>
 </html>

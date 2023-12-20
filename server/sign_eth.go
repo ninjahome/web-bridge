@@ -51,20 +51,20 @@ func signInByEth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	util.LogInst().Info().Str("eth-addr", obj.EthAddr).Int64("sign-time", obj.SignTim).Msg("sign in success")
-	nu := DbInst().NjUserSignIn(obj.EthAddr)
-	//nu := &NinjaUsrInfo{EthAddr: obj.EthAddr}
+	//nu := DbInst().NjUserSignIn(obj.EthAddr)
+	nu := &NinjaUsrInfo{EthAddr: obj.EthAddr}
 	if nu == nil {
 		util.LogInst().Warn().Str("eth-addr", obj.EthAddr).Msgf("no user found")
 		http.Error(w, "database error", http.StatusNotFound)
 		return
 	}
 
-	err = SMInst().Set(r, w, sesKeyForNJUserSignIN, obj.String())
-	if err != nil {
-		util.LogInst().Err(err).Msgf("save twitter info failed:%v", nu)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	//err = SMInst().Set(r, w, sesKeyForNJUserSignIN, obj.String())
+	//if err != nil {
+	//	util.LogInst().Err(err).Msgf("save twitter info failed:%v", nu)
+	//	http.Error(w, err.Error(), http.StatusInternalServerError)
+	//	return
+	//}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(nu.RawData())
