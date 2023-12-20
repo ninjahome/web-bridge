@@ -150,7 +150,8 @@
             method: 'eth_getBalance',
             params: [__global_current_ninja_user.eth_addr, 'latest'],
         });
-        if (balance === 0){
+        console.log('eth balance:',balance);
+        if (balance === 0x0){
             return "0.00 eth";
         }
         if (balance < 10**12){
