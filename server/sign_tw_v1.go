@@ -21,7 +21,6 @@ const (
 	accessReqTokenURL      = "https://api.twitter.com/oauth/request_token"
 	accessOauthTokenURL    = "https://api.twitter.com/oauth/authorize?oauth_token=%s"
 	accessAccessTokenURL   = "https://api.twitter.com/oauth/access_token"
-	accessUserInfoURL      = "https://api.twitter.com/2/users/me?user.fields=id,name,username,profile_image_url,description"
 )
 
 func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
@@ -69,6 +68,32 @@ func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, authorizeURL, http.StatusTemporaryRedirect)
 }
 
+type userAccessToken struct {
+	oauthToken       string
+	oauthTokenSecret string
+	userId           string
+	screenName       string
+}
+
+func (ut *userAccessToken) GetToken() *oauth1.Token {
+	return &oauth1.Token{
+		Token:       ut.oauthToken,
+		TokenSecret: ut.oauthTokenSecret,
+	}
+}
+
+func parseUserToken(values url.Values) *userAccessToken {
+	accessToken := values.Get("oauth_token")
+	accessSecret := values.Get("oauth_token_secret")
+	userID := values.Get("user_id")
+	screenName := values.Get("screen_name")
+	return &userAccessToken{
+		oauthToken:       accessToken,
+		oauthTokenSecret: accessSecret,
+		userId:           userID,
+		screenName:       screenName,
+	}
+}
 func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 	oauth1Config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	requestSecret, _ := SMInst().Get(sesKeyForRequestSecret, r)
@@ -97,32 +122,26 @@ func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 
 	bodyString := string(bodyBytes)
 	values, err := url.ParseQuery(bodyString)
-
 	if err != nil {
 		util.LogInst().Err(err).Msg("Failed to parse response body")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	for k, v := range values {
-		bts, _ := json.Marshal(v)
-		util.LogInst().Debug().Str("key", k).Str("value", string(bts)).Send()
-	}
-	accessToken := values.Get("oauth_token")
-	accessSecret := values.Get("oauth_token_secret")
-	token := oauth1.NewToken(accessToken, accessSecret)
+
+	token := parseUserToken(values)
 	bts, _ := json.Marshal(token)
 	_ = SMInst().Set(r, w, sesKeyForAccessToken, bts)
 	http.Redirect(w, r, "/signUpSuccessByTw", http.StatusFound)
 }
 
-func getAccessTokenFromSession(r *http.Request) (*oauth1.Token, error) {
+func getAccessTokenFromSession(r *http.Request) (*userAccessToken, error) {
 	bts, err := SMInst().Get(sesKeyForAccessToken, r)
 	if err != nil {
 		return nil, err
 	}
-	token := &oauth1.Token{}
-	err = json.Unmarshal(bts.([]byte), token)
-	return token, err
+	var token userAccessToken
+	err = json.Unmarshal(bts.([]byte), &token)
+	return &token, err
 }
 
 func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
@@ -157,12 +176,13 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	util.LogInst().Debug().Str("tw-id", result.TwitterData.ID).Str("ninja-id", result.EthAddr).Msg("twitter user sign up success")
 }
 
-func updateTwitterBio(token *oauth1.Token, newBio string) error {
+func updateTwitterBio(ut *userAccessToken, newBio string) error {
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
-	httpClient := config.Client(oauth1.NoContext, token)
+	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 
 	values := url.Values{}
 	values.Add("description", newBio)
@@ -182,11 +202,13 @@ func updateTwitterBio(token *oauth1.Token, newBio string) error {
 	return nil
 }
 
-func fetchTwitterUserInfo(token *oauth1.Token) (*TwitterAPIResponse, error) {
-	oauth1Config := oauth1.NewConfig("consumerKey", "consumerSecret")
-	httpClient := oauth1Config.Client(oauth1.NoContext, token)
+func fetchTwitterUserInfo(ut *userAccessToken) (*TwAPIResponse, error) {
+	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
+	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 
-	resp, err := httpClient.Get(accessUserInfoURL)
+	userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?user_id=%s", ut.userId)
+
+	resp, err := httpClient.Get(userInfoURL)
 	if err != nil {
 		return nil, err
 	}
@@ -196,11 +218,10 @@ func fetchTwitterUserInfo(token *oauth1.Token) (*TwitterAPIResponse, error) {
 		return nil, fmt.Errorf("twitter API responded with status: %s", resp.Status)
 	}
 
-	result := &TwitterAPIResponse{}
-	err = json.NewDecoder(resp.Body).Decode(result)
-	if err != nil {
+	var user TwAPIResponse
+	if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
 		return nil, err
 	}
 
-	return result, nil
+	return &user, nil
 }

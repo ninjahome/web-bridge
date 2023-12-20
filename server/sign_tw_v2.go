@@ -193,7 +193,7 @@ func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var result = &TwitterAPIResponse{}
+	var result = &TwAPIResV2{}
 	err = twitterActionWithAccessToken(token, accessUserURLV2, result)
 	if err != nil {
 		util.LogInst().Err(err).Msgf("get twitter info failed")

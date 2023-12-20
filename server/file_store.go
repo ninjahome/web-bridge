@@ -62,18 +62,50 @@ func newDb() *DbManager {
 *
  ******************************************************************************************************/
 
-type TwitterAPIResponse struct {
+type TwAPIResV2 struct {
+	TwitterData *TWUserInfoV2 `json:"data"`
+	EthAddr     string        `json:"eth_addr"`
+	SignUpAt    int64         `json:"sign_up_at"`
+}
+
+type TWUserInfoV2 struct {
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	Username        string `json:"username"`
+	ProfileImageURL string `json:"profile_image_url"`
+	Description     string `json:"description"`
+}
+
+func (t *TWUserInfoV2) String() string {
+	bts, _ := json.Marshal(t)
+	return string(bts)
+}
+
+func TWUsrInfoMustV2(str string) *TWUserInfoV2 {
+	t := &TWUserInfoV2{}
+	err := json.Unmarshal([]byte(str), t)
+	if err != nil {
+		return t
+	}
+	return t
+}
+
+type TwAPIResponse struct {
 	TwitterData *TWUserInfo `json:"data"`
 	EthAddr     string      `json:"eth_addr"`
 	SignUpAt    int64       `json:"sign_up_at"`
 }
 
 type TWUserInfo struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	Username        string `json:"username"`
-	ProfileImageURL string `json:"profile_image_url"`
-	Bio             string `json:"description"`
+	ID                   string `json:"id_str"`
+	Name                 string `json:"name"`
+	ScreenName           string `json:"screen_name"`
+	Description          string `json:"description"`
+	Verified             bool   `json:"verified"`
+	FollowersCount       int    `json:"followers_count"`
+	FriendsCount         int    `json:"friends_count"`
+	CreatedAt            string `json:"created_at"`
+	ProfileImageURLHTTPS string `json:"profile_image_url_https"`
 }
 
 func (t *TWUserInfo) String() string {
