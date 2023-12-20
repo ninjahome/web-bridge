@@ -10,10 +10,7 @@ var _sesInst *SessionManager
 var sessionOnce sync.Once
 
 const (
-	SessionNameSystem          = "session-name-for-ninja"
-	sesKeyForTWUserAccessToken = "twitter-user-access-token"
-	sesKeyForVerifierCode      = "code_verifier"
-	sesKeyForState             = "twitter-signup-state-key"
+	SessionNameSystem = "session-name-for-ninja"
 )
 
 type SessionManager struct {

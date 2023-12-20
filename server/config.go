@@ -10,12 +10,13 @@ import (
 
 var (
 	cfgActionRouter = map[string]LogicAction{
-		"/signUpByTwitter":   signUpByTwitter,
-		"/signUpByTwitterV2": signUpByTwitterV2,
-		"/tw_callback":       twitterSignCallBack,
-		"/tw_callbackV2":     twitterSignCallBackV2,
-		"/signUpSuccessByTw": showTwSignResultPage,
-		"/signInByEth":       signInByEth,
+		"/signUpByTwitter":     signUpByTwitter,
+		"/signUpByTwitterV2":   signUpByTwitterV2,
+		"/tw_callback":         twitterSignCallBack,
+		"/tw_callbackV2":       twitterSignCallBackV2,
+		"/signUpSuccessByTw":   signUpSuccessByTw,
+		"/signUpSuccessByTwV2": signUpSuccessByTwV2,
+		"/signInByEth":         signInByEth,
 	}
 
 	cfgHtmlFileRouter = map[string]string{
