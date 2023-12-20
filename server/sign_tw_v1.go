@@ -14,7 +14,7 @@ import (
 
 const (
 	sesKeyForNjUserId      = "twitter-signup-ninja-user-id"
-	sesKeyForAccessToken   = "twitter-signup-access-token"
+	sesKeyForAccessToken   = "twitter-access-key-v1"
 	callbackURL            = "https://bridge.simplenets.org/tw_callback"
 	accessUserProUrl       = "https://api.twitter.com/1.1/account/update_profile.json"
 	sesKeyForRequestSecret = "ses-key-for-request-secret"
@@ -22,6 +22,37 @@ const (
 	accessOauthTokenURL    = "https://api.twitter.com/oauth/authorize?oauth_token=%s"
 	accessAccessTokenURL   = "https://api.twitter.com/oauth/access_token"
 )
+
+type userAccessToken struct {
+	oauthToken       string
+	oauthTokenSecret string
+	userId           string
+	screenName       string
+}
+
+func (ut *userAccessToken) GetToken() *oauth1.Token {
+	return &oauth1.Token{
+		Token:       ut.oauthToken,
+		TokenSecret: ut.oauthTokenSecret,
+	}
+}
+
+func (ut *userAccessToken) string() string {
+	bts, _ := json.Marshal(ut)
+	return string(bts)
+}
+func getAccessTokenFromSession(r *http.Request) (*userAccessToken, error) {
+	bts, err := SMInst().Get(sesKeyForAccessToken, r)
+	if err != nil {
+		return nil, err
+	}
+	var token userAccessToken
+	err = json.Unmarshal(bts.([]byte), &token)
+	if err != nil {
+		return nil, err
+	}
+	return &token, nil
+}
 
 func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
 	ethAddr := r.URL.Query().Get("eth_addr")
@@ -66,25 +97,6 @@ func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
 
 	authorizeURL := fmt.Sprintf(accessOauthTokenURL, requestToken)
 	http.Redirect(w, r, authorizeURL, http.StatusTemporaryRedirect)
-}
-
-type userAccessToken struct {
-	oauthToken       string
-	oauthTokenSecret string
-	userId           string
-	screenName       string
-}
-
-func (ut *userAccessToken) GetToken() *oauth1.Token {
-	return &oauth1.Token{
-		Token:       ut.oauthToken,
-		TokenSecret: ut.oauthTokenSecret,
-	}
-}
-
-func (ut *userAccessToken) string() string {
-	bts, _ := json.Marshal(ut)
-	return string(bts)
 }
 
 func parseUserToken(values url.Values) *userAccessToken {
@@ -139,16 +151,6 @@ func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/signUpSuccessByTw", http.StatusFound)
 }
 
-func getAccessTokenFromSession(r *http.Request) (*userAccessToken, error) {
-	bts, err := SMInst().Get(sesKeyForAccessToken, r)
-	if err != nil {
-		return nil, err
-	}
-	var token userAccessToken
-	err = json.Unmarshal(bts.([]byte), &token)
-	return &token, err
-}
-
 func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 	ethAddr, err := SMInst().Get(sesKeyForNjUserId, r)
 	if err != nil {
@@ -162,6 +164,8 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	util.LogInst().Debug().Msg(token.string())
+
 	err = updateTwitterBio(token, "web3 id:"+ethAddr.(string))
 	if err != nil {
 		util.LogInst().Err(err).Msg("updateTwitterBio failed")
@@ -212,8 +216,7 @@ func fetchTwitterUserInfo(ut *userAccessToken) (*TwAPIResponse, error) {
 	util.LogInst().Debug().Msg(ut.string())
 	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 
-	userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?screen_name=%s", ut.screenName)
-	//userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?user_id=%s", ut.userId)
+	userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?user_id=%s", ut.userId)
 
 	resp, err := httpClient.Get(userInfoURL)
 	if err != nil {
