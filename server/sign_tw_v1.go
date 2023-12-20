@@ -22,7 +22,8 @@ func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
 	httpClient := oauth1Config.Client(oauth1.NoContext, oauth1Token)
 
 	requestTokenURL := "https://api.twitter.com/oauth/request_token"
-	response, err := httpClient.PostForm(requestTokenURL, nil)
+	callbackURL := url.QueryEscape(callbackURL)
+	response, err := httpClient.PostForm(requestTokenURL, url.Values{"oauth_callback": {callbackURL}})
 	if err != nil {
 		util.LogInst().Err(err).Msg("Failed to get request token")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -47,6 +48,7 @@ func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
 
 	requestToken := values.Get("oauth_token")
 	requestSecret := values.Get("oauth_token_secret")
+	util.LogInst().Debug().Str("requestToken", requestToken).Str("requestSecret", requestSecret).Send()
 
 	_ = SMInst().Set(r, w, sesKeyForRequestSecret, requestSecret)
 	authorizeURL := fmt.Sprintf("https://api.twitter.com/oauth/authorize?oauth_token=%s", requestToken)
