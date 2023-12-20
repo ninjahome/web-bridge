@@ -148,7 +148,7 @@ func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := parseUserToken(values)
-	_ = SMInst().Set(r, w, sesKeyForAccessToken, token.string())
+	_ = SMInst().Set(r, w, sesKeyForAccessToken, token.String())
 	http.Redirect(w, r, "/signUpSuccessByTw", http.StatusFound)
 }
 
@@ -165,7 +165,7 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	util.LogInst().Debug().Msg(token.string())
+	util.LogInst().Debug().Msg(token.String())
 
 	err = updateTwitterBio(token, "web3 id:"+ethAddr.(string))
 	if err != nil {
@@ -214,7 +214,7 @@ func updateTwitterBio(ut *userAccessToken, newBio string) error {
 
 func fetchTwitterUserInfo(ut *userAccessToken) (*TwAPIResponse, error) {
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
-	util.LogInst().Debug().Msg(ut.string())
+	util.LogInst().Debug().Msg(ut.String())
 	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 
 	userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?user_id=%s", ut.UserId)
