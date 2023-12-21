@@ -28,6 +28,11 @@ type SignDataByEth struct {
 	PayLoad   any    `json:"pay_load,omitempty"`
 }
 
+func (sp *SignDataByEth) RawData() string {
+	bts, _ := json.Marshal(sp)
+	return string(bts)
+}
+
 func signInByEth(w http.ResponseWriter, r *http.Request) {
 
 	param := &SignDataByEth{}
@@ -56,6 +61,13 @@ func signInByEth(w http.ResponseWriter, r *http.Request) {
 	if nu == nil {
 		util.LogInst().Warn().Str("eth-addr", obj.EthAddr).Msgf("no user found")
 		http.Error(w, "database error", http.StatusNotFound)
+		return
+	}
+
+	err = SMInst().Set(r, w, sesKeyForSignInParam, param.RawData())
+	if err != nil {
+		util.LogInst().Err(err).Msg("save sign in param to session failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

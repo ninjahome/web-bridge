@@ -53,7 +53,6 @@ func NewMainService() *MainService {
 				http.Error(writer, err.Error(), http.StatusRequestEntityTooLarge)
 				return
 			}
-
 			action(writer, request)
 		})
 	}

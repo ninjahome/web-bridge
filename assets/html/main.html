@@ -90,6 +90,10 @@
                     </button>
                 </div>
             </div>
+
+            <div id="operation-area">
+                <button onclick="quitFromService()" >退出</button>
+            </div>
         </div>
         <div class="left-lower">
             <!-- 左边下部内容 -->
@@ -241,6 +245,14 @@
         }
     }
 
+    function quitFromService(){
+        GetToSrv("/signOut").then(r=>{
+        }).catch(err=>{
+            console.log("sign out err:",err)
+        }).finally(r=>{
+            window.location.href = "/";
+        })
+    }
 </script>
 </body>
 </html>

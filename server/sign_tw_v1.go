@@ -16,8 +16,8 @@ const (
 	Web3IDProfile          = "Ninja Protocol Web3 ID:"
 	sesKeyForNjUserId      = "twitter-signup-ninja-user-id"
 	sesKeyForAccessToken   = "twitter-access-key-v1"
-	accessUserProUrl       = "https://api.twitter.com/1.1/account/update_profile.json"
 	sesKeyForRequestSecret = "ses-key-for-request-secret"
+	accessUserProUrl       = "https://api.twitter.com/1.1/account/update_profile.json"
 	accessReqTokenURL      = "https://api.twitter.com/oauth/request_token"
 	accessOauthTokenURL    = "https://api.twitter.com/oauth/authorize?oauth_token=%s"
 	accessAccessTokenURL   = "https://api.twitter.com/oauth/access_token"
@@ -128,6 +128,7 @@ func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "get secret from session failed", http.StatusInternalServerError)
 		return
 	}
+	defer SMInst().Del(sesKeyForRequestSecret, r, w)
 
 	requestToken := r.URL.Query().Get("oauth_token")
 	verifier := r.URL.Query().Get("oauth_verifier")
@@ -171,6 +172,8 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	defer SMInst().Del(sesKeyForNjUserId, r, w)
+
 	token, err := getAccessTokenFromSession(r)
 	if err != nil {
 		util.LogInst().Err(err).Msg("no user access token found")
@@ -202,7 +205,6 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	util.LogInst().Debug().Str("tw-id", result.TwitterData.ID).Str("ninja-id", result.EthAddr).Msg("twitter user sign up success")
 }
 
@@ -235,8 +237,8 @@ func fetchTwitterUserInfo(ut *userAccessToken) (*TwAPIResponse, error) {
 
 	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 
-	userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?screen_name=%s", ut.ScreenName)
-	//userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?user_id=%s", ut.UserId)
+	//userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?screen_name=%s", ut.ScreenName)
+	userInfoURL := fmt.Sprintf("https://api.twitter.com/1.1/users/show.json?user_id=%s", ut.UserId)
 
 	resp, err := httpClient.Get(userInfoURL)
 	if err != nil {
