@@ -21,6 +21,7 @@ var (
 		"/queryTwBasicById":    queryTwBasicById,
 		"/signOut":             signOut,
 		"/":                    mainPage,
+		"/pullMyTimeLine":      pullTwitterTimeline,
 	}
 
 	cfgHtmlFileRouter = map[string]string{

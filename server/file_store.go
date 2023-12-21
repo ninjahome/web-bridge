@@ -304,19 +304,19 @@ func (dm *DbManager) SaveTwAccessToken(token *TwUserAccessToken) error {
 	return err
 }
 
-func (dm *DbManager) GaveTwAccessToken(UserId string) (*TwUserAccessToken, error) {
+func (dm *DbManager) GetTwAccessToken(twiiterId string) (*TwUserAccessToken, error) {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
-	tokenDoc := dm.fileCli.Collection(DBTableTWUserAccToken).Doc(UserId)
+	tokenDoc := dm.fileCli.Collection(DBTableTWUserAccToken).Doc(twiiterId)
 	doc, err := tokenDoc.Get(opCtx)
 	if err != nil {
-		util.LogInst().Err(err).Str("twitter-id", UserId).Msg("load twitter access token failed")
+		util.LogInst().Err(err).Str("twitter-id", twiiterId).Msg("load twitter access token failed")
 		return nil, err
 	}
 	var token TwUserAccessToken
 	err = doc.DataTo(&token)
 	if err != nil {
-		util.LogInst().Err(err).Str("twitter-id", UserId).Msg("parse twitter access token failed")
+		util.LogInst().Err(err).Str("twitter-id", twiiterId).Msg("parse twitter access token failed")
 		return nil, err
 	}
 	return &token, nil
