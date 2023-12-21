@@ -123,6 +123,11 @@ func (t *TWUserInfo) String() string {
 	return string(bts)
 }
 
+func (t *TWUserInfo) RawData() []byte {
+	bts, _ := json.Marshal(t)
+	return bts
+}
+
 func TWUsrInfoMust(str string) *TWUserInfo {
 	t := &TWUserInfo{}
 	err := json.Unmarshal([]byte(str), t)
@@ -163,6 +168,7 @@ func NJUsrInfoMust(str string) *NinjaUsrInfo {
 	}
 	return nu
 }
+
 func (dm *DbManager) NjUserSignIn(ethAddr string) *NinjaUsrInfo {
 	nu := &NinjaUsrInfo{
 		EthAddr: ethAddr,
@@ -200,7 +206,7 @@ func (dm *DbManager) NjUserSignIn(ethAddr string) *NinjaUsrInfo {
 	return nu
 }
 
-func (dm *DbManager) BindingWeb3ID(bindData *Web3Binding, twMeta *TWUserInfo) error {
+func (dm *DbManager) BindingWeb3ID(bindData *Web3Binding, twMeta *TWUserInfo) (*NinjaUsrInfo, error) {
 	var ethAddr = bindData.EthAddr
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
@@ -210,18 +216,18 @@ func (dm *DbManager) BindingWeb3ID(bindData *Web3Binding, twMeta *TWUserInfo) er
 	doc, err := njUserDoc.Get(opCtx)
 	if err != nil {
 		util.LogInst().Err(err).Str("eth-addr", ethAddr).Msg("no nj user sign in data")
-		return err
+		return nil, err
 	}
 	nu := &NinjaUsrInfo{}
 	err = doc.DataTo(nu)
 	if err != nil {
 		util.LogInst().Err(err).Str("eth-addr", ethAddr).Msg("parse nj user failed")
-		return err
+		return nil, err
 	}
 	if len(nu.TwID) > 0 {
 		util.LogInst().Err(err).Str("eth-addr", ethAddr).
 			Str("twitter-id", nu.TwID).Msg("duplicate web3 binding")
-		return fmt.Errorf("duplicate web3 binding")
+		return nil, fmt.Errorf("duplicate web3 binding")
 	}
 
 	/*set meta binding  data*/
@@ -229,7 +235,7 @@ func (dm *DbManager) BindingWeb3ID(bindData *Web3Binding, twMeta *TWUserInfo) er
 	_, err = twitterDoc.Set(opCtx, twMeta)
 	if err != nil {
 		util.LogInst().Err(err).Str("twitter-id", twMeta.ID).Msg("update twitter meta failed")
-		return err
+		return nil, err
 	}
 
 	bindDoc := dm.fileCli.Collection(DBTableWeb3Bindings).Doc(ethAddr)
@@ -237,7 +243,7 @@ func (dm *DbManager) BindingWeb3ID(bindData *Web3Binding, twMeta *TWUserInfo) er
 	if err != nil {
 		util.LogInst().Err(err).Str("eth-addr", ethAddr).
 			Str("twitter-id", twMeta.ID).Msg("update web3 binding failed")
-		return err
+		return nil, err
 	}
 
 	/*update nj user basic data*/
@@ -246,8 +252,26 @@ func (dm *DbManager) BindingWeb3ID(bindData *Web3Binding, twMeta *TWUserInfo) er
 	if err != nil {
 		util.LogInst().Err(err).Str("eth-addr", ethAddr).
 			Str("twitter-id", nu.TwID).Msg("update nj user failed")
-		return err
+		return nil, err
 	}
 
-	return nil
+	return nu, nil
+}
+
+func (dm *DbManager) TwitterBasicInfo(TID string) (*TWUserInfo, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	twitterDoc := dm.fileCli.Collection(DBTableTWUser).Doc(TID)
+	doc, err := twitterDoc.Get(opCtx)
+	if err != nil {
+		util.LogInst().Err(err).Str("twitter-id", TID).Msg("twitterDoc get failed")
+		return nil, err
+	}
+	tu := &TWUserInfo{}
+	err = doc.DataTo(tu)
+	if err != nil {
+		util.LogInst().Err(err).Str("twitter-id", TID).Msg("twitter Doc to TWUserInfo failed")
+		return nil, err
+	}
+	return tu, nil
 }

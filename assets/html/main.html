@@ -14,9 +14,9 @@
         .left-side {
             display: flex;
             flex-direction: column;
-            min-width: 200px; /* 最小宽度设置为200px */
-            max-width: 320px; /* 最小宽度设置为200px */
-            width: 20%; /* 占据屏幕宽度的20% */
+            min-width: 200px;
+            max-width: 320px;
+            width: 20%;
             background-color: #f2f2f2;
         }
 
@@ -28,21 +28,22 @@
             padding: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: start; /* 从顶部开始排列 */
-            align-items: center; /* 水平居中 */
-            overflow: hidden; /* 隐藏溢出的内容 */
+            justify-content: start;
+            align-items: center;
+            overflow: hidden;
         }
 
         .left-upper img {
-            max-width: 100%; /* 限制宽度，确保不会溢出 */
-            max-height: 120px; /* 限制图片的最大高度 */
-            margin-bottom: 10px; /* 图片与下方内容的间隔 */
+            width: 60px;
+            height: 60px;
+            margin-bottom: 10px;
+            border-radius: 50%;
         }
 
         .field {
-            text-align: center; /* 字段文本居中 */
-            width: 100%; /* 字段宽度与容器相同 */
-            margin-bottom: 5px; /* 字段之间的间隔 */
+            text-align: center;
+            width: 100%;
+            margin-bottom: 5px;
         }
 
         .field-label {
@@ -60,7 +61,7 @@
     <div class="left-side">
         <div class="left-upper">
             <!-- 图片占位符 -->
-            <img src="/assets/file/logo.png" alt="Logo">
+            <img id="user-twitter-logo" src="/assets/file/logo.png" alt="Logo">
 
             <!-- Web3 ID -->
             <div class="field">
@@ -74,17 +75,19 @@
                 <div class="field-value" id="basic-web3-balance">0.0 ETH</div>
                 <div>
                     <button class="change-chain-id-button" id="change-chain-id-button"
-                            onclick="switchToWorkChain()">Switch To Arbitrum</button>
+                            onclick="switchToWorkChain()">Switch To Arbitrum
+                    </button>
                 </div>
             </div>
 
             <!-- Twitter -->
             <div class="field">
                 <div class="field-label">Twitter:</div>
-                <div class="field-value" id="basic-twitter-id">@username</div>
+                <div class="field-value" id="basic-twitter-name">@username</div>
                 <div>
                     <button class="sign-up-by-twitter-button" id="sign-up-by-twitter-button"
-                            onclick="signUpByTwitter()">Bridge Twitter</button>
+                            onclick="signUpByTwitter()">Bridge Twitter
+                    </button>
                 </div>
             </div>
         </div>
@@ -114,11 +117,12 @@
     }
 
     function checkSystemEnvironment() {
-        const savedUserInfo = getDataFromSessionDB(sesDbKeyForNjUserData())
+        const savedUserInfo = NinjaUserBasicInfo.loadCurrentNJUserObj()
         if (!savedUserInfo) {
             window.location.href = "/";
             return
         }
+
         if (typeof window.ethereum === 'undefined') {
             window.location.href = "/";
             return
@@ -127,7 +131,7 @@
         metamaskObj = window.ethereum;
         metamaskObj.on('accountsChanged', metamaskAccountChanged);
         metamaskObj.on('chainChanged', metamaskChainChanged);
-        metamaskObj.request({method: 'eth_chainId'}).then(chainID=>{
+        metamaskObj.request({method: 'eth_chainId'}).then(chainID => {
             metamaskChainChanged(chainID);
         })
     }
@@ -150,14 +154,14 @@
             method: 'eth_getBalance',
             params: [__global_current_ninja_user.eth_addr, 'latest'],
         });
-        console.log('eth balance:',balance);
-        if (balance === "0x0"){
+        console.log('eth balance:', balance);
+        if (balance === "0x0") {
             return "0.00 eth";
         }
-        if (balance < 10**12){
+        if (balance < 10 ** 12) {
             return "< 0.000001 eth"
         }
-        return parseFloat((balance / 10**18).toFixed(6)) + ' eth';
+        return parseFloat((balance / 10 ** 18).toFixed(6)) + ' eth';
     }
 
     function metamaskAccountChanged(accounts) {
@@ -169,26 +173,35 @@
         window.location.href = "/";
     }
 
-     function setupBasicInfo() {
+    function setupBasicInfo() {
         const twBtn = document.getElementById('sign-up-by-twitter-button')
-        const twIdLbl = document.getElementById('basic-twitter-id')
-         document.getElementById('basic-web3-id').innerText = __global_current_ninja_user.eth_addr;
+        const twNameLabel = document.getElementById('basic-twitter-name')
+        document.getElementById('basic-web3-id').innerText = __global_current_ninja_user.eth_addr;
         if (!__global_current_ninja_user.tw_id) {
-            twIdLbl.style.display = 'none';
+            twNameLabel.style.display = 'none';
             twBtn.style.display = 'inline-block';
         } else {
             twBtn.style.display = 'none';
-            twIdLbl.style.display = 'inline-block';
+            twNameLabel.style.display = 'inline-block';
+            loadTwitterInfo(__global_current_ninja_user.tw_id).then(twInfo => {
+                if (!twInfo) {
+                    return;
+                }
+                twNameLabel.innerText = twInfo.name;
+                if (twInfo.profile_image_url_https) {
+                    document.getElementById('user-twitter-logo').src = twInfo.profile_image_url_https;
+                }
+            })
         }
     }
 
     function switchToWorkChain() {
         metamaskObj.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: __globalTargetChainNetworkID }],
+            params: [{chainId: __globalTargetChainNetworkID}],
         }).catch((switchError) => {
             if (switchError.code !== 4902) {
-                showDialog("error","failed switching to arbitrum network");
+                showDialog("error", "failed switching to arbitrum network");
                 return;
             }
 
@@ -196,18 +209,38 @@
             metamaskObj.request({
                 method: 'wallet_addEthereumChain',
                 params: [arbParam],
-            }).then(r=>{
+            }).then(r => {
                 console.log(r);
-            }).catch(err=>{
-                showDialog("error","add to network failed:"+err.toString());
+            }).catch(err => {
+                showDialog("error", "add to network failed:" + err.toString());
             });
         });
     }
 
     function signUpByTwitter() {
-        // window.open("/signUpByTwitter?eth_addr="+__global_current_ninja_user.eth_addr, '_blank');
-        window.location.href = "/signUpByTwitter?eth_addr="+__global_current_ninja_user.eth_addr;
+        window.location.href = "/signUpByTwitter?eth_addr=" + __global_current_ninja_user.eth_addr;
     }
+
+    async function loadTwitterInfo(twitterID) {
+        try {
+            let tw_data = TwitterBasicInfo.loadTwBasicInfo(twitterID)
+            if (tw_data) {
+                return tw_data;
+            }
+
+            const response = await PostToSrvByJson('/queryTwBasicById', twitterID);
+            if (!response) {
+                console.log("query twitter basic info failed")
+                return null;
+            }
+
+            return TwitterBasicInfo.cacheTwBasicInfo(response);
+        } catch (err) {
+            console.log("queryTwBasicById err:", err)
+            showDialog("error", err.toString())
+        }
+    }
+
 </script>
 </body>
 </html>

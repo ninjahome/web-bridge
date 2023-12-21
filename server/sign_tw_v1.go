@@ -369,7 +369,7 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 		SignUpAt:  data.BindTime,
 		Signature: param.Signature,
 	}
-	err = DbInst().BindingWeb3ID(bindDataToStore, userdata)
+	newNu, err := DbInst().BindingWeb3ID(bindDataToStore, userdata)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save binding data  failed")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -389,5 +389,5 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(data.TwID))
+	w.Write(newNu.RawData())
 }

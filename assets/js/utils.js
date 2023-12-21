@@ -55,7 +55,9 @@ function PostToSrvByJson(url, data) {
         fetch(url, requestOptions)
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    return response.text().then(text => {
+                        throw new Error(text || 'Server responded with an error');
+                    });
                 }
                 return response.text();
             })

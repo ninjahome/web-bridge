@@ -116,8 +116,6 @@
         }
     }
 
-
-
     async function signInByEth() {
         showError(null);
         const web3Id = document.getElementById("web3-id").textContent;
@@ -143,10 +141,7 @@
                     showError("failed to load ninja user data");
                     return
                 }
-                const ninjaObj = JSON.parse(response)
-                // console.log("got ninja object:", ninjaObj);
-                setDataFromSessionDB(sesDbKeyForSignData(signParam.eth_addr), signParam);
-                setDataFromSessionDB(sesDbKeyForNjUserData(), ninjaObj);
+                NinjaUserBasicInfo.syncToSessionDbForApiResponse(response);
                 window.location.href = "/main";
             }).catch(err => {
                 showError(err.toString());

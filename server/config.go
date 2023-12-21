@@ -18,6 +18,7 @@ var (
 		"/signUpSuccessByTwV2": signUpSuccessByTwV2,
 		"/signInByEth":         signInByEth,
 		"/bindWeb3ID":          bindingWeb3ID,
+		"/queryTwBasicById":    queryTwBasicById,
 	}
 
 	cfgHtmlFileRouter = map[string]string{

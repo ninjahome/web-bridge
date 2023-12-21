@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>Binding Web3 Meta ID</title>
-
     <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/database.js"></script>
     <style>
         .profile-container {
             font-family: Arial, sans-serif;
@@ -83,6 +83,7 @@
     </div>
     <div class="profile-action">
         <button onclick="bindWeb3Id()">绑定web3身份</button>
+        <button onclick="backToHome()">暂时不绑定</button>
     </div>
 </div>
 
@@ -96,7 +97,7 @@
     }
 
     const twitterObj = {{ .TwitterData }};
-    const __global_current_ninja_user = "{{ .EthAddr }}";
+    const _curNinjaEthAddr = "{{ .EthAddr }}";
     const _bindingDate = {{ .SignUpAt }};
 
     let metamaskObj = null;
@@ -109,7 +110,7 @@
         document.getElementById("profile-screen-name").innerText = `@${twitterObj.screen_name}`;
         document.getElementById("profile-description").innerText = twitterObj.description;
 
-        document.getElementById("eth-address").textContent = __global_current_ninja_user;
+        document.getElementById("eth-address").textContent = _curNinjaEthAddr;
         document.getElementById("signup-time").textContent = new Date(_bindingDate).toLocaleDateString();
     }
 
@@ -117,9 +118,13 @@
         setupBasicInfos();
     }
 
+    function backToHome(){
+        window.location.href = "/main";
+    }
+
     async function bindWeb3Id() {
         if (typeof window.ethereum === 'undefined') {
-            showDialog("error", "您已关闭了metamask，请打开metamask并确切换到：" + __global_current_ninja_user);
+            showDialog("error", "您已关闭了metamask，请打开metamask并确切换到：" + _curNinjaEthAddr);
             return
         }
         metamaskObj = window.ethereum;
@@ -130,16 +135,16 @@
                 return
             }
             const curAccId = accounts[0]
-            if (curAccId !== __global_current_ninja_user) {
-                showDialog("error", "请打开metamask并确切换到：" + __global_current_ninja_user);
+            if (curAccId !== _curNinjaEthAddr) {
+                showDialog("error", "请打开metamask并确切换到：" + _curNinjaEthAddr);
                 return;
             }
 
-            const bindParam = new Web3BindingData(__global_current_ninja_user, twitterObj.id_str, _bindingDate)
+            const bindParam = new Web3BindingData(_curNinjaEthAddr, twitterObj.id_str, _bindingDate)
             const message = JSON.stringify(bindParam);
             const signature = await metamaskObj.request({
                 method: 'personal_sign',
-                params: [message, __global_current_ninja_user],
+                params: [message, _curNinjaEthAddr],
             })
 
             showWaiting("binding......", 15)
@@ -147,6 +152,7 @@
             PostToSrvByJson('/bindWeb3ID', obj).then(response => {
                 console.log("bind web3 success", response);
                 hideLoading();
+                NinjaUserBasicInfo.syncToSessionDbForApiResponse(response);
                 window.location.href = "/main";
             }).catch(err => {
                 hideLoading();
