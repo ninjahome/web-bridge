@@ -16,12 +16,15 @@ const (
 	Web3IDProfile          = "Ninja Protocol Web3 ID:"
 	sesKeyForNjUserId      = "twitter-signup-ninja-user-id"
 	sesKeyForAccessToken   = "twitter-access-key-v1"
-	callbackURL            = "https://bridge.simplenets.org/tw_callback"
 	accessUserProUrl       = "https://api.twitter.com/1.1/account/update_profile.json"
 	sesKeyForRequestSecret = "ses-key-for-request-secret"
 	accessReqTokenURL      = "https://api.twitter.com/oauth/request_token"
 	accessOauthTokenURL    = "https://api.twitter.com/oauth/authorize?oauth_token=%s"
 	accessAccessTokenURL   = "https://api.twitter.com/oauth/access_token"
+)
+
+var (
+	twitterSignUpCallbackURL = "https://bridge.simplenets.org/tw_callback"
 )
 
 type userAccessToken struct {
@@ -80,7 +83,7 @@ func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
 	oauth1Token := oauth1.NewToken("", "")
 	httpClient := oauth1Config.Client(oauth1.NoContext, oauth1Token)
 
-	callbackURL := url.QueryEscape(callbackURL)
+	callbackURL := url.QueryEscape(twitterSignUpCallbackURL)
 	response, err := httpClient.PostForm(accessReqTokenURL, url.Values{"oauth_callback": {callbackURL}})
 	if err != nil {
 		util.LogInst().Err(err).Msg("Failed to get request token")

@@ -35,16 +35,16 @@ var (
 type LogicAction func(w http.ResponseWriter, r *http.Request)
 
 type SrvConf struct {
-	DebugMode   bool   `json:"debug_mode"`
-	UseHttps    bool   `json:"use_https"`
-	SSLCertFile string `json:"ssl_cert_file"`
-	SSLKeyFile  string `json:"ssl_key_file"`
-	SessionKey  string `json:"session_key"`
+	RefreshContent bool   `json:"refresh_content"`
+	UseHttps       bool   `json:"use_https"`
+	SSLCertFile    string `json:"ssl_cert_file"`
+	SSLKeyFile     string `json:"ssl_key_file"`
+	SessionKey     string `json:"session_key"`
 }
 
 func (c *SrvConf) String() string {
 	s := "\n------server config------"
-	s += "\ndebug mode:" + fmt.Sprintf("%t", c.DebugMode)
+	s += "\nrefresh content:" + fmt.Sprintf("%t", c.RefreshContent)
 	s += "\nuse https:" + fmt.Sprintf("%t", c.UseHttps)
 	s += "\nssl cert file:" + c.SSLCertFile
 	s += "\nssl key file:" + c.SSLKeyFile
@@ -80,7 +80,8 @@ func (c *FileStoreConf) String() string {
 }
 
 type SysConf struct {
-	Log string `json:"log"`
+	Log      string `json:"log"`
+	LocalRun bool   `json:"local_run"`
 	*SrvConf
 	*TwitterConf
 	*FileStoreConf
@@ -90,6 +91,7 @@ type SysConf struct {
 func (c *SysConf) String() any {
 	var s = "\n=======================system config==========================="
 	s += "\nlog level:" + c.Log
+	s += "\nlocal mode:" + fmt.Sprintf("%t", c.LocalRun)
 	s += "\n" + c.SrvConf.String()
 	s += "\n" + c.TwitterConf.String()
 	s += "\n" + c.FileStoreConf.String()
@@ -115,7 +117,12 @@ func InitConf(c *SysConf) {
 			TokenURL: accessTokenURLV2,
 		},
 	}
-
 	_globalCfg.twOauthCfg = oauth2Config
+	if c.LocalRun {
+		twitterSignUpCallbackURL = "https://sharp-happy-grouse.ngrok-free.app/tw_callback"
+	} else {
+		twitterSignUpCallbackURL = "https://bridge.simplenets.org/tw_callback"
+	}
+
 	htmlTemplateManager = util.ParseTemplates("assets/html")
 }

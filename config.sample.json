@@ -1,6 +1,7 @@
 {
 	"log": "debug",
-	"debug_mode": true,
+	"local_run": false,
+	"refresh_content": true,
 	"use_https": false,
 	"ssl_cert_file": "",
 	"ssl_key_file": "",

@@ -10,13 +10,14 @@ import (
 
 func TestCreateDefaultConfigFile(t *testing.T) {
 	cfg := &SysConf{
-		Log: "debug",
+		Log:      "debug",
+		LocalRun: false,
 		SrvConf: &SrvConf{
-			DebugMode:   true,
-			UseHttps:    false,
-			SSLCertFile: "",
-			SSLKeyFile:  "",
-			SessionKey:  "",
+			RefreshContent: true,
+			UseHttps:       false,
+			SSLCertFile:    "",
+			SSLKeyFile:     "",
+			SessionKey:     "",
 		},
 		TwitterConf: &TwitterConf{
 			ClientID:       "",

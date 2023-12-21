@@ -1,17 +1,17 @@
 package main
 
 import (
+	"cloud.google.com/go/firestore"
 	"context"
 	"log"
-
-	"cloud.google.com/go/firestore"
-	"google.golang.org/api/option"
+	"os"
 )
 
 func main() {
 	ctx := context.Background()
-
-	client, err := firestore.NewClient(ctx, "dessage", option.WithCredentialsFile("dessage-c3b5c95267fb.json"))
+	os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080")
+	//client, err := firestore.NewClient(ctx, "dessage", option.WithCredentialsFile("dessage-c3b5c95267fb.json"))
+	client, err := firestore.NewClient(ctx, "dessage") // 使用适当的项目 ID
 	if err != nil {
 		log.Fatalf("Failed to create Firestore client: %v", err)
 	}

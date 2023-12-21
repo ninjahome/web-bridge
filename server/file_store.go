@@ -9,6 +9,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"os"
 	"sync"
 	"time"
 )
@@ -44,8 +45,14 @@ func DbInst() *DbManager {
 
 func newDb() *DbManager {
 	ctx, cancel := context.WithCancel(context.Background())
-
-	client, err := firestore.NewClient(ctx, _globalCfg.ProjectID, option.WithCredentialsFile(_globalCfg.KeyFilePath))
+	var client *firestore.Client
+	var err error
+	if _globalCfg.LocalRun {
+		_ = os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080")
+		client, err = firestore.NewClient(ctx, _globalCfg.ProjectID)
+	} else {
+		client, err = firestore.NewClient(ctx, _globalCfg.ProjectID, option.WithCredentialsFile(_globalCfg.KeyFilePath))
+	}
 	if err != nil {
 		panic(err)
 	}

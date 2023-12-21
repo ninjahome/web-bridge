@@ -104,7 +104,7 @@ func (bh *MainService) assetsStaticFile(writer http.ResponseWriter, request *htt
 	}
 
 	modTime := fileInfo.ModTime()
-	if _globalCfg.DebugMode {
+	if _globalCfg.RefreshContent {
 		writer.Header().Set("Cache-Control", "max-age=0, no-store, must-revalidate")
 	} else {
 		writer.Header().Set("Cache-Control", "public, max-age=1036000") // 缓存10天
