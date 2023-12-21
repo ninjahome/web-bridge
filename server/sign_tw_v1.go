@@ -110,16 +110,24 @@ func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
 	requestToken := values.Get("oauth_token")
 	requestSecret := values.Get("oauth_token_secret")
 
-	_ = SMInst().Set(r, w, sesKeyForRequestSecret, requestSecret)
-	_ = SMInst().Set(r, w, sesKeyForNjUserId, ethAddr)
-
+	var err1, err2 = SMInst().Set(r, w, sesKeyForRequestSecret, requestSecret), SMInst().Set(r, w, sesKeyForNjUserId, ethAddr)
+	if err1 != nil || err2 != nil {
+		util.LogInst().Err(err1).Err(err2).Msg("save secret or eth id to session failed")
+		http.Error(w, "session save failed", http.StatusInternalServerError)
+		return
+	}
 	authorizeURL := fmt.Sprintf(accessOauthTokenURL, requestToken)
 	http.Redirect(w, r, authorizeURL, http.StatusTemporaryRedirect)
 }
 
 func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 	oauth1Config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
-	requestSecret, _ := SMInst().Get(sesKeyForRequestSecret, r)
+	requestSecret, err := SMInst().Get(sesKeyForRequestSecret, r)
+	if err != nil {
+		util.LogInst().Err(err).Msg("get secret from session failed")
+		http.Error(w, "get secret from session failed", http.StatusInternalServerError)
+		return
+	}
 
 	requestToken := r.URL.Query().Get("oauth_token")
 	verifier := r.URL.Query().Get("oauth_verifier")
@@ -373,7 +381,7 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 		util.LogInst().Err(err).Msg("no user access token found")
 	}
 	if false == strings.Contains(userdata.Description, Web3IDProfile) {
-		err = updateTwitterBio(token, userdata.Description+Web3IDProfile+data.EthAddr)
+		err = updateTwitterBio(token, userdata.Description+"\n"+Web3IDProfile+data.EthAddr)
 		if err != nil {
 			util.LogInst().Err(err).Msg("update user's bio failed")
 		}

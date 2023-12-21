@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"github.com/gorilla/sessions"
 	"net/http"
 	"sync"
@@ -8,6 +9,9 @@ import (
 
 var _sesInst *SessionManager
 var sessionOnce sync.Once
+var (
+	SessionNotFound = errors.New("not found")
+)
 
 const (
 	SessionNameSystem = "session-name-for-ninja"
@@ -28,7 +32,7 @@ func newSM() *SessionManager {
 	var store = sessions.NewCookieStore([]byte(_globalCfg.SessionKey))
 	store.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   0,
+		MaxAge:   60,
 		HttpOnly: true,
 		Secure:   true,
 	}
@@ -44,6 +48,9 @@ func (sm *SessionManager) Get(key string, r *http.Request) (any, error) {
 	}
 
 	data := session.Values[key]
+	if data == nil {
+		return nil, SessionNotFound
+	}
 	return data, nil
 }
 
