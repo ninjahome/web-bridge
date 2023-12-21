@@ -19,6 +19,7 @@ const (
 	DefaultDBTimeOut        = 10 * time.Second
 	DBTableNJUser           = "ninja-user"
 	DBTableTWUser           = "twitter-user"
+	DBTableTWUserAccToken   = "twitter-user-access-token"
 	DBTableWeb3Bindings     = "twitter-eth-binding"
 )
 
@@ -169,6 +170,25 @@ func NJUsrInfoMust(str string) *NinjaUsrInfo {
 	return nu
 }
 
+/*******************************************************************************************************
+*
+* Twitter User Token
+*
+ ******************************************************************************************************/
+
+type TwUserAccessToken struct {
+	OauthToken       string `json:"oauth_token"`
+	OauthTokenSecret string `json:"oauth_token_secret"`
+	UserId           string `json:"user_id"`
+	ScreenName       string `json:"screen_name"`
+}
+
+/*******************************************************************************************************
+*
+* Ninja Protocol User Infos
+*
+ ******************************************************************************************************/
+
 func (dm *DbManager) NjUserSignIn(ethAddr string) *NinjaUsrInfo {
 	nu := &NinjaUsrInfo{
 		EthAddr: ethAddr,
@@ -248,7 +268,7 @@ func (dm *DbManager) BindingWeb3ID(bindData *Web3Binding, twMeta *TWUserInfo) (*
 
 	/*update nj user basic data*/
 	nu.TwID = bindData.TwitterID
-	_, err = njUserDoc.Set(opCtx, nu)
+	_, err = njUserDoc.Set(opCtx, nu, firestore.MergeAll)
 	if err != nil {
 		util.LogInst().Err(err).Str("eth-addr", ethAddr).
 			Str("twitter-id", nu.TwID).Msg("update nj user failed")
@@ -274,4 +294,30 @@ func (dm *DbManager) TwitterBasicInfo(TID string) (*TWUserInfo, error) {
 		return nil, err
 	}
 	return tu, nil
+}
+
+func (dm *DbManager) SaveTwAccessToken(token *TwUserAccessToken) error {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	tokenDoc := dm.fileCli.Collection(DBTableTWUserAccToken).Doc(token.UserId)
+	_, err := tokenDoc.Set(opCtx, token)
+	return err
+}
+
+func (dm *DbManager) GaveTwAccessToken(UserId string) (*TwUserAccessToken, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	tokenDoc := dm.fileCli.Collection(DBTableTWUserAccToken).Doc(UserId)
+	doc, err := tokenDoc.Get(opCtx)
+	if err != nil {
+		util.LogInst().Err(err).Str("twitter-id", UserId).Msg("load twitter access token failed")
+		return nil, err
+	}
+	var token TwUserAccessToken
+	err = doc.DataTo(&token)
+	if err != nil {
+		util.LogInst().Err(err).Str("twitter-id", UserId).Msg("parse twitter access token failed")
+		return nil, err
+	}
+	return &token, nil
 }

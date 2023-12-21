@@ -21,25 +21,19 @@ const (
 	accessReqTokenURL      = "https://api.twitter.com/oauth/request_token"
 	accessOauthTokenURL    = "https://api.twitter.com/oauth/authorize?oauth_token=%s"
 	accessAccessTokenURL   = "https://api.twitter.com/oauth/access_token"
+	verifyCredentialsURL   = "https://api.twitter.com/1.1/account/verify_credentials.json?skip_status=true"
 )
 
 var (
 	twitterSignUpCallbackURL = "https://bridge.simplenets.org/tw_callback"
 )
 
-type userAccessToken struct {
-	OauthToken       string
-	OauthTokenSecret string
-	UserId           string
-	ScreenName       string
-}
-
-func parseUserToken(values url.Values) *userAccessToken {
+func parseUserToken(values url.Values) *TwUserAccessToken {
 	accessToken := values.Get("oauth_token")
 	accessSecret := values.Get("oauth_token_secret")
 	userID := values.Get("user_id")
 	screenName := values.Get("screen_name")
-	return &userAccessToken{
+	return &TwUserAccessToken{
 		OauthToken:       accessToken,
 		OauthTokenSecret: accessSecret,
 		UserId:           userID,
@@ -47,24 +41,24 @@ func parseUserToken(values url.Values) *userAccessToken {
 	}
 }
 
-func (ut *userAccessToken) GetToken() *oauth1.Token {
+func (ut *TwUserAccessToken) GetToken() *oauth1.Token {
 	return &oauth1.Token{
 		Token:       ut.OauthToken,
 		TokenSecret: ut.OauthTokenSecret,
 	}
 }
 
-func (ut *userAccessToken) string() string {
+func (ut *TwUserAccessToken) String() string {
 	bts, _ := json.Marshal(ut)
 	return string(bts)
 }
 
-func getAccessTokenFromSession(r *http.Request) (*userAccessToken, error) {
+func getAccessTokenFromSession(r *http.Request) (*TwUserAccessToken, error) {
 	bts, err := SMInst().Get(sesKeyForAccessToken, r)
 	if err != nil {
 		return nil, err
 	}
-	var token userAccessToken
+	var token TwUserAccessToken
 	err = json.Unmarshal([]byte(bts.(string)), &token)
 	if err != nil {
 		return nil, err
@@ -161,7 +155,14 @@ func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := parseUserToken(values)
-	_ = SMInst().Set(r, w, sesKeyForAccessToken, token.string())
+	_ = SMInst().Set(r, w, sesKeyForAccessToken, token.String())
+	err = DbInst().SaveTwAccessToken(token)
+	if err != nil {
+		util.LogInst().Err(err).Msg("save twitter user access token failed")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	http.Redirect(w, r, "/signUpSuccessByTw", http.StatusFound)
 }
 
@@ -181,7 +182,7 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userData, err := verifyTwitterCredentials(token) //fetchTwitterUserInfo(token)//verifyTwitterCredentials
+	userData, err := verifyTwitterCredentials(token)
 	if err != nil {
 		util.LogInst().Err(err).Msg("get user basic info failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -208,7 +209,7 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 	util.LogInst().Debug().Str("tw-id", result.TwitterData.ID).Str("ninja-id", result.EthAddr).Msg("twitter user sign up success")
 }
 
-func updateTwitterBio(ut *userAccessToken, newBio string) error {
+func updateTwitterBio(ut *TwUserAccessToken, newBio string) error {
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 
@@ -230,10 +231,10 @@ func updateTwitterBio(ut *userAccessToken, newBio string) error {
 	return nil
 }
 
-func fetchTwitterUserInfo(ut *userAccessToken) (*TwAPIResponse, error) {
+func fetchTwitterUserInfo(ut *TwUserAccessToken) (*TwAPIResponse, error) {
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 
-	util.LogInst().Debug().Msg(ut.string())
+	util.LogInst().Debug().Msg(ut.String())
 
 	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 
@@ -254,15 +255,12 @@ func fetchTwitterUserInfo(ut *userAccessToken) (*TwAPIResponse, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
 		return nil, err
 	}
-
 	return &user, nil
 }
 
-func verifyTwitterCredentials(ut *userAccessToken) (*VerifiedTwitterUser, error) {
+func verifyTwitterCredentials(ut *TwUserAccessToken) (*VerifiedTwitterUser, error) {
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
-
-	verifyCredentialsURL := "https://api.twitter.com/1.1/account/verify_credentials.json?skip_status=true"
 
 	resp, err := httpClient.Get(verifyCredentialsURL)
 	if err != nil {
