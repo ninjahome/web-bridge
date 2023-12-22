@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ninjahome/web-bridge/util"
+	"golang.org/x/oauth2"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -20,6 +21,7 @@ const (
 	DBTableNJUser           = "ninja-user"
 	DBTableTWUser           = "twitter-user"
 	DBTableTWUserAccToken   = "twitter-user-access-token"
+	DBTableTWUserAccTokenV2 = "twitter-user-access-token_v2"
 	DBTableWeb3Bindings     = "twitter-eth-binding"
 )
 
@@ -155,6 +157,11 @@ type TwUserAccessToken struct {
 	ScreenName       string `json:"screen_name" firestore:"screen_name"`
 }
 
+type TwUserAccessTokenV2 struct {
+	UserId string `json:"user_id" firestore:"user_id"`
+	*oauth2.Token
+}
+
 /*******************************************************************************************************
 *
 * Ninja Protocol User Infos
@@ -275,20 +282,45 @@ func (dm *DbManager) SaveTwAccessToken(token *TwUserAccessToken) error {
 	_, err := tokenDoc.Set(opCtx, token)
 	return err
 }
-
-func (dm *DbManager) GetTwAccessToken(twiiterId string) (*TwUserAccessToken, error) {
+func (dm *DbManager) GetTwAccessToken(twitterId string) (*TwUserAccessToken, error) {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
-	tokenDoc := dm.fileCli.Collection(DBTableTWUserAccToken).Doc(twiiterId)
+	tokenDoc := dm.fileCli.Collection(DBTableTWUserAccToken).Doc(twitterId)
 	doc, err := tokenDoc.Get(opCtx)
 	if err != nil {
-		util.LogInst().Err(err).Str("twitter-id", twiiterId).Msg("load twitter access token failed")
+		util.LogInst().Err(err).Str("twitter-id", twitterId).Msg("load twitter access token failed")
 		return nil, err
 	}
 	var token TwUserAccessToken
 	err = doc.DataTo(&token)
 	if err != nil {
-		util.LogInst().Err(err).Str("twitter-id", twiiterId).Msg("parse twitter access token failed")
+		util.LogInst().Err(err).Str("twitter-id", twitterId).Msg("parse twitter access token failed")
+		return nil, err
+	}
+	return &token, nil
+}
+
+func (dm *DbManager) SaveTwAccessTokenV2(token *TwUserAccessTokenV2) error {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	tokenDoc := dm.fileCli.Collection(DBTableTWUserAccTokenV2).Doc(token.UserId)
+	_, err := tokenDoc.Set(opCtx, token)
+	return err
+}
+
+func (dm *DbManager) GetTwAccessTokenV2(twitterId string) (*TwUserAccessTokenV2, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	tokenDoc := dm.fileCli.Collection(DBTableTWUserAccTokenV2).Doc(twitterId)
+	doc, err := tokenDoc.Get(opCtx)
+	if err != nil {
+		util.LogInst().Err(err).Str("twitter-id", twitterId).Msg("load twitter access token failed")
+		return nil, err
+	}
+	var token TwUserAccessTokenV2
+	err = doc.DataTo(&token)
+	if err != nil {
+		util.LogInst().Err(err).Str("twitter-id", twitterId).Msg("parse twitter access token failed")
 		return nil, err
 	}
 	return &token, nil

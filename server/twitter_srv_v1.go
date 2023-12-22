@@ -30,7 +30,7 @@ type VideoVariant struct {
 }
 
 type TweetContent struct {
-	TweetContent string `json:"tweet_content"`
+	TweetContent string `json:"text"`
 }
 
 type Tweet struct {

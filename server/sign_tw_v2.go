@@ -107,22 +107,6 @@ func exchangeWithCodeVerifier(conf *oauth2.Config, code string, codeVerifier str
 	return &token, nil
 }
 
-func twitterActionWithAccessToken(token *oauth2.Token, accUrl string, result any) error {
-	client := _globalCfg.twOauthCfg.Client(context.Background(), token)
-	response, err := client.Get(accUrl)
-	if err != nil {
-		util.LogInst().Err(err).Msgf("create client err")
-		return err
-	}
-	defer response.Body.Close()
-
-	if err := json.NewDecoder(response.Body).Decode(result); err != nil {
-		util.LogInst().Err(err).Msgf("parse twitter call back data  err:%s", err)
-		return err
-	}
-	return nil
-}
-
 func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request) {
 	util.LogInst().Info().Msg("call back from twitter")
 
@@ -169,6 +153,7 @@ func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	http.Redirect(w, r, "/signUpSuccessByTwV2", http.StatusFound)
 }
 
@@ -181,21 +166,15 @@ func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "state lost for twitter sign up session", http.StatusInternalServerError)
 		return
 	}
-	bts, err := SMInst().Get(sesKeyForAccessTokenV2, r)
+
+	token, err := getAccessTokenFromSessionV2(r)
 	if err != nil {
 		util.LogInst().Err(err).Msg("no valid access token in current session")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	token := &oauth2.Token{}
-	if err := json.Unmarshal(bts.([]byte), token); err != nil {
-		util.LogInst().Err(err).Msg("unmarshal access token in current session")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
 	result := &TwAPIResponse{}
-	err = twitterActionWithAccessToken(token, accessUserURLV2, result)
+	err = twitterGetWithAccessToken(token, accessUserURLV2, result)
 	if err != nil {
 		util.LogInst().Err(err).Msgf("get twitter info failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -203,6 +182,15 @@ func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request) {
 	}
 	result.EthAddr = state.ethAddr
 	result.SignUpAt = time.Now().UnixMilli()
+	ut := &TwUserAccessTokenV2{
+		UserId: result.TwitterData.ID,
+		Token:  token,
+	}
+	err = DbInst().SaveTwAccessTokenV2(ut)
+	if err != nil {
+		util.LogInst().Err(err).Msg("save user access token failed")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 	err = htmlTemplateManager.ExecuteTemplate(w, "signUpSuccess.html", result)
 	if err != nil {
 		util.LogInst().Err(err).Msg("show sign up by twitter page failed")

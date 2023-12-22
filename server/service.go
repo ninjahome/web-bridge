@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/ninjahome/web-bridge/util"
 	"net/http"
@@ -65,4 +66,61 @@ func validateUsrRights(w http.ResponseWriter, r *http.Request) (*NinjaUsrInfo, e
 		return nil, fmt.Errorf("not a ninja user struct saved")
 	}
 	return njUser, nil
+}
+
+func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
+	param := &SignDataByEth{}
+	err := util.ReadRequest(r, param)
+	if err != nil {
+		util.LogInst().Err(err).Msg("no sign data by eth found")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if param.PayLoad == nil {
+		util.LogInst().Err(err).Msg("lost payload in sign data")
+		http.Error(w, "lost payload in sign data", http.StatusBadRequest)
+		return
+	}
+	userdata := &TWUserInfo{}
+	err = json.Unmarshal([]byte(param.PayLoad.(string)), userdata)
+	if err != nil {
+		util.LogInst().Err(err).Msg("parse twitter data failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	data := &Web3BindingData{}
+	err = json.Unmarshal([]byte(param.Message), data)
+	if err != nil {
+		util.LogInst().Err(err).Msg("parse sign data failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = util.Verify(data.EthAddr, param.Message, param.Signature)
+	if err != nil {
+		util.LogInst().Err(err).Msg("binding data verify signature failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	util.LogInst().Info().Str("eth-addr", data.EthAddr).
+		Str("twitter-id", data.TwID).
+		Int64("bind-time", data.BindTime).Msg("sign data success")
+
+	bindDataToStore := &Web3Binding{
+		TwitterID: data.TwID,
+		EthAddr:   data.EthAddr,
+		SignUpAt:  data.BindTime,
+		Signature: param.Signature,
+	}
+	newNu, err := DbInst().BindingWeb3ID(bindDataToStore, userdata)
+	if err != nil {
+		util.LogInst().Err(err).Msg("save binding data  failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(newNu.RawData())
 }

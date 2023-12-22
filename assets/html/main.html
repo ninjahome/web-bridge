@@ -273,13 +273,13 @@
     }
     class TweetContent {
         constructor(tweet_content) {
-            this.tweet_content = tweet_content;
+            this.text = tweet_content;
         }
     }
     function postTweet(){
         const content = document.getElementById("tweets-content").value;
         const tweet = new TweetContent(content);
-        PostToSrvByJson("/postTweet",tweet).then(r=>{
+        PostToSrvByJson("/postTweetsV2",tweet).then(r=>{
             console.log(r);
         }).catch(err=>{
             console.log(err);

@@ -24,6 +24,7 @@ var (
 		"/pullMyTimeLine":      pullTwitterTimeline,
 		"/pullHomeTimeLine":    pullTwitterHomeTimeline,
 		"/postTweet":           postTweets,
+		"/postTweetsV2":        postTweetsV2,
 	}
 
 	cfgHtmlFileRouter = map[string]string{
@@ -129,13 +130,6 @@ func InitConf(c *SysConf) {
 		},
 	}
 	_globalCfg.twOauthCfg = oauth2Config
-	//if c.LocalRun {
-	//	twitterSignUpCallbackURL = "https://sharp-happy-grouse.ngrok-free.app/tw_callback"
-	//} else {
-	//	twitterSignUpCallbackURL = "https://bridge.simplenets.org/tw_callback"
-	//}
-
-	//callbackURLV2    = "https://bridge.simplenets.org/tw_callbackV2"
 
 	htmlTemplateManager = util.ParseTemplates("assets/html")
 }
