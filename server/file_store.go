@@ -105,18 +105,18 @@ type TwAPIResponse struct {
 	SignUpAt    int64       `json:"sign_up_at"`
 }
 type Web3Binding struct {
-	TwitterID string `json:"twitter_id"`
-	EthAddr   string `json:"eth_addr"`
-	SignUpAt  int64  `json:"sign_up_at"`
-	Signature string `json:"signature"`
+	TwitterID string `json:"twitter_id" firestore:"twitter_id"`
+	EthAddr   string `json:"eth_addr" firestore:"eth_addr"`
+	SignUpAt  int64  `json:"sign_up_at" firestore:"sign_up_at"`
+	Signature string `json:"signature" firestore:"signature"`
 }
 
 type TWUserInfo struct {
-	ID                   string `json:"id_str"`
-	Name                 string `json:"name"`
-	ScreenName           string `json:"screen_name"`
-	Description          string `json:"description"`
-	ProfileImageUrlHttps string `json:"profile_image_url_https"`
+	ID                   string `json:"id_str" firestore:"id_str"`
+	Name                 string `json:"name" firestore:"name"`
+	ScreenName           string `json:"screen_name" firestore:"screen_name"`
+	Description          string `json:"description" firestore:"description"`
+	ProfileImageUrlHttps string `json:"profile_image_url_https" firestore:"profile_image_url_https"`
 }
 
 func (t *TWUserInfo) String() string {
@@ -145,10 +145,10 @@ func TWUsrInfoMust(str string) *TWUserInfo {
  ******************************************************************************************************/
 
 type NinjaUsrInfo struct {
-	Address  string `json:"address"`
-	EthAddr  string `json:"eth_addr"`
-	CreateAt int64  `json:"create_at"`
-	TwID     string `json:"tw_id"`
+	Address  string `json:"address" firestore:"address"`
+	EthAddr  string `json:"eth_addr" firestore:"eth_addr"`
+	CreateAt int64  `json:"create_at" firestore:"create_at"`
+	TwID     string `json:"tw_id" firestore:"tw_id"`
 }
 
 func (nu *NinjaUsrInfo) String() string {
@@ -177,10 +177,10 @@ func NJUsrInfoMust(str string) *NinjaUsrInfo {
  ******************************************************************************************************/
 
 type TwUserAccessToken struct {
-	OauthToken       string `json:"oauth_token"`
-	OauthTokenSecret string `json:"oauth_token_secret"`
-	UserId           string `json:"user_id"`
-	ScreenName       string `json:"screen_name"`
+	OauthToken       string `json:"oauth_token" firestore:"oauth_token"`
+	OauthTokenSecret string `json:"oauth_token_secret" firestore:"oauth_token_secret"`
+	UserId           string `json:"user_id" firestore:"user_id"`
+	ScreenName       string `json:"screen_name" firestore:"screen_name"`
 }
 
 /*******************************************************************************************************
@@ -268,7 +268,7 @@ func (dm *DbManager) BindingWeb3ID(bindData *Web3Binding, twMeta *TWUserInfo) (*
 
 	/*update nj user basic data*/
 	nu.TwID = bindData.TwitterID
-	_, err = njUserDoc.Set(opCtx, nu, firestore.MergeAll)
+	_, err = njUserDoc.Set(opCtx, nu, firestore.Merge([]string{"tw_id"}))
 	if err != nil {
 		util.LogInst().Err(err).Str("eth-addr", ethAddr).
 			Str("twitter-id", nu.TwID).Msg("update nj user failed")
