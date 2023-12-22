@@ -15,7 +15,7 @@ import (
 const (
 	Web3IDProfile          = "Ninja Protocol Web3 ID:"
 	sesKeyForNjUserId      = "twitter-signup-ninja-user-id"
-	sesKeyForAccessToken   = "twitter-access-key-v1"
+	sesKeyForAccessTokenV1 = "twitter-access-key-v1"
 	sesKeyForRequestSecret = "ses-key-for-request-secret"
 	accessUserProUrl       = "https://api.twitter.com/1.1/account/update_profile.json"
 	accessReqTokenURL      = "https://api.twitter.com/oauth/request_token"
@@ -50,7 +50,7 @@ func (ut *TwUserAccessToken) String() string {
 }
 
 func getAccessTokenFromSession(r *http.Request) (*TwUserAccessToken, error) {
-	bts, err := SMInst().Get(sesKeyForAccessToken, r)
+	bts, err := SMInst().Get(sesKeyForAccessTokenV1, r)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ func twitterSignCallBackV1(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := parseUserToken(values)
-	_ = SMInst().Set(r, w, sesKeyForAccessToken, token.String())
+	_ = SMInst().Set(r, w, sesKeyForAccessTokenV1, token.String())
 	err = DbInst().SaveTwAccessToken(token)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save twitter user access token failed")
@@ -205,12 +205,17 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 	util.LogInst().Debug().Str("tw-id", result.TwitterData.ID).Str("ninja-id", result.EthAddr).Msg("twitter user sign up success")
 }
 
-func updateTwitterBio(ut *TwUserAccessToken, newBio string) error {
+func updateTwitterBio(w http.ResponseWriter, r *http.Request) error {
+
+	ut, err := getAccessTokenFromSession(r)
+	if err != nil {
+		util.LogInst().Err(err).Msg("no user access token found")
+	}
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 
 	values := url.Values{}
-	values.Add("description", newBio)
+	values.Add("description", Web3IDProfile)
 	req, err := http.NewRequest("POST", accessUserProUrl, strings.NewReader(values.Encode()))
 	if err != nil {
 		util.LogInst().Err(err).Msg("updateTwitterBio NewRequest failed")
@@ -370,17 +375,6 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 		util.LogInst().Err(err).Msg("save binding data  failed")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
-	}
-
-	token, err := getAccessTokenFromSession(r)
-	if err != nil {
-		util.LogInst().Err(err).Msg("no user access token found")
-	}
-	if false == strings.Contains(userdata.Description, Web3IDProfile) {
-		err = updateTwitterBio(token, userdata.Description+"\n"+Web3IDProfile+data.EthAddr)
-		if err != nil {
-			util.LogInst().Err(err).Msg("update user's bio failed")
-		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")

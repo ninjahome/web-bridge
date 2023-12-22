@@ -18,7 +18,7 @@ import (
 const (
 	sesKeyForStateV2        = "twitter-signup-state-key"
 	sesKeyForVerifierCodeV2 = "code_verifier"
-	sesKeyForAccessTokenV2  = "twitter-user-access-token"
+	sesKeyForAccessTokenV2  = "twitter-access-key-v2"
 
 	authorizeURLV2   = "https://twitter.com/i/oauth2/authorize"
 	accessTokenURLV2 = "https://api.twitter.com/2/oauth2/token"
@@ -154,6 +154,7 @@ func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	defer SMInst().Del(sesKeyForVerifierCodeV2, r, w)
 	token, errToken := exchangeWithCodeVerifier(_globalCfg.twOauthCfg, code, codeVerifier.(string))
 	if errToken != nil {
 		util.LogInst().Err(errToken).Msgf("exchange err:%s", errToken)
@@ -173,6 +174,7 @@ func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request) {
 
 func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request) {
 	stateStr, _ := SMInst().Get(sesKeyForStateV2, r)
+	defer SMInst().Del(sesKeyForStateV2, r, w)
 	state := parseStateParam(stateStr.(string))
 	if state == nil {
 		util.LogInst().Warn().Msg("state lost for twitter sign up session")
@@ -192,7 +194,7 @@ func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var result = &TwAPIResV2{}
+	result := &TwAPIResponse{}
 	err = twitterActionWithAccessToken(token, accessUserURLV2, result)
 	if err != nil {
 		util.LogInst().Err(err).Msgf("get twitter info failed")
@@ -201,7 +203,7 @@ func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request) {
 	}
 	result.EthAddr = state.ethAddr
 	result.SignUpAt = time.Now().UnixMilli()
-	err = htmlTemplateManager.ExecuteTemplate(w, "signUpSuccessV2.html", result)
+	err = htmlTemplateManager.ExecuteTemplate(w, "signUpSuccess.html", result)
 	if err != nil {
 		util.LogInst().Err(err).Msg("show sign up by twitter page failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)

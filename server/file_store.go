@@ -71,34 +71,6 @@ func newDb() *DbManager {
 *
  ******************************************************************************************************/
 
-type TwAPIResV2 struct {
-	TwitterData *TWUserInfoV2 `json:"data"`
-	EthAddr     string        `json:"eth_addr"`
-	SignUpAt    int64         `json:"sign_up_at"`
-}
-
-type TWUserInfoV2 struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	Username        string `json:"username"`
-	ProfileImageURL string `json:"profile_image_url"`
-	Description     string `json:"description"`
-}
-
-func (t *TWUserInfoV2) String() string {
-	bts, _ := json.Marshal(t)
-	return string(bts)
-}
-
-func TWUsrInfoMustV2(str string) *TWUserInfoV2 {
-	t := &TWUserInfoV2{}
-	err := json.Unmarshal([]byte(str), t)
-	if err != nil {
-		return t
-	}
-	return t
-}
-
 type TwAPIResponse struct {
 	TwitterData *TWUserInfo `json:"data"`
 	EthAddr     string      `json:"eth_addr"`
@@ -112,11 +84,11 @@ type Web3Binding struct {
 }
 
 type TWUserInfo struct {
-	ID                   string `json:"id_str" firestore:"id_str"`
+	ID                   string `json:"id" firestore:"id"`
 	Name                 string `json:"name" firestore:"name"`
-	ScreenName           string `json:"screen_name" firestore:"screen_name"`
+	ScreenName           string `json:"username" firestore:"username"`
 	Description          string `json:"description" firestore:"description"`
-	ProfileImageUrlHttps string `json:"profile_image_url_https" firestore:"profile_image_url_https"`
+	ProfileImageUrlHttps string `json:"profile_image_url" firestore:"profile_image_url"`
 }
 
 func (t *TWUserInfo) String() string {

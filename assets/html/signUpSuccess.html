@@ -69,8 +69,8 @@
         <div class="profile-info" id="profile-name">
             <!-- Profile name will be loaded here -->
         </div>
-        <div class="profile-info" id="profile-screen-name">
-            <!-- Profile screen name will be loaded here -->
+        <div class="profile-info" id="profile-user-name">
+            <!-- Profile user name will be loaded here -->
         </div>
         <div class="profile-info" id="profile-description">
             <!-- Profile description will be loaded here -->
@@ -104,10 +104,10 @@
 
     function setupBasicInfos() {
         document.getElementById("profile-image").innerHTML = `
-                <img src="${twitterObj.profile_image_url_https}" alt="Profile Image">
+                <img src="${twitterObj.profile_image_url}" alt="Profile Image">
             `;
         document.getElementById("profile-name").innerText = twitterObj.name;
-        document.getElementById("profile-screen-name").innerText = `@${twitterObj.screen_name}`;
+        document.getElementById("profile-user-name").innerText = `@${twitterObj.username}`;
         document.getElementById("profile-description").innerText = twitterObj.description;
 
         document.getElementById("eth-address").textContent = _curNinjaEthAddr;
@@ -140,7 +140,7 @@
                 return;
             }
 
-            const bindParam = new Web3BindingData(_curNinjaEthAddr, twitterObj.id_str, _bindingDate)
+            const bindParam = new Web3BindingData(_curNinjaEthAddr, twitterObj.id, _bindingDate)
             const message = JSON.stringify(bindParam);
             const signature = await metamaskObj.request({
                 method: 'personal_sign',
