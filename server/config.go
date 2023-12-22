@@ -12,8 +12,8 @@ var (
 	cfgActionRouter = map[string]LogicAction{
 		"/signUpByTwitter":     signUpByTwitter,
 		"/signUpByTwitterV2":   signUpByTwitterV2,
-		"/tw_callback":         twitterSignCallBack,
-		"/tw_callbackV2":       twitterSignCallBackV2,
+		"/tw_callbackV1":       twitterSignCallBackV1,
+		"/tw_callback":         twitterSignCallBackV2,
 		"/signUpSuccessByTw":   signUpSuccessByTw,
 		"/signUpSuccessByTwV2": signUpSuccessByTwV2,
 		"/signInByEth":         signInByEth,
@@ -22,6 +22,7 @@ var (
 		"/signOut":             signOut,
 		"/main":                mainPage,
 		"/pullMyTimeLine":      pullTwitterTimeline,
+		"/pullHomeTimeLine":    pullTwitterHomeTimeline,
 		"/postTweet":           postTweets,
 	}
 
@@ -101,16 +102,24 @@ func (c *SysConf) String() any {
 	return s
 }
 
+var (
+	twitterSignUpCallbackURL = "https://bridge.simplenets.org/tw_callback"
+)
+
 func InitConf(c *SysConf) {
 	_globalCfg = c
 	util.SetLogLevel(c.Log)
 	fmt.Println(c.String())
 
 	_ = DbInst()
-
+	if c.LocalRun {
+		twitterSignUpCallbackURL = "https://sharp-happy-grouse.ngrok-free.app/tw_callback"
+	} else {
+		twitterSignUpCallbackURL = "https://bridge.simplenets.org/tw_callback"
+	}
 	conf := _globalCfg.TwitterConf
 	var oauth2Config = &oauth2.Config{
-		RedirectURL:  callbackURLV2,
+		RedirectURL:  twitterSignUpCallbackURL,
 		ClientID:     conf.ClientID,
 		ClientSecret: conf.ClientSecret,
 		Scopes:       []string{"tweet.read", "tweet.write", "follows.read", "follows.write", "users.read", "offline.access"},
@@ -120,11 +129,13 @@ func InitConf(c *SysConf) {
 		},
 	}
 	_globalCfg.twOauthCfg = oauth2Config
-	if c.LocalRun {
-		twitterSignUpCallbackURL = "https://sharp-happy-grouse.ngrok-free.app/tw_callback"
-	} else {
-		twitterSignUpCallbackURL = "https://bridge.simplenets.org/tw_callback"
-	}
+	//if c.LocalRun {
+	//	twitterSignUpCallbackURL = "https://sharp-happy-grouse.ngrok-free.app/tw_callback"
+	//} else {
+	//	twitterSignUpCallbackURL = "https://bridge.simplenets.org/tw_callback"
+	//}
+
+	//callbackURLV2    = "https://bridge.simplenets.org/tw_callbackV2"
 
 	htmlTemplateManager = util.ParseTemplates("assets/html")
 }

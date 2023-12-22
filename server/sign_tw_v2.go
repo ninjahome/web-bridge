@@ -20,7 +20,6 @@ const (
 	sesKeyForVerifierCodeV2 = "code_verifier"
 	sesKeyForAccessTokenV2  = "twitter-user-access-token"
 
-	callbackURLV2    = "https://bridge.simplenets.org/tw_callbackV2"
 	authorizeURLV2   = "https://twitter.com/i/oauth2/authorize"
 	accessTokenURLV2 = "https://api.twitter.com/2/oauth2/token"
 	accessUserURLV2  = "https://api.twitter.com/2/users/me?user.fields=profile_image_url,description"
@@ -169,7 +168,7 @@ func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, "/signUpSuccessByTw", http.StatusFound)
+	http.Redirect(w, r, "/signUpSuccessByTwV2", http.StatusFound)
 }
 
 func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request) {

@@ -24,10 +24,6 @@ const (
 	verifyCredentialsURL   = "https://api.twitter.com/1.1/account/verify_credentials.json?skip_status=true"
 )
 
-var (
-	twitterSignUpCallbackURL = "https://bridge.simplenets.org/tw_callback"
-)
-
 func parseUserToken(values url.Values) *TwUserAccessToken {
 	accessToken := values.Get("oauth_token")
 	accessSecret := values.Get("oauth_token_secret")
@@ -114,7 +110,7 @@ func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, authorizeURL, http.StatusTemporaryRedirect)
 }
 
-func twitterSignCallBack(w http.ResponseWriter, r *http.Request) {
+func twitterSignCallBackV1(w http.ResponseWriter, r *http.Request) {
 	oauth1Config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	requestSecret, err := SMInst().Get(sesKeyForRequestSecret, r)
 	if err != nil {

@@ -96,7 +96,7 @@
             </div>
         </div>
         <div class="left-lower">
-{{/*            <button onclick="pullTwitter()">拉取推文</button>*/}}
+            <button onclick="pullHomeTwitter()">拉取推文</button>
             <label for="tweets">
             <textarea id="tweets-content">
             </textarea>
@@ -227,7 +227,7 @@
     }
 
     function signUpByTwitter() {
-        window.location.href = "/signUpByTwitter?eth_addr=" + __global_current_ninja_user.eth_addr;
+        window.location.href = "/signUpByTwitterV2?eth_addr=" + __global_current_ninja_user.eth_addr;
     }
 
     async function loadTwitterInfo(twitterID) {
@@ -259,8 +259,8 @@
         })
     }
 
-    function pullTwitter(){
-        fetch("/pullMyTimeLine?twitter_uid="+__global_current_ninja_user.tw_id).then(response=>{
+    function pullHomeTwitter(){
+        fetch("/pullHomeTimeLine").then(response=>{
             if (response.ok){
                 window.location.href = "/signIn";
                 return;
