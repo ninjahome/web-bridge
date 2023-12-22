@@ -142,7 +142,7 @@
                     return
                 }
                 NinjaUserBasicInfo.syncToSessionDbForApiResponse(response);
-                window.location.href = "/";
+                window.location.href = "/main";
             }).catch(err => {
                 showError(err.toString());
                 hideLoading();

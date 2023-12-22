@@ -20,12 +20,14 @@ var (
 		"/bindWeb3ID":          bindingWeb3ID,
 		"/queryTwBasicById":    queryTwBasicById,
 		"/signOut":             signOut,
-		"/":                    mainPage,
+		"/main":                mainPage,
 		"/pullMyTimeLine":      pullTwitterTimeline,
+		"/postTweet":           postTweets,
 	}
 
 	cfgHtmlFileRouter = map[string]string{
 		"/signIn": "html/signIn.html",
+		"/":       "html/signIn.html",
 	}
 
 	htmlTemplateManager *template.Template //TODO::refactor to a struct

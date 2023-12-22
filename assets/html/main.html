@@ -96,7 +96,13 @@
             </div>
         </div>
         <div class="left-lower">
-            <button onclick="pullTwitter()">拉取推文</button>
+{{/*            <button onclick="pullTwitter()">拉取推文</button>*/}}
+            <label for="tweets">
+            <textarea id="tweets-content">
+            </textarea>
+            </label>
+            <button onclick="postTweet()">发布推文</button>
+
         </div>
     </div>
     <div class="right-side">
@@ -245,22 +251,41 @@
     }
 
     function quitFromService(){
-        GetToSrv("/signOut").then(r=>{
+        fetch("/signOut", { method: 'GET' }).then(r=>{
+            window.location.href = "/signIn";
         }).catch(err=>{
-            console.log("sign out err:",err)
-        }).finally(r=>{
+            console.log(err)
             window.location.href = "/signIn";
         })
     }
 
     function pullTwitter(){
-        GetToSrv("/pullMyTimeLine?twitter_uid="+__global_current_ninja_user.tw_id).then(r=>{
-            console.log(r);
+        fetch("/pullMyTimeLine?twitter_uid="+__global_current_ninja_user.tw_id).then(response=>{
+            if (response.ok){
+                window.location.href = "/signIn";
+                return;
+            }
+            console.log(response);
         }).catch(err=>{
             console.log("sign out err:",err)
             window.location.href = "/signIn";
         })
     }
+    class TweetContent {
+        constructor(tweet_content) {
+            this.tweet_content = tweet_content;
+        }
+    }
+    function postTweet(){
+        const content = document.getElementById("tweets-content").value;
+        const tweet = new TweetContent(content);
+        PostToSrvByJson("/postTweet",tweet).then(r=>{
+            console.log(r);
+        }).catch(err=>{
+            console.log(err);
+        })
+    }
+
 </script>
 </body>
 </html>

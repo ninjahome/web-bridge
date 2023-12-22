@@ -161,13 +161,13 @@ func (nu *NinjaUsrInfo) RawData() []byte {
 	return bts
 }
 
-func NJUsrInfoMust(str string) *NinjaUsrInfo {
+func NJUsrInfoMust(data []byte) (*NinjaUsrInfo, error) {
 	nu := &NinjaUsrInfo{}
-	err := json.Unmarshal([]byte(str), nu)
+	err := json.Unmarshal(data, nu)
 	if err != nil {
-		return nu
+		return nil, err
 	}
-	return nu
+	return nu, err
 }
 
 /*******************************************************************************************************

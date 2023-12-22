@@ -153,7 +153,7 @@
                 console.log("bind web3 success", response);
                 hideLoading();
                 NinjaUserBasicInfo.syncToSessionDbForApiResponse(response);
-                window.location.href = "/";
+                window.location.href = "/main";
             }).catch(err => {
                 hideLoading();
                 showDialog("error", "bind failed:" + err.toString())

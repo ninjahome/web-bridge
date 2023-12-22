@@ -1,22 +1,22 @@
 package server
 
 import (
+	"fmt"
 	"github.com/ninjahome/web-bridge/util"
 	"net/http"
 )
 
 const (
-	sesKeyForSignInParam = "session-key-for-sign-in-param"
+	sesKeyForRightCheck = "session-key-right-checking"
 )
 
 func queryTwBasicById(w http.ResponseWriter, r *http.Request) {
-	var twitterID = ""
-	var err = util.ReadRequest(r, &twitterID)
+	var ninjaUser, err = validateUsrRights(w, r)
 	if err != nil {
-		util.LogInst().Err(err).Msg("twitter id not in param for query basic info")
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Redirect(w, r, "/signIn", http.StatusFound)
 		return
 	}
+	var twitterID = ninjaUser.TwID
 	if len(twitterID) == 0 {
 		util.LogInst().Warn().Msg("invalid twitter id param")
 		http.Error(w, "twitter id invalid", http.StatusBadRequest)
@@ -36,10 +36,9 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request) {
 }
 
 func mainPage(w http.ResponseWriter, r *http.Request) {
-	var _, err = SMInst().Get(sesKeyForSignInParam, r)
+	var _, err = validateUsrRights(w, r)
 	if err != nil {
 		http.Redirect(w, r, "/signIn", http.StatusFound)
-		util.LogInst().Warn().Msgf("%s", err.Error())
 		return
 	}
 	err = htmlTemplateManager.ExecuteTemplate(w, "main.html", nil)
@@ -50,6 +49,20 @@ func mainPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func signOut(w http.ResponseWriter, r *http.Request) {
-	_ = SMInst().Del(sesKeyForSignInParam, r, w)
+	_ = SMInst().Del(sesKeyForRightCheck, r, w)
 	http.Redirect(w, r, "/signIn", http.StatusFound)
+}
+
+func validateUsrRights(w http.ResponseWriter, r *http.Request) (*NinjaUsrInfo, error) {
+	var data, err = SMInst().Get(sesKeyForRightCheck, r)
+	if err != nil {
+		util.LogInst().Warn().Msgf("%s", err.Error())
+		return nil, err
+	}
+
+	var njUser, errNu = NJUsrInfoMust(data.([]byte))
+	if errNu != nil {
+		return nil, fmt.Errorf("not a ninja user struct saved")
+	}
+	return njUser, nil
 }

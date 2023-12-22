@@ -64,7 +64,7 @@ func signInByEth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = SMInst().Set(r, w, sesKeyForSignInParam, param.RawData())
+	err = SMInst().Set(r, w, sesKeyForRightCheck, nu.RawData())
 	if err != nil {
 		util.LogInst().Err(err).Msg("save sign in param to session failed")
 		http.Error(w, err.Error(), http.StatusBadRequest)

@@ -70,19 +70,6 @@ function PostToSrvByJson(url, data) {
     });
 }
 
-async function GetToSrv(url) {
-    try {
-        const response = await fetch(url, { method: 'GET' });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return await response.json();
-    } catch (error) {
-        console.error('Error during fetch:', error);
-    }
-}
-
-
 function showWaiting(message, timeout) {
     const loadingFrame = document.createElement('iframe');
     loadingFrame.src = '/assets/html/loading.html';
