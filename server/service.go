@@ -12,7 +12,7 @@ const (
 )
 
 func queryTwBasicById(w http.ResponseWriter, r *http.Request) {
-	var ninjaUser, err = validateUsrRights(w, r)
+	var ninjaUser, err = validateUsrRights(r)
 	if err != nil {
 		http.Redirect(w, r, "/signIn", http.StatusFound)
 		return
@@ -37,7 +37,7 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request) {
 }
 
 func mainPage(w http.ResponseWriter, r *http.Request) {
-	var _, err = validateUsrRights(w, r)
+	var _, err = validateUsrRights(r)
 	if err != nil {
 		http.Redirect(w, r, "/signIn", http.StatusFound)
 		return
@@ -54,7 +54,7 @@ func signOut(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/signIn", http.StatusFound)
 }
 
-func validateUsrRights(w http.ResponseWriter, r *http.Request) (*NinjaUsrInfo, error) {
+func validateUsrRights(r *http.Request) (*NinjaUsrInfo, error) {
 	var data, err = SMInst().Get(sesKeyForRightCheck, r)
 	if err != nil {
 		util.LogInst().Warn().Msgf("%s", err.Error())
@@ -116,10 +116,15 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 	newNu, err := DbInst().BindingWeb3ID(bindDataToStore, userdata)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save binding data  failed")
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	err = SMInst().Set(r, w, sesKeyForRightCheck, newNu.RawData())
+	if err != nil {
+		util.LogInst().Err(err).Msg("setup new ninja user data  failed")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(newNu.RawData())

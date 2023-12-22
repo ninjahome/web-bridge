@@ -50,7 +50,7 @@ type User struct {
 }
 
 func checkTwitterRights(w http.ResponseWriter, r *http.Request) (*TwUserAccessToken, error) {
-	var ninjaUsr, err = validateUsrRights(w, r)
+	var ninjaUsr, err = validateUsrRights(r)
 	if err != nil {
 		http.Redirect(w, r, "/signIn", http.StatusFound)
 		return nil, err

@@ -28,11 +28,11 @@ class NinjaUserBasicInfo {
 }
 
 class TwitterBasicInfo {
-    constructor(id, name, screenName, avatarUrl, bio) {
-        this.id_str = id;
+    constructor(id, name, username, avatarUrl, bio) {
+        this.id = id;
         this.name = name;
-        this.screen_name = screenName;
-        this.profile_image_url_https = avatarUrl;
+        this.username = username;
+        this.profile_image_url = avatarUrl;
         this.description = bio;
     }
     static loadTwBasicInfo(TwitterID){
@@ -40,15 +40,15 @@ class TwitterBasicInfo {
         if (!storedData){
             return null
         }
-        return new TwitterBasicInfo(storedData.id_str,storedData.name, storedData.screen_name,
-            storedData.profile_image_url_https, storedData.description);
+        return new TwitterBasicInfo(storedData.id,storedData.name, storedData.username,
+            storedData.profile_image_url, storedData.description);
     }
     static cacheTwBasicInfo(objStr){
         const obj = JSON.parse(objStr)
-        if (!obj.id_str){
+        if (!obj.id){
             throw new Error("invalid twitter basic info")
         }
-        sessionStorage.setItem(sesDbKeyForTwitterUserData(obj.id_str), objStr);
+        sessionStorage.setItem(sesDbKeyForTwitterUserData(obj.id), objStr);
         return obj;
     }
 }

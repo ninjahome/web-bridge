@@ -34,7 +34,6 @@ func (sp *SignDataByEth) RawData() string {
 }
 
 func signInByEth(w http.ResponseWriter, r *http.Request) {
-
 	param := &SignDataByEth{}
 	err := util.ReadRequest(r, param)
 	if err != nil {
@@ -74,4 +73,5 @@ func signInByEth(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(nu.RawData())
+	util.LogInst().Debug().Str("eth-addr", obj.EthAddr).Msg("sign in by eth success")
 }

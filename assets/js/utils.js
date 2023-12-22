@@ -70,6 +70,17 @@ function PostToSrvByJson(url, data) {
     });
 }
 
+async function GetToSrvByJson(url) {
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    };
+    return await fetch(url, requestOptions)
+}
+
+
 function showWaiting(message, timeout) {
     const loadingFrame = document.createElement('iframe');
     loadingFrame.src = '/assets/html/loading.html';

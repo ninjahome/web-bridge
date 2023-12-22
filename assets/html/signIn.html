@@ -11,8 +11,8 @@
 <div class="container">
     <!-- 信息展示部分 -->
     <div class="info-section">
-        <img src="/assets/file/logo.png" alt="Dessage Logo" class="logo">
-        <div class="product-name">Dessage</div>
+        <img id="cached-twitter-logo" src="/assets/file/logo.png" alt="Dessage Logo" class="logo">
+        <div class="cached-twitter-name" id="cached-twitter-name">Dessage</div>
         <div class="product-description">A dapp powered by Ninja Protocol and Blockchain.</div>
     </div>
 
@@ -60,6 +60,10 @@
         const signInDiv = document.getElementById("sign-in-div");
         const metamaskDiv = document.getElementById("metamask-div");
         const web3Id = document.getElementById("web3-id");
+        const twitterAvatar = document.getElementById("cached-twitter-logo" );
+        const twitterName = document.getElementById("cached-twitter-name" );
+        twitterAvatar.src = "/assets/file/logo.png";
+        twitterName.innerHTML = "Dessage";
         if (!web3ID) {
             web3IdLabel.style.display = 'none';
             signInDiv.style.display = 'none';
@@ -70,6 +74,21 @@
         signInDiv.style.display = 'block';
         metamaskDiv.style.display = 'none';
         web3Id.textContent = web3ID;
+
+        const savedUserInfo = getDataFromSessionDB(sesDbKeyForNjUserData(web3ID))
+        if (!savedUserInfo){
+            return;
+        }
+        let tw_data = TwitterBasicInfo.loadTwBasicInfo(savedUserInfo.tw_id)
+        if(!tw_data){
+            return;
+        }
+        if (tw_data.profile_image_url) {
+            twitterAvatar.src = tw_data.profile_image_url
+        }
+        if (tw_data.name) {
+            twitterName.innerHTML = tw_data.name
+        }
     }
 
     document.addEventListener("DOMContentLoaded", initElmStatus);

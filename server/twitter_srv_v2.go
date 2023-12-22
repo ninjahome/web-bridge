@@ -108,7 +108,7 @@ func postTweetsV2(w http.ResponseWriter, r *http.Request) {
 }
 
 func checkTwitterRightsV2(w http.ResponseWriter, r *http.Request) (*TwUserAccessTokenV2, error) {
-	var ninjaUsr, err = validateUsrRights(w, r)
+	var ninjaUsr, err = validateUsrRights(r)
 	if err != nil {
 		http.Redirect(w, r, "/signIn", http.StatusFound)
 		return nil, err

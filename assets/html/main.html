@@ -197,8 +197,8 @@
                     return;
                 }
                 twNameLabel.innerText = twInfo.name;
-                if (twInfo.profile_image_url_https) {
-                    document.getElementById('user-twitter-logo').src = twInfo.profile_image_url_https;
+                if (twInfo.profile_image_url) {
+                    document.getElementById('user-twitter-logo').src = twInfo.profile_image_url;
                 }
             })
         }
@@ -237,13 +237,15 @@
                 return tw_data;
             }
 
-            const response = await PostToSrvByJson('/queryTwBasicById', twitterID);
-            if (!response) {
+            const response = await GetToSrvByJson("/queryTwBasicById") ;
+            if (!response.ok) {
                 console.log("query twitter basic info failed")
                 return null;
             }
 
-            return TwitterBasicInfo.cacheTwBasicInfo(response);
+            const text = await response.text();
+            console.log(text);
+            return TwitterBasicInfo.cacheTwBasicInfo(text);
         } catch (err) {
             console.log("queryTwBasicById err:", err)
             showDialog("error", err.toString())
