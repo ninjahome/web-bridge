@@ -4,11 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ninjahome/web-bridge/util"
+	"html/template"
 	"net/http"
 )
 
 const (
 	sesKeyForRightCheck = "session-key-right-checking"
+	BuyRightsUrlKey     = "twOwner"
 )
 
 func queryTwBasicById(w http.ResponseWriter, r *http.Request) {
@@ -37,13 +39,19 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request) {
 }
 
 func mainPage(w http.ResponseWriter, r *http.Request) {
-	var _, err = validateUsrRights(r)
+	var nu, err = validateUsrRights(r)
 	if err != nil {
 		http.Redirect(w, r, "/signIn", http.StatusFound)
 		return
 	}
-	err = htmlTemplateManager.ExecuteTemplate(w, "main.html", nil)
+	data := struct {
+		NinjaUsrInfoJson template.JS // 使用 template.JS 以避免额外的转义
+	}{
+		NinjaUsrInfoJson: template.JS(nu.RawData()),
+	}
+	err = htmlTemplateManager.ExecuteTemplate(w, "main.html", data)
 	if err != nil {
+		util.LogInst().Err(err).Msg("main html failed")
 		http.Redirect(w, r, "/signIn", http.StatusFound)
 		return
 	}
@@ -68,6 +76,20 @@ func validateUsrRights(r *http.Request) (*NinjaUsrInfo, error) {
 	return njUser, nil
 }
 
+func buyRights(w http.ResponseWriter, r *http.Request) {
+	var _, err = validateUsrRights(r)
+	if err != nil {
+		util.LogInst().Info().Msg("new buy request:" + err.Error())
+		http.Redirect(w, r, "/signIn", http.StatusFound)
+	}
+
+	var owner = r.URL.Query().Get(BuyRightsUrlKey)
+	if len(owner) == 0 {
+		util.LogInst().Info().Msg("no owner found for buy link:")
+		http.Redirect(w, r, "/signIn", http.StatusFound)
+	}
+	http.Redirect(w, r, "/main", http.StatusFound)
+}
 func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 	param := &SignDataByEth{}
 	err := util.ReadRequest(r, param)

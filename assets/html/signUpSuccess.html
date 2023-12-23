@@ -152,7 +152,6 @@
             PostToSrvByJson('/bindWeb3ID', obj).then(response => {
                 console.log("bind web3 success", response);
                 hideLoading();
-                NinjaUserBasicInfo.syncToSessionDbForApiResponse(response);
                 window.location.href = "/main";
             }).catch(err => {
                 hideLoading();

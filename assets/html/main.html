@@ -112,9 +112,9 @@
     </div>
 </div>
 
-
 <script>
-    let ninjaUserObj = null;
+    let ninjaUserObj = {{ .NinjaUsrInfoJson }};
+    console.log(ninjaUserObj);
     let metamaskObj = null;
     let twitterUserObj = null;
 
@@ -128,17 +128,11 @@
     }
 
     function checkSystemEnvironment() {
-        const savedUserInfo = NinjaUserBasicInfo.loadCurrentNJUserObj()
-        if (!savedUserInfo) {
-            window.location.href = "/signIn";
-            return
-        }
 
         if (typeof window.ethereum === 'undefined') {
             window.location.href = "/signIn";
             return
         }
-        ninjaUserObj = savedUserInfo;
         metamaskObj = window.ethereum;
         metamaskObj.on('accountsChanged', metamaskAccountChanged);
         metamaskObj.on('chainChanged', metamaskChainChanged);
@@ -319,7 +313,8 @@
             PostToSrvByJson("/postTweetsV2", obj).then(resp => {
                 console.log(resp);
                 const refreshedTweet = JSON.parse(resp)
-
+                document.getElementById("tweets-content").value='';
+                showDialog("success","post success");
 
             }).catch(err => {
                 console.log(err);

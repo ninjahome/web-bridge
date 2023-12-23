@@ -25,6 +25,7 @@ var (
 		"/pullHomeTimeLine":    pullTwitterHomeTimeline,
 		"/postTweet":           postTweets,
 		"/postTweetsV2":        postTweetsV2,
+		"/buyRights":           mainPage,
 	}
 
 	cfgHtmlFileRouter = map[string]string{

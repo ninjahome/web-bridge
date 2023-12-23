@@ -160,7 +160,6 @@
                     showError("failed to load ninja user data");
                     return
                 }
-                NinjaUserBasicInfo.syncToSessionDbForApiResponse(response);
                 window.location.href = "/main";
             }).catch(err => {
                 showError(err.toString());

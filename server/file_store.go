@@ -195,7 +195,7 @@ func (nt *NinjaTweet) String() string {
 }
 
 func (nt *NinjaTweet) ToTweet() string {
-	return nt.TweetContent + "\nRights purchase:" + systemUrlHome + "?twOwner=" + nt.Web3ID
+	return nt.TweetContent + "\nRights purchase:" + systemUrlHome + "/buyRights?" + BuyRightsUrlKey + "=" + nt.Web3ID
 }
 
 /*******************************************************************************************************
