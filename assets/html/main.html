@@ -84,6 +84,7 @@
             <div class="field">
                 <div class="field-label">Twitter:</div>
                 <div class="field-value" id="basic-twitter-name">@username</div>
+                <div class="field-value" id="basic-twitter-verified">Premium</div>
                 <div>
                     <button class="sign-up-by-twitter-button" id="sign-up-by-twitter-button"
                             onclick="signUpByTwitter()">Bridge Twitter
@@ -92,11 +93,11 @@
             </div>
 
             <div id="operation-area">
-                <button onclick="quitFromService()" >退出</button>
+                <button onclick="quitFromService()">退出</button>
             </div>
         </div>
         <div class="left-lower">
-            <button onclick="pullHomeTwitter()">拉取推文</button>
+            {{/*            <button onclick="pullHomeTwitter()">拉取推文</button>*/}}
             <label for="tweets">
             <textarea id="tweets-content">
             </textarea>
@@ -113,8 +114,9 @@
 
 
 <script>
-    let __global_current_ninja_user = null;
+    let ninjaUserObj = null;
     let metamaskObj = null;
+    let twitterUserObj = null;
 
     document.addEventListener("DOMContentLoaded", initMainPage);
 
@@ -136,7 +138,7 @@
             window.location.href = "/signIn";
             return
         }
-        __global_current_ninja_user = savedUserInfo;
+        ninjaUserObj = savedUserInfo;
         metamaskObj = window.ethereum;
         metamaskObj.on('accountsChanged', metamaskAccountChanged);
         metamaskObj.on('chainChanged', metamaskChainChanged);
@@ -161,7 +163,7 @@
     async function metamaskAccBalance() {
         const balance = await metamaskObj.request({
             method: 'eth_getBalance',
-            params: [__global_current_ninja_user.eth_addr, 'latest'],
+            params: [ninjaUserObj.eth_addr, 'latest'],
         });
         // console.log('eth balance:', balance);
         if (balance === "0x0") {
@@ -185,18 +187,26 @@
     function setupBasicInfo() {
         const twBtn = document.getElementById('sign-up-by-twitter-button')
         const twNameLabel = document.getElementById('basic-twitter-name')
-        document.getElementById('basic-web3-id').innerText = __global_current_ninja_user.eth_addr;
-        if (!__global_current_ninja_user.tw_id) {
+        const isVerifiedLabel = document.getElementById("basic-twitter-verified");
+        document.getElementById('basic-web3-id').innerText = ninjaUserObj.eth_addr;
+        if (!ninjaUserObj.tw_id) {
             twNameLabel.style.display = 'none';
             twBtn.style.display = 'inline-block';
         } else {
             twBtn.style.display = 'none';
             twNameLabel.style.display = 'inline-block';
-            loadTwitterInfo(__global_current_ninja_user.tw_id).then(twInfo => {
+            loadTwitterInfo(ninjaUserObj.tw_id).then(twInfo => {
                 if (!twInfo) {
+                    twitterUserObj = null;
                     return;
                 }
+                twitterUserObj = twInfo;
                 twNameLabel.innerText = twInfo.name;
+                if (!twInfo.verified){
+                    isVerifiedLabel.innerText = "Premium False";
+                }else{
+                    isVerifiedLabel.innerText = "Premium True";
+                }
                 if (twInfo.profile_image_url) {
                     document.getElementById('user-twitter-logo').src = twInfo.profile_image_url;
                 }
@@ -227,7 +237,7 @@
     }
 
     function signUpByTwitter() {
-        window.location.href = "/signUpByTwitterV2?eth_addr=" + __global_current_ninja_user.eth_addr;
+        window.location.href = "/signUpByTwitterV2?eth_addr=" + ninjaUserObj.eth_addr;
     }
 
     async function loadTwitterInfo(twitterID) {
@@ -237,7 +247,7 @@
                 return tw_data;
             }
 
-            const response = await GetToSrvByJson("/queryTwBasicById") ;
+            const response = await GetToSrvByJson("/queryTwBasicById");
             if (!response.ok) {
                 console.log("query twitter basic info failed")
                 return null;
@@ -252,41 +262,74 @@
         }
     }
 
-    function quitFromService(){
-        fetch("/signOut", { method: 'GET' }).then(r=>{
+    function quitFromService() {
+        fetch("/signOut", {method: 'GET'}).then(r => {
             window.location.href = "/signIn";
-        }).catch(err=>{
+        }).catch(err => {
             console.log(err)
             window.location.href = "/signIn";
         })
     }
 
-    function pullHomeTwitter(){
-        fetch("/pullHomeTimeLine").then(response=>{
-            if (response.ok){
+    function pullHomeTwitter() {
+    }
+
+    class TweetContent {
+        constructor(tweet_content, createAt, web3Id, twitterID, tweet_id, signature) {
+            this.text = tweet_content;
+            this.create_time = createAt;
+            this.web3_id = web3Id;
+            this.twitter_id = twitterID;
+            this.tweet_id = tweet_id;
+            this.signature = signature;
+        }
+    }
+
+    async function postTweet() {
+        try {
+            const content = document.getElementById("tweets-content").value.trim();
+            if (!content) {
+                showDialog("tips", "content can't be empty")
+                return;
+            }
+            if (!twitterUserObj.verified && content.length > 160){
+                showDialog("tips","max 160 characters for not twitter premium user");
+                return;
+            }
+
+            const twitterID = ninjaUserObj.tw_id;
+            if (!twitterID) {
+                showDialog("tips", "bind your twitter first")
+                return;
+            }
+            if (!metamaskObj) {
                 window.location.href = "/signIn";
                 return;
             }
-            console.log(response);
-        }).catch(err=>{
-            console.log("sign out err:",err)
-            window.location.href = "/signIn";
-        })
-    }
-    class TweetContent {
-        constructor(tweet_content) {
-            this.text = tweet_content;
+            const web3Id = ninjaUserObj.eth_addr;
+            const tweet = new TweetContent(content, (new Date()).getTime(), web3Id, twitterID);
+            const message = JSON.stringify(tweet);
+            const signature = await metamaskObj.request({
+                method: 'personal_sign',
+                params: [message, web3Id],
+            })
+
+            const obj = new SignDataForPost(message, signature, null)
+
+            PostToSrvByJson("/postTweetsV2", obj).then(resp => {
+                console.log(resp);
+                const refreshedTweet = JSON.parse(resp)
+
+
+            }).catch(err => {
+                console.log(err);
+                showDialog("error",err.toString())
+            })
+        } catch (err) {
+            showDialog("error",err.toString())
         }
     }
-    function postTweet(){
-        const content = document.getElementById("tweets-content").value;
-        const tweet = new TweetContent(content);
-        PostToSrvByJson("/postTweetsV2",tweet).then(r=>{
-            console.log(r);
-        }).catch(err=>{
-            console.log(err);
-        })
-    }
+
 
 </script>
 </body>

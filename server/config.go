@@ -104,7 +104,8 @@ func (c *SysConf) String() any {
 }
 
 var (
-	twitterSignUpCallbackURL = "https://bridge.simplenets.org/tw_callback"
+	systemUrlHome            = "https://bridge.simplenets.org"
+	twitterSignUpCallbackURL = ""
 )
 
 func InitConf(c *SysConf) {
@@ -114,10 +115,11 @@ func InitConf(c *SysConf) {
 
 	_ = DbInst()
 	if c.LocalRun {
-		twitterSignUpCallbackURL = "https://sharp-happy-grouse.ngrok-free.app/tw_callback"
+		systemUrlHome = "https://sharp-happy-grouse.ngrok-free.app"
 	} else {
-		twitterSignUpCallbackURL = "https://bridge.simplenets.org/tw_callback"
+		systemUrlHome = "https://bridge.simplenets.org"
 	}
+	twitterSignUpCallbackURL = systemUrlHome + "/tw_callback"
 	conf := _globalCfg.TwitterConf
 	var oauth2Config = &oauth2.Config{
 		RedirectURL:  twitterSignUpCallbackURL,

@@ -23,6 +23,8 @@ const (
 	DBTableTWUserAccToken   = "twitter-user-access-token"
 	DBTableTWUserAccTokenV2 = "twitter-user-access-token_v2"
 	DBTableWeb3Bindings     = "twitter-eth-binding"
+	DBTableTweetsPosted     = "tweets-posted"
+	DBTableTweetsOfUser     = "tweets-of-user"
 )
 
 /*******************************************************************************************************
@@ -91,6 +93,7 @@ type TWUserInfo struct {
 	ScreenName           string `json:"username" firestore:"username"`
 	Description          string `json:"description" firestore:"description"`
 	ProfileImageUrlHttps string `json:"profile_image_url" firestore:"profile_image_url"`
+	Verified             bool   `json:"verified"  firestore:"verified"`
 }
 
 func (t *TWUserInfo) String() string {
@@ -160,6 +163,39 @@ type TwUserAccessToken struct {
 type TwUserAccessTokenV2 struct {
 	UserId string `json:"user_id" firestore:"user_id"`
 	*oauth2.Token
+}
+
+/*******************************************************************************************************
+*
+* Ninja tweet
+*
+ ******************************************************************************************************/
+
+type NinjaTweet struct {
+	TweetContent string `json:"text" firestore:"text"`
+	CreateAt     int64  `json:"create_time" firestore:"create_time"`
+	Web3ID       string `json:"web3_id" firestore:"web3_id"`
+	TweetUsrId   string `json:"twitter_id" firestore:"twitter_id"`
+	TweetId      string `json:"tweet_id,omitempty" firestore:"tweet_id"`
+	Signature    string `json:"signature,omitempty" firestore:"signature"`
+}
+
+type TweetsOfUser struct {
+	Tweets map[string]struct{} `json:"tweets"  firestore:"tweets"`
+}
+
+func (nt *NinjaTweet) IsValid() bool {
+	return nt.CreateAt > 0 && len(nt.TweetContent) > 0 &&
+		len(nt.TweetUsrId) > 0 && len(nt.Web3ID) > 0
+}
+
+func (nt *NinjaTweet) String() string {
+	bts, _ := json.Marshal(nt)
+	return string(bts)
+}
+
+func (nt *NinjaTweet) ToTweet() string {
+	return nt.TweetContent + "\nRights purchase:" + systemUrlHome + "?twOwner=" + nt.Web3ID
 }
 
 /*******************************************************************************************************
@@ -325,3 +361,34 @@ func (dm *DbManager) GetTwAccessTokenV2(twitterId string) (*TwUserAccessTokenV2,
 	}
 	return &token, nil
 }
+
+func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	tweetsDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(content.TweetId)
+	_, err := tweetsDoc.Set(opCtx, content)
+	if err != nil {
+		util.LogInst().Err(err).Msg("save tweet draft failed:" + content.String())
+		return err
+	}
+
+	ownerDoc := dm.fileCli.Collection(DBTableTweetsOfUser).Doc(content.Signature)
+
+	var newItem = make(map[string]struct{})
+	newItem[content.TweetId] = struct{}{}
+	_, err = ownerDoc.Set(opCtx, newItem, firestore.MergeAll)
+	return err
+}
+
+//func (dm *DbManager) UpdateTweetDraft(content *NinjaTweet) error {
+//	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+//	defer cancel()
+//	tweetsDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(content.Signature)
+//
+//	_, err := tweetsDoc.Set(opCtx, content, firestore.Merge([]string{"tweet_id"}))
+//	if err != nil {
+//		util.LogInst().Err(err).Msg("update tweet draft failed:" + content.String())
+//		return err
+//	}
+//	return nil
+//}

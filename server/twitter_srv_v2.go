@@ -11,6 +11,11 @@ import (
 	"net/http"
 )
 
+const (
+	accessPointPostTweets = "https://api.twitter.com/2/tweets"
+	tweetTimeFormat       = "01/02/06 15:04:05"
+)
+
 func twitterGetWithAccessToken(token *oauth2.Token, accUrl string, result any) error {
 	client := _globalCfg.twOauthCfg.Client(context.Background(), token)
 	response, err := client.Get(accUrl)
@@ -71,6 +76,9 @@ type TweetPostResult struct {
 	ID   string `json:"id"`
 	Text string `json:"text"`
 }
+type TweetContent struct {
+	Txt string `json:"text"`
+}
 
 func postTweetsV2(w http.ResponseWriter, r *http.Request) {
 	var ut, errToken = checkTwitterRightsV2(w, r)
@@ -79,32 +87,59 @@ func postTweetsV2(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, errToken.Error(), http.StatusInternalServerError)
 		return
 	}
-	var tweetContent TweetContent
-	err := util.ReadRequest(r, &tweetContent)
+	param := &SignDataByEth{}
+	err := util.ReadRequest(r, param)
+	if err != nil {
+		util.LogInst().Err(err).Msg("Error parsing sign data ")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var tweetContent NinjaTweet
+	err = json.Unmarshal([]byte(param.Message), &tweetContent)
 	if err != nil {
 		util.LogInst().Err(err).Msg("Error parsing tweet ")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if tweetContent.TweetContent == "" {
-		util.LogInst().Warn().Msg("Tweet text cannot be empty")
-		http.Error(w, "Tweet text cannot be empty", http.StatusBadRequest)
+	if !tweetContent.IsValid() {
+		util.LogInst().Warn().Msg("invalid tweet content:" + tweetContent.String())
+		http.Error(w, "invalid tweet content", http.StatusBadRequest)
 		return
 	}
 
-	urlTweet := "https://api.twitter.com/2/tweets"
+	err = util.Verify(tweetContent.Web3ID, param.Message, param.Signature)
+	if err != nil {
+		util.LogInst().Err(err).Msg("tweet signature verify failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	tweetContent.Signature = param.Signature
+
 	var tweetResponse = &TwitterPostResponse{}
-	err = twitterPostWithAccessToken(ut.Token, urlTweet, tweetContent, tweetResponse)
+	var tweetReq = &TweetContent{Txt: tweetContent.ToTweet()}
+	err = twitterPostWithAccessToken(ut.Token, accessPointPostTweets, tweetReq, tweetResponse)
 	if err != nil {
 		util.LogInst().Err(err).Msg("post tweet failed")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	tweetContent.TweetId = tweetResponse.Data.ID
+
+	err = DbInst().SaveTweet(&tweetContent)
+	if err != nil {
+		util.LogInst().Err(err).Msg("save tweet failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(tweetResponse)
-	util.LogInst().Debug().Msg("Tweet posted successfully")
+	bts, _ := json.Marshal(tweetContent)
+	w.Write(bts)
+	util.LogInst().Debug().Str("eth-addr", tweetContent.Web3ID).
+		Str("twitter-id", tweetContent.TweetId).
+		Str("tweet-id", tweetContent.TweetId).Msg("Tweet posted successfully")
 }
 
 func checkTwitterRightsV2(w http.ResponseWriter, r *http.Request) (*TwUserAccessTokenV2, error) {

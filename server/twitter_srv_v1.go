@@ -29,10 +29,6 @@ type VideoVariant struct {
 	URL         string `json:"url"`          // 视频的URL
 }
 
-type TweetContent struct {
-	TweetContent string `json:"text"`
-}
-
 type Tweet struct {
 	CreatedAt        string `json:"created_at"`
 	IDStr            string `json:"id_str"`
@@ -131,7 +127,7 @@ func postTweets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if tweetContent.TweetContent == "" {
+	if tweetContent.Txt == "" {
 		util.LogInst().Warn().Msg("Tweet text cannot be empty")
 		http.Error(w, "Tweet text cannot be empty", http.StatusBadRequest)
 		return
@@ -145,7 +141,7 @@ func postTweets(w http.ResponseWriter, r *http.Request) {
 
 	// 构建请求参数
 	params := url.Values{}
-	params.Set("status", tweetContent.TweetContent)
+	params.Set("status", tweetContent.Txt)
 
 	// 发送POST请求到Twitter API
 	resp, err := httpClient.PostForm(updateURL, params)
