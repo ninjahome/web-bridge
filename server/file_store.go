@@ -353,13 +353,15 @@ func (dm *DbManager) GetTwAccessTokenV2(twitterId string) (*TwUserAccessTokenV2,
 		util.LogInst().Err(err).Str("twitter-id", twitterId).Msg("load twitter access token failed")
 		return nil, err
 	}
-	var token TwUserAccessTokenV2
-	err = doc.DataTo(&token)
+	var token = &TwUserAccessTokenV2{
+		Token: &oauth2.Token{},
+	}
+	err = doc.DataTo(token)
 	if err != nil {
 		util.LogInst().Err(err).Str("twitter-id", twitterId).Msg("parse twitter access token failed")
 		return nil, err
 	}
-	return &token, nil
+	return token, nil
 }
 
 func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
