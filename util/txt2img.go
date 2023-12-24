@@ -7,19 +7,36 @@ import (
 	"golang.org/x/image/math/fixed"
 	"image"
 	"image/draw"
-	"os"
+	"io/ioutil"
 )
 
 func calcTextHeight(txt string, maxWidth int, fontSize float64, face font.Face) (int, error) {
 	// 用于测量的临时变量
-	var width, height, lineHeight fixed.Int26_6
+	var _, height, lineHeight fixed.Int26_6
 	lineHeight = fixed.I(int(fontSize * 1.5))
 
+	// Measure each line
+	lines := splitTextIntoLines(txt, maxWidth, face)
+	for range lines {
+		height += lineHeight
+	}
+
+	// 加上最后一行的高度
+	height += lineHeight
+
+	return height.Ceil(), nil
+}
+
+// splitTextIntoLines splits the text into lines based on the max width.
+func splitTextIntoLines(txt string, maxWidth int, face font.Face) []string {
+	var lines []string
+	var line string
+	var width fixed.Int26_6
 	for _, r := range txt {
 		if r == '\n' {
-			// 显式换行
+			lines = append(lines, line)
+			line = ""
 			width = 0
-			height += lineHeight
 			continue
 		}
 
@@ -29,22 +46,20 @@ func calcTextHeight(txt string, maxWidth int, fontSize float64, face font.Face) 
 		}
 
 		if width+awidth > fixed.I(maxWidth) {
-			// 自动换行
+			lines = append(lines, line)
+			line = ""
 			width = 0
-			height += lineHeight
 		}
+		line += string(r)
 		width += awidth
 	}
-
-	// 加上最后一行的高度
-	height += lineHeight
-
-	return height.Ceil(), nil
+	lines = append(lines, line) // Add last line
+	return lines
 }
 
 func ConvertLongTweetToImg(txt string) (image.Image, error) {
 	// 读取字体
-	fontBytes, err := os.ReadFile("util/Noto_Sans_SC.ttf")
+	fontBytes, err := ioutil.ReadFile("util/Noto_Sans_SC.ttf")
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +72,7 @@ func ConvertLongTweetToImg(txt string) (image.Image, error) {
 	opts := &truetype.Options{
 		Size:    24,
 		DPI:     72,
-		Hinting: font.HintingFull,
+		Hinting: font.HintingNone, // Change hinting here
 	}
 	face := truetype.NewFace(f, opts)
 
@@ -74,7 +89,7 @@ func ConvertLongTweetToImg(txt string) (image.Image, error) {
 
 	// 创建新的画布
 	img := image.NewRGBA(image.Rect(0, 0, originalMaxWidth, textHeight))
-	draw.Draw(img, img.Bounds(), image.White, image.Point{}, draw.Src)
+	draw.Draw(img, img.Bounds(), image.White, image.ZP, draw.Src)
 
 	// 设置 freetype 上下文参数
 	c := freetype.NewContext()
@@ -86,38 +101,16 @@ func ConvertLongTweetToImg(txt string) (image.Image, error) {
 
 	// 绘制文本
 	pt := freetype.Pt(0, int(c.PointToFixed(24)>>6))
-	var width fixed.Int26_6
 	lineHeight := fixed.I(int(24 * 1.5))
 
-	for _, r := range txt {
-		if r == '\n' {
-			// 显式换行
-			width = 0
-			pt.Y += lineHeight
-			pt.X = 0
-			continue
-		}
-
-		awidth, ok := face.GlyphAdvance(r)
-		if !ok {
-			continue
-		}
-
-		if width+awidth > fixed.I(maxWidth) {
-			// 自动换行
-			width = 0
-			pt.Y += lineHeight
-			pt.X = 0
-		}
-
-		pt.X += awidth
-		width += awidth
-
-		// 绘制字符
-		_, err = c.DrawString(string(r), pt)
+	// Split text into lines
+	lines := splitTextIntoLines(txt, maxWidth, face)
+	for _, line := range lines {
+		_, err = c.DrawString(line, pt)
 		if err != nil {
 			return nil, err
 		}
+		pt.Y += lineHeight
 	}
 
 	return img, nil

@@ -22,6 +22,15 @@ var testContent = `罗马帝国是历史上的一个文明帝国，承接着先�
 
 罗马帝国是世界历史上一个伟大的帝国，无论经济、文化、政治和军事上的成就都达到很高的水准，并和在与公元前一世纪兴起于亚洲的汉帝国西、东遥相并立。后世多将两者并列为当时世界上最先进及文明的强大帝国[12]。整个罗马帝国(包括东西罗马帝国)存在将近一千五百年，帝国的疆域在图拉真在位末年（117年）达到全盛，控制着大约五百万平方公里的土地[2]，统治着七千万的人口，这相当于当时世界总人口的百分之二十一。罗马帝国幅原辽阔，而且国祚长久，使拉丁希腊的语言、文化、宗教、发明、建筑、哲学、法律及政府模式对后世的影响相当深远。欧洲在整个中世纪时期，有数次对罗马帝国的复辟，这包括神圣罗马帝国。文艺复兴而后的欧洲帝国主义的兴起，更使希腊、罗马、犹太和基督教的文化向全世界传播开去，对现代社会文明的发展有着重要影响。`
 
+var testContent2 = `Visitors sunbathe at La Marbella beach ( Image: Bloomberg via Getty Images)
+He thinks this means employees will be more open to collaboration, and more motivated generally, which is essential for the success of the business. Each office is assigned a weekly team happiness tool, to check how staff are feeling about work.
+
+Their workplace environments are designed to make sure staff feel creatively inspired and fulfilled at work. As a mid-tier financial advisory firm, the company is quickly challenging the "big four" - Deloitte, Ernst & Young, KPMG and PwC - having secured plenty of new clients.
+
+It's representing organisations such as Rugby League superpowers Leeds Rhinos and fast growing retailers such as the beauty and cosmetic brand P Louise, and the rapidly growing sportswear brand, Montirex. Paul said: “It’s been another great year for Sedulo, which simply could not have been possible without the hard work and dedication shown by our team year after year.
+
+"We started the Sedulo Christmas trip over 12 years ago now and it’s something we’ll continue to do, despite the rapid pace at which the business is growing. These trips are about giving something back and showing our people that their hard work is appreciated, particularly after completion of our 2023 record breaking Christmas Toy Appeal, while also allowing us to come together as a team and celebrate the continued success of our business.`
+
 func TestTxt2Img(t *testing.T) {
 	var img, err = ConvertLongTweetToImg(testContent)
 	if err != nil {
