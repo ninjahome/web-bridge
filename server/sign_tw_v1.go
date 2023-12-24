@@ -62,7 +62,7 @@ func getAccessTokenFromSession(r *http.Request) (*TwUserAccessToken, error) {
 	return &token, nil
 }
 
-func signUpByTwitter(w http.ResponseWriter, r *http.Request) {
+func signUpByTwitterV1(w http.ResponseWriter, r *http.Request) {
 	ethAddr := r.URL.Query().Get("eth_addr")
 	if ethAddr == "" {
 		http.Error(w, "eth_addr parameter is required", http.StatusBadRequest)

@@ -7,10 +7,7 @@ import (
 	"fmt"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
-	"image"
-	"image/jpeg"
 	"io"
-	"mime/multipart"
 	"net/http"
 )
 
@@ -127,15 +124,12 @@ func postTweetsV2(w http.ResponseWriter, r *http.Request) {
 	}
 	tweetContent.Signature = param.Signature
 
-	txtImg, err := util.ConvertLongTweetToImg(tweetContent.TweetContent)
-	mediaID, err := uploadMedia(ut.Token, txtImg)
-
 	var tweetResponse = &TwitterPostResponse{}
 	var tweetReq = &TweetContent{
-		Txt: "this is from dessage web3",
-		Media: map[string][]string{
-			"media_ids": {mediaID},
-		},
+		Txt: tweetContent.ToTweet(),
+		//Media: map[string][]string{
+		//	"media_ids": {mediaID},
+		//},
 	}
 	err = twitterPostWithAccessToken(ut.Token, accessPointPostTweets, "application/json", tweetReq, tweetResponse)
 	if err != nil {
@@ -233,46 +227,4 @@ func isOAuth2TokenValid(token *oauth2.Token) bool {
 	defer resp.Body.Close()
 
 	return resp.StatusCode == http.StatusOK
-}
-
-func uploadMedia(token *oauth2.Token, img image.Image) (string, error) {
-	var buffer bytes.Buffer
-	writer := multipart.NewWriter(&buffer)
-
-	// 创建multipart的图片部分
-	part, err := writer.CreateFormFile("media", "image.jpg")
-	if err != nil {
-		return "", err
-	}
-
-	err = jpeg.Encode(part, img, &jpeg.Options{Quality: jpeg.DefaultQuality})
-	if err != nil {
-		return "", err
-	}
-	writer.Close()
-
-	req, err := http.NewRequest("POST", "https://upload.twitter.com/1.1/media/upload.json", &buffer)
-	if err != nil {
-		return "", err
-	}
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-
-	client := _globalCfg.twOauthCfg.Client(context.Background(), token)
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	bts, _ := io.ReadAll(resp.Body)
-	util.LogInst().Debug().Msg(string(bts))
-	var result map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&result)
-	mediaID, ok := result["media_id_string"].(string)
-	if !ok {
-		bts, _ := json.Marshal(result)
-		util.LogInst().Warn().Msg("upload media failed:" + string(bts))
-		return "", fmt.Errorf("error getting media ID")
-	}
-
-	return mediaID, nil
 }

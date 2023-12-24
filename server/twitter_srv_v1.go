@@ -1,13 +1,16 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/dghubble/oauth1"
 	"github.com/ninjahome/web-bridge/util"
+	"image"
+	"image/jpeg"
 	"io"
+	"mime/multipart"
 	"net/http"
-	"net/url"
 )
 
 type Media struct {
@@ -111,49 +114,82 @@ func pullTwitterTimeline(w http.ResponseWriter, r *http.Request) {
 	w.Write(bts)
 }
 
-// postTweets 发布推文到Twitter
 func postTweets(w http.ResponseWriter, r *http.Request) {
 	var ut, errToken = checkTwitterRights(w, r)
 	if errToken != nil {
-		util.LogInst().Err(errToken).Msg("load access  token failed")
+		util.LogInst().Err(errToken).Msg("load access token failed")
 		http.Error(w, errToken.Error(), http.StatusInternalServerError)
 		return
 	}
-	var tweetContent TweetContent
-	err := util.ReadRequest(r, &tweetContent)
+	param := &SignDataByEth{}
+	err := util.ReadRequest(r, param)
 	if err != nil {
-		util.LogInst().Err(err).Msg("Error parsing request body")
+		util.LogInst().Err(err).Msg("Error parsing sign data ")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if tweetContent.Txt == "" {
-		util.LogInst().Warn().Msg("Tweet text cannot be empty")
-		http.Error(w, "Tweet text cannot be empty", http.StatusBadRequest)
+	var tweetContent NinjaTweet
+	err = json.Unmarshal([]byte(param.Message), &tweetContent)
+	if err != nil {
+		util.LogInst().Err(err).Msg("Error parsing tweet ")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
+	if !tweetContent.IsValid() {
+		util.LogInst().Warn().Msg("invalid tweet content:" + tweetContent.String())
+		http.Error(w, "invalid tweet content", http.StatusBadRequest)
+		return
+	}
+
+	err = util.Verify(tweetContent.Web3ID, param.Message, param.Signature)
+	if err != nil {
+		util.LogInst().Err(err).Msg("tweet signature verify failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	tweetContent.Signature = param.Signature
 	token := oauth1.NewToken(ut.OauthToken, ut.OauthTokenSecret)
+
+	txtImg, err := util.ConvertLongTweetToImg(tweetContent.TweetContent)
+	mediaID, err := uploadMedia(token, txtImg)
+	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	httpClient := config.Client(oauth1.NoContext, token)
 
-	updateURL := "https://api.twitter.com/1.1/statuses/update.json"
+	// Twitter API v2 的 URL
+	updateURL := "https://api.twitter.com/2/tweets"
 
-	// 构建请求参数
-	params := url.Values{}
-	params.Set("status", tweetContent.Txt)
+	tweetBody, err := json.Marshal(map[string]interface{}{
+		//"text": tweetContent.TweetContent,
+		"text": "message from dessage web3 ",
+		"media": map[string][]string{
+			"media_ids": []string{mediaID},
+		},
+	})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
-	// 发送POST请求到Twitter API
-	resp, err := httpClient.PostForm(updateURL, params)
+	// 发送POST请求到 Twitter API
+	req, err := http.NewRequest("POST", updateURL, bytes.NewBuffer(tweetBody))
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		bts, _ := io.ReadAll(resp.Body)
-		util.LogInst().Warn().Msg("post tweet failed" + string(bts))
+		util.LogInst().Warn().Int("status", resp.StatusCode).Msg("post tweet failed" + string(bts))
 		http.Error(w, fmt.Sprintf("Twitter API responded with status: %s", resp.Status), http.StatusInternalServerError)
 		return
 	}
@@ -170,50 +206,49 @@ func postTweets(w http.ResponseWriter, r *http.Request) {
 	util.LogInst().Debug().Msg("Tweet posted successfully")
 }
 
-func pullTwitterHomeTimeline(w http.ResponseWriter, r *http.Request) {
-	// 检查Twitter权限
-	var ut, errToken = checkTwitterRights(w, r)
-	if errToken != nil {
-		util.LogInst().Err(errToken).Msg("load access token failed")
-		http.Error(w, errToken.Error(), http.StatusInternalServerError)
-		return
+func uploadMedia(token *oauth1.Token, img image.Image) (string, error) {
+	var buffer bytes.Buffer
+	writer := multipart.NewWriter(&buffer)
+
+	// 创建multipart的图片部分
+	part, err := writer.CreateFormFile("media", "image.jpg")
+	if err != nil {
+		return "", err
 	}
 
-	// 设置Twitter API配置
+	err = jpeg.Encode(part, img, &jpeg.Options{Quality: jpeg.DefaultQuality})
+	if err != nil {
+		return "", err
+	}
+	writer.Close()
+
+	// 使用 OAuth 1.0a 进行认证
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
-	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
+	httpClient := config.Client(oauth1.NoContext, token)
 
-	// 构建请求的URL
-	timelineURL := "https://api.twitter.com/1.1/statuses/home_timeline.json?exclude_replies=true&include_rts=false&count=10"
+	req, err := http.NewRequest("POST", "https://upload.twitter.com/1.1/media/upload.json", &buffer)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 
-	// 发送请求
-	resp, errResp := httpClient.Get(timelineURL)
-	if errResp != nil {
-		util.LogInst().Err(errResp).Str("twitter-id", ut.UserId).Msg("http pull timeline failed")
-		http.Error(w, errResp.Error(), http.StatusInternalServerError)
-		return
+	resp, err := httpClient.Do(req)
+	if err != nil {
+		return "", err
 	}
 	defer resp.Body.Close()
+	bts, _ := io.ReadAll(resp.Body)
+	util.LogInst().Debug().Msg(string(bts))
 
-	// 检查响应状态码
-	if resp.StatusCode != http.StatusOK {
-		bts, _ := io.ReadAll(resp.Body)
-		util.LogInst().Warn().Str("twitter-id", ut.UserId).Msg("pull timeline status:" + resp.Status + string(bts))
-		http.Error(w, "pull timeline status:"+resp.Status, http.StatusInternalServerError)
-		return
+	var result map[string]interface{}
+	json.NewDecoder(bytes.NewBuffer(bts)).Decode(&result) // 使用 bts 构建新的 buffer，因为原 buffer 已被读取
+
+	mediaID, ok := result["media_id_string"].(string)
+	if !ok {
+		bts, _ := json.Marshal(result)
+		util.LogInst().Warn().Msg("upload media failed:" + string(bts))
+		return "", fmt.Errorf("error getting media ID")
 	}
 
-	// 解析响应数据
-	var tweets []Tweet
-	if err := json.NewDecoder(resp.Body).Decode(&tweets); err != nil {
-		util.LogInst().Err(err).Str("twitter-id", ut.UserId).Msg("parse pull timeline failed")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	// 发送响应
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	bts, _ := json.Marshal(tweets)
-	w.Write(bts)
+	return mediaID, nil
 }

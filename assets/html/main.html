@@ -231,7 +231,7 @@
     }
 
     function signUpByTwitter() {
-        window.location.href = "/signUpByTwitterV2?eth_addr=" + ninjaUserObj.eth_addr;
+        window.location.href = "/signUpByTwitter?eth_addr=" + ninjaUserObj.eth_addr;
     }
 
     async function loadTwitterInfo(twitterID) {
@@ -306,7 +306,7 @@
 
             const obj = new SignDataForPost(message, signature, null)
 
-            PostToSrvByJson("/postTweetsV2", obj).then(resp => {
+            PostToSrvByJson("/postTweet", obj).then(resp => {
                 console.log(resp);
                 const refreshedTweet = JSON.parse(resp)
                 document.getElementById("tweets-content").value='';

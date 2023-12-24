@@ -10,22 +10,17 @@ import (
 
 var (
 	cfgActionRouter = map[string]LogicAction{
-		"/signUpByTwitter":     signUpByTwitter,
-		"/signUpByTwitterV2":   signUpByTwitterV2,
-		"/tw_callbackV1":       twitterSignCallBackV1,
-		"/tw_callback":         twitterSignCallBackV2,
-		"/signUpSuccessByTw":   signUpSuccessByTw,
-		"/signUpSuccessByTwV2": signUpSuccessByTwV2,
-		"/signInByEth":         signInByEth,
-		"/bindWeb3ID":          bindingWeb3ID,
-		"/queryTwBasicById":    queryTwBasicById,
-		"/signOut":             signOut,
-		"/main":                mainPage,
-		"/pullMyTimeLine":      pullTwitterTimeline,
-		"/pullHomeTimeLine":    pullTwitterHomeTimeline,
-		"/postTweet":           postTweets,
-		"/postTweetsV2":        postTweetsV2,
-		"/buyRights":           mainPage,
+		"/signUpByTwitter":   signUpByTwitterV1,
+		"/tw_callback":       twitterSignCallBackV1,
+		"/signUpSuccessByTw": signUpSuccessByTw,
+		"/signInByEth":       signInByEth,
+		"/bindWeb3ID":        bindingWeb3ID,
+		"/queryTwBasicById":  queryTwBasicById,
+		"/signOut":           signOut,
+		"/main":              mainPage,
+		"/pullMyTimeLine":    pullTwitterTimeline,
+		"/postTweet":         postTweets,
+		"/buyRights":         mainPage,
 	}
 
 	cfgHtmlFileRouter = map[string]string{
