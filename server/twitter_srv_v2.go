@@ -165,6 +165,18 @@ func checkTwitterRightsV2(w http.ResponseWriter, r *http.Request) (*TwUserAccess
 		util.LogInst().Err(err).Str("twitter-id", twitterUid).Msg("access token not in db")
 		return nil, err
 	}
+	if false == isOAuth2TokenValid(ut.Token) {
+		ut.Token, err = refreshAccessToken(ut.RefreshToken)
+		if err != nil {
+			util.LogInst().Err(err).Str("twitter-id", twitterUid).Msg("refresh token failed")
+			return nil, err
+		}
+		err = DbInst().SaveTwAccessTokenV2(ut)
+		if err != nil {
+			util.LogInst().Err(err).Str("twitter-id", twitterUid).Msg("save refreshed token failed")
+			return nil, err
+		}
+	}
 	return ut, nil
 }
 
@@ -179,4 +191,26 @@ func getAccessTokenFromSessionV2(r *http.Request) (*oauth2.Token, error) {
 		return nil, err
 	}
 	return &token, nil
+}
+
+func refreshAccessToken(refreshToken string) (*oauth2.Token, error) {
+	ctx := context.Background()
+	tokenSource := _globalCfg.twOauthCfg.TokenSource(ctx, &oauth2.Token{RefreshToken: refreshToken})
+	newToken, err := tokenSource.Token()
+	if err != nil {
+		return nil, err
+	}
+	return newToken, nil
+}
+
+func isOAuth2TokenValid(token *oauth2.Token) bool {
+	client := _globalCfg.twOauthCfg.Client(context.Background(), token)
+
+	resp, err := client.Get(accessUserURLV2)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+
+	return resp.StatusCode == http.StatusOK
 }

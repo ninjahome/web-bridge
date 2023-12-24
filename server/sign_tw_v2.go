@@ -198,13 +198,3 @@ func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-
-func refreshAccessToken(refreshToken string) (*oauth2.Token, error) {
-	ctx := context.Background()
-	tokenSource := _globalCfg.twOauthCfg.TokenSource(ctx, &oauth2.Token{RefreshToken: refreshToken})
-	newToken, err := tokenSource.Token()
-	if err != nil {
-		return nil, err
-	}
-	return newToken, nil
-}

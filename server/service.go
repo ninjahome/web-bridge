@@ -76,20 +76,6 @@ func validateUsrRights(r *http.Request) (*NinjaUsrInfo, error) {
 	return njUser, nil
 }
 
-func buyRights(w http.ResponseWriter, r *http.Request) {
-	var _, err = validateUsrRights(r)
-	if err != nil {
-		util.LogInst().Info().Msg("new buy request:" + err.Error())
-		http.Redirect(w, r, "/signIn", http.StatusFound)
-	}
-
-	var owner = r.URL.Query().Get(BuyRightsUrlKey)
-	if len(owner) == 0 {
-		util.LogInst().Info().Msg("no owner found for buy link:")
-		http.Redirect(w, r, "/signIn", http.StatusFound)
-	}
-	http.Redirect(w, r, "/main", http.StatusFound)
-}
 func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 	param := &SignDataByEth{}
 	err := util.ReadRequest(r, param)
