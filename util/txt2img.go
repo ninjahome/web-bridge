@@ -44,7 +44,7 @@ func calcTextHeight(txt string, maxWidth int, fontSize float64, face font.Face) 
 
 func ConvertLongTweetToImg(txt string) (image.Image, error) {
 	// 读取字体
-	fontBytes, err := os.ReadFile("NotoSansSC-Regular.ttf")
+	fontBytes, err := os.ReadFile("Noto_Sans_SC.ttf")
 	if err != nil {
 		return nil, err
 	}
