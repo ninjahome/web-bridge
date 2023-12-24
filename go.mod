@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/firestore v1.14.0
 	github.com/dghubble/oauth1 v0.7.2
 	github.com/ethereum/go-ethereum v1.13.5
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 	github.com/gorilla/sessions v1.2.2
 	github.com/hopwesley/fdlimit v1.0.0
 	github.com/rs/zerolog v1.31.0
@@ -43,6 +44,7 @@ require (
 	go.opentelemetry.io/otel/metric v1.21.0 // indirect
 	go.opentelemetry.io/otel/trace v1.21.0 // indirect
 	golang.org/x/crypto v0.16.0 // indirect
+	golang.org/x/image v0.14.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect

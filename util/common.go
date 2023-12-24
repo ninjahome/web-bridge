@@ -8,7 +8,10 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/golang/freetype"
 	"html/template"
+	"image"
+	"image/draw"
 	"io"
 	"net/http"
 	"os"
@@ -22,6 +25,7 @@ import (
 
 const (
 	MaxReqContentLen = 1024 * 1024 * 5
+	TweetFontInImg   = "Noto_Sans_SC.ttf"
 )
 
 var (
@@ -102,4 +106,36 @@ func ReadRequest(request *http.Request, obj any) error {
 		return ErrHttpEmptyRequest
 	}
 	return json.Unmarshal(b.Bytes(), obj)
+}
+
+func ConvertLongTweetToImg(txt string) (image.Image, error) {
+	img := image.NewRGBA(image.Rect(0, 0, 500, 500))
+
+	draw.Draw(img, img.Bounds(), image.White, image.Point{}, draw.Src)
+
+	// 读取字体
+	fontBytes, err := os.ReadFile("util/Noto_Sans_SC.ttf")
+	if err != nil {
+		return nil, err
+	}
+	f, err := freetype.ParseFont(fontBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	// 设置字体参数
+	c := freetype.NewContext()
+	c.SetFont(f)
+	c.SetFontSize(24)
+	c.SetClip(img.Bounds())
+	c.SetDst(img)
+	c.SetSrc(image.Black)
+
+	pt := freetype.Pt(10, 10+int(c.PointToFixed(24)>>6))
+	_, err = c.DrawString(txt, pt)
+	if err != nil {
+		return nil, err
+	}
+	return img, nil
+
 }
