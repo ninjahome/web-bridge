@@ -64,7 +64,7 @@ Solana眼下的崛起，一方面是以太坊layer2短暂沉寂带来的空窗�
 Note：若认同我的思考，喜欢我文章的话，帮忙一键三连下，谢谢大家支持。`
 
 func TestTxt2Img(t *testing.T) {
-	fontBytes, err := os.ReadFile("Noto_Sans_SC.ttf")
+	fontBytes, err := os.ReadFile("NotoSansSC-Light.ttf")
 	if err != nil {
 		panic(err)
 	}
@@ -72,7 +72,7 @@ func TestTxt2Img(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	img, err := ConvertLongTweetToImg(testContent3, f, 28.0)
+	img, err := ConvertLongTweetToImg(testContent3, f, 22.0)
 	if err != nil {
 		t.Fatal(err)
 	}

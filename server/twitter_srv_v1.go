@@ -42,17 +42,12 @@ func checkTwitterRights(w http.ResponseWriter, r *http.Request) (*TwUserAccessTo
 	return ut, nil
 }
 
-func twitterApiPost(token *oauth1.Token, reqBody any, contentType string, response any) error {
+func twitterApiPost(token *oauth1.Token, reqBody io.Reader, contentType string, response any) error {
 
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	httpClient := config.Client(oauth1.NoContext, token)
-	bts, err := json.Marshal(reqBody)
-	if err != nil {
-		util.LogInst().Err(err).Msg("marshal request failed")
-		return err
-	}
 
-	req, err := http.NewRequest("POST", accessPointTweet, bytes.NewBuffer(bts))
+	req, err := http.NewRequest("POST", accessPointTweet, reqBody)
 	if err != nil {
 		util.LogInst().Err(err).Msg("create http post request failed")
 		return err
@@ -137,7 +132,9 @@ func postTweets(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var tweetResponse TweetResponse
-	err = twitterApiPost(ut.GetToken(), tweetBody, "application/json", &tweetResponse)
+	bts, _ := json.Marshal(tweetBody)
+
+	err = twitterApiPost(ut.GetToken(), bytes.NewBuffer(bts), "application/json", &tweetResponse)
 	if err != nil {
 		util.LogInst().Err(err).Msg(" posted tweet failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -164,33 +161,22 @@ func uploadMedia(token *oauth1.Token, img image.Image) (string, error) {
 
 	part, err := writer.CreateFormFile("media", "image.jpg")
 	if err != nil {
+		util.LogInst().Err(err).Msg("create form file failed")
 		return "", err
 	}
 
 	err = jpeg.Encode(part, img, &jpeg.Options{Quality: jpeg.DefaultQuality})
 	if err != nil {
+		util.LogInst().Err(err).Msg("jpeg Encode failed")
 		return "", err
 	}
 	writer.Close()
-
-	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
-	httpClient := config.Client(oauth1.NoContext, token)
-
-	req, err := http.NewRequest("POST", accessPointMedia, &buffer)
-	if err != nil {
-		return "", err
-	}
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-
-	resp, err := httpClient.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	bts, _ := io.ReadAll(resp.Body)
-
 	var result map[string]interface{}
-	json.NewDecoder(bytes.NewBuffer(bts)).Decode(&result) // 使用 bts 构建新的 buffer，因为原 buffer 已被读取
+	err = twitterApiPost(token, &buffer, writer.FormDataContentType(), &result)
+	if err != nil {
+		util.LogInst().Err(err).Msg("twitterApiPost  failed")
+		return "", err
+	}
 
 	mediaID, ok := result["media_id_string"].(string)
 	if !ok {
