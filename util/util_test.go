@@ -1,6 +1,7 @@
 package util
 
 import (
+	"github.com/golang/freetype"
 	"image/jpeg"
 	"os"
 	"testing"
@@ -63,7 +64,15 @@ Solana眼下的崛起，一方面是以太坊layer2短暂沉寂带来的空窗�
 Note：若认同我的思考，喜欢我文章的话，帮忙一键三连下，谢谢大家支持。`
 
 func TestTxt2Img(t *testing.T) {
-	var img, err = ConvertLongTweetToImg(testContent3)
+	fontBytes, err := os.ReadFile("NotoSansSC-Regular.ttf")
+	if err != nil {
+		panic(err)
+	}
+	f, err := freetype.ParseFont(fontBytes)
+	if err != nil {
+		panic(err)
+	}
+	img, err := ConvertLongTweetToImg(testContent3, f)
 	if err != nil {
 		t.Fatal(err)
 	}

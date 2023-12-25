@@ -12,7 +12,7 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 	cfg := &SysConf{
 		Log:      "debug",
 		LocalRun: false,
-		SrvConf: &SrvConf{
+		HttpConf: &HttpConf{
 			RefreshContent: true,
 			UseHttps:       false,
 			SSLCertFile:    "",
@@ -20,6 +20,7 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			SessionKey:     "",
 		},
 		TwitterConf: &TwitterConf{
+			FontPath:       "util/Noto_Sans_SC.ttf",
 			ClientID:       "",
 			ClientSecret:   "",
 			ConsumerKey:    "",

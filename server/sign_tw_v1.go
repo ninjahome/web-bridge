@@ -196,7 +196,7 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	err = htmlTemplateManager.ExecuteTemplate(w, "signUpSuccess.html", result)
+	err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "signUpSuccess.html", result)
 	if err != nil {
 		util.LogInst().Err(err).Msg("show sign up by twitter page failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)

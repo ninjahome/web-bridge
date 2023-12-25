@@ -152,7 +152,7 @@ func postTweets(w http.ResponseWriter, r *http.Request) {
 	tweetContent.Signature = param.Signature
 	token := oauth1.NewToken(ut.OauthToken, ut.OauthTokenSecret)
 
-	txtImg, err := util.ConvertLongTweetToImg(tweetContent.TweetContent)
+	txtImg, err := util.ConvertLongTweetToImg(tweetContent.TweetContent, _globalCfg.imgFont)
 	mediaID, err := uploadMedia(token, txtImg)
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	httpClient := config.Client(oauth1.NoContext, token)

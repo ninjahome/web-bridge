@@ -2,10 +2,13 @@ package server
 
 import (
 	"fmt"
+	"github.com/golang/freetype"
+	"github.com/golang/freetype/truetype"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
 	"html/template"
 	"net/http"
+	"os"
 )
 
 var (
@@ -28,21 +31,21 @@ var (
 		"/":       "html/signIn.html",
 	}
 
-	htmlTemplateManager *template.Template //TODO::refactor to a struct
-	_globalCfg          *SysConf
+	_globalCfg *SysConf
 )
 
 type LogicAction func(w http.ResponseWriter, r *http.Request)
 
-type SrvConf struct {
-	RefreshContent bool   `json:"refresh_content"`
-	UseHttps       bool   `json:"use_https"`
-	SSLCertFile    string `json:"ssl_cert_file"`
-	SSLKeyFile     string `json:"ssl_key_file"`
-	SessionKey     string `json:"session_key"`
+type HttpConf struct {
+	RefreshContent      bool   `json:"refresh_content"`
+	UseHttps            bool   `json:"use_https"`
+	SSLCertFile         string `json:"ssl_cert_file"`
+	SSLKeyFile          string `json:"ssl_key_file"`
+	SessionKey          string `json:"session_key"`
+	htmlTemplateManager *template.Template
 }
 
-func (c *SrvConf) String() string {
+func (c *HttpConf) String() string {
 	s := "\n------server config------"
 	s += "\nrefresh content:" + fmt.Sprintf("%t", c.RefreshContent)
 	s += "\nuse https:" + fmt.Sprintf("%t", c.UseHttps)
@@ -53,6 +56,8 @@ func (c *SrvConf) String() string {
 }
 
 type TwitterConf struct {
+	imgFont        *truetype.Font
+	FontPath       string `json:"font_path"`
 	ClientID       string `json:"client_id"`
 	ClientSecret   string `json:"client_secret"`
 	ConsumerKey    string `json:"consumer_key"`
@@ -82,7 +87,7 @@ func (c *FileStoreConf) String() string {
 type SysConf struct {
 	Log      string `json:"log"`
 	LocalRun bool   `json:"local_run"`
-	*SrvConf
+	*HttpConf
 	*TwitterConf
 	*FileStoreConf
 	twOauthCfg *oauth2.Config
@@ -92,7 +97,7 @@ func (c *SysConf) String() any {
 	var s = "\n=======================system config==========================="
 	s += "\nlog level:" + c.Log
 	s += "\nlocal mode:" + fmt.Sprintf("%t", c.LocalRun)
-	s += "\n" + c.SrvConf.String()
+	s += "\n" + c.HttpConf.String()
 	s += "\n" + c.TwitterConf.String()
 	s += "\n" + c.FileStoreConf.String()
 	s += "\n=============================================================="
@@ -129,5 +134,16 @@ func InitConf(c *SysConf) {
 	}
 	_globalCfg.twOauthCfg = oauth2Config
 
-	htmlTemplateManager = util.ParseTemplates("assets/html")
+	_globalCfg.htmlTemplateManager = util.ParseTemplates("assets/html")
+
+	fontBytes, err := os.ReadFile(_globalCfg.FontPath)
+	if err != nil {
+		panic(err)
+	}
+	f, err := freetype.ParseFont(fontBytes)
+	if err != nil {
+		panic(err)
+	}
+
+	_globalCfg.imgFont = f
 }

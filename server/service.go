@@ -49,7 +49,7 @@ func mainPage(w http.ResponseWriter, r *http.Request) {
 	}{
 		NinjaUsrInfoJson: template.JS(nu.RawData()),
 	}
-	err = htmlTemplateManager.ExecuteTemplate(w, "main.html", data)
+	err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "main.html", data)
 	if err != nil {
 		util.LogInst().Err(err).Msg("main html failed")
 		http.Redirect(w, r, "/signIn", http.StatusFound)

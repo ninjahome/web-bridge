@@ -191,7 +191,7 @@ func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request) {
 		util.LogInst().Err(err).Msg("save user access token failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	err = htmlTemplateManager.ExecuteTemplate(w, "signUpSuccess.html", result)
+	err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "signUpSuccess.html", result)
 	if err != nil {
 		util.LogInst().Err(err).Msg("show sign up by twitter page failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
