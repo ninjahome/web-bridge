@@ -1,15 +1,6 @@
 
 
-function initMainPage() {
-    checkSystemEnvironment();
-    window.addEventListener('popstate', clearSessionStorage);
-    window.addEventListener('replaceState', clearSessionStorage);
-    setupBasicInfo();
-}
 
-function isOverflown(element) {
-    return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
-}
 function checkSystemEnvironment() {
 
     if (typeof window.ethereum === 'undefined') {
@@ -20,7 +11,7 @@ function checkSystemEnvironment() {
     metamaskObj.on('accountsChanged', metamaskAccountChanged);
     metamaskObj.on('chainChanged', metamaskChainChanged);
     metamaskObj.request({method: 'eth_chainId'}).then(chainID => {
-        metamaskChainChanged(chainID);
+        metamaskChainChanged(chainID).then(r=>{});
     })
 }
 
