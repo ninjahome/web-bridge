@@ -42,20 +42,15 @@ func parseStateParam(str string) *stateParam {
 	return &stateParam{ethAddr: strArr[0], stateNo: strArr[1]}
 }
 
-func signUpByTwitterV2(w http.ResponseWriter, r *http.Request) {
+func signUpByTwitterV2(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {
 
-	ethAddr := r.URL.Query().Get("eth_addr")
-	if ethAddr == "" {
-		http.Error(w, "eth_addr parameter is required", http.StatusBadRequest)
-		return
-	}
 	codeVerifier := util.RandomBytesInHex(32)
 
 	sha2 := sha256.New()
 	_, _ = io.WriteString(sha2, codeVerifier)
 	codeChallenge := base64.RawURLEncoding.EncodeToString(sha2.Sum(nil))
 
-	state := stateParam{ethAddr: ethAddr, stateNo: util.RandomBytesInHex(24)}
+	state := stateParam{ethAddr: nu.EthAddr, stateNo: util.RandomBytesInHex(24)}
 	var stateStr = state.String()
 	var err1, err2 = SMInst().Set(r, w, sesKeyForStateV2, stateStr), SMInst().Set(r, w, sesKeyForVerifierCodeV2, codeVerifier)
 	if err1 != nil || err2 != nil {
@@ -107,7 +102,7 @@ func exchangeWithCodeVerifier(conf *oauth2.Config, code string, codeVerifier str
 	return &token, nil
 }
 
-func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request) {
+func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo) {
 	util.LogInst().Info().Msg("call back from twitter")
 
 	errStr := r.URL.Query().Get("error")
@@ -157,7 +152,7 @@ func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/signUpSuccessByTwV2", http.StatusFound)
 }
 
-func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request) {
+func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo) {
 	stateStr, _ := SMInst().Get(sesKeyForStateV2, r)
 	defer SMInst().Del(sesKeyForStateV2, r, w)
 	state := parseStateParam(stateStr.(string))

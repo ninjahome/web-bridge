@@ -126,6 +126,7 @@ type NinjaUsrInfo struct {
 	EthAddr  string `json:"eth_addr" firestore:"eth_addr"`
 	CreateAt int64  `json:"create_at" firestore:"create_at"`
 	TwID     string `json:"tw_id" firestore:"tw_id"`
+	UpdateAt int64
 }
 
 func (nu *NinjaUsrInfo) String() string {
@@ -136,6 +137,10 @@ func (nu *NinjaUsrInfo) String() string {
 func (nu *NinjaUsrInfo) RawData() []byte {
 	bts, _ := json.Marshal(nu)
 	return bts
+}
+
+func (nu *NinjaUsrInfo) RefreshSession() {
+	nu.UpdateAt = time.Now().UnixMilli()
 }
 
 func NJUsrInfoMust(data []byte) (*NinjaUsrInfo, error) {

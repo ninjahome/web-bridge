@@ -171,11 +171,10 @@
 
     function metamaskAccountChanged(accounts) {
         if (accounts.length === 0) {
-            window.location.href = "/signIn";
+            window.location.href = "/signOut";
             return;
         }
-        //TODO::what's right logic
-        window.location.href = "/signIn";
+        window.location.href = "/signOut";
     }
 
     function setupBasicInfo() {
@@ -231,7 +230,7 @@
     }
 
     function signUpByTwitter() {
-        window.location.href = "/signUpByTwitter?eth_addr=" + ninjaUserObj.eth_addr;
+        window.location.href = "/signUpByTwitter";
     }
 
     async function loadTwitterInfo(twitterID) {
@@ -263,9 +262,6 @@
             console.log(err)
             window.location.href = "/signIn";
         })
-    }
-
-    function pullHomeTwitter() {
     }
 
     class TweetContent {

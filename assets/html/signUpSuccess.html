@@ -116,18 +116,22 @@
 
     function initPages() {
         setupBasicInfos();
-    }
-
-    function backToHome(){
-        window.location.href = "/";
-    }
-
-    async function bindWeb3Id() {
         if (typeof window.ethereum === 'undefined') {
             showDialog("error", "您已关闭了metamask，请打开metamask并确切换到：" + _curNinjaEthAddr);
             return
         }
         metamaskObj = window.ethereum;
+        metamaskObj.on('accountsChanged', metamaskAccountChanged);
+
+    }
+    function metamaskAccountChanged(){
+        window.location.href = "/signOut";
+    }
+    function backToHome(){
+        window.location.href = "/main";
+    }
+
+    async function bindWeb3Id() {
         try {
             const accounts = await metamaskObj.request({method: 'eth_accounts'})
             if (accounts.length === 0) {

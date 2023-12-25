@@ -22,7 +22,7 @@ func MustSignInData(str string) *SignInObj {
 	return so
 }
 
-func signInByEth(w http.ResponseWriter, r *http.Request) {
+func signInByEth(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo) {
 	param := &SignDataByEth{}
 	err := util.ReadRequest(r, param)
 	if err != nil {
@@ -58,7 +58,7 @@ func signInByEth(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
+	nu.RefreshSession()
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(nu.RawData())

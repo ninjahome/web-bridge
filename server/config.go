@@ -13,16 +13,16 @@ import (
 
 var (
 	cfgActionRouter = map[string]LogicAction{
-		"/signUpByTwitter":   signUpByTwitterV1,
-		"/tw_callback":       twitterSignCallBackV1,
-		"/signUpSuccessByTw": signUpSuccessByTw,
-		"/signInByEth":       signInByEth,
-		"/bindWeb3ID":        bindingWeb3ID,
-		"/queryTwBasicById":  queryTwBasicById,
-		"/signOut":           signOut,
-		"/main":              mainPage,
-		"/postTweet":         postTweets,
-		"/buyRights":         mainPage,
+		"/signUpByTwitter":   {signUpByTwitterV1, true},
+		"/tw_callback":       {twitterSignCallBackV1, false},
+		"/signUpSuccessByTw": {signUpSuccessByTw, false},
+		"/signInByEth":       {signInByEth, false},
+		"/bindWeb3ID":        {bindingWeb3ID, true},
+		"/queryTwBasicById":  {queryTwBasicById, true},
+		"/signOut":           {signOut, false},
+		"/main":              {mainPage, true},
+		"/postTweet":         {postTweets, true},
+		"/buyRights":         {mainPage, true},
 	}
 
 	cfgHtmlFileRouter = map[string]string{
@@ -33,7 +33,10 @@ var (
 	_globalCfg *SysConf
 )
 
-type LogicAction func(w http.ResponseWriter, r *http.Request)
+type LogicAction struct {
+	Action    func(w http.ResponseWriter, r *http.Request, token *NinjaUsrInfo)
+	NeedToken bool
+}
 
 type HttpConf struct {
 	RefreshContent      bool   `json:"refresh_content"`
@@ -146,5 +149,5 @@ func InitConf(c *SysConf) {
 }
 
 func (c *SysConf) GetNjProtocolAd(NjTwID int64) string {
-	return fmt.Sprintf("\nBuy Rights: %s/?id=%d", c.UrlHome, NjTwID)
+	return fmt.Sprintf("\nBuy Rights:%s/buyRights?id=%d", c.UrlHome, NjTwID)
 }

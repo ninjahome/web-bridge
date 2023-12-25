@@ -18,20 +18,14 @@ const (
 	accessPointMedia = "https://upload.twitter.com/1.1/media/upload.json"
 )
 
-func checkTwitterRights(w http.ResponseWriter, r *http.Request) (*TwUserAccessToken, error) {
-	var ninjaUsr, err = validateUsrRights(r)
-	if err != nil {
-		http.Redirect(w, r, "/signIn", http.StatusFound)
-		return nil, err
-	}
-
+func checkTwitterRights(ninjaUsr *NinjaUsrInfo, r *http.Request) (*TwUserAccessToken, error) {
 	var twitterUid = ninjaUsr.TwID
 	if len(twitterUid) == 0 {
 		util.LogInst().Warn().Msg("no twitter id for ninja user:" + ninjaUsr.EthAddr)
 		return nil, fmt.Errorf("bind twitter first")
 	}
-	var ut, errToken = getAccessTokenFromSession(r)
-	if errToken == nil {
+	var ut, err = getAccessTokenFromSession(r)
+	if err == nil {
 		return ut, nil
 	}
 	ut, err = DbInst().GetTwAccessToken(twitterUid)
@@ -42,12 +36,13 @@ func checkTwitterRights(w http.ResponseWriter, r *http.Request) (*TwUserAccessTo
 	return ut, nil
 }
 
-func twitterApiPost(token *oauth1.Token, reqBody io.Reader, contentType string, response any) error {
+func twitterApiPost(url string, token *oauth1.Token,
+	reqBody io.Reader, contentType string, response any) error {
 
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	httpClient := config.Client(oauth1.NoContext, token)
 
-	req, err := http.NewRequest("POST", accessPointTweet, reqBody)
+	req, err := http.NewRequest("POST", url, reqBody)
 	if err != nil {
 		util.LogInst().Err(err).Msg("create http post request failed")
 		return err
@@ -66,6 +61,9 @@ func twitterApiPost(token *oauth1.Token, reqBody io.Reader, contentType string, 
 		util.LogInst().Warn().Int("status", resp.StatusCode).Msg("post tweet failed" + string(bts))
 		return fmt.Errorf("http response status err:%s", resp.Status)
 	}
+	if response == nil {
+		return nil
+	}
 	if err := json.NewDecoder(resp.Body).Decode(response); err != nil {
 		util.LogInst().Err(err).Msg("decode response failed")
 		return err
@@ -74,6 +72,7 @@ func twitterApiPost(token *oauth1.Token, reqBody io.Reader, contentType string, 
 }
 
 func prepareTweet(njTweet *NinjaTweet, ut *TwUserAccessToken) (*TweetRequest, error) {
+
 	var appendStr = _globalCfg.GetNjProtocolAd(njTweet.CreateAt)
 	var combinedTxt = njTweet.Txt + appendStr
 	if !util.IsOverTwitterLimit(combinedTxt) {
@@ -94,7 +93,7 @@ func prepareTweet(njTweet *NinjaTweet, ut *TwUserAccessToken) (*TweetRequest, er
 		util.LogInst().Err(err).Msg("convert txt to img failed:" + njTweet.String())
 		return nil, err
 	}
-	combinedTxt = util.TruncateString(njTweet.Txt, 80) + "..." + appendStr
+	combinedTxt = util.TruncateString(njTweet.Txt, appendStr)
 	var req = &TweetRequest{
 		Text: combinedTxt,
 		Media: &Media{
@@ -104,11 +103,10 @@ func prepareTweet(njTweet *NinjaTweet, ut *TwUserAccessToken) (*TweetRequest, er
 	return req, nil
 }
 
-func postTweets(w http.ResponseWriter, r *http.Request) {
-	var ut, err = checkTwitterRights(w, r)
+func postTweets(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {
+	var ut, err = checkTwitterRights(nu, r)
 	if err != nil {
 		util.LogInst().Err(err).Msg("load access token failed")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	param := &SignDataByEth{}
@@ -134,7 +132,7 @@ func postTweets(w http.ResponseWriter, r *http.Request) {
 	var tweetResponse TweetResponse
 	bts, _ := json.Marshal(tweetBody)
 
-	err = twitterApiPost(ut.GetToken(), bytes.NewBuffer(bts), "application/json", &tweetResponse)
+	err = twitterApiPost(accessPointTweet, ut.GetToken(), bytes.NewBuffer(bts), "application/json", &tweetResponse)
 	if err != nil {
 		util.LogInst().Err(err).Msg(" posted tweet failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -172,7 +170,7 @@ func uploadMedia(token *oauth1.Token, img image.Image) (string, error) {
 	}
 	writer.Close()
 	var result map[string]interface{}
-	err = twitterApiPost(token, &buffer, writer.FormDataContentType(), &result)
+	err = twitterApiPost(accessPointMedia, token, &buffer, writer.FormDataContentType(), &result)
 	if err != nil {
 		util.LogInst().Err(err).Msg("twitterApiPost  failed")
 		return "", err

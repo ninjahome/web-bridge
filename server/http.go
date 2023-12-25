@@ -53,7 +53,17 @@ func NewMainService() *MainService {
 				http.Error(writer, err.Error(), http.StatusRequestEntityTooLarge)
 				return
 			}
-			action(writer, request)
+			if !action.NeedToken {
+				action.Action(writer, request, nil)
+				return
+			}
+
+			var token = validateUsrRights(request)
+			if token == nil {
+				http.Redirect(writer, request, "/signIn", http.StatusFound)
+				return
+			}
+			action.Action(writer, request, token)
 		})
 	}
 

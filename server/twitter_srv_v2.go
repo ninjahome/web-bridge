@@ -133,10 +133,9 @@ func postTweetsV2(w http.ResponseWriter, r *http.Request) {
 }
 
 func checkTwitterRightsV2(w http.ResponseWriter, r *http.Request) (*TwUserAccessTokenV2, error) {
-	var ninjaUsr, err = validateUsrRights(r)
-	if err != nil {
-		http.Redirect(w, r, "/signIn", http.StatusFound)
-		return nil, err
+	var ninjaUsr = validateUsrRights(r)
+	if ninjaUsr == nil {
+		return nil, fmt.Errorf("sign in first")
 	}
 
 	var twitterUid = ninjaUsr.TwID

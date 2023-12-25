@@ -18,6 +18,11 @@ type SignDataByEth struct {
 	Signature string `json:"signature"`
 	PayLoad   any    `json:"pay_load,omitempty"`
 }
+type Web3BindingData struct {
+	EthAddr  string `json:"eth_addr"`
+	TwID     string `json:"tw_id"`
+	BindTime int64  `json:"bind_time"`
+}
 
 func (sp *SignDataByEth) RawData() string {
 	bts, _ := json.Marshal(sp)
@@ -47,21 +52,15 @@ func (sp *SignDataByEth) ParseNinjaTweet() (*NinjaTweet, error) {
 	return &tweetContent, nil
 }
 
-func queryTwBasicById(w http.ResponseWriter, r *http.Request) {
-	var ninjaUser, err = validateUsrRights(r)
-	if err != nil {
-		http.Redirect(w, r, "/signIn", http.StatusFound)
-		return
-	}
+func queryTwBasicById(w http.ResponseWriter, _ *http.Request, ninjaUser *NinjaUsrInfo) {
+
 	var twitterID = ninjaUser.TwID
 	if len(twitterID) == 0 {
 		util.LogInst().Warn().Msg("invalid twitter id param")
 		http.Error(w, "twitter id invalid", http.StatusBadRequest)
 		return
 	}
-	var userdata *TWUserInfo = nil
-	userdata, err = DbInst().TwitterBasicInfo(twitterID)
-
+	var userdata, err = DbInst().TwitterBasicInfo(twitterID)
 	if err != nil {
 		util.LogInst().Err(err).Msg("query twitter data failed")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -72,18 +71,14 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request) {
 	w.Write(userdata.RawData())
 }
 
-func mainPage(w http.ResponseWriter, r *http.Request) {
-	var nu, err = validateUsrRights(r)
-	if err != nil {
-		http.Redirect(w, r, "/signIn", http.StatusFound)
-		return
-	}
+func mainPage(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {
+
 	data := struct {
-		NinjaUsrInfoJson template.JS // 使用 template.JS 以避免额外的转义
+		NinjaUsrInfoJson template.JS
 	}{
 		NinjaUsrInfoJson: template.JS(nu.RawData()),
 	}
-	err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "main.html", data)
+	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "main.html", data)
 	if err != nil {
 		util.LogInst().Err(err).Msg("main html failed")
 		http.Redirect(w, r, "/signIn", http.StatusFound)
@@ -91,26 +86,27 @@ func mainPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func signOut(w http.ResponseWriter, r *http.Request) {
+func signOut(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo) {
 	_ = SMInst().Del(sesKeyForRightCheck, r, w)
 	http.Redirect(w, r, "/signIn", http.StatusFound)
 }
 
-func validateUsrRights(r *http.Request) (*NinjaUsrInfo, error) {
+func validateUsrRights(r *http.Request) *NinjaUsrInfo {
 	var data, err = SMInst().Get(sesKeyForRightCheck, r)
 	if err != nil {
 		util.LogInst().Warn().Msgf("%s", err.Error())
-		return nil, err
+		return nil
 	}
 
 	var njUser, errNu = NJUsrInfoMust(data.([]byte))
 	if errNu != nil {
-		return nil, fmt.Errorf("not a ninja user struct saved")
+		util.LogInst().Warn().Msgf("ninja user not found")
+		return nil
 	}
-	return njUser, nil
+	return njUser
 }
 
-func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
+func bindingWeb3ID(w http.ResponseWriter, r *http.Request, origNu *NinjaUsrInfo) {
 	param := &SignDataByEth{}
 	err := util.ReadRequest(r, param)
 	if err != nil {
@@ -123,8 +119,8 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "lost payload in sign data", http.StatusBadRequest)
 		return
 	}
-	userdata := &TWUserInfo{}
-	err = json.Unmarshal([]byte(param.PayLoad.(string)), userdata)
+	twUsrData := &TWUserInfo{}
+	err = json.Unmarshal([]byte(param.PayLoad.(string)), twUsrData)
 	if err != nil {
 		util.LogInst().Err(err).Msg("parse twitter data failed")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -138,7 +134,12 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
+	if data.EthAddr != origNu.EthAddr {
+		util.LogInst().Warn().Msgf("metamask account has changed[%s=>%s]",
+			origNu.EthAddr, data.EthAddr)
+		http.Redirect(w, r, "/signIn", http.StatusFound)
+		return
+	}
 	err = util.Verify(data.EthAddr, param.Message, param.Signature)
 	if err != nil {
 		util.LogInst().Err(err).Msg("binding data verify signature failed")
@@ -155,7 +156,7 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 		SignUpAt:  data.BindTime,
 		Signature: param.Signature,
 	}
-	newNu, err := DbInst().BindingWeb3ID(bindDataToStore, userdata)
+	newNu, err := DbInst().BindingWeb3ID(bindDataToStore, twUsrData)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save binding data  failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -167,6 +168,8 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	_ = updateTwitterBio(r, twUsrData.Description, data.EthAddr)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(newNu.RawData())

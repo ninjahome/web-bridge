@@ -14,7 +14,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"unicode/utf8"
 )
 
 import (
@@ -107,11 +106,23 @@ func ReadRequest(request *http.Request, obj any) error {
 }
 
 func IsOverTwitterLimit(text string) bool {
-	return utf8.RuneCountInString(text) > MaxTwitterLen
+	return len(text) > MaxTwitterLen
 }
-func TruncateString(str string, n int) string {
-	if n > utf8.RuneCountInString(str) {
-		return str
+
+func TruncateString(raw, append string) string {
+	appendLen := len(append) + 3 // 加上三个省略号的长度
+	if appendLen >= MaxTwitterLen {
+		return append[:MaxTwitterLen] // 如果附加文本太长，只返回截断的附加文本
 	}
-	return string([]rune(str)[:n])
+
+	maxLen := MaxTwitterLen - appendLen
+	truncated := ""
+	for _, r := range raw {
+		if len(truncated)+len(string(r)) > maxLen {
+			break
+		}
+		truncated += string(r)
+	}
+
+	return truncated + "..." + append
 }
