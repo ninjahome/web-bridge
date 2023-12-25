@@ -14,5 +14,6 @@
 	"consumer_key": "",
 	"consumer_secret": "",
 	"project_id": "dessage",
-	"key_file_path": "dessage-c3b5c95267fb.json"
+	"key_file_path": "dessage-c3b5c95267fb.json",
+	"tweets_page_size": 20
 }

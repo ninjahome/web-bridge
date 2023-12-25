@@ -29,8 +29,9 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			ConsumerSecret: "",
 		},
 		FileStoreConf: &FileStoreConf{
-			ProjectID:   DefaultTwitterProjectID,
-			KeyFilePath: "dessage-c3b5c95267fb.json",
+			TweetsPageSize: 20,
+			ProjectID:      DefaultTwitterProjectID,
+			KeyFilePath:    "dessage-c3b5c95267fb.json",
 		},
 	}
 

@@ -4,9 +4,11 @@ import (
 	"cloud.google.com/go/firestore"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -381,4 +383,31 @@ func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 	newItem[content.TweetId] = struct{}{}
 	_, err = ownerDoc.Set(opCtx, newItem, firestore.MergeAll)
 	return err
+}
+
+func (dm *DbManager) QueryGlobalLatestTweets(pageSize int, id int64, callback func(tweet *NinjaTweet)) error {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	iter := dm.fileCli.Collection(DBTableTweetsPosted).
+		Where("create_time", ">", id).
+		OrderBy("create_time", firestore.Asc).Limit(pageSize).Documents(opCtx)
+	defer iter.Stop()
+	for {
+		doc, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			return nil
+		}
+		if err != nil {
+			util.LogInst().Err(err).Msgf("Failed to iterate: %v", err)
+			return err
+		}
+
+		var tweet NinjaTweet
+		err = doc.DataTo(&tweet)
+		if err != nil {
+			util.LogInst().Err(err).Msgf("Failed to convert document to NinjaUsrInfo: %v", err)
+			return err
+		}
+		callback(&tweet)
+	}
 }

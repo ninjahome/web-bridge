@@ -1,5 +1,5 @@
-
-
+let metamaskObj = null;
+let twitterUserObj = null;
 
 function checkSystemEnvironment() {
 
@@ -11,7 +11,8 @@ function checkSystemEnvironment() {
     metamaskObj.on('accountsChanged', metamaskAccountChanged);
     metamaskObj.on('chainChanged', metamaskChainChanged);
     metamaskObj.request({method: 'eth_chainId'}).then(chainID => {
-        metamaskChainChanged(chainID).then(r=>{});
+        metamaskChainChanged(chainID).then(r => {
+        });
     })
 }
 
@@ -54,7 +55,6 @@ function metamaskAccountChanged(accounts) {
 function setupBasicInfo() {
     const twBtn = document.getElementById('sign-up-by-twitter-button')
     const twNameLabel = document.getElementById('basic-twitter-name')
-    const isVerifiedLabel = document.getElementById("basic-twitter-verified");
     document.getElementById('basic-web3-id').innerText = ninjaUserObj.eth_addr;
     if (!ninjaUserObj.tw_id) {
         twNameLabel.style.display = 'none';
@@ -62,22 +62,27 @@ function setupBasicInfo() {
     } else {
         twBtn.style.display = 'none';
         twNameLabel.style.display = 'inline-block';
-        loadTwitterInfo(ninjaUserObj.tw_id).then(twInfo => {
-            if (!twInfo) {
-                twitterUserObj = null;
-                return;
-            }
-            twitterUserObj = twInfo;
-            twNameLabel.innerText = twInfo.name;
-            if (!twInfo.verified){
-                isVerifiedLabel.innerText = "Premium False";
-            }else{
-                isVerifiedLabel.innerText = "Premium True";
-            }
-            if (twInfo.profile_image_url) {
-                document.getElementById('user-twitter-logo').src = twInfo.profile_image_url;
-            }
+        loadTwitterInfo(ninjaUserObj.tw_id,true).then(twInfo => {
+            setupTwitterElem(twInfo);
         })
+    }
+}
+function setupTwitterElem(twInfo){
+    if (!twInfo) {
+        twitterUserObj = null;
+        return;
+    }
+    const isVerifiedLabel = document.getElementById("basic-twitter-verified");
+    const twNameLabel = document.getElementById('basic-twitter-name')
+    twitterUserObj = twInfo;
+    twNameLabel.innerText = twInfo.name;
+    if (!twInfo.verified) {
+        isVerifiedLabel.innerText = "Premium False";
+    } else {
+        isVerifiedLabel.innerText = "Premium True";
+    }
+    if (twInfo.profile_image_url) {
+        document.getElementById('user-twitter-logo').src = twInfo.profile_image_url;
     }
 }
 
@@ -107,13 +112,14 @@ function signUpByTwitter() {
     window.location.href = "/signUpByTwitter";
 }
 
-async function loadTwitterInfo(twitterID) {
+async function loadTwitterInfo(twitterID, needCache) {
     try {
-        let tw_data = TwitterBasicInfo.loadTwBasicInfo(twitterID)
-        if (tw_data) {
-            return tw_data;
+        if (needCache) {
+            let tw_data = TwitterBasicInfo.loadTwBasicInfo(twitterID)
+            if (tw_data) {
+                return tw_data;
+            }
         }
-
         const response = await GetToSrvByJson("/queryTwBasicById");
         if (!response.ok) {
             console.log("query twitter basic info failed")
@@ -125,8 +131,14 @@ async function loadTwitterInfo(twitterID) {
         return TwitterBasicInfo.cacheTwBasicInfo(text);
     } catch (err) {
         console.log("queryTwBasicById err:", err)
-        showDialog("error", err.toString())
+        return null;
     }
+}
+
+function refreshTwitterInfo() {
+    loadTwitterInfo(ninjaUserObj.tw_id,false).then(twInfo => {
+        setupTwitterElem(twInfo);
+    })
 }
 
 function quitFromService() {
@@ -179,20 +191,20 @@ async function postTweet() {
         PostToSrvByJson("/postTweet", obj).then(resp => {
             console.log(resp);
             const refreshedTweet = JSON.parse(resp)
-            document.getElementById("tweets-content").value='';
-            showDialog("success","post success");
+            document.getElementById("tweets-content").value = '';
+            showDialog("success", "post success");
 
         }).catch(err => {
             console.log(err);
-            showDialog("error",err.toString())
+            showDialog("error", err.toString())
         })
     } catch (err) {
-        showDialog("error",err.toString())
+        showDialog("error", err.toString())
     }
 
     function LoadTweets() {
         const lastTweetId = 0;
-        fetchData('/allNinjaTweets?lastTwId='+lastTweetId).then(tweets => {
+        fetchData('/allNinjaTweets?lastTwId=' + lastTweetId).then(tweets => {
             const tweetsPark = document.querySelector('.tweets-park');
             tweetsPark.innerHTML = '';
 
@@ -242,6 +254,5 @@ async function postTweet() {
             });
         });
     }
-
 }
 

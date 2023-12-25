@@ -13,16 +13,17 @@ import (
 
 var (
 	cfgActionRouter = map[string]LogicAction{
-		"/signUpByTwitter":   {signUpByTwitterV1, true},
-		"/tw_callback":       {twitterSignCallBackV1, false},
-		"/signUpSuccessByTw": {signUpSuccessByTw, false},
-		"/signInByEth":       {signInByEth, false},
-		"/bindWeb3ID":        {bindingWeb3ID, true},
-		"/queryTwBasicById":  {queryTwBasicById, true},
-		"/signOut":           {signOut, false},
-		"/main":              {mainPage, true},
-		"/postTweet":         {postTweets, true},
-		"/buyRights":         {mainPage, true},
+		"/signUpByTwitter":    {signUpByTwitterV1, true},
+		"/tw_callback":        {twitterSignCallBackV1, false},
+		"/signUpSuccessByTw":  {signUpSuccessByTw, false},
+		"/signInByEth":        {signInByEth, false},
+		"/bindWeb3ID":         {bindingWeb3ID, true},
+		"/queryTwBasicById":   {queryTwBasicById, true},
+		"/signOut":            {signOut, false},
+		"/main":               {mainPage, true},
+		"/postTweet":          {postTweets, true},
+		"/buyRights":          {mainPage, true},
+		"/globalLatestTweets": {globalTweetQuery, true},
 	}
 
 	cfgHtmlFileRouter = map[string]string{
@@ -75,8 +76,9 @@ func (c *TwitterConf) String() string {
 }
 
 type FileStoreConf struct {
-	ProjectID   string `json:"project_id"`
-	KeyFilePath string `json:"key_file_path"`
+	ProjectID      string `json:"project_id"`
+	KeyFilePath    string `json:"key_file_path"`
+	TweetsPageSize int    `json:"tweets_page_size"`
 }
 
 func (c *FileStoreConf) String() string {
