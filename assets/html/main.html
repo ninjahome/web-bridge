@@ -5,6 +5,8 @@
     <title>Ninja User Info</title>
     <script src="/assets/js/utils.js"></script>
     <script src="/assets/js/database.js"></script>
+    <script src="/assets/js/main.js"> </script>
+
     <style>
         .container {
             display: flex;
@@ -53,6 +55,114 @@
         .field-value {
             font-style: italic;
         }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            width: 80%;
+            height: 100%;
+            padding: 20px;
+            background-color: #fff;
+        }
+
+        .tweets-park {
+            width: 60%;
+            background-color: #e6e6e6;
+            margin-bottom: 20px;
+        }
+
+
+
+        .tweet-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .tweet-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .tweet-header .name {
+            font-weight: bold;
+        }
+
+        .tweet-header .username {
+            color: #555;
+            margin-left: 5px;
+        }
+
+        .tweet-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tweet-footer .tweet-action {
+            display: flex;
+            align-items: center;
+        }
+
+        .tweet-card {
+            min-height: 100px;
+            max-height: 400px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .tweet-footer .tweet-info {
+            font-style: italic;
+        }
+        .tweet-action button {
+            background-color: #4CAF50; /* 绿色背景 */
+            color: white; /* 白色文字 */
+            padding: 6px 12px;
+            margin: 4px 2px;
+            border: none;
+            border-radius: 4px; /* 圆角边框 */
+            cursor: pointer; /* 鼠标悬停时变为手形图标 */
+            transition: background-color 0.3s; /* 平滑的背景色过渡效果 */
+        }
+
+        .tweet-action button:hover {
+            background-color: #45a049; /* 鼠标悬停时的背景色 */
+        }
+        .show-more {
+            background-color: #4CAF50; /* 绿色背景 */
+            color: white; /* 白色文字 */
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px; /* 圆角边框 */
+            cursor: pointer; /* 鼠标悬停时变为手形图标 */
+            transition: background-color 0.3s; /* 平滑的背景色过渡效果 */
+            text-align: center;
+            display: block; /* 让按钮独占一行 */
+            margin: 10px auto; /* 水平居中 */
+        }
+
+        .show-more:hover {
+            background-color: #45a049; /* 鼠标悬停时的背景色 */
+        }
+
+        .tweet-content {
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .tweet-content-collapsed {
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+        }
+
     </style>
 </head>
 <body>
@@ -97,7 +207,6 @@
             </div>
         </div>
         <div class="left-lower">
-            {{/*            <button onclick="pullHomeTwitter()">拉取推文</button>*/}}
             <label for="tweets">
             <textarea id="tweets-content">
             </textarea>
@@ -106,12 +215,60 @@
 
         </div>
     </div>
-    <div class="right-side">
-        <!-- 右边内容 -->
-        <p>这里是右边部分，占据剩余空间。</p>
+    <div class="main-container">
+        <div class="tweets-park">
+            <div class="tweet-card">
+                <div class="tweet-header">
+                    <img src="https://via.placeholder.com/40" alt="Avatar">
+                    <span class="name">John Doe</span>
+                    <span class="username">@johndoe</span>
+                    <span class="time">1h</span>
+                </div>
+                <div class="tweet-content">
+                        罗马帝国是历史上的一个文明帝国，承接着先前的罗马共和国。中国史书称为“大秦”或“海西国”。
+前44年，罗马共和国将领凯撒成为终身独裁官，象征着共和制的结束；至前27年，屋大维成为奥古斯都，象征着罗马帝国的开端。其首都罗马城在公元前100年至公元400年这段时期是欧洲最大的城市，直至公元500年君士坦丁堡取代罗马城成为欧洲最大城市[5][6]，帝国人口亦增长到五千至九千万，大约是当时世界总人口的约20%[7][8]
+罗马帝国可分为前期（前27年—200年）、中期（200年—395年）和后期〔395年—1204年[注 2]/1453年[注 3]〕三个阶段。
+罗马共和国末年，政局由于一连串的内战和政治角力变得非常不稳定。公元前44年，共和国将领凯撒被元老院封为终身独裁官后不久，便遭到刺杀身亡。直至公元前31年，屋大维在亚克兴角战役击败对手马克·安东尼和女王克娄巴特拉七世，吞并埃及托勒密王国后，共和国的政局仍然不明朗。至公元前27年，元老院放弃共和制，赐君权及奥古斯都头衔予屋大维，这象征着罗马共和国的终结。这时元老院仍然存在，但大权已掌握在屋大维手中[9]。最初几位皇帝都以“第一公民”自居。
+屋大维征战的胜利扩张了帝国的领土。立国之初的两个世纪，帝国的政局有着前所未见的稳定，这段时期被称为“罗马治世”。直到公元41年，帝国第三位皇帝卡里古拉被刺身亡后，元老院曾经考虑恢复共和政制，但罗马禁卫军架空元老院，遂立克劳狄一世为帝。克劳狄一世在位期间，帝国继屋大维后首次征战不列颠尼亚。公元68年，克劳狄一世的继位者尼禄在兵变中自杀身亡，帝国遭遇一连串短暂的内战，同时犹太地区更爆发第一次起义，这段时期曾经有四位军团将领称帝。维斯帕先在公元69年战胜其他将领，建立弗拉维王朝。其继位者提图斯，在公元79年维苏威火山爆发后开放斗兽场。提图斯只短暂在位两年，便由其兄弟图密善继位为帝国第11位皇帝。图密善最后亦遭到刺杀身亡。元老院后来封涅尔瓦为皇帝，这亦是罗马五贤帝之首，开辟一段长达八十多年的政局稳定时期。罗马第13位皇帝图拉真是罗马五贤帝之中的第二位，他在位时见证帝国的最大版图。
+康茂德在位时，帝国开始出现衰退之兆。公元192年康茂德被刺杀身亡，触发五帝之年，有五人同时称帝，分别是佩蒂纳克斯、尤利安努斯、奈哲尔、阿尔拜努斯和塞普蒂米乌斯·塞维鲁，乱象最后由塞普蒂米乌斯·塞维鲁取得胜利而告终。公元235年皇帝亚历山大·塞维鲁被刺杀身亡，导致三世纪危机，这段时期短短50年之内有26人被元老院封为皇帝。直至戴克里先在位时创立四帝共治，帝国才全面恢复稳定，这段时期一共有四位皇帝共同统治罗马帝国。这种制度并不能维持下去，很快便招致内战。内战最终由君士坦丁一世胜出，成为帝国的唯一统治者。后来君士坦丁一世迁都至拜占庭，并命名为新罗马，但史家更喜欢以其名字―君士坦丁称之为君士坦丁堡。君士坦丁堡自此之后一直是帝国的首都，一直到其终结。君士坦丁一世亦于313年将基督公教（中文译为天主教会）合法化，并由狄奥西亚一世将基督教定为国教，基督教从而成为西方世界的主要宗教。
+这时的罗马帝国仍然是世界上的强权，并与其东面安息帝国的继承者波斯第二帝国互相抗衡，持续着一个世纪的纷争[10][11]。狄奥多西一世是最后一位统治一个完整的罗马帝国的皇帝，随后帝国的领土因滥权、内战、野蛮人入侵、军事改革和经济衰退等负面因素被日益蚕食，这时的罗马帝国实际上已完全分裂成东西两部分，自此之后再没有被统一过。公元410年及公元455年，西面的罗马城相继被西哥德人和汪达尔人等日耳曼部族入侵。公元476年，西罗马帝国皇帝罗慕路斯·奥古斯都被奥多亚塞废黜，这象征着西罗马帝国的终结。但由于罗慕路斯·奥古斯都从未被东罗马帝国所承认，所以严格上来说，西罗马帝国上一位皇帝尼波斯在公元480年去世后才算是罗马帝国在西欧的统治划上句号。而东罗马帝国则一直存在至1453年，君士坦丁堡被土耳其人攻陷、皇帝君士坦丁十一世战死为止。史学家通称东罗马帝国为拜占庭帝国。
+罗马帝国是世界历史上一个伟大的帝国，无论经济、文化、政治和军事上的成就都达到很高的水准，并和在与公元前一世纪兴起于亚洲的汉帝国西、东遥相并立。后世多将两者并列为当时世界上最先进及文明的强大帝国[12]。整个罗马帝国(包括东西罗马帝国)存在将近一千五百年，帝国的疆域在图拉真在位末年（117年）达到全盛，控制着大约五百万平方公里的土地[2]，统治着七千万的人口，这相当于当时世界总人口的百分之二十一。罗马帝国幅原辽阔，而且国祚长久，使拉丁希腊的语言、文化、宗教、发明、建筑、哲学、法律及政府模式对后世的影响相当深远。欧洲在整个中世纪时期，有数次对罗马帝国的复辟，这包括神圣罗马帝国。文艺复兴而后的欧洲帝国主义的兴起，更使希腊、罗马、犹太和基督教的文化向全世界传播开去，对现代社会文明的发展有着重要影响。
+                </div>
+                <button class="show-more" onclick="showFullTweetContent.call(this)">Show more</button>
+
+                <div class="tweet-footer">
+                    <div class="tweet-action">
+                        <button>$10打赏</button>
+                        <span>总赏额：0.23 eth</span>
+                    </div>
+                    <div class="tweet-info">Web3 ID: 0x00a7539cc7cc54f08a761175aa678005ef91f4dc</div>
+                </div>
+            </div>
+            <div class="tweet-card">
+                <div class="tweet-header">
+                    <img src="https://via.placeholder.com/40" alt="Avatar">
+                    <span class="name">John Doe</span>
+                    <span class="username">@johndoe</span>
+                    <span class="time">1h</span>
+                </div>
+                <div class="tweet-content">
+                   济、文化、政治和军事上的成就都达到很高的水准，并和在与公元
+                </div>
+                <button class="show-more" onclick="showFullTweetContent.call(this)">Show more</button>
+
+                <div class="tweet-footer">
+                    <div class="tweet-action">
+                        <button>$10打赏</button>
+                        <span>总赏额：0.2123 eth</span>
+                    </div>
+                    <div class="tweet-info">Web3 ID: 0x00a7539cc7cc54f08a761175aa678005ef91f4dc</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="operation-area"></div>
     </div>
 </div>
-
 <script>
     let ninjaUserObj = {{ .NinjaUsrInfoJson }};
     console.log(ninjaUserObj);
@@ -120,200 +277,17 @@
 
     document.addEventListener("DOMContentLoaded", initMainPage);
 
-    function initMainPage() {
-        checkSystemEnvironment();
-        window.addEventListener('popstate', clearSessionStorage);
-        window.addEventListener('replaceState', clearSessionStorage);
-        setupBasicInfo();
-    }
-
-    function checkSystemEnvironment() {
-
-        if (typeof window.ethereum === 'undefined') {
-            window.location.href = "/signIn";
-            return
-        }
-        metamaskObj = window.ethereum;
-        metamaskObj.on('accountsChanged', metamaskAccountChanged);
-        metamaskObj.on('chainChanged', metamaskChainChanged);
-        metamaskObj.request({method: 'eth_chainId'}).then(chainID => {
-            metamaskChainChanged(chainID);
-        })
-    }
-
-    async function metamaskChainChanged(chainId) {
-        const chainBtn = document.getElementById('change-chain-id-button')
-        const chainBalance = document.getElementById('basic-web3-balance')
-        if (__globalTargetChainNetworkID === chainId) {
-            chainBtn.style.display = 'none';
-            chainBalance.style.display = 'inline-block';
-            chainBalance.innerText = await metamaskAccBalance()
-            return;
-        }
-        chainBalance.style.display = 'none';
-        chainBtn.style.display = 'inline-block';
-    }
-
-    async function metamaskAccBalance() {
-        const balance = await metamaskObj.request({
-            method: 'eth_getBalance',
-            params: [ninjaUserObj.eth_addr, 'latest'],
-        });
-        // console.log('eth balance:', balance);
-        if (balance === "0x0") {
-            return "0.00 eth";
-        }
-        if (balance < 10 ** 12) {
-            return "< 0.000001 eth"
-        }
-        return parseFloat((balance / 10 ** 18).toFixed(6)) + ' eth';
-    }
-
-    function metamaskAccountChanged(accounts) {
-        if (accounts.length === 0) {
-            window.location.href = "/signOut";
-            return;
-        }
-        window.location.href = "/signOut";
-    }
-
-    function setupBasicInfo() {
-        const twBtn = document.getElementById('sign-up-by-twitter-button')
-        const twNameLabel = document.getElementById('basic-twitter-name')
-        const isVerifiedLabel = document.getElementById("basic-twitter-verified");
-        document.getElementById('basic-web3-id').innerText = ninjaUserObj.eth_addr;
-        if (!ninjaUserObj.tw_id) {
-            twNameLabel.style.display = 'none';
-            twBtn.style.display = 'inline-block';
+    function showFullTweetContent() {
+        const tweetCard = this.closest('.tweet-card');
+        const tweetContent = tweetCard.querySelector('.tweet-content');
+        if (this.innerText === "Show more") {
+            tweetContent.style.display = 'block';  // 显式设置为块级元素
+            tweetContent.classList.remove('tweet-content-collapsed');
+            this.innerText = "Show less";
         } else {
-            twBtn.style.display = 'none';
-            twNameLabel.style.display = 'inline-block';
-            loadTwitterInfo(ninjaUserObj.tw_id).then(twInfo => {
-                if (!twInfo) {
-                    twitterUserObj = null;
-                    return;
-                }
-                twitterUserObj = twInfo;
-                twNameLabel.innerText = twInfo.name;
-                if (!twInfo.verified){
-                    isVerifiedLabel.innerText = "Premium False";
-                }else{
-                    isVerifiedLabel.innerText = "Premium True";
-                }
-                if (twInfo.profile_image_url) {
-                    document.getElementById('user-twitter-logo').src = twInfo.profile_image_url;
-                }
-            })
-        }
-    }
-
-    function switchToWorkChain() {
-        metamaskObj.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{chainId: __globalTargetChainNetworkID}],
-        }).catch((switchError) => {
-            if (switchError.code !== 4902) {
-                showDialog("error", "failed switching to arbitrum network");
-                return;
-            }
-
-            const arbParam = __globalMetaMaskNetworkParam.get(__globalTargetChainNetworkID);
-            metamaskObj.request({
-                method: 'wallet_addEthereumChain',
-                params: [arbParam],
-            }).then(r => {
-                console.log(r);
-            }).catch(err => {
-                showDialog("error", "add to network failed:" + err.toString());
-            });
-        });
-    }
-
-    function signUpByTwitter() {
-        window.location.href = "/signUpByTwitter";
-    }
-
-    async function loadTwitterInfo(twitterID) {
-        try {
-            let tw_data = TwitterBasicInfo.loadTwBasicInfo(twitterID)
-            if (tw_data) {
-                return tw_data;
-            }
-
-            const response = await GetToSrvByJson("/queryTwBasicById");
-            if (!response.ok) {
-                console.log("query twitter basic info failed")
-                return null;
-            }
-
-            const text = await response.text();
-            console.log(text);
-            return TwitterBasicInfo.cacheTwBasicInfo(text);
-        } catch (err) {
-            console.log("queryTwBasicById err:", err)
-            showDialog("error", err.toString())
-        }
-    }
-
-    function quitFromService() {
-        fetch("/signOut", {method: 'GET'}).then(r => {
-            window.location.href = "/signIn";
-        }).catch(err => {
-            console.log(err)
-            window.location.href = "/signIn";
-        })
-    }
-
-    class TweetContent {
-        constructor(tweet_content, createAt, web3Id, twitterID, tweet_id, signature) {
-            this.text = tweet_content;
-            this.create_time = createAt;
-            this.web3_id = web3Id;
-            this.twitter_id = twitterID;
-            this.tweet_id = tweet_id;
-            this.signature = signature;
-        }
-    }
-
-    async function postTweet() {
-        try {
-            const content = document.getElementById("tweets-content").value.trim();
-            if (!content) {
-                showDialog("tips", "content can't be empty")
-                return;
-            }
-
-            const twitterID = ninjaUserObj.tw_id;
-            if (!twitterID) {
-                showDialog("tips", "bind your twitter first")
-                return;
-            }
-            if (!metamaskObj) {
-                window.location.href = "/signIn";
-                return;
-            }
-            const web3Id = ninjaUserObj.eth_addr;
-            const tweet = new TweetContent(content, (new Date()).getTime(), web3Id, twitterID);
-            const message = JSON.stringify(tweet);
-            const signature = await metamaskObj.request({
-                method: 'personal_sign',
-                params: [message, web3Id],
-            })
-
-            const obj = new SignDataForPost(message, signature, null)
-
-            PostToSrvByJson("/postTweet", obj).then(resp => {
-                console.log(resp);
-                const refreshedTweet = JSON.parse(resp)
-                document.getElementById("tweets-content").value='';
-                showDialog("success","post success");
-
-            }).catch(err => {
-                console.log(err);
-                showDialog("error",err.toString())
-            })
-        } catch (err) {
-            showDialog("error",err.toString())
+            tweetContent.style.display = '-webkit-box'; // 重置为 -webkit-box
+            tweetContent.classList.add('tweet-content-collapsed');
+            this.innerText = "Show more";
         }
     }
 
