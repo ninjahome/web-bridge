@@ -56,11 +56,12 @@ func (c *HttpConf) String() string {
 
 type TwitterConf struct {
 	imgFont        *truetype.Font
-	FontPath       string `json:"font_path"`
-	ClientID       string `json:"client_id"`
-	ClientSecret   string `json:"client_secret"`
-	ConsumerKey    string `json:"consumer_key"`
-	ConsumerSecret string `json:"consumer_secret"`
+	FontSize       float64 `json:"font_size"`
+	FontPath       string  `json:"font_path"`
+	ClientID       string  `json:"client_id"`
+	ClientSecret   string  `json:"client_secret"`
+	ConsumerKey    string  `json:"consumer_key"`
+	ConsumerSecret string  `json:"consumer_secret"`
 }
 
 func (c *TwitterConf) String() string {

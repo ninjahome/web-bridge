@@ -88,7 +88,7 @@ func prepareTweet(njTweet *NinjaTweet, ut *TwUserAccessToken) (*TweetRequest, er
 	}
 
 	var token = ut.GetToken()
-	txtImg, err := util.ConvertLongTweetToImg(njTweet.Txt, _globalCfg.imgFont)
+	txtImg, err := util.ConvertLongTweetToImg(njTweet.Txt, _globalCfg.imgFont, _globalCfg.FontSize)
 	if err != nil {
 		util.LogInst().Err(err).Msg("convert txt to img failed:" + njTweet.String())
 		return nil, err

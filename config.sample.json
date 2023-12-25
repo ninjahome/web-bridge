@@ -7,6 +7,7 @@
 	"ssl_cert_file": "",
 	"ssl_key_file": "",
 	"session_key": "",
+	"font_size": 28,
 	"font_path": "util/Noto_Sans_SC.ttf",
 	"client_id": "",
 	"client_secret": "",
