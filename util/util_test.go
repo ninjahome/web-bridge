@@ -30,9 +30,40 @@ Their workplace environments are designed to make sure staff feel creatively ins
 It's representing organisations such as Rugby League superpowers Leeds Rhinos and fast growing retailers such as the beauty and cosmetic brand P Louise, and the rapidly growing sportswear brand, Montirex. Paul said: “It’s been another great year for Sedulo, which simply could not have been possible without the hard work and dedication shown by our team year after year.
 
 "We started the Sedulo Christmas trip over 12 years ago now and it’s something we’ll continue to do, despite the rapid pace at which the business is growing. These trips are about giving something back and showing our people that their hard work is appreciated, particularly after completion of our 2023 record breaking Christmas Toy Appeal, while also allowing us to come together as a team and celebrate the continued success of our business.`
+var testContent3 = `最近，Solana带领Avalanche、NEAR等layer1公链大杀四方，市场又传出杀死以太坊的声音。 确实，ETH Killer是上一轮牛市大部分公链手握的王牌叙事。
+不过，在EVM一统江湖，layer2尚未爆发的当下，单靠MEME、DePin等叙事不足以撼动ETH的市场地位。这只是坎昆升级前，Alt-Layer1的短暂狂欢，Why？
+1）各大公链争相杀死以太坊的叙事，已然被一轮牛熊周期充分验证“失败了”。表面上看这源于以太坊强大的市场共识，和开发者群体创新力量，以及DeFi、NFT金融应用无限组合的魔力。
+实际上因为，Crypto市场还受限于技术、市场、合规等因素并未实现Mass Adoption大规模普及，这些新公链带来的技术“跃迁”并没有成为激发新叙事，扩大新市场增量的抓手，还仅仅在吃以太坊的溢出红利。
+Solana、Avalanche、Aptos等公链想从开发语言、代码复杂度、运行机制等底层框架彻底提升技术水平，为应用市场提供更好的infra。比如，Solana的高并发处理性能和用户体验UX优势，单论技术确实更适用于未来增量Crypto市场。
+只不过，眼下市场基本运作逻辑还没真正蜕变。
+偏好风险的游资，渴求财富密码的市场受众，不断刷新的多样玩法，始终存在的信息差，偶尔溢出圈的暴富故事等等，这些完美构成了周期性的牛市基本要素。
+这让技术“先天局限”的以太坊，愣是靠各类EIP、ERC标准协议等缝缝补补，也足以衍生出一个庞大的应用市场，还能让其他竞品公链仅靠溢出效应就能频频冒头。
+但大家都在吃以太坊DeFi市场红利，还没到Alt-layer1 可以轻松取代并超越以太坊的时候。
+2）以太坊“先天缺陷”已经探索出了一整套成熟解决方案，比如：扩容问题，演变出了Rollup、Plasma、Validium等各类方案；又比如：EOA地址局限，靠ERC4337 Account Abstraction也得到了升级，甚至演变出了一个账户抽象赛道；
+此外，layer2也同样成了一个叙事赛道，OP-Rollup和ZK-Rollup展开持续拉锯战等；后续还有坎昆升级后的Blob空间以及更遥远的Sharding分片、底层SNARK化等来提供后续发展支撑；
+即便是区块容量上限潜在的DA能力局限问题，也延伸出了Eigenlayer等基于Restaking方案来优化DA，再通过模块化组合Celestia这类三方DA方案，以及对VM执行层的可选替代方案等等。
+整个以太坊的开发、扩容、外延环境已经足够成熟和繁荣。它背后的开发者力量才是大以太屹立不倒的基石。
+虽然以太坊过去几年，持续叠乐高构建生态的落地结果确实不及预期，但能在频发的黑客攻击下，完成POW到POS的关键升级，又能把开发者资源聚拢在以以太坊EVM为中心的主线上，且能演变出一个更加宏大的layer2叙事板块，以太坊的后续潜在可能性不容低估。
+相信以太坊，是对以太坊多年稳固共识的敬畏，也是对其背后庞大开发者群体Builder的Respect。
+依稀记得18年岁末，EOS号称全新范式公链，且掀起了一轮菠菜游戏狂潮，但事实结果大家都看到了，短暂繁华散尽后，最终还是慢却稳健的以太坊笑到了最后。
+真正的价值发现，一定得慢慢Capture捕捉。
+3）Layer2在熊市的Build速度确实慢了，尤其是没有一轮layer2 Summer的市场大馈赠，让参与layer2生态构建的每个人都有点心有不甘。
+不过， layer2 Build速度过慢和以太坊DeFi叙事溢出到各大新锐公链另立山头道理类似。 以太坊layer2的后半程要靠一些高频交易和应用驱动，单靠以太坊金融玩法的溢出效应和路径依赖，和Alt-layer1硬碰硬对抗并没有优势。
+一方面，Arbitrum、Optimism等OP-Rollup有了layer2先发生态优势，并在Stack战略下，扩大了市场疆域，但这些战略扩张到底属于B端布局，OP-Rollup需要解决被诟病的中心化难题且带动C端市场增长。
+另一方面，zkSync、Starknet等ZK-Rollup有更Advanced技术优势，只不过ZK也是着眼于未来的技术，已有用户量级无法充分显现ZK的强大之处。只有用户量级扩大，Gas才能低到忽略不计，体验也越丝滑，这才是ZK layer2的最终形态。
+此外，layer2市场腰尾部力量正在举事，比如，Metis，尝试用Hyper（OP+ZK）Rollup技术，做POS去中心化Sequencer，变革Token的激励方式（治理—>实用）等等。还有，Espresso、Astria等共享Sequencer方案，也在以Rollup as a Service的方式也不断外延layer2市场的潜能。
+别以为OP+ZK就已经把layer2的故事讲完了，在我看来，Layer2 War才真正开始，真正内卷的layer2市场坎昆升级后可能才拉开局面。当坎昆升级时间敲定后，layer2的抱团逆势上涨不正是对眼下layer2憋屈处境的一次情绪释放？
+当未来应用链叙事场景打开，Mass Adoption的局面被打开后，layer2赛道能沉淀的资金、用户和DApp应用，一定比其他Alt-layer1更稳固。
+4）当然，此刻为以太坊生态发声，并非否定Solana的市场潜力。不可否认，Solana的技术创新起点确实高于已有区块链架构，无论是它的存储和计算分离特性以及高并发交易处理特性，都使得它对用户很友好，更容易打造生态。
+以DePin为例，物理基础设施+Token代币激励，这是过去一直在失败漩涡中反复的叙事，比如Filecoin Arweave等。在Solana上会不会真正成功，我不知道，但DePin发生在Solana上，我对DePin的信心会多一些。毕竟，高并发的技术起点和web2天然接轨，这和靠模块组合并入的生态逻辑还不一样。
+Solana眼下的崛起，一方面是以太坊layer2短暂沉寂带来的空窗机会，另一方面则是Solana上本来就活跃着一批开发力量的结果。但需要纠正的是，Solana的目标并非杀死以太坊，它其实在找以太坊的“空白”点伺机突破，如果有所建树且有于以太坊匹配的生态当量，顶多也就是比肩而已，何来取代一说。
+以太坊不可避免的会被一些全新技术起点的Alt-layer1链冲击，但他们都不是以太坊“杀手”，我更倾向于称之为，web3破局创新者。
+以太坊在DeFi金融应用以及庞大的组合性生态已经获得了成功，而layer2、layer3未来的新征途还正在路上。
+如果“开放、包容、可信、组合”，这样的以太坊最终都成就不了区块链价值落地，我很难相信一个新链就会。
+Note：若认同我的思考，喜欢我文章的话，帮忙一键三连下，谢谢大家支持。`
 
 func TestTxt2Img(t *testing.T) {
-	var img, err = ConvertLongTweetToImg(testContent)
+	var img, err = ConvertLongTweetToImg(testContent3)
 	if err != nil {
 		t.Fatal(err)
 	}

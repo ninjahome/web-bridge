@@ -7,7 +7,7 @@ import (
 	"golang.org/x/image/math/fixed"
 	"image"
 	"image/draw"
-	"io/ioutil"
+	"os"
 )
 
 func calcTextHeight(txt string, maxWidth int, fontSize float64, face font.Face) (int, error) {
@@ -59,7 +59,7 @@ func splitTextIntoLines(txt string, maxWidth int, face font.Face) []string {
 
 func ConvertLongTweetToImg(txt string) (image.Image, error) {
 	// 读取字体
-	fontBytes, err := ioutil.ReadFile("util/Noto_Sans_SC.ttf")
+	fontBytes, err := os.ReadFile("util/Noto_Sans_SC.ttf")
 	if err != nil {
 		return nil, err
 	}
