@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"unicode/utf8"
 )
 
 import (
@@ -22,7 +23,7 @@ import (
 
 const (
 	MaxReqContentLen = 1024 * 1024 * 5
-	TweetFontInImg   = "Noto_Sans_SC.ttf"
+	MaxTwitterLen    = 280
 )
 
 var (
@@ -103,4 +104,14 @@ func ReadRequest(request *http.Request, obj any) error {
 		return ErrHttpEmptyRequest
 	}
 	return json.Unmarshal(b.Bytes(), obj)
+}
+
+func IsOverTwitterLimit(text string) bool {
+	return utf8.RuneCountInString(text) > MaxTwitterLen
+}
+func TruncateString(str string, n int) string {
+	if n > utf8.RuneCountInString(str) {
+		return str
+	}
+	return string([]rune(str)[:n])
 }

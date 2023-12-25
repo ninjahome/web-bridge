@@ -68,25 +68,6 @@ func twitterPostWithAccessToken(token *oauth2.Token, accUrl, contentType string,
 	return nil
 }
 
-type TwitterPostResponse struct {
-	Data TweetPostResult `json:"data"`
-}
-
-type TweetPostResult struct {
-	ID   string `json:"id"`
-	Text string `json:"text"`
-}
-type TweetContent struct {
-	Txt   string              `json:"text"`
-	Poll  *TweetPoll          `json:"poll,omitempty"`
-	Media map[string][]string `json:"media"`
-}
-
-type TweetPoll struct {
-	Options         []string `json:"options"`          // 投票选项
-	DurationMinutes int      `json:"duration_minutes"` // 投票持续时间（分钟）
-}
-
 func postTweetsV2(w http.ResponseWriter, r *http.Request) {
 	var ut, errToken = checkTwitterRightsV2(w, r)
 	if errToken != nil {
@@ -124,12 +105,9 @@ func postTweetsV2(w http.ResponseWriter, r *http.Request) {
 	}
 	tweetContent.Signature = param.Signature
 
-	var tweetResponse = &TwitterPostResponse{}
-	var tweetReq = &TweetContent{
-		Txt: tweetContent.ToTweet(),
-		//Media: map[string][]string{
-		//	"media_ids": {mediaID},
-		//},
+	var tweetResponse = &TweetResponse{}
+	var tweetReq = &TweetRequest{
+		Text: _globalCfg.GetNjProtocolAd(tweetContent.CreateAt),
 	}
 	err = twitterPostWithAccessToken(ut.Token, accessPointPostTweets, "application/json", tweetReq, tweetResponse)
 	if err != nil {

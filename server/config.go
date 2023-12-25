@@ -21,7 +21,6 @@ var (
 		"/queryTwBasicById":  queryTwBasicById,
 		"/signOut":           signOut,
 		"/main":              mainPage,
-		"/pullMyTimeLine":    pullTwitterTimeline,
 		"/postTweet":         postTweets,
 		"/buyRights":         mainPage,
 	}
@@ -87,6 +86,7 @@ func (c *FileStoreConf) String() string {
 type SysConf struct {
 	Log      string `json:"log"`
 	LocalRun bool   `json:"local_run"`
+	UrlHome  string `json:"url_home"`
 	*HttpConf
 	*TwitterConf
 	*FileStoreConf
@@ -97,6 +97,7 @@ func (c *SysConf) String() any {
 	var s = "\n=======================system config==========================="
 	s += "\nlog level:" + c.Log
 	s += "\nlocal mode:" + fmt.Sprintf("%t", c.LocalRun)
+	s += "\nhome:" + c.UrlHome
 	s += "\n" + c.HttpConf.String()
 	s += "\n" + c.TwitterConf.String()
 	s += "\n" + c.FileStoreConf.String()
@@ -105,7 +106,6 @@ func (c *SysConf) String() any {
 }
 
 var (
-	systemUrlHome            = "https://bridge.simplenets.org"
 	twitterSignUpCallbackURL = ""
 )
 
@@ -115,12 +115,8 @@ func InitConf(c *SysConf) {
 	fmt.Println(c.String())
 
 	_ = DbInst()
-	if c.LocalRun {
-		systemUrlHome = "https://sharp-happy-grouse.ngrok-free.app"
-	} else {
-		systemUrlHome = "https://bridge.simplenets.org"
-	}
-	twitterSignUpCallbackURL = systemUrlHome + "/tw_callback"
+
+	twitterSignUpCallbackURL = _globalCfg.UrlHome + "/tw_callback"
 	conf := _globalCfg.TwitterConf
 	var oauth2Config = &oauth2.Config{
 		RedirectURL:  twitterSignUpCallbackURL,
@@ -146,4 +142,8 @@ func InitConf(c *SysConf) {
 	}
 
 	_globalCfg.imgFont = f
+}
+
+func (c *SysConf) GetNjProtocolAd(NjTwID int64) string {
+	return fmt.Sprintf("Buy Rights: %s/?id=%d", c.UrlHome, NjTwID)
 }

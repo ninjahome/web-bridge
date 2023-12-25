@@ -52,35 +52,36 @@ func splitTextIntoLines(txt string, maxWidth int, face font.Face) []string {
 	return lines
 }
 
-func ConvertLongTweetToImg(txt string, f *truetype.Font) (image.Image, error) {
+func ConvertLongTweetToImg(txt string, f *truetype.Font, fontSize float64) (image.Image, error) {
+
 	opts := &truetype.Options{
-		Size:    24,
+		Size:    fontSize,
 		DPI:     72,
 		Hinting: font.HintingNone,
 	}
 	face := truetype.NewFace(f, opts)
 
-	originalMaxWidth := 1800
-	rightPadding := 40
-	maxWidth := originalMaxWidth - rightPadding
+	originalMaxWidth := 1600
+	leftPadding := 40
+	maxWidth := originalMaxWidth - 2*leftPadding
 
-	textHeight, err := calcTextHeight(txt, maxWidth, 24, face)
+	textHeight, err := calcTextHeight(txt, maxWidth, fontSize, face)
 	if err != nil {
 		return nil, err
 	}
 
 	img := image.NewRGBA(image.Rect(0, 0, originalMaxWidth, textHeight))
-	draw.Draw(img, img.Bounds(), image.White, image.ZP, draw.Src)
+	draw.Draw(img, img.Bounds(), image.White, image.Point{}, draw.Src)
 
 	c := freetype.NewContext()
 	c.SetFont(f)
-	c.SetFontSize(24)
+	c.SetFontSize(fontSize)
 	c.SetClip(img.Bounds())
 	c.SetDst(img)
 	c.SetSrc(image.Black)
 
-	pt := freetype.Pt(0, int(c.PointToFixed(24)>>6))
-	lineHeight := fixed.I(int(24 * 1.5))
+	pt := freetype.Pt(leftPadding, int(c.PointToFixed(fontSize)>>6))
+	lineHeight := fixed.I(int(fontSize * 1.5))
 
 	lines := splitTextIntoLines(txt, maxWidth, face)
 	for _, line := range lines {

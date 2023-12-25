@@ -172,12 +172,12 @@ type TwUserAccessTokenV2 struct {
  ******************************************************************************************************/
 
 type NinjaTweet struct {
-	TweetContent string `json:"text" firestore:"text"`
-	CreateAt     int64  `json:"create_time" firestore:"create_time"`
-	Web3ID       string `json:"web3_id" firestore:"web3_id"`
-	TweetUsrId   string `json:"twitter_id" firestore:"twitter_id"`
-	TweetId      string `json:"tweet_id,omitempty" firestore:"tweet_id"`
-	Signature    string `json:"signature,omitempty" firestore:"signature"`
+	Txt        string `json:"text" firestore:"text"`
+	CreateAt   int64  `json:"create_time" firestore:"create_time"`
+	Web3ID     string `json:"web3_id" firestore:"web3_id"`
+	TweetUsrId string `json:"twitter_id" firestore:"twitter_id"`
+	TweetId    string `json:"tweet_id,omitempty" firestore:"tweet_id"`
+	Signature  string `json:"signature,omitempty" firestore:"signature"`
 }
 
 type TweetsOfUser struct {
@@ -185,17 +185,13 @@ type TweetsOfUser struct {
 }
 
 func (nt *NinjaTweet) IsValid() bool {
-	return nt.CreateAt > 0 && len(nt.TweetContent) > 0 &&
+	return nt.CreateAt > 0 && len(nt.Txt) > 0 &&
 		len(nt.TweetUsrId) > 0 && len(nt.Web3ID) > 0
 }
 
 func (nt *NinjaTweet) String() string {
 	bts, _ := json.Marshal(nt)
 	return string(bts)
-}
-
-func (nt *NinjaTweet) ToTweet() string {
-	return nt.TweetContent + "\n#Dessage Rights purchase:" + systemUrlHome + "/buyRights?" + BuyRightsUrlKey + "=" + nt.Web3ID
 }
 
 /*******************************************************************************************************
@@ -367,7 +363,7 @@ func (dm *DbManager) GetTwAccessTokenV2(twitterId string) (*TwUserAccessTokenV2,
 func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
-	tweetsDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(content.TweetId)
+	tweetsDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(fmt.Sprintf("%d", content.CreateAt))
 	_, err := tweetsDoc.Set(opCtx, content)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save tweet draft failed:" + content.String())
@@ -381,16 +377,3 @@ func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 	_, err = ownerDoc.Set(opCtx, newItem, firestore.MergeAll)
 	return err
 }
-
-//func (dm *DbManager) UpdateTweetDraft(content *NinjaTweet) error {
-//	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
-//	defer cancel()
-//	tweetsDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(content.Signature)
-//
-//	_, err := tweetsDoc.Set(opCtx, content, firestore.Merge([]string{"tweet_id"}))
-//	if err != nil {
-//		util.LogInst().Err(err).Msg("update tweet draft failed:" + content.String())
-//		return err
-//	}
-//	return nil
-//}

@@ -22,17 +22,6 @@ func MustSignInData(str string) *SignInObj {
 	return so
 }
 
-type SignDataByEth struct {
-	Message   string `json:"message"`
-	Signature string `json:"signature"`
-	PayLoad   any    `json:"pay_load,omitempty"`
-}
-
-func (sp *SignDataByEth) RawData() string {
-	bts, _ := json.Marshal(sp)
-	return string(bts)
-}
-
 func signInByEth(w http.ResponseWriter, r *http.Request) {
 	param := &SignDataByEth{}
 	err := util.ReadRequest(r, param)

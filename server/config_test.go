@@ -12,6 +12,7 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 	cfg := &SysConf{
 		Log:      "debug",
 		LocalRun: false,
+		UrlHome:  "https://bridge.simplenets.org",
 		HttpConf: &HttpConf{
 			RefreshContent: true,
 			UseHttps:       false,

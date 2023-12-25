@@ -13,6 +13,40 @@ const (
 	BuyRightsUrlKey     = "twOwner"
 )
 
+type SignDataByEth struct {
+	Message   string `json:"message"`
+	Signature string `json:"signature"`
+	PayLoad   any    `json:"pay_load,omitempty"`
+}
+
+func (sp *SignDataByEth) RawData() string {
+	bts, _ := json.Marshal(sp)
+	return string(bts)
+}
+
+func (sp *SignDataByEth) ParseNinjaTweet() (*NinjaTweet, error) {
+	var tweetContent NinjaTweet
+	var err = json.Unmarshal([]byte(sp.Message), &tweetContent)
+	if err != nil {
+		util.LogInst().Err(err).Msg("Error parsing tweet ")
+		return nil, err
+	}
+
+	if !tweetContent.IsValid() {
+		util.LogInst().Warn().Msg("invalid tweet content:" + tweetContent.String())
+		return nil, fmt.Errorf("invalid tweet content")
+	}
+
+	err = util.Verify(tweetContent.Web3ID, sp.Message, sp.Signature)
+	if err != nil {
+		util.LogInst().Err(err).Msg("tweet signature verify failed")
+		return nil, err
+	}
+	tweetContent.Signature = sp.Signature
+
+	return &tweetContent, nil
+}
+
 func queryTwBasicById(w http.ResponseWriter, r *http.Request) {
 	var ninjaUser, err = validateUsrRights(r)
 	if err != nil {

@@ -38,10 +38,7 @@ func parseUserToken(values url.Values) *TwUserAccessToken {
 }
 
 func (ut *TwUserAccessToken) GetToken() *oauth1.Token {
-	return &oauth1.Token{
-		Token:       ut.OauthToken,
-		TokenSecret: ut.OauthTokenSecret,
-	}
+	return oauth1.NewToken(ut.OauthToken, ut.OauthTokenSecret)
 }
 
 func (ut *TwUserAccessToken) String() string {
