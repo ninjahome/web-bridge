@@ -61,7 +61,7 @@ func ConvertLongTweetToImg(txt string, f *truetype.Font, fontSize float64) (imag
 	}
 	face := truetype.NewFace(f, opts)
 
-	originalMaxWidth := 1600
+	originalMaxWidth := 2000
 	leftPadding := 40
 	maxWidth := originalMaxWidth - 2*leftPadding
 

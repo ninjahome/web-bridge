@@ -146,5 +146,5 @@ func InitConf(c *SysConf) {
 }
 
 func (c *SysConf) GetNjProtocolAd(NjTwID int64) string {
-	return fmt.Sprintf("Buy Rights: %s/?id=%d", c.UrlHome, NjTwID)
+	return fmt.Sprintf("\nBuy Rights: %s/?id=%d", c.UrlHome, NjTwID)
 }
