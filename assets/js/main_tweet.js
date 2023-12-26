@@ -1,6 +1,6 @@
 const dbKeyCachedGlobalTweets = "__db_key_cached_global_tweets__"
 const dbKeyCachedTweetContentById = "__db_key_cached_tweet_content__by_id__"
-const maxCachedLocalTweetNo = 3//160
+const maxCachedLocalTweetNo = 120
 let isMoreTweetsLoading = false;
 let hasMoreTweetsToLoad = true;
 let maxTweetIdCurShowed = BigInt(0);
@@ -72,9 +72,9 @@ function updateLocalCachedTweetList(newIDs) {
     localStorage.setItem(dbKeyCachedGlobalTweets, JSON.stringify(topNArray.map(Number)));
 }
 
-function parseNjTweetsFromSrv(tweetArray, refreshNew) {
+function parseNjTweetsFromSrv(tweetArray, refreshNewest) {
     if (tweetArray.length === 0) {
-        if (!refreshNew) {
+        if (!refreshNewest) {
             hasMoreTweetsToLoad = false;
         }
         console.log("no new tweets got")
@@ -88,7 +88,7 @@ function parseNjTweetsFromSrv(tweetArray, refreshNew) {
         newIDs.push(obj.create_time);
         return obj;
     });
-    populateLatestTweets(localTweets, false, refreshNew);
+    populateLatestTweets(localTweets, refreshNewest);
     updateLocalCachedTweetList(newIDs)
 }
 
@@ -101,6 +101,7 @@ function loadCachedGlobalTweets() {
     if (localTweetsIds.length === 0) {
         return;
     }
+
     const tweets = localTweetsIds
         .map(tweetID => {
             const storedTweetData = localStorage.getItem(TweetToShowOnWeb.DBKey(tweetID));
@@ -118,9 +119,8 @@ function loadCachedGlobalTweets() {
     if (tweets.length === 0) {
         return;
     }
-    populateLatestTweets(tweets, true, false);
+    populateLatestTweets(tweets, false);
 }
-
 
 function loadMoreTweets() {
     if (!hasMoreTweetsToLoad) {
@@ -131,37 +131,34 @@ function loadMoreTweets() {
     }
 
     const documentHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
-    console.log(window.innerHeight, window.scrollY, documentHeight)
     if (window.innerHeight + window.scrollY < documentHeight - 100) {
         return;
     }
-
+    isMoreTweetsLoading = true;
     loadGlobalLatestTweetsFromSrv(false);
 }
 
-function loadGlobalLatestTweetsFromSrv(refreshNew) {
+function loadGlobalLatestTweetsFromSrv(refreshNewest) {
     let startID;
-    if (refreshNew) {
+    if (refreshNewest) {
         startID = maxTweetIdCurShowed
     } else {
         startID = minTweetIdCurShowed
     }
 
-    fetch("/globalLatestTweets?startID=" + startID + "&&isRefresh=" + refreshNew)
+    fetch("/globalLatestTweets?startID=" + startID + "&&isRefresh=" + refreshNewest)
         .then(response => response.json())
         .then(tweetArray => {
-            parseNjTweetsFromSrv(tweetArray, refreshNew);
+            parseNjTweetsFromSrv(tweetArray, refreshNewest);
         })
         .catch(err => {
             showDialog("error", err.toString());
         });
 }
 
-function populateLatestTweets(newCachedTweet, clean, refreshNew) {
+function populateLatestTweets(newCachedTweet, insertAtHead) {
     const tweetsPark = document.querySelector('.tweets-park');
-    if (clean) {
-        tweetsPark.innerHTML = '';
-    }
+
     let maxCreateTime = BigInt(0);
     let minCreateTime = BigInt(0);
     newCachedTweet.forEach(async tweet => {
@@ -235,7 +232,6 @@ function populateLatestTweets(newCachedTweet, clean, refreshNew) {
         showMoreBtn.onclick = function () {
             showFullTweetContent.call(this);
         };
-        tweetCard.appendChild(showMoreBtn);
 
         // 设置 tweet-footer
         const tweetFooter = document.createElement('div');
@@ -244,8 +240,8 @@ function populateLatestTweets(newCachedTweet, clean, refreshNew) {
         const tweetActionDiv = document.createElement('div');
         tweetActionDiv.classList.add('tweet-action');
         tweetActionDiv.innerHTML = `
-            <button>$10打赏</button>
-            <span>总赏额：0.23 eth</span>
+            <button>$10U打赏</button>
+            <span>总赏额：0.23 eth 产生彩票数：68张</span>
         `;
         tweetFooter.appendChild(tweetActionDiv);
 
@@ -256,11 +252,18 @@ function populateLatestTweets(newCachedTweet, clean, refreshNew) {
 
         tweetCard.appendChild(tweetFooter);
 
-        if (refreshNew) {
-            tweetsPark.appendChild(tweetCard);
-        } else {
+        if (insertAtHead) {
             tweetsPark.insertBefore(tweetCard, tweetsPark.firstChild);
+        } else {
+            tweetsPark.appendChild(tweetCard);
         }
+        setTimeout(() => {
+            if (tweetContent.scrollHeight <= tweetContent.clientHeight) {
+                showMoreBtn.style.display = 'none';
+            } else {
+                tweetCard.appendChild(showMoreBtn); // 只有在内容溢出时才添加按钮
+            }
+        }, 0);
     });
 
     maxTweetIdCurShowed = maxCreateTime;
@@ -296,14 +299,12 @@ async function postTweet() {
             params: [message, web3Id],
         })
 
-        const obj = new SignDataForPost(message, signature, null)
-
-        PostToSrvByJson("/postTweet", obj).then(resp => {
-            console.log(resp);
+        const sigData = new SignDataForPost(message, signature, null)
+        PostToSrvByJson("/postTweet", sigData).then(resp => {
             const refreshedTweet = JSON.parse(resp)
             document.getElementById("tweets-content").value = '';
             showDialog("success", "post success");
-
+            parseNjTweetsFromSrv([refreshedTweet], true);
         }).catch(err => {
             console.log(err);
             showDialog("error", err.toString())

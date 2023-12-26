@@ -149,7 +149,7 @@ func postTweets(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(tweetResponse)
+	json.NewEncoder(w).Encode(njTweet)
 	util.LogInst().Debug().Msg("Tweet posted successfully")
 }
 

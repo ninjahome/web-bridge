@@ -74,7 +74,6 @@
             margin-bottom: 20px;
         }
 
-
         .tweet-header {
             display: flex;
             align-items: center;
@@ -110,50 +109,49 @@
 
         .tweet-card {
             min-height: 100px;
-            max-height: 400px; /* 当文本未展开时限制最大高度 */
-            overflow: hidden; /* 隐藏超出部分内容 */
+            max-height: 400px;
+            overflow: hidden;
             border: 1px solid #ccc;
             padding: 15px;
             margin-bottom: 20px;
             background-color: #f9f9f9;
-            transition: max-height 0.3s ease; /* 平滑高度变化 */
+            transition: max-height 0.3s ease;
         }
-
 
         .tweet-footer .tweet-info {
             font-style: italic;
         }
 
         .tweet-action button {
-            background-color: #4CAF50; /* 绿色背景 */
-            color: white; /* 白色文字 */
+            background-color: #4CAF50;
+            color: white;
             padding: 6px 12px;
             margin: 4px 2px;
             border: none;
-            border-radius: 4px; /* 圆角边框 */
-            cursor: pointer; /* 鼠标悬停时变为手形图标 */
-            transition: background-color 0.3s; /* 平滑的背景色过渡效果 */
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
 
         .tweet-action button:hover {
-            background-color: #45a049; /* 鼠标悬停时的背景色 */
+            background-color: #45a049;
         }
 
         .show-more {
-            background-color: #4CAF50; /* 绿色背景 */
-            color: white; /* 白色文字 */
+            background-color: #4CAF50;
+            color: white;
             padding: 6px 12px;
             border: none;
-            border-radius: 4px; /* 圆角边框 */
-            cursor: pointer; /* 鼠标悬停时变为手形图标 */
-            transition: background-color 0.3s; /* 平滑的背景色过渡效果 */
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
             text-align: center;
-            display: block; /* 让按钮独占一行 */
-            margin: 10px auto; /* 水平居中 */
+            display: block;
+            margin: 10px auto;
         }
 
         .show-more:hover {
-            background-color: #45a049; /* 鼠标悬停时的背景色 */
+            background-color: #45a049;
         }
 
         .tweet-content {
@@ -169,6 +167,25 @@
             display: -webkit-box;
             -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
+        }
+
+        .left-lower {
+            position: relative;
+        }
+
+        .tweets-content {
+            width: 100%;
+            min-height: 200px;
+            max-height: 400px;
+            resize: vertical;
+            padding-bottom: 30px;
+        }
+
+        .left-lower button {
+            position: absolute;
+            right: 10px;
+            bottom: 5px;
+            z-index: 10;
         }
 
     </style>
@@ -214,45 +231,43 @@
             </div>
 
             <div id="operation-area">
-                <button onclick="refreshTwitterInfo()">更新推特Profile</button>
+                <button onclick="refreshTwitterInfo()">同步推特</button>
                 <button onclick="quitFromService()">退出</button>
             </div>
         </div>
         <div class="left-lower">
             <label for="tweets">
-            <textarea id="tweets-content">
+            <textarea class="tweets-content" id="tweets-content">
             </textarea>
             </label>
             <button onclick="postTweet()">发布推文</button>
-
         </div>
     </div>
     <div class="main-container">
         <div class="tweets-park">
-            <div class="tweet-card">
-                <div class="tweet-header">
-                    <img id="twitterAvatar" src="https://via.placeholder.com/40" alt="Avatar">
-                    <span id="twitterName" class="name">John Doe</span>
-                    <span id="twitterUserName" class="username">@johndoe</span>
-                    <span id="tweet-create-time" class="time">1h</span>
-                </div>
+{{/*            <div class="tweet-card">*/}}
+{{/*                <div class="tweet-header">*/}}
+{{/*                    <img id="twitterAvatar" src="https://via.placeholder.com/40" alt="Avatar">*/}}
+{{/*                    <span id="twitterName" class="name">John Doe</span>*/}}
+{{/*                    <span id="twitterUserName" class="username">@johndoe</span>*/}}
+{{/*                    <span id="tweet-create-time" class="time">1h</span>*/}}
+{{/*                </div>*/}}
 
-                <div id="tweet-content" class="tweet-content">
-                    世界上的强权，并与其东面安息帝国
-                </div>
+{{/*                <div id="tweet-content" class="tweet-content">*/}}
+{{/*                    世界上的强权，并与其东面安息帝国*/}}
+{{/*                </div>*/}}
 
-                <button class="show-more" onclick="showFullTweetContent.call(this)">Show more</button>
-                <div class="tweet-footer">
-                    <div class="tweet-action">
-                        <button>$10打赏</button>
-                        <span>总赏额：0.23 eth</span>
-                    </div>
-                    <div class="tweet-info">Web3 ID: <span id="tweet-owner-web3-id">0x00a7539cc7cc54f08a761175aa678005ef91f4dc</span>
-                    </div>
-                </div>
-            </div>
+{{/*                <button class="show-more" onclick="showFullTweetContent.call(this)">Show more</button>*/}}
+{{/*                <div class="tweet-footer">*/}}
+{{/*                    <div class="tweet-action">*/}}
+{{/*                        <button>$10打赏</button>*/}}
+{{/*                        <span>总赏额：0.23 eth</span>*/}}
+{{/*                    </div>*/}}
+{{/*                    <div class="tweet-info">Web3 ID: <span id="tweet-owner-web3-id">0x00a7539cc7cc54f08a761175aa678005ef91f4dc</span>*/}}
+{{/*                    </div>*/}}
+{{/*                </div>*/}}
+{{/*            </div>*/}}
         </div>
-
         <div class="operation-area"></div>
     </div>
 </div>

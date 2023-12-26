@@ -385,12 +385,12 @@ func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 	return err
 }
 
-func (dm *DbManager) QueryGlobalLatestTweets(pageSize int, id int64, new bool, callback func(tweet *NinjaTweet)) error {
+func (dm *DbManager) QueryGlobalLatestTweets(pageSize int, id int64, readNewest bool, callback func(tweet *NinjaTweet)) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
 	var doc = dm.fileCli.Collection(DBTableTweetsPosted)
 	var iter *firestore.DocumentIterator
-	if new {
+	if readNewest {
 		iter = doc.
 			Where("create_time", ">", id).
 			OrderBy("create_time", firestore.Asc).Limit(pageSize).Documents(opCtx)

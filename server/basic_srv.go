@@ -6,6 +6,7 @@ import (
 	"github.com/ninjahome/web-bridge/util"
 	"html/template"
 	"net/http"
+	"strconv"
 )
 
 const (
@@ -52,7 +53,12 @@ func (sp *SignDataByEth) ParseNinjaTweet() (*NinjaTweet, error) {
 	return &tweetContent, nil
 }
 
-func queryTwBasicById(w http.ResponseWriter, _ *http.Request, ninjaUser *NinjaUsrInfo) {
+func queryTwBasicById(w http.ResponseWriter, r *http.Request, ninjaUser *NinjaUsrInfo) {
+	var needSyncFromTwitter = r.URL.Query().Get("forceSync")
+	forceSync, err := strconv.ParseBool(needSyncFromTwitter)
+	if err != nil {
+		forceSync = false
+	}
 
 	var twitterID = ninjaUser.TwID
 	if len(twitterID) == 0 {
@@ -61,12 +67,37 @@ func queryTwBasicById(w http.ResponseWriter, _ *http.Request, ninjaUser *NinjaUs
 		http.Error(w, "twitter id invalid", http.StatusBadRequest)
 		return
 	}
-	var userdata, err = DbInst().TwitterBasicInfo(twitterID)
-	if err != nil {
-		util.LogInst().Err(err).Str("twitter-id", twitterID).
-			Str("eth-addr", ninjaUser.EthAddr).Msg("query twitter data failed")
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	var userdata *TWUserInfo
+	if forceSync {
+		ut, err := checkTwitterRights(ninjaUser, r)
+		if err != nil {
+			util.LogInst().Warn().Str("twitter-id", twitterID).
+				Str("eth-addr", ninjaUser.EthAddr).Msg("check twitter access token failed")
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		twitterUser, err := verifyTwitterCredentials(ut)
+		if err != nil {
+			util.LogInst().Warn().Str("twitter-id", twitterID).
+				Str("eth-addr", ninjaUser.EthAddr).Msg("sync twitter server failed")
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		userdata = &TWUserInfo{
+			ID:                   twitterUser.IDStr,
+			Name:                 twitterUser.Name,
+			ScreenName:           twitterUser.ScreenName,
+			Description:          twitterUser.Description,
+			ProfileImageUrlHttps: twitterUser.ProfileImageUrlHttps,
+		}
+	} else {
+		userdata, err = DbInst().TwitterBasicInfo(twitterID)
+		if err != nil {
+			util.LogInst().Err(err).Str("twitter-id", twitterID).
+				Str("eth-addr", ninjaUser.EthAddr).Msg("query twitter data failed")
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

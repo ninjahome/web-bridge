@@ -19,7 +19,11 @@ function setupTwitterElem(twInfo) {
     }
 }
 
-async function loadTwitterInfo(twitterID, needCache) {
+async function loadTwitterInfo(twitterID, needCache,forceSync) {
+    if (!forceSync){
+        forceSync = false;
+    }
+
     try {
         if (needCache) {
             let tw_data = TwitterBasicInfo.loadTwBasicInfo(twitterID)
@@ -27,7 +31,7 @@ async function loadTwitterInfo(twitterID, needCache) {
                 return tw_data;
             }
         }
-        const response = await GetToSrvByJson("/queryTwBasicById");
+        const response = await GetToSrvByJson("/queryTwBasicById?forceSync="+forceSync);
         if (!response.ok) {
             console.log("query twitter basic info failed")
             return null;
@@ -43,7 +47,7 @@ async function loadTwitterInfo(twitterID, needCache) {
 }
 
 function refreshTwitterInfo() {
-    loadTwitterInfo(ninjaUserObj.tw_id, false).then(twInfo => {
+    loadTwitterInfo(ninjaUserObj.tw_id, false,true).then(twInfo => {
         setupTwitterElem(twInfo);
     })
 }
