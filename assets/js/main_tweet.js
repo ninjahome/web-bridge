@@ -163,7 +163,7 @@ function populateLatestTweets(newCachedTweet, insertAtHead) {
     let minCreateTime = BigInt(0);
     newCachedTweet.forEach(async tweet => {
 
-        if (!tweet.name|| tweet.name === "unknown") {
+        if (!tweet.name|| tweet.name === "unknown" || tweet.profile_image_url === DefaultAvatarSrc) {
             const twitterInfo = await loadTwitterInfo(tweet.twitter_id, true)
             if (!twitterInfo ) {
                 tweet.name = "unknown";
