@@ -56,19 +56,23 @@ func queryTwBasicById(w http.ResponseWriter, _ *http.Request, ninjaUser *NinjaUs
 
 	var twitterID = ninjaUser.TwID
 	if len(twitterID) == 0 {
-		util.LogInst().Warn().Msg("invalid twitter id param")
+		util.LogInst().Warn().Str("twitter-id", twitterID).
+			Str("eth-addr", ninjaUser.EthAddr).Msg("invalid twitter id param")
 		http.Error(w, "twitter id invalid", http.StatusBadRequest)
 		return
 	}
 	var userdata, err = DbInst().TwitterBasicInfo(twitterID)
 	if err != nil {
-		util.LogInst().Err(err).Msg("query twitter data failed")
+		util.LogInst().Err(err).Str("twitter-id", twitterID).
+			Str("eth-addr", ninjaUser.EthAddr).Msg("query twitter data failed")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(userdata.RawData())
+	util.LogInst().Debug().Str("twitter-id", twitterID).
+		Str("eth-addr", ninjaUser.EthAddr).Msg("query twitter basic info success")
 }
 
 func mainPage(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {

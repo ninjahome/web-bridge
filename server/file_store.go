@@ -385,12 +385,21 @@ func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 	return err
 }
 
-func (dm *DbManager) QueryGlobalLatestTweets(pageSize int, id int64, callback func(tweet *NinjaTweet)) error {
+func (dm *DbManager) QueryGlobalLatestTweets(pageSize int, id int64, new bool, callback func(tweet *NinjaTweet)) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
-	iter := dm.fileCli.Collection(DBTableTweetsPosted).
-		Where("create_time", ">", id).
-		OrderBy("create_time", firestore.Asc).Limit(pageSize).Documents(opCtx)
+	var doc = dm.fileCli.Collection(DBTableTweetsPosted)
+	var iter *firestore.DocumentIterator
+	if new {
+		iter = doc.
+			Where("create_time", ">", id).
+			OrderBy("create_time", firestore.Asc).Limit(pageSize).Documents(opCtx)
+	} else {
+		iter = doc.
+			Where("create_time", "<", id).
+			OrderBy("create_time", firestore.Desc).Limit(pageSize).Documents(opCtx)
+	}
+
 	defer iter.Stop()
 	for {
 		doc, err := iter.Next()

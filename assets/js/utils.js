@@ -166,3 +166,5 @@ class SignDataForPost {
         this.pay_load = payload;
     }
 }
+
+const  DefaultAvatarSrc = "/assets/file/logo.png"

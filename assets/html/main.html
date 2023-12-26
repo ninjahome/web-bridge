@@ -6,6 +6,9 @@
     <script src="/assets/js/utils.js"></script>
     <script src="/assets/js/database.js"></script>
     <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/main_twitter.js"></script>
+    <script src="/assets/js/main_tweet.js"></script>
+    <script src="/assets/js/main_blockchain.js"></script>
 
     <style>
         .container {
@@ -229,8 +232,8 @@
             <div class="tweet-card">
                 <div class="tweet-header">
                     <img id="twitterAvatar" src="https://via.placeholder.com/40" alt="Avatar">
-                    <span id="twitterName"  class="name">John Doe</span>
-                    <span id="twitterUserName"  class="username">@johndoe</span>
+                    <span id="twitterName" class="name">John Doe</span>
+                    <span id="twitterUserName" class="username">@johndoe</span>
                     <span id="tweet-create-time" class="time">1h</span>
                 </div>
 
@@ -244,7 +247,8 @@
                         <button>$10打赏</button>
                         <span>总赏额：0.23 eth</span>
                     </div>
-                    <div class="tweet-info" >Web3 ID: <span id="tweet-owner-web3-id">0x00a7539cc7cc54f08a761175aa678005ef91f4dc</span></div>
+                    <div class="tweet-info">Web3 ID: <span id="tweet-owner-web3-id">0x00a7539cc7cc54f08a761175aa678005ef91f4dc</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -253,172 +257,31 @@
     </div>
 </div>
 <script>
-    const lastTweetIdHasGot = 0;
-    const dbKeyGlobalLastTweetID = "__db_key_global_last_tweet_id_has_got__"
     let ninjaUserObj = {{ .NinjaUsrInfoJson }};
     console.log(ninjaUserObj);
-
     document.addEventListener("DOMContentLoaded", initMainPage);
+
+    window.onscroll = function() {
+        throttle(() => loadMoreTweets(), 200);
+    }
+    let throttleTimer;
+    function throttle(callback, time) {
+        if (throttleTimer) return;
+
+        throttleTimer = setTimeout(() => {
+            callback();
+            clearTimeout(throttleTimer);
+            throttleTimer = null;
+        }, time);
+    }
 
     function initMainPage() {
         checkSystemEnvironment();
         window.addEventListener('popstate', clearSessionStorage);
         window.addEventListener('replaceState', clearSessionStorage);
         setupBasicInfo();
-        loadGlobalLatestTweets();
-    }
-
-    function showFullTweetContent() {
-        const tweetCard = this.closest('.tweet-card');
-        const tweetContent = tweetCard.querySelector('.tweet-content');
-        if (this.innerText === "Show more") {
-            tweetContent.style.display = 'block';
-            tweetContent.classList.remove('tweet-content-collapsed');
-            tweetCard.style.maxHeight = 'none';
-            this.innerText = "Show less";
-        } else {
-            tweetContent.style.display = '-webkit-box'; // 重置为 -webkit-box
-            tweetContent.classList.add('tweet-content-collapsed');
-            tweetCard.style.maxHeight = '400px';
-            this.innerText = "Show more";
-        }
-    }
-
-    function isOverflown(element) {
-        return element.scrollHeight > element.clientHeight || element.scrollWidth > element.clientWidth;
-    }
-
-    class cachedNjTweet{
-        constructor(njTweet,tweeterUserInfo,contractInfo) {
-            this.njTweet = njTweet;
-            this.tweeterUserInfo = tweeterUserInfo;
-            this.contractInfo = contractInfo;
-        }
-        updateTwitterInfo(tweeterUserInfo){
-            if (!tweeterUserInfo){
-                return;
-            }
-            //TODO::getElement
-        }
-    }
-    function parseNjTweets(tweetArray){
-        if (tweetArray.length === 0){
-            return;
-        }
-        let maxCreateTime = BigInt(0);
-        const newCachedTweet = tweetArray.map(tweet => {
-            const createTime = BigInt(tweet.create_time);
-            if (createTime > maxCreateTime) {
-                maxCreateTime = createTime;
-            }
-            const cachedTweet = new cachedNjTweet(tweet, null, null);
-            let tw_data = TwitterBasicInfo.loadTwBasicInfo()
-            if(!tw_data){
-                loadTwitterInfo(tweet.twitter_id,false).then(twitterInfo=>{
-                    cachedTweet.updateTwitterInfo(twitterInfo);
-                })
-            }
-        });
-        localStorage.setItem(dbKeyGlobalLastTweetID, maxCreateTime.toString());
-        populateLatestTweets(newCachedTweet);
-    }
-    function loadGlobalLatestTweets(){
-        let lastTwID = localStorage.getItem(dbKeyGlobalLastTweetID) || "0";
-
-        fetch("/globalLatestTweets?lastTwID=" + lastTwID)
-            .then(response => response.json())
-            .then(tweetArray => {
-                parseNjTweets(tweetArray);
-            })
-            .catch(err => {
-                showDialog("error", err.toString());
-            });
-    }
-
-    function populateLatestTweets(newCachedTweet) {
-        const tweetsPark = document.querySelector('.tweets-park');
-        tweetsPark.innerHTML = ''; // 清空现有内容
-
-        newCachedTweet.forEach(cachedTweet => {
-            const tweeterUserInfo = cachedTweet.tweeterUserInfo || new TwitterBasicInfo("defaultId", "Default Name", "defaultUsername", "/assets/file/logo.png", "Default Bio");
-            const njTweet = cachedTweet.njTweet;
-            const timeSuffix = njTweet.create_time;
-
-            // 创建 tweet-card 元素
-            const tweetCard = document.createElement('div');
-            tweetCard.classList.add('tweet-card');
-
-            // 设置 tweet-header 内容
-            const tweetHeader = document.createElement('div');
-            tweetHeader.classList.add('tweet-header');
-
-            const avatarImg = document.createElement('img');
-            avatarImg.src = tweeterUserInfo.profile_image_url;
-            avatarImg.alt = "Avatar";
-            avatarImg.id = `twitterAvatar-${timeSuffix}`;
-            tweetHeader.appendChild(avatarImg);
-
-            const nameSpan = document.createElement('span');
-            nameSpan.classList.add('name');
-            nameSpan.id = `twitterName-${timeSuffix}`;
-            nameSpan.textContent = tweeterUserInfo.name;
-            tweetHeader.appendChild(nameSpan);
-
-            const usernameSpan = document.createElement('span');
-            usernameSpan.classList.add('username');
-            usernameSpan.id = `twitterUserName-${timeSuffix}`;
-            usernameSpan.textContent = "@" + tweeterUserInfo.username;
-            tweetHeader.appendChild(usernameSpan);
-
-            const timeSpan = document.createElement('span');
-            timeSpan.classList.add('time');
-            timeSpan.id = `tweet-create-time-${timeSuffix}`;
-            timeSpan.textContent = formatTime(njTweet.create_time);
-            tweetHeader.appendChild(timeSpan);
-
-            tweetCard.appendChild(tweetHeader);
-
-            // 设置 tweet-content
-            const tweetContent = document.createElement('div');
-            tweetContent.classList.add('tweet-content', 'tweet-content-collapsed');
-            tweetContent.id = `tweet-content-${timeSuffix}`;
-            tweetContent.textContent = njTweet.text;
-            tweetCard.appendChild(tweetContent);
-
-            // 添加 Show more 按钮
-            const showMoreBtn = document.createElement('button');
-            showMoreBtn.classList.add('show-more');
-            showMoreBtn.textContent = "Show more";
-            showMoreBtn.onclick = function() { showFullTweetContent.call(this); };
-            tweetCard.appendChild(showMoreBtn);
-
-            // 设置 tweet-footer
-            const tweetFooter = document.createElement('div');
-            tweetFooter.classList.add('tweet-footer');
-
-            const tweetActionDiv = document.createElement('div');
-            tweetActionDiv.classList.add('tweet-action');
-            tweetActionDiv.innerHTML = `
-            <button>$10打赏</button>
-            <span>总赏额：0.23 eth</span>
-        `;
-            tweetFooter.appendChild(tweetActionDiv);
-
-            const tweetInfoDiv = document.createElement('div');
-            tweetInfoDiv.classList.add('tweet-info');
-            tweetInfoDiv.innerHTML = `Web3 ID: <span id="tweet-owner-web3-id-${timeSuffix}">${njTweet.web3_id}</span>`;
-            tweetFooter.appendChild(tweetInfoDiv);
-
-            tweetCard.appendChild(tweetFooter);
-
-            // 将 tweet-card 添加到 tweets-park 容器
-            tweetsPark.appendChild(tweetCard);
-        });
-    }
-
-    function formatTime(createTime) {
-        // 格式化时间戳为可读格式
-        return new Date(createTime).toLocaleString();
+        loadCachedGlobalTweets();
+        loadGlobalLatestTweetsFromSrv(true);
     }
 
 </script>
