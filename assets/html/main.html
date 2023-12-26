@@ -61,15 +61,17 @@
 
         .main-container {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             width: 80%;
             height: 100%;
             padding: 20px;
             background-color: #fff;
+            align-items: flex-start;
+            justify-content: space-between;
         }
 
         .tweets-park {
-            width: 60%;
+            flex-grow: 1.618;
             background-color: #e6e6e6;
             margin-bottom: 20px;
         }
@@ -188,6 +190,95 @@
             z-index: 10;
         }
 
+        .operation-area-right {
+            flex: 1 0 38.2%;
+        }
+
+        #lottery-card {
+            background-color: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #lottery-card .lottery-info p {
+            margin: 10px 0;
+        }
+
+        #lottery-card .lottery-algorithm {
+            margin-top: 20px;
+        }
+
+        #lottery-card button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            margin: 10px 5px 0 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #lottery-card button:hover {
+            background-color: #45a049;
+        }
+
+        .lottery-algorithm {
+            background-color: #f8f8f8; /* 背景色 */
+            border: 1px solid #eaeaea; /* 边框 */
+            border-radius: 4px; /* 边框圆角 */
+            padding: 20px; /* 内边距 */
+            margin: 20px 0; /* 外边距 */
+            max-width: 800px; /* 最大宽度 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 盒子阴影 */
+        }
+
+        .algorithm-steps {
+            list-style-type: none; /* 移除列表标记 */
+            padding: 0; /* 移除内边距 */
+            counter-reset: step-counter; /* 设置一个计数器 */
+        }
+
+        .algorithm-steps li {
+            counter-increment: step-counter; /* 增加计数器的值 */
+            margin-bottom: 10px; /* 底部外边距 */
+            padding-left: 20px; /* 左边内边距 */
+            position: relative; /* 为伪元素定位准备 */
+        }
+
+        .algorithm-steps li::before {
+            content: counter(step-counter); /* 插入计数器的值 */
+            position: absolute; /* 绝对定位 */
+            left: 0; /* 左对齐 */
+            top: 0; /* 顶部对齐 */
+            background-color: #4CAF50; /* 背景色 */
+            color: white; /* 文字颜色 */
+            border-radius: 50%; /* 圆形 */
+            width: 20px; /* 宽度 */
+            height: 20px; /* 高度 */
+            text-align: center; /* 文字居中 */
+            line-height: 20px; /* 行高，使文字垂直居中 */
+            font-weight: bold; /* 字体加粗 */
+        }
+
+        .lottery-algorithm h3 {
+            text-align: center; /* 标题居中 */
+            margin-bottom: 20px; /* 标题与列表之间的间距 */
+        }
+
+        .calculation-method {
+            background-color: #e7f4e4; /* 浅绿色背景 */
+            border-left: 3px solid #4CAF50; /* 左侧边框 */
+            padding: 8px 16px; /* 内边距 */
+            margin: 10px 0; /* 外边距 */
+            font-family: monospace; /* 等宽字体 */
+            display: block; /* 块级元素，确保换行 */
+            text-indent: 20px; /* 首行缩进 */
+            font-size: 1.25em; /* 稍微减小字体大小 */
+        }
+
     </style>
 </head>
 <body>
@@ -268,7 +359,33 @@
 {{/*                </div>*/}}
 {{/*            </div>*/}}
         </div>
-        <div class="operation-area"></div>
+        <div class="operation-area-right">
+            <div id="lottery-card">
+                <div id="lottery-card">
+                    <div class="lottery-info">
+                        <p>本期总奖池：<span id="total-prize">20.6880 eth</span></p>
+                        <p>本期开奖随机数hash：<span id="lottery-hash">0x9f60ec8488410d48e11f5e26fdf10c20ef1f4d22</span></p>
+                        <p>累计开奖金额：<span id="total-awards">68125.342 eth</span></p>
+                    </div>
+                    <button onclick="showPastLotteries()">往期开奖列表</button>
+                    <button onclick="showContractAddress()">智能合约地址</button>
+                    <div class="lottery-algorithm">
+                        <h3>开奖算法</h3>
+                        <ol class="algorithm-steps">
+                            <li><strong>第一步：</strong>产生随机数，并将随机数的hash值存放到区块链智能合约，公开可查。使用hash算法keccak256。</li>
+                            <li><strong>第二步：</strong>用户购买凭证，累计奖池，购买凭证存储在智能合约，公开可查。</li>
+                            <li><strong>第三步：</strong>执行抽奖操作，输入随机数，比对输入的随机数的hash与智能合约存储的hash是否一致。检查通过后进行中奖地址计算。
+                                <strong>计算方法：</strong>
+                                <div class="calculation-method">
+                                    购买地址列表[(随机数 + block.difficulty + 抽奖凭证数)%购买地址数]。
+                                </div>
+                            </li>
+                            <li><strong>第四步：</strong>奖池奖金转入中奖者地址，奖池清空，开启下一轮抽奖。</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <script>
@@ -299,6 +416,10 @@
         loadGlobalLatestTweetsFromSrv(true);
     }
 
+    function showPastLotteries(){
+    }
+    function showContractAddress(){
+    }
 </script>
 </body>
 </html>

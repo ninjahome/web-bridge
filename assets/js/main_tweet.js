@@ -77,7 +77,6 @@ function parseNjTweetsFromSrv(tweetArray, refreshNewest) {
         if (!refreshNewest) {
             hasMoreTweetsToLoad = false;
         }
-        console.log("no new tweets got")
         return;
     }
     const newIDs = [];
@@ -240,7 +239,7 @@ function populateLatestTweets(newCachedTweet, insertAtHead) {
         const tweetActionDiv = document.createElement('div');
         tweetActionDiv.classList.add('tweet-action');
         tweetActionDiv.innerHTML = `
-            <button>$10U打赏</button>
+            <button>0.01 eth打赏</button>
             <span>总赏额：0.23 eth 产生彩票数：68张</span>
         `;
         tweetFooter.appendChild(tweetActionDiv);
