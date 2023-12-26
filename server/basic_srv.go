@@ -53,33 +53,43 @@ func (sp *SignDataByEth) ParseNinjaTweet() (*NinjaTweet, error) {
 	return &tweetContent, nil
 }
 
-func queryTwBasicById(w http.ResponseWriter, r *http.Request, ninjaUser *NinjaUsrInfo) {
+func queryTwBasicById(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {
 	var needSyncFromTwitter = r.URL.Query().Get("forceSync")
 	forceSync, err := strconv.ParseBool(needSyncFromTwitter)
 	if err != nil {
 		forceSync = false
 	}
 
-	var twitterID = ninjaUser.TwID
+	var twitterID = r.URL.Query().Get("twitterID")
 	if len(twitterID) == 0 {
 		util.LogInst().Warn().Str("twitter-id", twitterID).
-			Str("eth-addr", ninjaUser.EthAddr).Msg("invalid twitter id param")
+			Str("eth-addr", nu.EthAddr).Msg("invalid twitter id param")
 		http.Error(w, "twitter id invalid", http.StatusBadRequest)
 		return
 	}
+
 	var userdata *TWUserInfo
 	if forceSync {
-		ut, err := checkTwitterRights(ninjaUser, r)
+		if twitterID != nu.TwID && forceSync {
+			util.LogInst().Warn().Str("twitter-id-query", twitterID).
+				Str("real-twitter-id", nu.TwID).
+				Str("eth-addr", nu.EthAddr).
+				Msg("check twitter access token failed")
+			http.Error(w, "no rights", http.StatusBadRequest)
+			return
+		}
+
+		ut, err := checkTwitterRights(nu.TwID, r)
 		if err != nil {
 			util.LogInst().Warn().Str("twitter-id", twitterID).
-				Str("eth-addr", ninjaUser.EthAddr).Msg("check twitter access token failed")
+				Str("eth-addr", nu.EthAddr).Msg("check twitter access token failed")
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		twitterUser, err := verifyTwitterCredentials(ut)
 		if err != nil {
 			util.LogInst().Warn().Str("twitter-id", twitterID).
-				Str("eth-addr", ninjaUser.EthAddr).Msg("sync twitter server failed")
+				Str("eth-addr", nu.EthAddr).Msg("sync twitter server failed")
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -94,7 +104,7 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request, ninjaUser *NinjaUs
 		userdata, err = DbInst().TwitterBasicInfo(twitterID)
 		if err != nil {
 			util.LogInst().Err(err).Str("twitter-id", twitterID).
-				Str("eth-addr", ninjaUser.EthAddr).Msg("query twitter data failed")
+				Str("eth-addr", nu.EthAddr).Msg("query twitter data failed")
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -103,7 +113,7 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request, ninjaUser *NinjaUs
 	w.WriteHeader(http.StatusOK)
 	w.Write(userdata.RawData())
 	util.LogInst().Debug().Str("twitter-id", twitterID).
-		Str("eth-addr", ninjaUser.EthAddr).Msg("query twitter basic info success")
+		Str("eth-addr", nu.EthAddr).Msg("query twitter basic info success")
 }
 
 func mainPage(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {

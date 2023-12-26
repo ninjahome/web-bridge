@@ -82,6 +82,7 @@ function parseNjTweetsFromSrv(tweetArray, refreshNewest) {
     const newIDs = [];
     const localTweets = tweetArray.map(tweet => {
         let tw_data = TwitterBasicInfo.loadTwBasicInfo(tweet.twitter_id)
+        console.log("tid",tweet.twitter_id, tw_data === null)
         let obj = new TweetToShowOnWeb(tweet, tw_data, null);
         localStorage.setItem(TweetToShowOnWeb.DBKey(obj.create_time), JSON.stringify(obj));
         newIDs.push(obj.create_time);
@@ -162,14 +163,15 @@ function populateLatestTweets(newCachedTweet, insertAtHead) {
     let minCreateTime = BigInt(0);
     newCachedTweet.forEach(async tweet => {
 
-        if (!tweet.name) {
+        if (!tweet.name|| tweet.name === "unknown") {
             const twitterInfo = await loadTwitterInfo(tweet.twitter_id, true)
-            if (!twitterInfo) {
+            if (!twitterInfo ) {
                 tweet.name = "unknown";
                 tweet.username = "unknown";
             } else {
                 tweet.name = twitterInfo.name;
                 tweet.username = twitterInfo.username;
+                tweet.profile_image_url = twitterInfo.profile_image_url;
             }
             localStorage.setItem(TweetToShowOnWeb.DBKey(tweet.create_time), JSON.stringify(tweet));
         }

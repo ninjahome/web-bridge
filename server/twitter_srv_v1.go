@@ -18,10 +18,9 @@ const (
 	accessPointMedia = "https://upload.twitter.com/1.1/media/upload.json"
 )
 
-func checkTwitterRights(ninjaUsr *NinjaUsrInfo, r *http.Request) (*TwUserAccessToken, error) {
-	var twitterUid = ninjaUsr.TwID
+func checkTwitterRights(twitterUid string, r *http.Request) (*TwUserAccessToken, error) {
 	if len(twitterUid) == 0 {
-		util.LogInst().Warn().Msg("no twitter id for ninja user:" + ninjaUsr.EthAddr)
+		util.LogInst().Warn().Msg("no twitter id for ninja user:" + twitterUid)
 		return nil, fmt.Errorf("bind twitter first")
 	}
 	var ut, err = getAccessTokenFromSession(r)
@@ -104,7 +103,7 @@ func prepareTweet(njTweet *NinjaTweet, ut *TwUserAccessToken) (*TweetRequest, er
 }
 
 func postTweets(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {
-	var ut, err = checkTwitterRights(nu, r)
+	var ut, err = checkTwitterRights(nu.TwID, r)
 	if err != nil {
 		util.LogInst().Err(err).Msg("load access token failed")
 		return

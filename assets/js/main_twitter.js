@@ -19,7 +19,7 @@ function setupTwitterElem(twInfo) {
     }
 }
 
-async function loadTwitterInfo(twitterID, needCache,forceSync) {
+async function loadTwitterInfo(twitterID, needCache, forceSync) {
     if (!forceSync){
         forceSync = false;
     }
@@ -31,7 +31,7 @@ async function loadTwitterInfo(twitterID, needCache,forceSync) {
                 return tw_data;
             }
         }
-        const response = await GetToSrvByJson("/queryTwBasicById?forceSync="+forceSync);
+        const response = await GetToSrvByJson("/queryTwBasicById?twitterID="+twitterID+"&&forceSync="+forceSync);
         if (!response.ok) {
             console.log("query twitter basic info failed")
             return null;
