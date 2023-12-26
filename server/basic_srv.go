@@ -100,6 +100,13 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) 
 			Description:          twitterUser.Description,
 			ProfileImageUrlHttps: twitterUser.ProfileImageUrlHttps,
 		}
+		err = DbInst().UpdateBasicInfo(userdata)
+		if err != nil {
+			util.LogInst().Warn().Str("twitter-id", twitterID).
+				Str("eth-addr", nu.EthAddr).Msg("update twitter new user data failed")
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 	} else {
 		userdata, err = DbInst().TwitterBasicInfo(twitterID)
 		if err != nil {

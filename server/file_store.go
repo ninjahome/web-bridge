@@ -314,6 +314,19 @@ func (dm *DbManager) TwitterBasicInfo(TID string) (*TWUserInfo, error) {
 	return tu, nil
 }
 
+func (dm *DbManager) UpdateBasicInfo(twData *TWUserInfo) error {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	twitterDoc := dm.fileCli.Collection(DBTableTWUser).Doc(twData.ID)
+	_, err := twitterDoc.Set(opCtx, twData)
+	if err != nil {
+		util.LogInst().Err(err).Str("twitter-id", twData.ID).Msg("twitterDoc get failed")
+		return err
+	}
+	util.LogInst().Debug().Str("twitter-id", twData.ID).Msg("update twitter user data success")
+	return nil
+}
+
 func (dm *DbManager) SaveTwAccessToken(token *TwUserAccessToken) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
