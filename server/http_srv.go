@@ -80,7 +80,7 @@ func (bh *MainService) Start() {
 		panic(http.ListenAndServeTLS(":443", cfg.SSLCertFile, cfg.SSLKeyFile, nil))
 	} else {
 		fmt.Print("Simple HTTP")
-		panic(http.ListenAndServe(":80", nil))
+		panic(http.ListenAndServe(":"+cfg.HttpPort, nil))
 	}
 }
 

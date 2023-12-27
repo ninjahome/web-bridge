@@ -2,6 +2,7 @@
 	"log": "debug",
 	"local_run": false,
 	"url_home": "https://bridge.simplenets.org",
+	"http_port": "8880",
 	"refresh_content": true,
 	"use_https": false,
 	"ssl_cert_file": "",

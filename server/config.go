@@ -93,6 +93,7 @@ type SysConf struct {
 	Log      string `json:"log"`
 	LocalRun bool   `json:"local_run"`
 	UrlHome  string `json:"url_home"`
+	HttpPort string `json:"http_port"`
 	*HttpConf
 	*TwitterConf
 	*FileStoreConf
@@ -116,9 +117,13 @@ var (
 )
 
 func InitConf(c *SysConf) {
-	_globalCfg = c
 	util.SetLogLevel(c.Log)
+	if len(c.HttpPort) == 0 {
+		c.HttpPort = "80"
+	}
 	fmt.Println(c.String())
+
+	_globalCfg = c
 
 	_ = DbInst()
 

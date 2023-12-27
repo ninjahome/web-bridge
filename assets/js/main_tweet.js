@@ -82,7 +82,6 @@ function parseNjTweetsFromSrv(tweetArray, refreshNewest) {
     const newIDs = [];
     const localTweets = tweetArray.map(tweet => {
         let tw_data = TwitterBasicInfo.loadTwBasicInfo(tweet.twitter_id)
-        console.log("tid",tweet.twitter_id, tw_data === null)
         let obj = new TweetToShowOnWeb(tweet, tw_data, null);
         localStorage.setItem(TweetToShowOnWeb.DBKey(obj.create_time), JSON.stringify(obj));
         newIDs.push(obj.create_time);
@@ -152,7 +151,7 @@ function loadGlobalLatestTweetsFromSrv(refreshNewest) {
             parseNjTweetsFromSrv(tweetArray, refreshNewest);
         })
         .catch(err => {
-            showDialog("error", err.toString());
+            showDialog("error", "api globalLatestTweets:"+err.toString());
         });
 }
 
@@ -308,10 +307,10 @@ async function postTweet() {
             parseNjTweetsFromSrv([refreshedTweet], true);
         }).catch(err => {
             console.log(err);
-            showDialog("error", err.toString())
+            showDialog("error", "api postTweet:"+err.toString())
         })
     } catch (err) {
-        showDialog("error", err.toString())
+        showDialog("error", "postTweet:"+err.toString())
     }
 }
 

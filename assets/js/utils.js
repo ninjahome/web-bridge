@@ -122,7 +122,7 @@ function toHex(number) {
 }
 
 
-const __globalTargetChainNetworkID = toHex(421613);
+const __globalTargetChainNetworkID = toHex(421614);
 const __globalMetaMaskNetworkParam = new Map([
     [toHex(42161), {
         chainId:  toHex(42161),
