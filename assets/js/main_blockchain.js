@@ -36,8 +36,11 @@ async function metamaskAccBalance() {
     if (balance < 10 ** 12) {
         return "< 0.000001 eth"
     }
-    return parseFloat((balance / 10 ** 18).toFixed(6)) + ' eth';
+    const balanceInEth = (parseInt(balance, 16) / 10 ** 18).toFixed(6);
+    const formattedBalance = parseFloat(balanceInEth).toFixed(2);
+    return formattedBalance + ' eth';
 }
+
 
 function metamaskAccountChanged(accounts) {
     if (accounts.length === 0) {
