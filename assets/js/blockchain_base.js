@@ -1,0 +1,2 @@
+const tweetExchangeContractAddress = "";
+const tweetExchangeContractABI =``;

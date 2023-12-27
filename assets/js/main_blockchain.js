@@ -29,7 +29,6 @@ async function metamaskAccBalance() {
         method: 'eth_getBalance',
         params: [ninjaUserObj.eth_addr, 'latest'],
     });
-    // console.log('eth balance:', balance);
     if (balance === "0x0") {
         return "0.00 eth";
     }
@@ -71,4 +70,22 @@ function switchToWorkChain() {
             showDialog("error", "add to network failed:" + err.toString());
         });
     });
+}
+
+async function postTweet(tweetContent) {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+
+    // Compute hash
+    const tweetHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tweetContent));
+
+    // Sign the hash
+    const signature = await signer.signMessage(ethers.utils.arrayify(tweetHash));
+
+    // Contract interaction
+    const contract = new ethers.Contract(tweetExchangeContractAddress, tweetExchangeContractABI, signer);
+    const transaction = await contract.publishTweet(tweetHash, signature, { value: ethers.utils.parseEther("0.01") });
+
+    // Wait for the transaction to be mined
+    await transaction.wait();
 }
