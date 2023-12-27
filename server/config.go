@@ -105,6 +105,7 @@ func (c *SysConf) String() any {
 	s += "\nlog level:" + c.Log
 	s += "\nlocal mode:" + fmt.Sprintf("%t", c.LocalRun)
 	s += "\nhome:" + c.UrlHome
+	s += "\nhttp port:" + c.HttpPort
 	s += "\n" + c.HttpConf.String()
 	s += "\n" + c.TwitterConf.String()
 	s += "\n" + c.FileStoreConf.String()
