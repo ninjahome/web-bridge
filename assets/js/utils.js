@@ -155,7 +155,7 @@ const __globalMetaMaskNetworkParam = new Map([
             decimals: 18
         },
         rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
-        blockExplorerUrls: ['https://sepolia-explorer.arbitrum.io'],
+        blockExplorerUrls: ['https://sepolia.arbiscan.io'],
     }]
 ]);
 
