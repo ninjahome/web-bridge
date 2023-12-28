@@ -82,6 +82,7 @@ func signUpByTwitterV1(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo)
 	}
 
 	bodyString := string(bodyBytes)
+	util.LogInst().Debug().Msg(bodyString)
 	values, err := url.ParseQuery(bodyString)
 	if err != nil {
 		util.LogInst().Err(err).Msg("Failed to parse query from response body")
