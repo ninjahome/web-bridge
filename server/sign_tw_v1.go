@@ -73,15 +73,20 @@ func signUpByTwitterV1(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo)
 		return
 	}
 	defer response.Body.Close()
-
 	bodyBytes, err := io.ReadAll(response.Body)
 	if err != nil {
 		util.LogInst().Err(err).Msg("Failed to read response body")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	bodyString := string(bodyBytes)
+
+	if response.StatusCode != http.StatusOK {
+		http.Error(w, bodyString, http.StatusInternalServerError)
+		util.LogInst().Warn().Msg(bodyString)
+		return
+	}
+
 	util.LogInst().Debug().Msg(bodyString)
 	values, err := url.ParseQuery(bodyString)
 	if err != nil {
@@ -134,8 +139,13 @@ func twitterSignCallBackV1(w http.ResponseWriter, r *http.Request, _ *NinjaUsrIn
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	bodyString := string(bodyBytes)
+	if resp.StatusCode != http.StatusOK {
+		http.Error(w, bodyString, http.StatusInternalServerError)
+		util.LogInst().Warn().Msg(bodyString)
+		return
+	}
+
 	values, err := url.ParseQuery(bodyString)
 	if err != nil {
 		util.LogInst().Err(err).Msg("Failed to parse response body")
