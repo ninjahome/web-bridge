@@ -72,8 +72,11 @@ function switchToWorkChain() {
     });
 }
 
-async function postTweet(tweetContent) {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+async function signTweetAnfPay(tweetContent) {
+    if (!metamaskObj){
+        return;
+    }
+    const provider = new ethers.providers.Web3Provider(metamaskObj);
     const signer = provider.getSigner();
 
     // Compute hash

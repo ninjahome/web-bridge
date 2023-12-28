@@ -57,8 +57,8 @@ func twitterApiPost(url string, token *oauth1.Token,
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		bts, _ := io.ReadAll(resp.Body)
-		util.LogInst().Warn().Int("status", resp.StatusCode).Msg("post tweet failed" + string(bts))
-		return fmt.Errorf("http response status err:%s", resp.Status)
+		util.LogInst().Warn().Int("status", resp.StatusCode).Msg("post tweet failed:" + string(bts))
+		return fmt.Errorf("status:%s err:%s", resp.Status, string(bts))
 	}
 	if response == nil {
 		return nil
