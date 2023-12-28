@@ -62,29 +62,27 @@ func ParseTemplates(path string) *template.Template {
 	return template.Must(tmpl.ParseFiles(files...))
 }
 
-func Verify(address, message, signedMessage string) error {
+func Verify(address, message, signedMessage string) (string, error) {
 	sig := common.FromHex(signedMessage)
 
-	// 在以太坊中，签名是65字节，最后一个字节是V值（27或28），但在Geth内部需要将其减少到0或1
 	if sig[64] != 27 && sig[64] != 28 {
-		return ErrSignInvalid
+		return "", ErrSignInvalid
 	}
 	sig[64] -= 27
 
-	// 使用恢复方法来获取公钥
-	pubKey, err := crypto.SigToPub(signHash(message), sig)
+	var prefixedHash = signHash(message)
+	pubKey, err := crypto.SigToPub(prefixedHash, sig)
 	if err != nil {
-		return ErrSignNoAddr
+		return "", ErrSignNoAddr
 	}
 
-	// 将公钥转换为以太坊地址
 	recoveredAddr := crypto.PubkeyToAddress(*pubKey)
 	addressOrig := strings.ToLower(address)
 	addressSigned := strings.ToLower(recoveredAddr.Hex())
 	if addressOrig != addressSigned {
-		return ErrSignNotMatch
+		return "", ErrSignNotMatch
 	}
-	return nil
+	return common.BytesToHash(prefixedHash).Hex(), nil
 }
 
 func signHash(data string) []byte {

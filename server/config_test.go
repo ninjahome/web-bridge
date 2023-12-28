@@ -51,10 +51,16 @@ func TestSignParam(t *testing.T) {
 	fmt.Println(obj)
 	signedMessage := "0x227caaf479a4fcc890694919d81dfbd3eb234137c93362f71411c7172584bcd1765d2924135fa15934f0f1543f1524a86de15d62b6383d737bd77eec334233ed1b"
 
-	retErr := util.Verify(obj.EthAddr, message, signedMessage)
-	fmt.Println("verify result :", retErr)
+	hash, retErr := util.Verify(obj.EthAddr, message, signedMessage)
+	fmt.Println("verify result :", retErr, "hash", hash)
 }
 func TestGenASessionKey(t *testing.T) {
 	secretKey := util.RandomBytesInHex(16)
 	fmt.Println(secretKey)
+}
+
+func TestVerify(t *testing.T) {
+	hash, retErr := util.Verify("0x00a7539cc7cc54f08a761175aa678005ef91f4dc",
+		`{"text":"const messageHash = ethers.utils.hashMessage(message);","create_time":1703758019240,"web3_id":"0x00a7539cc7cc54f08a761175aa678005ef91f4dc","twitter_id":"1472854871548170246"}`, "0x35759ef0f8749e1ca203d0da78e0048facf0e3fbf26dc953039de1e92484bf5b5ed8e5ec957df3d2b111ec8dd9d45c8000219a6e0af4c8ea9ed9bac80743036c1b")
+	fmt.Println("verify result :", retErr, "hash", hash, hash == "0x7beff7fdd64827d2cc82dbbf9525a6f4712db6d9c6944594e669958374c66f22")
 }

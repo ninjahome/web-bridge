@@ -297,9 +297,12 @@ async function postTweet() {
         const signature = await metamaskObj.request({
             method: 'personal_sign',
             params: [message, web3Id],
-        })
+        });
+        const messageHash = ethers.utils.hashMessage(message);
 
-        const sigData = new SignDataForPost(message, signature, null)
+        console.log("tweetHash=>",messageHash,"sig=>",signature,  "web3Id=>",web3Id,"message\n",message);
+
+        const sigData = new SignDataForPost(message, signature, messageHash)
         PostToSrvByJson("/postTweet", sigData).then(resp => {
             const refreshedTweet = JSON.parse(resp)
             document.getElementById("tweets-content").value = '';

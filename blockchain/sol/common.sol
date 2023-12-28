@@ -39,28 +39,16 @@ contract Owner {
         require(addr != address(0), "invalid address");
         _;
     }
+}
 
-    function recoverSigner(bytes32 hash, bytes memory signature)
-    internal
-    pure
-    returns (address)
-    {
-        require(signature.length == 65, "Invalid signature length");
+interface PlugInI {
+    function tweetBought(
+        bytes32 tweetHash,
+        address owner,
+        address buyer,
+        uint256 leftVal,
+        uint256 voteNo
+    ) external;
 
-        bytes32 r;
-        bytes32 s;
-        uint8 v;
-
-        assembly {
-            r := mload(add(signature, 32))
-            s := mload(add(signature, 64))
-            v := byte(0, mload(add(signature, 96)))
-        }
-
-        bytes32 prefixedHash = keccak256(
-            abi.encodePacked("\x19Ethereum Signed Message:\n32", hash)
-        );
-
-        return ecrecover(prefixedHash, v, r, s);
-    }
+    function checkPluginInterface() external pure returns (bool);
 }

@@ -97,13 +97,14 @@ func postTweetsV2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = util.Verify(tweetContent.Web3ID, param.Message, param.Signature)
+	hash, err := util.Verify(tweetContent.Web3ID, param.Message, param.Signature)
 	if err != nil {
 		util.LogInst().Err(err).Msg("tweet signature verify failed")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	tweetContent.Signature = param.Signature
+	tweetContent.PrefixedHash = hash
 
 	var tweetResponse = &TweetResponse{}
 	var tweetReq = &TweetRequest{

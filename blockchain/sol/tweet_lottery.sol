@@ -5,7 +5,7 @@ pragma solidity >=0.7.0 <0.9.0;
 import "./common.sol";
 import "./tweet_exchange.sol";
 
-contract TweetLotteryGame is TweetExchange {
+contract TweetLotteryGame is Owner, PlugInI {
     uint256 lotteryGameRoundTime = (48 hours - 10 minutes);
     mapping(address => bool) admins;
 
@@ -15,11 +15,19 @@ contract TweetLotteryGame is TweetExchange {
     bytes32 public randomHash;
     uint256 public nextLotteryDrawTime = 0;
 
-    address[] public winnners;
+    address[] public winners;
     mapping(address => uint256) bonusForWinner;
     mapping(uint256 => address) ticketsOwner;
     uint256[] public allTickets;
     mapping(address => uint256[]) ownersTickets;
+
+    event TweetBought(
+        bytes32 thash,
+        address owner,
+        address buyer,
+        uint256 val,
+        uint256 no
+    );
 
     modifier onlyAdmin() {
         require(admins[msg.sender] == true, "only admin's operation");
@@ -29,11 +37,14 @@ contract TweetLotteryGame is TweetExchange {
     event AdminOperation(address admin, bool opType);
     event RoundTimeChanged(uint256 newTime);
     event StartLottery(bytes32 hash, uint256 time);
-    event DiscoverWinner(address admin, uint256 bonus, uint256 time);
+    event DiscoverWinner(address admin, uint256 bonus);
+    event WinnerWithdrawBonus(address winner, uint256 bonus);
 
-    constructor() {
+    constructor() payable {
         admins[msg.sender] = true;
     }
+
+    receive() external payable {}
 
     function adminOperation(address admin, bool isDelete) public isOwner {
         if (isDelete) {
@@ -64,6 +75,63 @@ contract TweetLotteryGame is TweetExchange {
         emit StartLottery(hash, block.timestamp);
     }
 
+    function discoveryWinner(uint256 random) public onlyAdmin noReentrant {
+        require(allTickets.length > 0, "no tickets");
+        require(gameBalance > 0, "no bonus");
+        require(block.timestamp >= nextLotteryDrawTime, "not time");
+
+        bytes32 hash = keccak256(abi.encodePacked(random));
+        require(hash == randomHash, "invalid random data");
+        currentRound += 1;
+
+        uint256 idx = generateRandomNumber(random) % allTickets.length;
+        uint256 ticketId = allTickets[idx];
+        address winner = ticketsOwner[ticketId];
+        if (winner == address(0)) {
+            return;
+        }
+
+        winners.push(winner);
+        nextLotteryDrawTime += lotteryGameRoundTime;
+        uint256 bonus = gameBalance;
+        gameBalance = 0;
+        bonusForWinner[winner] += bonus;
+        emit DiscoverWinner(winner, bonus);
+    }
+
+    function withDrawBonus() public noReentrant {
+        require(bonusForWinner[msg.sender] > 1 gwei, "no bonus for you");
+        uint256 bonus = bonusForWinner[msg.sender];
+        bonusForWinner[msg.sender] = 0;
+        payable(msg.sender).transfer(bonus);
+        emit WinnerWithdrawBonus(msg.sender, bonus);
+    }
+
+    function tweetBought(
+        bytes32 tweetHash,
+        address owner,
+        address buyer,
+        uint256 leftVal,
+        uint256 voteNo
+    ) public onlyAdmin {
+        gameBalance += leftVal;
+
+        for (uint256 idx = 1; idx <= voteNo; idx++) {
+            uint256 newTid = currentLotteryTicketID + idx;
+            allTickets.push(newTid);
+            ticketsOwner[newTid] = buyer;
+            ownersTickets[buyer].push(newTid);
+        }
+
+        currentLotteryTicketID += voteNo;
+
+        emit TweetBought(tweetHash, owner, buyer, leftVal, voteNo);
+    }
+
+    function checkPluginInterface() external pure returns (bool) {
+        return true;
+    }
+
     function generateRandomNumber(uint256 random)
     public
     view
@@ -83,52 +151,5 @@ contract TweetLotteryGame is TweetExchange {
                 )
             )
         );
-    }
-
-    function discoveryWinner(uint256 random) public onlyAdmin noReentrant {
-        require(allTickets.length > 0, "no tickets");
-        require(gameBalance > 0, "no bonus");
-        require(block.timestamp >= nextLotteryDrawTime, "not time");
-
-        bytes32 hash = keccak256(abi.encodePacked(random));
-        require(hash == randomHash, "invalid random data");
-        currentRound += 1;
-
-        uint256 idx = generateRandomNumber(random) % allTickets.length;
-        uint256 ticketId = allTickets[idx];
-        address winner = ticketsOwner[ticketId];
-        if (winner == address(0)) {
-            return;
-        }
-
-        winnners.push(winner);
-        nextLotteryDrawTime += lotteryGameRoundTime;
-        uint256 bonus = gameBalance;
-        gameBalance = 0;
-        bonusForWinner[winner] += bonus;
-        emit DiscoverWinner(winner, bonus, block.timestamp);
-    }
-
-    function withDrawBonus() public noReentrant {
-        require(bonusForWinner[msg.sender] > 1 gwei, "no bonus for you");
-        uint256 bonus = bonusForWinner[msg.sender];
-        bonusForWinner[msg.sender] = 0;
-        payable(msg.sender).transfer(bonus);
-    }
-
-    function tweetBought(
-        address buyer,
-        uint256 leftVal,
-        uint256 voteNo
-    ) internal override {
-        gameBalance += leftVal;
-
-        for (uint256 idx = 1; idx <= voteNo; idx++) {
-            uint256 newTid = currentLotteryTicketID + idx;
-            allTickets.push(newTid);
-            ticketsOwner[newTid] = buyer;
-            ownersTickets[buyer].push(newTid);
-        }
-        currentLotteryTicketID += voteNo;
     }
 }

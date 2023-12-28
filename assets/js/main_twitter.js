@@ -38,7 +38,6 @@ async function loadTwitterInfo(twitterID, needCache, forceSync) {
         }
 
         const text = await response.text();
-        console.log(text);
         return TwitterBasicInfo.cacheTwBasicInfo(text);
     } catch (err) {
         console.log("queryTwBasicById err:", err)

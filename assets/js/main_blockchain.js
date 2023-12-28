@@ -72,22 +72,13 @@ function switchToWorkChain() {
     });
 }
 
-async function signTweetAnfPay(tweetContent) {
-    if (!metamaskObj){
-        return;
-    }
+async function signTweetAndPay(prefixedHash,signature ) {
+
     const provider = new ethers.providers.Web3Provider(metamaskObj);
     const signer = provider.getSigner();
 
-    // Compute hash
-    const tweetHash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(tweetContent));
-
-    // Sign the hash
-    const signature = await signer.signMessage(ethers.utils.arrayify(tweetHash));
-
-    // Contract interaction
     const contract = new ethers.Contract(tweetExchangeContractAddress, tweetExchangeContractABI, signer);
-    const transaction = await contract.publishTweet(tweetHash, signature, { value: ethers.utils.parseEther("0.01") });
+    const transaction = await contract.publishTweet(prefixedHash, signature, { value: ethers.utils.parseEther("0.001") });
 
     // Wait for the transaction to be mined
     await transaction.wait();

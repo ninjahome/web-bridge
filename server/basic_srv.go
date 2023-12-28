@@ -43,12 +43,13 @@ func (sp *SignDataByEth) ParseNinjaTweet() (*NinjaTweet, error) {
 		return nil, fmt.Errorf("invalid tweet content")
 	}
 
-	err = util.Verify(tweetContent.Web3ID, sp.Message, sp.Signature)
+	prefixedHash, err := util.Verify(tweetContent.Web3ID, sp.Message, sp.Signature)
 	if err != nil {
 		util.LogInst().Err(err).Msg("tweet signature verify failed")
 		return nil, err
 	}
 	tweetContent.Signature = sp.Signature
+	tweetContent.PrefixedHash = prefixedHash
 
 	return &tweetContent, nil
 }
@@ -192,7 +193,7 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request, origNu *NinjaUsrInfo)
 		http.Redirect(w, r, "/signIn", http.StatusFound)
 		return
 	}
-	err = util.Verify(data.EthAddr, param.Message, param.Signature)
+	_, err = util.Verify(data.EthAddr, param.Message, param.Signature)
 	if err != nil {
 		util.LogInst().Err(err).Msg("binding data verify signature failed")
 		http.Error(w, err.Error(), http.StatusBadRequest)

@@ -38,7 +38,7 @@ func signInByEth(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = util.Verify(obj.EthAddr, param.Message, param.Signature)
+	_, err = util.Verify(obj.EthAddr, param.Message, param.Signature)
 	if err != nil {
 		util.LogInst().Err(err).Msg("sign in verify signature failed")
 		http.Error(w, err.Error(), http.StatusBadRequest)
