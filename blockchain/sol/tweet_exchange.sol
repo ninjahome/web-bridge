@@ -5,13 +5,15 @@ pragma solidity >=0.7.0 <0.9.0;
 import "./common.sol";
 
 contract TweetExchangeAmin is Owner {
+    uint256 public constant oneFinney = 1e6 gwei;
     uint256 public tweetPostPrice = 0.005 ether;
     uint256 public tweetVotePrice = 0.005 ether;
 
     uint256 public feeReceived;
     uint256 public maxVotePerTweet = 1e8;
     uint256 public kolIncomePerTweetVoteRate = 30;
-    uint256 public serviceFeePerTweetVoteRate = 5;
+    uint256 public serviceFeePerTweetVoteRate = 10;
+    uint256 public serviceFeeForWithdrawRate = 2;
     address public pluginAddress;
     bool public pluginStop = false;
 
@@ -22,7 +24,8 @@ contract TweetExchangeAmin is Owner {
         uint256 pricePost,
         uint256 priceVot,
         uint256 kolRate,
-        uint256 feeRate
+        uint256 feeRate,
+        uint256 withDrawRate
     );
 
     constructor() payable {}
@@ -49,22 +52,24 @@ contract TweetExchangeAmin is Owner {
     }
 
     function changeTweetPostPrice(uint256 newPriceInFinney) public isOwner {
-        tweetPostPrice = newPriceInFinney * 1e6 gwei;
+        tweetPostPrice = newPriceInFinney * oneFinney;
         emit SystemSettingChanged(
             tweetPostPrice,
             tweetVotePrice,
             kolIncomePerTweetVoteRate,
-            serviceFeePerTweetVoteRate
+            serviceFeePerTweetVoteRate,
+            serviceFeeForWithdrawRate
         );
     }
 
     function changeTweetVotePrice(uint256 newPriceInFinney) public isOwner {
-        tweetVotePrice = newPriceInFinney * 1e6 gwei;
+        tweetVotePrice = newPriceInFinney * oneFinney;
         emit SystemSettingChanged(
             tweetPostPrice,
             tweetVotePrice,
             kolIncomePerTweetVoteRate,
-            serviceFeePerTweetVoteRate
+            serviceFeePerTweetVoteRate,
+            serviceFeeForWithdrawRate
         );
     }
 
@@ -78,7 +83,8 @@ contract TweetExchangeAmin is Owner {
             tweetPostPrice,
             tweetVotePrice,
             kolIncomePerTweetVoteRate,
-            serviceFeePerTweetVoteRate
+            serviceFeePerTweetVoteRate,
+            serviceFeeForWithdrawRate
         );
     }
 
@@ -92,7 +98,20 @@ contract TweetExchangeAmin is Owner {
             tweetPostPrice,
             tweetVotePrice,
             kolIncomePerTweetVoteRate,
-            serviceFeePerTweetVoteRate
+            serviceFeePerTweetVoteRate,
+            serviceFeeForWithdrawRate
+        );
+    }
+
+    function setServiceFeeRateForWithdraw(uint256 newRate) public isOwner {
+        require(newRate > 0 && newRate < 100, "rate invalid");
+        serviceFeeForWithdrawRate = newRate;
+        emit SystemSettingChanged(
+            tweetPostPrice,
+            tweetVotePrice,
+            kolIncomePerTweetVoteRate,
+            serviceFeePerTweetVoteRate,
+            serviceFeeForWithdrawRate
         );
     }
 
@@ -102,10 +121,7 @@ contract TweetExchangeAmin is Owner {
     }
 
     function setPluginAddr(address addr) public isOwner {
-        require(
-            PlugInI(addr).checkPluginInterface(),
-            "invalid plugin address"
-        );
+        require(PlugInI(addr).checkPluginInterface(), "invalid plugin address");
         pluginAddress = addr;
         emit PluginChanged(pluginAddress, pluginStop);
     }
@@ -179,13 +195,23 @@ contract TweetExchange is TweetExchangeAmin {
         emit TweetRightsBought(msg.sender, tweetVotePrice, voteNo);
     }
 
-    function kolWithDrawTweetIncomes(uint256 amount, bool all)
+    function kolWithdrawTweetIncomes(uint256 amount, bool all)
     public
     noReentrant
     {
         require(kolTweetVoteIncome[msg.sender] >= amount, "insufficient funds");
         require(amount >= 1 gwei || all, "invalid param");
-        kolTweetVoteIncome[msg.sender] -= amount;
+        if (all) {
+            amount = kolTweetVoteIncome[msg.sender];
+            kolTweetVoteIncome[msg.sender] = 0;
+        } else {
+            kolTweetVoteIncome[msg.sender] -= amount;
+        }
+
+        uint256 serviceFee = (amount / 100) * serviceFeeForWithdrawRate;
+        feeReceived += serviceFee;
+        amount -= serviceFee;
+
         payable(msg.sender).transfer(amount);
         emit KolWithDraw(msg.sender, amount);
     }
