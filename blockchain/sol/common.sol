@@ -2,7 +2,7 @@
 
 pragma solidity >=0.7.0 <0.9.0;
 
-contract Owner {
+abstract contract Owner {
     address private owner;
 
     event OwnerSet(address indexed oldOwner, address indexed newOwner);
@@ -56,6 +56,10 @@ abstract contract ServiceFeeForWithdraw is Owner {
     event ServiceFeeChanged(uint256 newSerficeFeeRate);
     event UpgradeToNewRule(address newContract, uint256 balance);
 
+    constructor() {
+        __admins[msg.sender] = true;
+    }
+
     function adminServiceFeeWithdraw() public isOwner noReentrant {
         payable(this.getOwner()).transfer(__serviceFeeReceived);
         __serviceFeeReceived = 0;
@@ -67,12 +71,17 @@ abstract contract ServiceFeeForWithdraw is Owner {
         emit ServiceFeeChanged(newRate);
     }
 
-    function serviceFeeInc(uint256 newFee) internal {
-        __serviceFeeReceived += newFee;
+    function recordServiceFee(uint256 fee) internal {
+        __serviceFeeReceived += fee;
     }
 
-    function serviceFeeRate() public view returns (uint256) {
-        return __serviceFeeRate;
+    function minusWithDrawFee(uint256 val) internal returns (uint256) {
+        if (__serviceFeeRate == 0) {
+            return val;
+        }
+        uint256 fee = (val / 100) * __serviceFeeRate;
+        __serviceFeeReceived += fee;
+        return val - fee;
     }
 
     function serviceFeeReceived() public view returns (uint256) {

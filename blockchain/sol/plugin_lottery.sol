@@ -35,11 +35,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
 
     event RoundTimeChanged(uint256 newTimeInHours);
     event StartLottery(bytes32 hash, uint256 round, uint256 time);
-    event WinnerWithdrawBonus(
-        address winner,
-        uint256 bonus,
-        uint256 serviceFee
-    );
+    event WinnerWithdrawBonus(address winner, uint256 bonus);
     event TicketSold(address buyer, uint256 no, uint256 serviceFee);
     event DiscoverWinner(
         address winner,
@@ -54,7 +50,6 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
     );
 
     constructor() payable {
-        __admins[msg.sender] = true;
         nextLotteryDiscoverTime = block.timestamp;
     }
 
@@ -152,7 +147,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
         require(balance == __ticketPriceForOuter, "insufficient funds");
 
         uint256 serFee = (balance / 100) * __serviceFeeRateForTicketBuy;
-        serviceFeeInc(serFee);
+        recordServiceFee(serFee);
         balance -= serFee;
 
         bonusOfCurrentRound += balance;
@@ -167,14 +162,12 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
         require(balance > __minValCheck, "no bonus for you");
         require(balance <= address(this).balance, "insufficient founds");
 
-        uint256 serFee = (balance / 100) * serviceFeeRate();
-        serviceFeeInc(serFee);
-        balance -= serFee;
+        uint256 reminders = minusWithDrawFee(balance);
 
         bonusBalance[msg.sender] = 0;
-        payable(msg.sender).transfer(balance);
+        payable(msg.sender).transfer(reminders);
 
-        emit WinnerWithdrawBonus(msg.sender, balance, serFee);
+        emit WinnerWithdrawBonus(msg.sender, reminders);
     }
 
     function tweetBought(

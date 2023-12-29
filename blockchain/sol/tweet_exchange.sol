@@ -126,7 +126,7 @@ contract TweetExchange is TweetExchangeAmin {
         uint256 value,
         uint256 voteNo
     );
-    event KolWithdraw(address indexed kol, uint256 amount, uint256 servicFee);
+    event KolWithdraw(address indexed kol, uint256 amount);
     event ThirdPartyClaims(address indexed addr, uint256 amount);
 
     constructor() payable {}
@@ -141,7 +141,7 @@ contract TweetExchange is TweetExchangeAmin {
 
         ownersOfAllTweets[hash] = msg.sender;
 
-        serviceFeeInc(tweetPostPrice);
+        recordServiceFee(tweetPostPrice);
 
         emit TweetPublished(msg.sender, hash);
     }
@@ -162,7 +162,7 @@ contract TweetExchange is TweetExchangeAmin {
         kolTweetBalance[tweetOwner] += forKolSum;
 
         uint256 serviceFee = (amount / 100) * serviceFeePerTweetVoteRate;
-        serviceFeeInc(serviceFee);
+        recordServiceFee(serviceFee);
 
         uint256 leftVal = amount - forKolSum - serviceFee;
 
@@ -196,7 +196,7 @@ contract TweetExchange is TweetExchangeAmin {
         kolTweetBalance[kolAddr] += kolIncome;
 
         uint256 serviceFee = (amount / 100) * serviceFeePerKolIpRightRate;
-        serviceFeeInc(serviceFee);
+        recordServiceFee(serviceFee);
 
         uint256 leftVal = amount - kolIncome - serviceFee;
 
@@ -247,12 +247,10 @@ contract TweetExchange is TweetExchangeAmin {
             kolTweetBalance[msg.sender] -= amount;
         }
 
-        uint256 serviceFee = (amount / 100) * serviceFeeRate();
-        serviceFeeInc(serviceFee);
-        amount -= serviceFee;
+        uint256 reminders = minusWithDrawFee(amount);
 
-        payable(msg.sender).transfer(amount);
-        emit KolWithdraw(msg.sender, amount, serviceFee);
+        payable(msg.sender).transfer(reminders);
+        emit KolWithdraw(msg.sender, reminders);
     }
 
     function recoverSigner(bytes32 prefixedHash, bytes memory signature)

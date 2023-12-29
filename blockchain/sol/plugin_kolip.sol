@@ -91,11 +91,13 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
 
         MapArray storage investors = __investorsOfSomeKol[kolAddr];
         if (investors.filter[buyer] == false) {
+            investors.filter[buyer] = true;
             investors.list.push(buyer);
         }
 
         MapArray storage kols = __kolOfOneInvestor[buyer];
         if (kols.filter[kolAddr] == false) {
+            kols.filter[kolAddr] = true;
             kols.list.push(kolAddr);
         }
     }
@@ -109,7 +111,7 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
     noReentrant
     isValidAddress(kol)
     {
-        KolKeyStatus memory curStatus = __kolKeyStatusRecord[kol];
+        KolKeyStatus storage curStatus = __kolKeyStatusRecord[kol];
         BuyerKeyRecord storage record = __buyersKeyRecordOfKol[msg.sender][kol];
 
         uint256 amount = record.nonceToAmount[nonce];
@@ -118,10 +120,12 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
         require(val <= address(this).balance, "insufficient funds");
 
         delete record.nonceToAmount[nonce];
-        record.nonceToAmount[curStatus.nonce] += amount;
+        curStatus.nonce++;
+        record.nonceToAmount[curStatus.nonce] = amount;
+        uint256 reminders = minusWithDrawFee(val);
 
-        payable(msg.sender).transfer(val);
-        emit InvestorWithdrawByOneNonce(msg.sender, kol, nonce, val);
+        payable(msg.sender).transfer(reminders);
+        emit InvestorWithdrawByOneNonce(msg.sender, kol, nonce, reminders);
     }
 
     function withdrawFromOneKol(address kol)
@@ -129,21 +133,36 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
     noReentrant
     isValidAddress(kol)
     {
-        KolKeyStatus memory curStatus = __kolKeyStatusRecord[kol];
-        BuyerKeyRecord storage record = __buyersKeyRecordOfKol[msg.sender][kol];
-        uint256 val = AllIncomeOfOneKol(kol, msg.sender);
-        require(val <= address(this).balance, "insufficient funds");
+        privateWithdrawFromOneKol(kol, msg.sender, true);
+    }
 
+    function privateWithdrawFromOneKol(
+        address kol,
+        address investor,
+        bool once
+    ) internal isValidAddress(investor) {
+        KolKeyStatus storage curStatus = __kolKeyStatusRecord[kol];
+        BuyerKeyRecord storage record = __buyersKeyRecordOfKol[msg.sender][kol];
+
+        uint256 val = AllIncomeOfOneKol(kol, msg.sender);
+        require(val > 0 && val <= address(this).balance, "insufficient funds");
+        uint totalAmount = 0;
         for (uint256 idx = 0; idx < record.nonceList.length; idx++) {
             uint256 nonce = record.nonceList[idx];
             uint256 amount = record.nonceToAmount[nonce];
             delete record.nonceToAmount[nonce];
-            record.nonceToAmount[curStatus.nonce] += amount;
+            totalAmount += amount;
         }
         delete record.nonceList;
+        curStatus.nonce++;
+        record.nonceToAmount[curStatus.nonce] = totalAmount;
         record.nonceList.push(curStatus.nonce);
-        payable(msg.sender).transfer(val);
-        emit InvestorWithdrawByOneKol(msg.sender, kol, val);
+
+        if (once) {
+            uint256 reminders = minusWithDrawFee(val);
+            payable(msg.sender).transfer(reminders);
+            emit InvestorWithdrawByOneKol(msg.sender, kol, reminders);
+        }
     }
 
     function withDrawAllIncome() public noReentrant {
@@ -153,11 +172,13 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
         require(val <= address(this).balance, "insufficient funds");
 
         for (uint256 idx = 0; idx < kol.list.length; idx++) {
-            withdrawFromOneKol(kol.list[idx]);
+            privateWithdrawFromOneKol(kol.list[idx], msg.sender, false);
         }
 
-        payable(msg.sender).transfer(val);
-        emit InvestorWithdrawAllIncome(msg.sender, val);
+        uint256 reminders = minusWithDrawFee(val);
+
+        payable(msg.sender).transfer(reminders);
+        emit InvestorWithdrawAllIncome(msg.sender, reminders);
     }
 
     /********************************************************************************
