@@ -4,44 +4,29 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import "./common.sol";
 
-contract TweetExchangeAmin is Owner {
+contract TweetExchangeAmin is ServiceFeeForWithdraw {
     uint256 public constant oneFinney = 1e6 gwei;
+
     uint256 public tweetPostPrice = 0.005 ether;
     uint256 public tweetVotePrice = 0.005 ether;
 
-    uint256 public feeReceived;
     uint256 public maxVotePerTweet = 1e8;
+
     uint256 public kolIncomePerTweetVoteRate = 30;
     uint256 public serviceFeePerTweetVoteRate = 10;
-    uint256 public serviceFeeForWithdrawRate = 2;
+
+    uint256 public kolIncomePerIPRightBuyRate = 90;
+    uint256 public serviceFeePerKolIpRightRate = 10;
+
     address public pluginAddress;
     bool public pluginStop = false;
 
-    event UpgradeToNewRule(address indexed recipient, uint256 amount);
     event Received(address indexed sender, uint256 amount);
     event PluginChanged(address pAddr, bool stop);
-    event SystemSettingChanged(
-        uint256 pricePost,
-        uint256 priceVot,
-        uint256 kolRate,
-        uint256 feeRate,
-        uint256 withDrawRate
-    );
+
+    event SystemRateChanged(uint256 pricePost, string rateName);
 
     constructor() payable {}
-
-    function upgradeToNewRule(address payable recipient)
-    public
-    isOwner
-    isValidAddress(recipient)
-    {
-        payable(this.getOwner()).transfer(feeReceived);
-        uint256 balance = address(this).balance;
-        if (balance > 0) {
-            recipient.transfer(balance);
-        }
-        emit UpgradeToNewRule(recipient, balance);
-    }
 
     receive() external payable {
         emit Received(msg.sender, msg.value);
@@ -51,169 +36,223 @@ contract TweetExchangeAmin is Owner {
         return address(this).balance;
     }
 
-    function changeTweetPostPrice(uint256 newPriceInFinney) public isOwner {
+    function adminSetTweetPostPrice(uint256 newPriceInFinney) public isOwner {
         tweetPostPrice = newPriceInFinney * oneFinney;
-        emit SystemSettingChanged(
-            tweetPostPrice,
-            tweetVotePrice,
-            kolIncomePerTweetVoteRate,
-            serviceFeePerTweetVoteRate,
-            serviceFeeForWithdrawRate
-        );
+        emit SystemRateChanged(tweetPostPrice, "tweet_post_price");
     }
 
-    function changeTweetVotePrice(uint256 newPriceInFinney) public isOwner {
+    function adminSetTweetVotePrice(uint256 newPriceInFinney) public isOwner {
         tweetVotePrice = newPriceInFinney * oneFinney;
-        emit SystemSettingChanged(
-            tweetPostPrice,
-            tweetVotePrice,
-            kolIncomePerTweetVoteRate,
-            serviceFeePerTweetVoteRate,
-            serviceFeeForWithdrawRate
-        );
+        emit SystemRateChanged(tweetVotePrice, "tweet_vote_price");
     }
 
-    function setKolIncomePerTweetRate(uint256 newRate) public isOwner {
+    function adminSetKolIncomePerTweetRate(uint256 newRate) public isOwner {
         require(
-            newRate + serviceFeePerTweetVoteRate < 100,
+            newRate + serviceFeePerTweetVoteRate <= 100,
             "rate is more than 100"
         );
         kolIncomePerTweetVoteRate = newRate;
-        emit SystemSettingChanged(
-            tweetPostPrice,
-            tweetVotePrice,
-            kolIncomePerTweetVoteRate,
-            serviceFeePerTweetVoteRate,
-            serviceFeeForWithdrawRate
-        );
+        emit SystemRateChanged(newRate, "kol_income_per_tweet_vote_rate");
     }
 
-    function setServiceFeeRateForPerTweetVote(uint256 newRate) public isOwner {
+    function adminSetServiceFeeRateForPerTweetVote(uint256 newRate)
+    public
+    isOwner
+    {
         require(
-            newRate + kolIncomePerTweetVoteRate < 100,
+            newRate + kolIncomePerTweetVoteRate <= 100,
             "rate is more than 100"
         );
         serviceFeePerTweetVoteRate = newRate;
-        emit SystemSettingChanged(
-            tweetPostPrice,
-            tweetVotePrice,
-            kolIncomePerTweetVoteRate,
-            serviceFeePerTweetVoteRate,
-            serviceFeeForWithdrawRate
-        );
+        emit SystemRateChanged(newRate, "service_fee_per_tweet_vote_rate");
     }
 
-    function setServiceFeeRateForWithdraw(uint256 newRate) public isOwner {
-        require(newRate > 0 && newRate < 100, "rate invalid");
-        serviceFeeForWithdrawRate = newRate;
-        emit SystemSettingChanged(
-            tweetPostPrice,
-            tweetVotePrice,
-            kolIncomePerTweetVoteRate,
-            serviceFeePerTweetVoteRate,
-            serviceFeeForWithdrawRate
+    function adminSetKolIncomeRatePerIpRight(uint256 newRate) public isOwner {
+        require(
+            newRate + serviceFeePerKolIpRightRate <= 100,
+            "rate is more than 100"
         );
+        kolIncomePerIPRightBuyRate = newRate;
+        emit SystemRateChanged(newRate, "kol_income_per_kol_ip_right_rate");
     }
 
-    function setMaxVotePerTweet(uint256 newMaxVote) public isOwner {
-        require(newMaxVote > 1, "invalid max vote no");
+    function adminSetServiceFeeRatePerKolIPRight(uint256 newRate)
+    public
+    isOwner
+    {
+        require(
+            newRate + kolIncomePerIPRightBuyRate <= 100,
+            "rate is more than 100"
+        );
+        serviceFeePerKolIpRightRate = newRate;
+        emit SystemRateChanged(newRate, "service_fee_per_kol_ip_right_rate");
+    }
+
+    function adminSetMaxVotePerTweet(uint256 newMaxVote) public isOwner {
+        require(newMaxVote >= 1, "invalid max vote no");
         maxVotePerTweet = newMaxVote;
+        emit SystemRateChanged(newMaxVote, "max_vote_number_once");
     }
 
-    function setPluginAddr(address addr) public isOwner {
+    function adminSetPluginAddr(address addr) public isOwner {
         require(PlugInI(addr).checkPluginInterface(), "invalid plugin address");
         pluginAddress = addr;
         emit PluginChanged(pluginAddress, pluginStop);
     }
 
-    function stopPlugin(bool stop) public isOwner {
+    function adminStopPlugin(bool stop) public isOwner {
         pluginStop = stop;
         emit PluginChanged(pluginAddress, pluginStop);
     }
 }
 
 contract TweetExchange is TweetExchangeAmin {
-    struct TweetInfo {
-        uint256 value;
-        address owner;
-        uint256 votes;
-    }
+    mapping(bytes32 => address) public ownersOfAllTweets;
+    mapping(address => uint256) public kolTweetBalance;
+    mapping(address => uint256) public kolIpRightPrice;
 
-    mapping(bytes32 => TweetInfo) public tweetsInfo;
-    mapping(address => uint256) public kolTweetVoteIncome;
+    event KolIpRightOpen(address kol, uint256 price, bool isUpdateOp);
+    event KolRightsBought(
+        address kolAddr,
+        address buyer,
+        uint256 rightsNo,
+        uint256 pricePerRight
+    );
 
     event TweetPublished(address indexed from, bytes32 tweetHash);
-    event TweetRightsBought(address indexed from, uint256 price, uint256 no);
-    event KolWithDraw(address indexed kol, uint256 amount);
+    event TweetRightsBought(
+        bytes32 tweetHash,
+        address indexed from,
+        uint256 value,
+        uint256 voteNo
+    );
+    event KolWithdraw(address indexed kol, uint256 amount, uint256 servicFee);
     event ThirdPartyClaims(address indexed addr, uint256 amount);
 
     constructor() payable {}
 
     function publishTweet(bytes32 hash, bytes memory signature) public payable {
         require(msg.value == tweetPostPrice, "tweet post fee cahnged");
-        require(tweetsInfo[hash].owner == address(0), "duplicate post");
+        require(ownersOfAllTweets[hash] == address(0), "duplicate post");
         require(
             recoverSigner(hash, signature) == msg.sender,
             "Invalid signature"
         );
 
-        tweetsInfo[hash] = TweetInfo(0, msg.sender, 0);
+        ownersOfAllTweets[hash] = msg.sender;
 
-        feeReceived += tweetPostPrice;
+        serviceFeeInc(tweetPostPrice);
 
         emit TweetPublished(msg.sender, hash);
     }
 
-    function buyTweetRights(bytes32 tweetHash, uint256 voteNo) public payable {
+    function buyTweetRights(bytes32 tweetHash, uint256 voteNo)
+    public
+    payable
+    noReentrant
+    {
         require(voteNo > 0 && voteNo < maxVotePerTweet, "vote no. invalid");
         uint256 amount = voteNo * tweetVotePrice;
-        require(amount > 1 gwei, "amount invalid");
+        require(amount > __minValCheck, "amount invalid");
         require(msg.value == amount, "insufficient funds");
-
-        TweetInfo storage tweet = tweetsInfo[tweetHash];
-        require(tweet.owner != address(0), "no such tweet");
-
-        tweet.votes += voteNo;
-        tweet.value += amount;
+        address tweetOwner = ownersOfAllTweets[tweetHash];
+        require(tweetOwner != address(0), "no such tweet");
 
         uint256 forKolSum = (amount / 100) * kolIncomePerTweetVoteRate;
-        kolTweetVoteIncome[tweet.owner] += forKolSum;
+        kolTweetBalance[tweetOwner] += forKolSum;
 
         uint256 serviceFee = (amount / 100) * serviceFeePerTweetVoteRate;
-        feeReceived += serviceFee;
-        if (pluginAddress != address(0)) {
-            uint256 leftVal = amount - forKolSum - serviceFee;
-            PlugInI(pluginAddress).tweetBought(
+        serviceFeeInc(serviceFee);
+
+        uint256 leftVal = amount - forKolSum - serviceFee;
+
+        if (
+            pluginAddress != address(0) &&
+            pluginStop == false &&
+            leftVal > __minValCheck
+        ) {
+            PlugInI(pluginAddress).tweetBought{value: leftVal}(
                 tweetHash,
-                tweet.owner,
+                tweetOwner,
                 msg.sender,
-                leftVal,
                 voteNo
             );
         }
 
-        emit TweetRightsBought(msg.sender, tweetVotePrice, voteNo);
+        emit TweetRightsBought(tweetHash, msg.sender, tweetVotePrice, voteNo);
+    }
+
+    function buyKolIpRights(address kolAddr, uint256 rightsNo)
+    public
+    payable
+    noReentrant
+    {
+        require(kolIpRightPrice[kolAddr] > 0, "kol ip right not open");
+
+        uint256 amount = kolIpRightPrice[kolAddr] * rightsNo;
+        require(msg.value >= amount, "insufficient funds");
+
+        uint256 kolIncome = (amount / 100) * kolIncomePerIPRightBuyRate;
+        kolTweetBalance[kolAddr] += kolIncome;
+
+        uint256 serviceFee = (amount / 100) * serviceFeePerKolIpRightRate;
+        serviceFeeInc(serviceFee);
+
+        uint256 leftVal = amount - kolIncome - serviceFee;
+
+        if (
+            pluginAddress != address(0) &&
+            pluginStop == false &&
+            leftVal > __minValCheck
+        ) {
+            PlugInI(pluginAddress).KolIPRightsBought{value: leftVal}(
+                kolAddr,
+                msg.sender,
+                rightsNo
+            );
+        }
+
+        emit KolRightsBought(
+            kolAddr,
+            msg.sender,
+            rightsNo,
+            kolIpRightPrice[kolAddr]
+        );
+    }
+
+    function setupKolIpRights(uint256 pricePerRight, bool update) public {
+        require(pricePerRight > __minValCheck, "invalid ip right price");
+
+        if (update) {
+            require(kolIpRightPrice[msg.sender] > 0, "not open yet");
+            kolIpRightPrice[msg.sender] = pricePerRight;
+        } else {
+            require(kolIpRightPrice[msg.sender] == 0, "duplicate operation");
+            kolIpRightPrice[msg.sender] = pricePerRight;
+        }
+
+        emit KolIpRightOpen(msg.sender, pricePerRight, update);
     }
 
     function kolWithdrawTweetIncomes(uint256 amount, bool all)
     public
     noReentrant
     {
-        require(kolTweetVoteIncome[msg.sender] >= amount, "insufficient funds");
-        require(amount >= 1 gwei || all, "invalid param");
+        require(kolTweetBalance[msg.sender] >= amount, "insufficient funds");
+        require(amount >= __minValCheck || all, "invalid param");
         if (all) {
-            amount = kolTweetVoteIncome[msg.sender];
-            kolTweetVoteIncome[msg.sender] = 0;
+            amount = kolTweetBalance[msg.sender];
+            kolTweetBalance[msg.sender] = 0;
         } else {
-            kolTweetVoteIncome[msg.sender] -= amount;
+            kolTweetBalance[msg.sender] -= amount;
         }
 
-        uint256 serviceFee = (amount / 100) * serviceFeeForWithdrawRate;
-        feeReceived += serviceFee;
+        uint256 serviceFee = (amount / 100) * serviceFeeRate();
+        serviceFeeInc(serviceFee);
         amount -= serviceFee;
 
         payable(msg.sender).transfer(amount);
-        emit KolWithDraw(msg.sender, amount);
+        emit KolWithdraw(msg.sender, amount, serviceFee);
     }
 
     function recoverSigner(bytes32 prefixedHash, bytes memory signature)
