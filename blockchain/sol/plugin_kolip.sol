@@ -146,7 +146,7 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
 
         uint256 val = AllIncomeOfOneKol(kol, msg.sender);
         require(val > 0 && val <= address(this).balance, "insufficient funds");
-        uint totalAmount = 0;
+        uint256 totalAmount = 0;
         for (uint256 idx = 0; idx < record.nonceList.length; idx++) {
             uint256 nonce = record.nonceList[idx];
             uint256 amount = record.nonceToAmount[nonce];
