@@ -122,7 +122,7 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
         delete record.nonceToAmount[nonce];
         curStatus.nonce++;
         record.nonceToAmount[curStatus.nonce] = amount;
-        uint256 reminders = minusWithDrawFee(val);
+        uint256 reminders = minusWithdrawFee(val);
 
         payable(msg.sender).transfer(reminders);
         emit InvestorWithdrawByOneNonce(msg.sender, kol, nonce, reminders);
@@ -159,7 +159,7 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
         record.nonceList.push(curStatus.nonce);
 
         if (once) {
-            uint256 reminders = minusWithDrawFee(val);
+            uint256 reminders = minusWithdrawFee(val);
             payable(msg.sender).transfer(reminders);
             emit InvestorWithdrawByOneKol(msg.sender, kol, reminders);
         }
@@ -175,7 +175,7 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
             privateWithdrawFromOneKol(kol.list[idx], msg.sender, false);
         }
 
-        uint256 reminders = minusWithDrawFee(val);
+        uint256 reminders = minusWithdrawFee(val);
 
         payable(msg.sender).transfer(reminders);
         emit InvestorWithdrawAllIncome(msg.sender, reminders);

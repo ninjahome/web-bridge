@@ -43,7 +43,7 @@ abstract contract Owner {
 
 abstract contract ServiceFeeForWithdraw is Owner {
     uint256 private __serviceFeeReceived;
-    uint256 private __serviceFeeRate = 2;
+    uint256 private __withdrawFeeRate = 2;
     uint256 public constant __minValCheck = 1 gwei;
     mapping(address => bool) public __admins;
 
@@ -67,7 +67,7 @@ abstract contract ServiceFeeForWithdraw is Owner {
 
     function adminSetServiceFeeRate(uint256 newRate) public isOwner {
         require(newRate >= 0 && newRate <= 100, "rate invalid");
-        __serviceFeeRate = newRate;
+        __withdrawFeeRate = newRate;
         emit ServiceFeeChanged(newRate);
     }
 
@@ -75,17 +75,21 @@ abstract contract ServiceFeeForWithdraw is Owner {
         __serviceFeeReceived += fee;
     }
 
-    function minusWithDrawFee(uint256 val) internal returns (uint256) {
-        if (__serviceFeeRate == 0) {
+    function minusWithdrawFee(uint256 val) internal returns (uint256) {
+        if (__withdrawFeeRate == 0) {
             return val;
         }
-        uint256 fee = (val / 100) * __serviceFeeRate;
+        uint256 fee = (val / 100) * __withdrawFeeRate;
         __serviceFeeReceived += fee;
         return val - fee;
     }
 
     function serviceFeeReceived() public view returns (uint256) {
         return __serviceFeeReceived;
+    }
+
+    function withdrawFeeRate() public view returns (uint256) {
+        return __withdrawFeeRate;
     }
 
     function adminUpgradeToNewRule(address payable recipient)

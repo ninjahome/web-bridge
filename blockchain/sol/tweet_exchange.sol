@@ -247,7 +247,7 @@ contract TweetExchange is TweetExchangeAmin {
             kolTweetBalance[msg.sender] -= amount;
         }
 
-        uint256 reminders = minusWithDrawFee(amount);
+        uint256 reminders = minusWithdrawFee(amount);
 
         payable(msg.sender).transfer(reminders);
         emit KolWithdraw(msg.sender, reminders);
