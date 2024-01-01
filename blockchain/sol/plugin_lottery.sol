@@ -7,15 +7,14 @@ import "./tweet_exchange.sol";
 
 contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
     uint256 public __lotteryGameRoundTime = 48 hours;
-    uint256 public __currentLotteryTicketID = 0;
+    uint256 public __currentLotteryTicketID = 100000;
     uint256 public __bonusRateToWinner = 50;
     bool public __openToOuterPlayer = false;
-    bool public __pauseGame = false;
 
     uint256 public __ticketPriceForOuter = 1e6 gwei;
     uint256 public __serviceFeeRateForTicketBuy = 5;
 
-    uint256 public currentRoundNo = 1;
+    uint256 public currentRoundNo = 0;
     mapping(address => uint256) public bonusBalance;
 
     struct GameInfoOneRound {
@@ -37,10 +36,12 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
         bytes32 team;
     }
 
+    mapping(uint256 => bytes32) public buyerInfoIdxForTickets;
+    mapping(bytes32 => BuyerInfo) public buyerInfoRecords;
+
     mapping(uint256 => GameInfoOneRound) public gameInfoRecord;
     mapping(uint256 => uint256[]) public ticketsRecords;
-    mapping(uint256 => mapping(uint256 => BuyerInfo))
-    public buyerInfoForTickets;
+
     mapping(uint256 => mapping(bytes32 => TweetTeam)) private tweetTeamMap;
     mapping(uint256 => mapping(address => uint256[])) ticketsOfBuyer;
 
@@ -53,7 +54,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
     );
 
     event AdminOperated(uint256 newTimeInHours, string opName);
-    event StartNewRound(bytes32 hash, uint256 round, bool skipToNext);
+    event SkipToNewRound(bytes32 hash, uint256 round);
     event WinnerWithdrawBonus(address winner, uint256 bonus);
     event TicketSold(address buyer, uint256 no, uint256 serviceFee);
     event DiscoverWinner(
@@ -63,25 +64,20 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
         uint256 bonus,
         uint256 bonusToTeam,
         uint256 random,
-        uint256 ticketsNo,
-        uint256 idxInTicket
+        bytes32 nextRandomHash
     );
     event KolIpRightBout(address kolAddr, address buyer, uint256 keyNo);
 
-    modifier gameOn() {
-        require(__pauseGame == false, "game paused");
-        _;
-    }
-
-    constructor(bytes32 randomHash) payable {
-        gameInfoRecord[currentRoundNo] = GameInfoOneRound({
-            randomHash: randomHash,
+    constructor(bytes32 hash) payable {
+        GameInfoOneRound memory newRoundInfo = GameInfoOneRound({
+            randomHash: hash,
             discoverTime: block.timestamp + __lotteryGameRoundTime,
             winner: address(0),
             winTeam: bytes32(0),
             winTicketID: 0,
             bonus: msg.value
         });
+        gameInfoRecord[currentRoundNo] = newRoundInfo;
     }
 
     receive() external payable {
@@ -127,49 +123,29 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
         emit AdminOperated(newRate, "rate_for_bonus_winner");
     }
 
-    function adminPauseGame(bool pause) public onlyAdmin {
-        __pauseGame = pause;
-        emit AdminOperated(pause ? 1 : 0, "game_pause_operation");
-    }
-
     /********************************************************************************
      *                       lottery admin
      *********************************************************************************/
 
-    function startNewGameRound(bytes32 hash, bool skipToNextRound)
-    public
-    onlyAdmin
-    noReentrant
-    {
+    function skipToNextRound(bytes32 hash) public onlyAdmin noReentrant {
         require(hash != bytes32(0), "Hash cannot be the zero value");
-        require(
-            gameInfoRecord[currentRoundNo].bonus <= __minValCheck ||
-            skipToNextRound,
-            "find the winner of current  round first"
-        );
-
-        uint256 discoverTime = block.timestamp + __lotteryGameRoundTime;
 
         GameInfoOneRound memory newRoundInfo = GameInfoOneRound({
             randomHash: hash,
-            discoverTime: discoverTime,
+            discoverTime: block.timestamp + __lotteryGameRoundTime,
             winner: address(0),
             winTeam: bytes32(0),
             winTicketID: 0,
             bonus: 0
         });
 
-        if (skipToNextRound && gameInfoRecord[currentRoundNo].bonus > 0) {
-            newRoundInfo.bonus += gameInfoRecord[currentRoundNo].bonus;
-            gameInfoRecord[currentRoundNo].bonus = 0;
-        }
-
+        newRoundInfo.bonus += gameInfoRecord[currentRoundNo].bonus;
+        gameInfoRecord[currentRoundNo].bonus = 0;
         currentRoundNo += 1;
+
         gameInfoRecord[currentRoundNo] = newRoundInfo;
 
-        __pauseGame = false;
-
-        emit StartNewRound(hash, currentRoundNo, skipToNextRound);
+        emit SkipToNewRound(hash, currentRoundNo);
     }
 
     function dispatchBonusToTeam(uint256 val, BuyerInfo memory winner)
@@ -196,24 +172,25 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
             if (teamMember == address(0) || vote == 0) {
                 continue;
             }
+            if (teamMember == winner.addr) {
+                vote -= 1;
+            }
             bonusBalance[teamMember] += bonusPerVote * vote;
         }
 
         return winner.team;
     }
 
-    function discoverWinner(uint256 random) public onlyAdmin noReentrant {
+    function generateWiner(uint256 random, bytes32 currentHash)
+    public
+    view
+    returns (uint256)
+    {
         uint256[] memory allTickets = ticketsRecords[currentRoundNo];
         require(allTickets.length > 0, "no tickets");
 
-        GameInfoOneRound storage gInfo = gameInfoRecord[currentRoundNo];
-        require(gInfo.bonus > __minValCheck, "no bonus");
-        require(
-            block.timestamp >= (gInfo.discoverTime - 10 minutes),
-            "not time"
-        );
         bytes32 hash = keccak256(abi.encodePacked(random));
-        require(hash == gInfo.randomHash, "invalid random data");
+        require(hash == currentHash, "invalid random data");
 
         bytes32 newRandom = keccak256(
             abi.encodePacked(
@@ -225,12 +202,30 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
         );
 
         uint256 idx = uint256(newRandom) % allTickets.length;
-        uint256 ticketId = allTickets[idx];
+        return allTickets[idx];
+    }
 
-        BuyerInfo memory winner = buyerInfoForTickets[currentRoundNo][ticketId];
+    function discoverWinner(uint256 random, bytes32 nextRoundRandomHash)
+    public
+    onlyAdmin
+    noReentrant
+    {
+        GameInfoOneRound storage gInfo = gameInfoRecord[currentRoundNo];
+
+        require(gInfo.randomHash != bytes32(0), "random not set");
+        require(gInfo.winner == address(0), "can't have winner before game");
+        require(gInfo.bonus > __minValCheck, "no bonus");
+        require(
+            block.timestamp >= (gInfo.discoverTime - 10 minutes),
+            "not time"
+        );
+
+        uint256 ticketId = generateWiner(random, gInfo.randomHash);
+
+        bytes32 buyerHash = buyerInfoIdxForTickets[ticketId];
+        require(buyerHash != bytes32(0), "invalid winner hash");
+        BuyerInfo memory winner = buyerInfoRecords[buyerHash];
         require(winner.addr != address(0), "invalid winner address");
-
-        __pauseGame = true;
 
         gInfo.winner = winner.addr;
         gInfo.winTicketID = ticketId;
@@ -241,7 +236,16 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
         uint256 bonusToTeam = gInfo.bonus - bonusToWinner;
         gInfo.winTeam = dispatchBonusToTeam(bonusToTeam, winner);
 
-        gInfo.bonus = 0;
+        currentRoundNo += 1;
+
+        gameInfoRecord[currentRoundNo] = GameInfoOneRound({
+            randomHash: nextRoundRandomHash,
+            discoverTime: block.timestamp + __lotteryGameRoundTime,
+            winner: address(0),
+            winTeam: bytes32(0),
+            winTicketID: 0,
+            bonus: 0
+        });
 
         emit DiscoverWinner(
             winner.addr,
@@ -250,8 +254,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
             bonusToWinner,
             bonusToTeam,
             random,
-            ticketsRecords[currentRoundNo].length,
-            idx
+            nextRoundRandomHash
         );
     }
 
@@ -264,17 +267,21 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
         address buyer,
         bytes32 tweetHash
     ) internal {
+        bytes32 buyerHash = keccak256(abi.encodePacked(buyer, tweetHash));
+        if (buyerInfoRecords[buyerHash].addr == address(0)) {
+            buyerInfoRecords[buyerHash] = BuyerInfo(buyer, tweetHash);
+        }
+
         for (uint256 idx = 1; idx <= no; idx++) {
             uint256 newTid = __currentLotteryTicketID + idx;
 
             ticketsRecords[currentRoundNo].push(newTid);
 
-            buyerInfoForTickets[currentRoundNo][newTid] = BuyerInfo(
-                buyer,
-                tweetHash
-            );
+            buyerInfoIdxForTickets[newTid] = buyerHash;
+
             ticketsOfBuyer[currentRoundNo][buyer].push(newTid);
         }
+
         __currentLotteryTicketID += no;
     }
 
@@ -290,7 +297,6 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
     isValidAddress(buyer)
     isValidAddress(tweetOwner)
     noReentrant
-    gameOn
     {
         uint256 val = msg.value;
         require(val > __minValCheck, "invalid msg value");
@@ -310,12 +316,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
         emit TweetBought(tweetHash, tweetOwner, buyer, val, voteNo);
     }
 
-    function buyTicketFromOuter(uint256 ticketNo)
-    public
-    payable
-    noReentrant
-    gameOn
-    {
+    function buyTicketFromOuter(uint256 ticketNo) public payable noReentrant {
         require(ticketNo > 0, "invalid ticket number");
         require(__openToOuterPlayer, "not open now");
         uint256 balance = msg.value;
@@ -333,18 +334,14 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
 
     function withdrawByWinner(uint256 amount, bool all) public noReentrant {
         uint256 balance = bonusBalance[msg.sender];
-
-        require(amount > __minValCheck || all, "too small amount");
+        if (all) {
+            amount = balance;
+        }
+        require(amount > __minValCheck, "too small amount");
         require(balance >= amount, "too much amount");
         require(balance <= address(this).balance, "insufficient founds");
 
-        if (all) {
-            amount = balance;
-            bonusBalance[msg.sender] = 0;
-        } else {
-            bonusBalance[msg.sender] -= amount;
-        }
-
+        bonusBalance[msg.sender] -= amount;
         uint256 reminders = minusWithdrawFee(amount);
 
         payable(msg.sender).transfer(reminders);
@@ -401,8 +398,50 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
         return team.memMap[memAddr];
     }
 
+    function historyTeamMembers(uint256 roundNo, bytes32 tweet)
+    public
+    view
+    returns (address[] memory members)
+    {
+        TweetTeam storage team = tweetTeamMap[roundNo][tweet];
+        if (team.memList.length == 0) {
+            return new address[](0);
+        }
+        members = new address[](team.memList.length);
+        for (uint256 idx; idx < team.memList.length; idx++) {
+            members[idx] = team.memList[idx];
+        }
+        return members;
+    }
+
+    function historyTeamMembersCountForGame(uint256 roundNo, bytes32 tweet)
+    public
+    view
+    returns (uint256, uint256)
+    {
+        TweetTeam storage team = tweetTeamMap[roundNo][tweet];
+        return (team.memList.length, team.voteNo);
+    }
+
+    function historyTeamMemberVoteNo(
+        uint256 roundNo,
+        bytes32 tweet,
+        address memAddr
+    ) public view returns (uint256) {
+        TweetTeam storage team = tweetTeamMap[roundNo][tweet];
+        return team.memMap[memAddr];
+    }
+
     function currentTickets() public view returns (uint256[] memory) {
         return ticketsRecords[currentRoundNo];
+    }
+
+    function historyTickets(uint256 round)
+    public
+    view
+    returns (uint256[] memory)
+    {
+        return ticketsRecords[round];
     }
 
     function currentTicketNo() public view returns (uint256) {
@@ -414,7 +453,8 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
     }
 
     function tickInfos(uint256 tid) public view returns (BuyerInfo memory) {
-        return buyerInfoForTickets[currentRoundNo][tid];
+        bytes32 buyerHash = buyerInfoIdxForTickets[tid];
+        return buyerInfoRecords[buyerHash];
     }
 
     function tickList(address owner) public view returns (uint256[] memory) {
