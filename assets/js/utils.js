@@ -156,6 +156,17 @@ const __globalMetaMaskNetworkParam = new Map([
         },
         rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
         blockExplorerUrls: ['https://sepolia.arbiscan.io'],
+    }],
+    [toHex(5777), {
+        chainId: toHex(5777),
+        chainName: 'loaclTest',
+        nativeCurrency: {
+            name: 'ETH',
+            symbol: 'ETH',
+            decimals: 18
+        },
+        rpcUrls: ['HTTP://192.168.1.122:7545'],
+        blockExplorerUrls: [''],
     }]
 ]);
 

@@ -65,7 +65,7 @@ abstract contract ServiceFeeForWithdraw is Owner {
         __serviceFeeReceived = 0;
     }
 
-    function adminSetServiceFeeRate(uint256 newRate) public isOwner {
+    function adminSetWithdrawFeeRate(uint256 newRate) public isOwner {
         require(newRate >= 0 && newRate <= 100, "rate invalid");
         __withdrawFeeRate = newRate;
         emit ServiceFeeChanged(newRate);

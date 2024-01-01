@@ -3,277 +3,421 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 import "./common.sol";
+import "./tweet_exchange.sol";
 
-contract TweetExchangeAmin is ServiceFeeForWithdraw {
-    uint256 public constant oneFinney = 1e6 gwei;
+contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
+    uint256 public __lotteryGameRoundTime = 48 hours;
+    uint256 public __currentLotteryTicketID = 0;
+    uint256 public __bonusRateToWinner = 50;
+    bool public __openToOuterPlayer = false;
+    bool public __pauseGame = false;
 
-    uint256 public tweetPostPrice = 0.005 ether;
-    uint256 public tweetVotePrice = 0.005 ether;
+    uint256 public __ticketPriceForOuter = 1e6 gwei;
+    uint256 public __serviceFeeRateForTicketBuy = 5;
 
-    uint256 public maxVotePerTweet = 1e8;
+    uint256 public currentRoundNo = 1;
+    mapping(address => uint256) public bonusBalance;
 
-    uint256 public kolIncomePerTweetVoteRate = 30;
-    uint256 public serviceFeePerTweetVoteRate = 10;
+    struct GameInfoOneRound {
+        bytes32 randomHash;
+        uint256 discoverTime;
+        address winner;
+        bytes32 winTeam;
+        uint256 winTicketID;
+        uint256 bonus;
+    }
+    struct TweetTeam {
+        mapping(address => uint256) memMap;
+        address[] memList;
+        uint256 voteNo;
+    }
 
-    uint256 public kolIncomePerIPRightBuyRate = 90;
-    uint256 public serviceFeePerKolIpRightRate = 10;
+    struct BuyerInfo {
+        address addr;
+        bytes32 team;
+    }
 
-    address public pluginAddress;
-    bool public pluginStop = false;
+    mapping(uint256 => GameInfoOneRound) public gameInfoRecord;
+    mapping(uint256 => uint256[]) public ticketsRecords;
+    mapping(uint256 => mapping(uint256 => BuyerInfo))
+    public buyerInfoForTickets;
+    mapping(uint256 => mapping(bytes32 => TweetTeam)) private tweetTeamMap;
+    mapping(uint256 => mapping(address => uint256[])) ticketsOfBuyer;
 
-    event Received(address indexed sender, uint256 amount);
-    event PluginChanged(address pAddr, bool stop);
+    event TweetBought(
+        bytes32 thash,
+        address owner,
+        address buyer,
+        uint256 val,
+        uint256 no
+    );
 
-    event SystemRateChanged(uint256 pricePost, string rateName);
+    event AdminOperated(uint256 newTimeInHours, string opName);
+    event StartNewRound(bytes32 hash, uint256 round, bool skipToNext);
+    event WinnerWithdrawBonus(address winner, uint256 bonus);
+    event TicketSold(address buyer, uint256 no, uint256 serviceFee);
+    event DiscoverWinner(
+        address winner,
+        bytes32 winnerTeam,
+        uint256 ticketID,
+        uint256 bonus,
+        uint256 bonusToTeam,
+        uint256 random,
+        uint256 ticketsNo,
+        uint256 idxInTicket
+    );
+    event KolIpRightBout(address kolAddr, address buyer, uint256 keyNo);
 
-    constructor() payable {}
+    modifier gameOn() {
+        require(__pauseGame == false, "game paused");
+        _;
+    }
+
+    constructor(bytes32 randomHash) payable {
+        gameInfoRecord[currentRoundNo] = GameInfoOneRound({
+            randomHash: randomHash,
+            discoverTime: block.timestamp + __lotteryGameRoundTime,
+            winner: address(0),
+            winTeam: bytes32(0),
+            winTicketID: 0,
+            bonus: msg.value
+        });
+    }
 
     receive() external payable {
-        emit Received(msg.sender, msg.value);
+        gameInfoRecord[currentRoundNo].bonus += msg.value;
+        emit AdminOperated(msg.value, "received_bonus_from_outer");
     }
 
-    function exchangeBalance() public view returns (uint256) {
-        return address(this).balance;
+    /********************************************************************************
+     *                       admin operation
+     *********************************************************************************/
+    function adminOpenToOuterPlayer(bool isOpen) public isOwner {
+        __openToOuterPlayer = isOpen;
+        emit AdminOperated(isOpen ? 1 : 0, "game_open_to_outer_player");
     }
 
-    function adminSetTweetPostPrice(uint256 newPriceInFinney) public isOwner {
-        tweetPostPrice = newPriceInFinney * oneFinney;
-        emit SystemRateChanged(tweetPostPrice, "tweet_post_price");
+    function adminSetTicketPriceForOuter(uint256 priceInFinney) public isOwner {
+        require(priceInFinney > __minValCheck, "invalid ticket price");
+        __ticketPriceForOuter = priceInFinney * 1e6 gwei;
     }
 
-    function adminSetTweetVotePrice(uint256 newPriceInFinney) public isOwner {
-        tweetVotePrice = newPriceInFinney * oneFinney;
-        emit SystemRateChanged(tweetVotePrice, "tweet_vote_price");
-    }
-
-    function adminSetKolIncomePerTweetRate(uint256 newRate) public isOwner {
-        require(
-            newRate + serviceFeePerTweetVoteRate <= 100,
-            "rate is more than 100"
-        );
-        kolIncomePerTweetVoteRate = newRate;
-        emit SystemRateChanged(newRate, "kol_income_per_tweet_vote_rate");
-    }
-
-    function adminSetServiceFeeRateForPerTweetVote(uint256 newRate)
+    function adminSetServiceFeeRateForTicketBuy(uint256 newRate)
     public
     isOwner
     {
-        require(
-            newRate + kolIncomePerTweetVoteRate <= 100,
-            "rate is more than 100"
-        );
-        serviceFeePerTweetVoteRate = newRate;
-        emit SystemRateChanged(newRate, "service_fee_per_tweet_vote_rate");
+        require(newRate >= 0 && newRate <= 100, "invalid rate param");
+        __serviceFeeRateForTicketBuy = newRate;
+        emit AdminOperated(newRate, "rate_of_service_fee_for_tciket_buy");
     }
 
-    function adminSetKolIncomeRatePerIpRight(uint256 newRate) public isOwner {
-        require(
-            newRate + serviceFeePerKolIpRightRate <= 100,
-            "rate is more than 100"
-        );
-        kolIncomePerIPRightBuyRate = newRate;
-        emit SystemRateChanged(newRate, "kol_income_per_kol_ip_right_rate");
+    function adminChangeRoundTime(uint256 newTimeInMinutes) public isOwner {
+        require(newTimeInMinutes > 0, "invalid time");
+
+        __lotteryGameRoundTime = newTimeInMinutes * 1 minutes;
+
+        emit AdminOperated(newTimeInMinutes, "game_round_time_in_minitues");
     }
 
-    function adminSetServiceFeeRatePerKolIPRight(uint256 newRate)
+    function adminChangeBonusRateToWinner(uint256 newRate) public isOwner {
+        require(newRate >= 0 && newRate <= 100, "invalid rate");
+
+        __bonusRateToWinner = newRate;
+
+        emit AdminOperated(newRate, "rate_for_bonus_winner");
+    }
+
+    function adminPauseGame(bool pause) public onlyAdmin {
+        __pauseGame = pause;
+        emit AdminOperated(pause ? 1 : 0, "game_pause_operation");
+    }
+
+    /********************************************************************************
+     *                       lottery admin
+     *********************************************************************************/
+
+    function startNewGameRound(bytes32 hash, bool skipToNextRound)
     public
-    isOwner
+    onlyAdmin
+    noReentrant
     {
+        require(hash != bytes32(0), "Hash cannot be the zero value");
         require(
-            newRate + kolIncomePerIPRightBuyRate <= 100,
-            "rate is more than 100"
+            gameInfoRecord[currentRoundNo].bonus <= __minValCheck ||
+            skipToNextRound,
+            "find the winner of current  round first"
         );
-        serviceFeePerKolIpRightRate = newRate;
-        emit SystemRateChanged(newRate, "service_fee_per_kol_ip_right_rate");
+
+        uint256 discoverTime = block.timestamp + __lotteryGameRoundTime;
+
+        GameInfoOneRound memory newRoundInfo = GameInfoOneRound({
+            randomHash: hash,
+            discoverTime: discoverTime,
+            winner: address(0),
+            winTeam: bytes32(0),
+            winTicketID: 0,
+            bonus: 0
+        });
+
+        if (skipToNextRound && gameInfoRecord[currentRoundNo].bonus > 0) {
+            newRoundInfo.bonus += gameInfoRecord[currentRoundNo].bonus;
+            gameInfoRecord[currentRoundNo].bonus = 0;
+        }
+
+        currentRoundNo += 1;
+        gameInfoRecord[currentRoundNo] = newRoundInfo;
+
+        __pauseGame = false;
+
+        emit StartNewRound(hash, currentRoundNo, skipToNextRound);
     }
 
-    function adminSetMaxVotePerTweet(uint256 newMaxVote) public isOwner {
-        require(newMaxVote >= 1, "invalid max vote no");
-        maxVotePerTweet = newMaxVote;
-        emit SystemRateChanged(newMaxVote, "max_vote_number_once");
+    function dispatchBonusToTeam(uint256 val, BuyerInfo memory winner)
+    private
+    returns (bytes32 teamHash)
+    {
+        if (winner.team == bytes32(0)) {
+            bonusBalance[winner.addr] += val;
+            return bytes32(0);
+        }
+        TweetTeam storage team = tweetTeamMap[currentRoundNo][winner.team];
+        uint256 totalVote = team.voteNo;
+        if (totalVote <= 1) {
+            bonusBalance[winner.addr] += val;
+            return bytes32(0);
+        }
+
+        uint256 bonusPerVote = val / (totalVote - 1);
+
+        for (uint256 idx = 0; idx < team.memList.length; idx++) {
+            address teamMember = team.memList[idx];
+            uint256 vote = team.memMap[teamMember];
+
+            if (teamMember == address(0) || vote == 0) {
+                continue;
+            }
+            bonusBalance[teamMember] += bonusPerVote * vote;
+        }
+
+        return winner.team;
     }
 
-    function adminSetPluginAddr(address addr) public isOwner {
-        require(PlugInI(addr).checkPluginInterface(), "invalid plugin address");
-        pluginAddress = addr;
-        emit PluginChanged(pluginAddress, pluginStop);
+    function discoverWinner(uint256 random) public onlyAdmin noReentrant {
+        uint256[] memory allTickets = ticketsRecords[currentRoundNo];
+        require(allTickets.length > 0, "no tickets");
+
+        GameInfoOneRound storage gInfo = gameInfoRecord[currentRoundNo];
+        require(gInfo.bonus > __minValCheck, "no bonus");
+        require(
+            block.timestamp >= (gInfo.discoverTime - 10 minutes),
+            "not time"
+        );
+        bytes32 hash = keccak256(abi.encodePacked(random));
+        require(hash == gInfo.randomHash, "invalid random data");
+
+        bytes32 newRandom = keccak256(
+            abi.encodePacked(
+                uint256(blockhash(block.number - 1)),
+                block.timestamp,
+                block.prevrandao,
+                random
+            )
+        );
+
+        uint256 idx = uint256(newRandom) % allTickets.length;
+        uint256 ticketId = allTickets[idx];
+
+        BuyerInfo memory winner = buyerInfoForTickets[currentRoundNo][ticketId];
+        require(winner.addr != address(0), "invalid winner address");
+
+        __pauseGame = true;
+
+        gInfo.winner = winner.addr;
+        gInfo.winTicketID = ticketId;
+
+        uint256 bonusToWinner = ((gInfo.bonus / 100) * __bonusRateToWinner);
+        bonusBalance[winner.addr] += bonusToWinner;
+
+        uint256 bonusToTeam = gInfo.bonus - bonusToWinner;
+        gInfo.winTeam = dispatchBonusToTeam(bonusToTeam, winner);
+
+        gInfo.bonus = 0;
+
+        emit DiscoverWinner(
+            winner.addr,
+            winner.team,
+            ticketId,
+            bonusToWinner,
+            bonusToTeam,
+            random,
+            ticketsRecords[currentRoundNo].length,
+            idx
+        );
     }
 
-    function adminStopPlugin(bool stop) public isOwner {
-        pluginStop = stop;
-        emit PluginChanged(pluginAddress, pluginStop);
-    }
-}
+    /********************************************************************************
+     *                       lottery operation
+     *********************************************************************************/
 
-contract TweetExchange is TweetExchangeAmin {
-    mapping(bytes32 => address) public ownersOfAllTweets;
-    mapping(address => uint256) public kolTweetBalance;
-    mapping(address => uint256) public kolIpRightPrice;
-
-    event KolIpRightOpen(address kol, uint256 price, bool isUpdateOp);
-    event KolRightsBought(
-        address kolAddr,
+    function generateTicket(
+        uint256 no,
         address buyer,
-        uint256 rightsNo,
-        uint256 pricePerRight
-    );
+        bytes32 tweetHash
+    ) internal {
+        for (uint256 idx = 1; idx <= no; idx++) {
+            uint256 newTid = __currentLotteryTicketID + idx;
 
-    event TweetPublished(address indexed from, bytes32 tweetHash);
-    event TweetRightsBought(
+            ticketsRecords[currentRoundNo].push(newTid);
+
+            buyerInfoForTickets[currentRoundNo][newTid] = BuyerInfo(
+                buyer,
+                tweetHash
+            );
+            ticketsOfBuyer[currentRoundNo][buyer].push(newTid);
+        }
+        __currentLotteryTicketID += no;
+    }
+
+    function tweetBought(
         bytes32 tweetHash,
-        address indexed from,
-        uint256 value,
+        address tweetOwner,
+        address buyer,
         uint256 voteNo
-    );
-    event KolWithdraw(address indexed kol, uint256 amount);
-    event ThirdPartyClaims(address indexed addr, uint256 amount);
+    )
+    public
+    payable
+    onlyAdmin
+    isValidAddress(buyer)
+    isValidAddress(tweetOwner)
+    noReentrant
+    gameOn
+    {
+        uint256 val = msg.value;
+        require(val > __minValCheck, "invalid msg value");
+        require(voteNo >= 1, "invalid vote no");
+        require(tweetHash != bytes32(0));
 
-    constructor() payable {}
+        gameInfoRecord[currentRoundNo].bonus += val;
+        generateTicket(voteNo, buyer, tweetHash);
 
-    function publishTweet(bytes32 hash, bytes memory signature) public payable {
-        require(msg.value == tweetPostPrice, "tweet post fee cahnged");
-        require(ownersOfAllTweets[hash] == address(0), "duplicate post");
-        require(
-            recoverSigner(hash, signature) == msg.sender,
-            "Invalid signature"
-        );
+        TweetTeam storage team = tweetTeamMap[currentRoundNo][tweetHash];
+        if (team.memMap[buyer] == 0) {
+            team.memList.push(buyer);
+        }
+        team.memMap[buyer] += voteNo;
+        team.voteNo += voteNo;
 
-        ownersOfAllTweets[hash] = msg.sender;
-
-        recordServiceFee(tweetPostPrice);
-
-        emit TweetPublished(msg.sender, hash);
+        emit TweetBought(tweetHash, tweetOwner, buyer, val, voteNo);
     }
 
-    function buyTweetRights(bytes32 tweetHash, uint256 voteNo)
+    function buyTicketFromOuter(uint256 ticketNo)
     public
     payable
     noReentrant
+    gameOn
     {
-        require(voteNo > 0 && voteNo < maxVotePerTweet, "vote no. invalid");
-        uint256 amount = voteNo * tweetVotePrice;
-        require(amount > __minValCheck, "amount invalid");
-        require(msg.value == amount, "insufficient funds");
-        address tweetOwner = ownersOfAllTweets[tweetHash];
-        require(tweetOwner != address(0), "no such tweet");
+        require(ticketNo > 0, "invalid ticket number");
+        require(__openToOuterPlayer, "not open now");
+        uint256 balance = msg.value;
+        require(balance == __ticketPriceForOuter, "ticket price change");
 
-        uint256 forKolSum = (amount / 100) * kolIncomePerTweetVoteRate;
-        kolTweetBalance[tweetOwner] += forKolSum;
+        uint256 serFee = (balance / 100) * __serviceFeeRateForTicketBuy;
+        recordServiceFee(serFee);
+        balance -= serFee;
 
-        uint256 serviceFee = (amount / 100) * serviceFeePerTweetVoteRate;
-        recordServiceFee(serviceFee);
+        gameInfoRecord[currentRoundNo].bonus += balance;
+        generateTicket(ticketNo, msg.sender, bytes32(0));
 
-        uint256 leftVal = amount - forKolSum - serviceFee;
-
-        if (
-            pluginAddress != address(0) &&
-            pluginStop == false &&
-            leftVal > __minValCheck
-        ) {
-            PlugInI(pluginAddress).tweetBought{value: leftVal}(
-                tweetHash,
-                tweetOwner,
-                msg.sender,
-                voteNo
-            );
-        }
-
-        emit TweetRightsBought(tweetHash, msg.sender, tweetVotePrice, voteNo);
+        emit TicketSold(msg.sender, ticketNo, serFee);
     }
 
-    function buyKolIpRights(address kolAddr, uint256 rightsNo)
-    public
-    payable
-    noReentrant
-    {
-        require(kolIpRightPrice[kolAddr] > 0, "kol ip right not open");
+    function withdrawByWinner(uint256 amount, bool all) public noReentrant {
+        uint256 balance = bonusBalance[msg.sender];
 
-        uint256 amount = kolIpRightPrice[kolAddr] * rightsNo;
-        require(msg.value >= amount, "insufficient funds");
+        require(amount > __minValCheck || all, "too small amount");
+        require(balance >= amount, "too much amount");
+        require(balance <= address(this).balance, "insufficient founds");
 
-        uint256 kolIncome = (amount / 100) * kolIncomePerIPRightBuyRate;
-        kolTweetBalance[kolAddr] += kolIncome;
-
-        uint256 serviceFee = (amount / 100) * serviceFeePerKolIpRightRate;
-        recordServiceFee(serviceFee);
-
-        uint256 leftVal = amount - kolIncome - serviceFee;
-
-        if (
-            pluginAddress != address(0) &&
-            pluginStop == false &&
-            leftVal > __minValCheck
-        ) {
-            PlugInI(pluginAddress).KolIPRightsBought{value: leftVal}(
-                kolAddr,
-                msg.sender,
-                rightsNo
-            );
-        }
-
-        emit KolRightsBought(
-            kolAddr,
-            msg.sender,
-            rightsNo,
-            kolIpRightPrice[kolAddr]
-        );
-    }
-
-    function setupKolIpRights(uint256 pricePerRight, bool update) public {
-        require(pricePerRight > __minValCheck, "invalid ip right price");
-
-        if (update) {
-            require(kolIpRightPrice[msg.sender] > 0, "not open yet");
-            kolIpRightPrice[msg.sender] = pricePerRight;
-        } else {
-            require(kolIpRightPrice[msg.sender] == 0, "duplicate operation");
-            kolIpRightPrice[msg.sender] = pricePerRight;
-        }
-
-        emit KolIpRightOpen(msg.sender, pricePerRight, update);
-    }
-
-    function kolWithdrawTweetIncomes(uint256 amount, bool all)
-    public
-    noReentrant
-    {
-        require(kolTweetBalance[msg.sender] >= amount, "insufficient funds");
-        require(amount >= __minValCheck || all, "invalid param");
         if (all) {
-            amount = kolTweetBalance[msg.sender];
-            kolTweetBalance[msg.sender] = 0;
+            amount = balance;
+            bonusBalance[msg.sender] = 0;
         } else {
-            kolTweetBalance[msg.sender] -= amount;
+            bonusBalance[msg.sender] -= amount;
         }
 
         uint256 reminders = minusWithdrawFee(amount);
 
         payable(msg.sender).transfer(reminders);
-        emit KolWithdraw(msg.sender, reminders);
+
+        emit WinnerWithdrawBonus(msg.sender, reminders);
     }
 
-    function recoverSigner(bytes32 prefixedHash, bytes memory signature)
+    function checkPluginInterface() external pure returns (bool) {
+        return true;
+    }
+
+    function KolIPRightsBought(
+        address kolAddr,
+        address buyer,
+        uint256 keyNo
+    ) external payable {
+        emit KolIpRightBout(kolAddr, buyer, keyNo);
+    }
+
+    /********************************************************************************
+     *                       basic query
+     *********************************************************************************/
+    function teamMembers(bytes32 tweet)
     public
-    pure
-    returns (address)
+    view
+    returns (address[] memory members)
     {
-        require(signature.length == 65, "Invalid signature length");
-
-        bytes32 r;
-        bytes32 s;
-        uint8 v;
-
-        assembly {
-            r := mload(add(signature, 32))
-            s := mload(add(signature, 64))
-            v := byte(0, mload(add(signature, 96)))
+        TweetTeam storage team = tweetTeamMap[currentRoundNo][tweet];
+        if (team.memList.length == 0) {
+            return new address[](0);
         }
-
-        if (v < 27) {
-            v += 27;
+        members = new address[](team.memList.length);
+        for (uint256 idx; idx < team.memList.length; idx++) {
+            members[idx] = team.memList[idx];
         }
+        return members;
+    }
 
-        return ecrecover(prefixedHash, v, r, s);
+    function teamMembersCountForGame(bytes32 tweet)
+    public
+    view
+    returns (uint256, uint256)
+    {
+        TweetTeam storage team = tweetTeamMap[currentRoundNo][tweet];
+        return (team.memList.length, team.voteNo);
+    }
+
+    function teamMemberVoteNo(bytes32 tweet, address memAddr)
+    public
+    view
+    returns (uint256)
+    {
+        TweetTeam storage team = tweetTeamMap[currentRoundNo][tweet];
+        return team.memMap[memAddr];
+    }
+
+    function currentTickets() public view returns (uint256[] memory) {
+        return ticketsRecords[currentRoundNo];
+    }
+
+    function currentTicketNo() public view returns (uint256) {
+        return ticketsRecords[currentRoundNo].length;
+    }
+
+    function currentBonus() public view returns (uint256) {
+        return gameInfoRecord[currentRoundNo].bonus;
+    }
+
+    function tickInfos(uint256 tid) public view returns (BuyerInfo memory) {
+        return buyerInfoForTickets[currentRoundNo][tid];
+    }
+
+    function tickList(address owner) public view returns (uint256[] memory) {
+        return ticketsOfBuyer[currentRoundNo][owner];
     }
 }

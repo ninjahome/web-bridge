@@ -20,7 +20,7 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
         mapping(address => bool) filter;
         address[] list;
     }
-
+    uint256 public __priceToOpenIpRightSell = 1e6 gwei;
     mapping(address => MapArray) private __investorsOfSomeKol;
     mapping(address => MapArray) private __kolOfOneInvestor;
     mapping(address => KolKeyStatus) private __kolKeyStatusRecord;
@@ -36,10 +36,74 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
     );
     event InvestorWithdrawByOneKol(address investor, address kol, uint256 val);
     event InvestorWithdrawAllIncome(address investor, uint256 val);
+    event KolIpRightOpen(address kol, uint256 val, uint256 time);
+    event TweetBought(
+        bytes32 tHash,
+        address owner,
+        address buyer,
+        uint256 voteNoe
+    );
+    event KolIncreaseIncomeForKey(
+        address kol,
+        uint256 totalVal,
+        uint256 valPerVote,
+        uint256 totalVote,
+        uint256 tim
+    );
+
+    event KolIpRightBought(
+        address kolAddr,
+        address buyer,
+        uint256 keyNo,
+        uint256 curNonce,
+        uint256 KoltotalNo
+    );
+
+    receive() external payable {
+        require(msg.value >= __minValCheck, "too low bonus");
+
+        KolKeyStatus storage recordOfKolKey = __kolKeyStatusRecord[msg.sender];
+        require(recordOfKolKey.totalNo >= 1, "open your ip right first");
+
+        uint256 price = msg.value / recordOfKolKey.totalNo;
+        incomePerNoncePerKey[msg.sender][recordOfKolKey.nonce] += price;
+
+        emit KolIncreaseIncomeForKey(
+            msg.sender,
+            msg.value,
+            price,
+            recordOfKolKey.totalNo,
+            block.timestamp
+        );
+    }
+
+    function adminChangeIpRightSellPrice(uint256 newPrice) public isOwner {
+        require(newPrice >= __minValCheck, "to small price");
+        __priceToOpenIpRightSell = newPrice;
+    }
 
     /********************************************************************************
      *                       record operation
      *********************************************************************************/
+
+    function OpenIpRightSell() public payable {
+        require(msg.value >= __priceToOpenIpRightSell, "open fee is too low");
+
+        KolKeyStatus storage recordOfKolKey = __kolKeyStatusRecord[msg.sender];
+        require(recordOfKolKey.totalNo == 0, "duplicate open operation");
+        recordOfKolKey.totalNo = 1;
+
+        BuyerKeyRecord storage record = __buyersKeyRecordOfKol[msg.sender][
+                        msg.sender
+            ];
+        record.nonceToAmount[recordOfKolKey.nonce] = 1;
+        record.nonceList.push(recordOfKolKey.nonce);
+
+        incomePerNoncePerKey[msg.sender][recordOfKolKey.nonce] += msg.value;
+
+        emit KolIpRightOpen(msg.sender, msg.value, block.timestamp);
+    }
+
     function tweetBought(
         bytes32 tweetHash,
         address tweetOwner,
@@ -57,12 +121,16 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
         require(val > __minValCheck, "invalid msg value");
         require(voteNo >= 1, "invalid vote no");
         require(tweetHash != bytes32(0));
+
         KolKeyStatus memory recordOfKolKey = __kolKeyStatusRecord[tweetOwner];
         if (recordOfKolKey.totalNo == 0) {
-            return;
+            incomePerNoncePerKey[tweetOwner][recordOfKolKey.nonce] += val;
+        } else {
+            uint256 valPerKey = val / recordOfKolKey.totalNo;
+            incomePerNoncePerKey[tweetOwner][recordOfKolKey.nonce] += valPerKey;
         }
-        uint256 valPerKey = val / recordOfKolKey.totalNo;
-        incomePerNoncePerKey[tweetOwner][recordOfKolKey.nonce] += valPerKey;
+
+        emit TweetBought(tweetHash, tweetOwner, buyer, voteNo);
     }
 
     function checkPluginInterface() external pure returns (bool) {
@@ -81,7 +149,10 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
     onlyAdmin
     noReentrant
     {
+        require(keyNo >= 1, "invalid key no");
         KolKeyStatus storage recordOfKolKey = __kolKeyStatusRecord[kolAddr];
+        require(recordOfKolKey.totalNo >= 1, "ip right for kol not open");
+
         recordOfKolKey.nonce++;
         recordOfKolKey.totalNo += keyNo;
 
@@ -100,6 +171,14 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
             kols.filter[kolAddr] = true;
             kols.list.push(kolAddr);
         }
+
+        emit KolIpRightBought(
+            kolAddr,
+            buyer,
+            keyNo,
+            recordOfKolKey.nonce,
+            recordOfKolKey.totalNo
+        );
     }
 
     /********************************************************************************

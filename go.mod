@@ -11,6 +11,7 @@ require (
 	github.com/hopwesley/fdlimit v1.0.0
 	github.com/rs/zerolog v1.31.0
 	github.com/spf13/cobra v1.8.0
+	golang.org/x/crypto v0.16.0
 	golang.org/x/image v0.14.0
 	golang.org/x/oauth2 v0.15.0
 	google.golang.org/api v0.154.0
@@ -44,7 +45,6 @@ require (
 	go.opentelemetry.io/otel v1.21.0 // indirect
 	go.opentelemetry.io/otel/metric v1.21.0 // indirect
 	go.opentelemetry.io/otel/trace v1.21.0 // indirect
-	golang.org/x/crypto v0.16.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
