@@ -36,20 +36,31 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
     }
 
     function adminSetTweetPostPrice(uint256 newPriceInFinney) public isOwner {
+        require(
+            tweetPostPrice != newPriceInFinney * oneFinney,
+            "no need change"
+        );
+
         tweetPostPrice = newPriceInFinney * oneFinney;
         emit SystemRateChanged(tweetPostPrice, "tweet_post_price");
     }
 
     function adminSetTweetVotePrice(uint256 newPriceInFinney) public isOwner {
+        require(
+            tweetVotePrice != newPriceInFinney * oneFinney,
+            "no need change"
+        );
         tweetVotePrice = newPriceInFinney * oneFinney;
         emit SystemRateChanged(tweetVotePrice, "tweet_vote_price");
     }
 
     function adminSetKolIncomePerTweetRate(uint8 newRate) public isOwner {
+        require(kolIncomePerTweetVoteRate != newRate, "no need change");
         require(
             newRate + serviceFeePerTweetVoteRate <= 100,
             "rate is more than 100"
         );
+
         kolIncomePerTweetVoteRate = newRate;
         emit SystemRateChanged(newRate, "kol_income_per_tweet_vote_rate");
     }
@@ -58,6 +69,7 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
     public
     isOwner
     {
+        require(serviceFeePerTweetVoteRate != newRate, "no need change");
         require(
             newRate + kolIncomePerTweetVoteRate <= 100,
             "rate is more than 100"
@@ -67,6 +79,7 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
     }
 
     function adminSetMaxVotePerTweet(uint256 newMaxVote) public isOwner {
+        require(maxVotePerTweet != newMaxVote, "no need change");
         require(newMaxVote >= 1, "invalid max vote no");
         maxVotePerTweet = newMaxVote;
         emit SystemRateChanged(newMaxVote, "max_vote_number_once");
@@ -77,12 +90,14 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
             TweetVotePlugInI(addr).checkPluginInterface(),
             "invalid plugin address"
         );
+        require(pluginAddress != addr, "no need change");
         pluginAddress = addr;
         pluginStop = false;
         emit PluginChanged(pluginAddress, pluginStop);
     }
 
     function adminStopPlugin(bool stop) public isOwner {
+        require(pluginStop != stop, "no need change");
         pluginStop = stop;
         emit PluginChanged(pluginAddress, pluginStop);
     }
@@ -107,6 +122,15 @@ contract TweetVote is TweetVoteAmin {
 
     constructor() payable {}
 
+    /*
+     * @dev Allows a user to publish a tweet.
+     * @param hash Hash of the tweet content.
+     * @param signature Digital signature to verify tweet ownership.
+     * Requires the sent value to be equal to the tweet post price.
+     * Requires the tweet not to have been published before.
+     * Emits a {TweetPublished} event.
+     */
+
     function publishTweet(bytes32 hash, bytes memory signature)
     public
     payable
@@ -126,6 +150,27 @@ contract TweetVote is TweetVoteAmin {
         emit TweetPublished(msg.sender, hash);
     }
 
+    /*
+     * @dev Allows a user to vote on a tweet.
+     * @param tweetHash The hash of the tweet being voted on.
+     * @param voteNo The number of votes the user wants to cast.
+     * This function allows users to vote on a tweet by sending Ether.
+     * The function calculates the total cost of the votes based on the `tweetVotePrice`.
+     * It then verifies if the user has sent the correct amount of Ether for the number of votes.
+     *
+     * Requirements:
+     * - `voteNo` must be greater than 0 and less than the `maxVotePerTweet`.
+     * - The sent Ether (`msg.value`) must be equal to the total cost of the votes.
+     * - The tweet identified by `tweetHash` must exist.
+     *
+     * The function splits the payment into three parts:
+     * 1. A portion for the tweet owner (`kolIncomePerTweetVoteRate`).
+     * 2. A service fee (`serviceFeePerTweetVoteRate`).
+     * 3. The remaining amount is optionally sent to a plugin contract if it's active.
+     *
+     * Emits a {TweetVoted} event indicating the tweet that was voted on, the voter,
+     * the price per vote, and the number of votes cast.
+     */
     function voteToTweets(bytes32 tweetHash, uint256 voteNo)
     public
     payable

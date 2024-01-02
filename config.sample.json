@@ -1,5 +1,5 @@
 {
-	"log": "debug",
+	"log_level": "debug",
 	"local_run": false,
 	"url_home": "https://bridge.simplenets.org",
 	"http_port": "8880",
@@ -16,5 +16,8 @@
 	"consumer_secret": "",
 	"project_id": "dessage",
 	"key_file_path": "dessage-c3b5c95267fb.json",
-	"tweets_page_size": 20
+	"tweets_page_size": 20,
+	"tweet_vote_contract_address": "0x56D9Ed25DAD4d1833DB2fA8830EF9FF7971a5136",
+	"game_plugin_contract_address": "0x2BE3a89d85BA2510FBf0cb5b33F460D9AF717D0E",
+	"kol_key_contract_address": ""
 }

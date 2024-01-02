@@ -186,6 +186,7 @@ type NinjaTweet struct {
 	TweetId      string `json:"tweet_id,omitempty" firestore:"tweet_id"`
 	Signature    string `json:"signature,omitempty" firestore:"signature"`
 	PrefixedHash string `json:"prefixed_hash" firestore:"prefixed_hash"`
+	TxHash       string `json:"tx_hash" firestore:"tx_hash"`
 }
 
 type TweetsOfUser struct {

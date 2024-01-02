@@ -151,7 +151,7 @@ function loadGlobalLatestTweetsFromSrv(refreshNewest) {
             parseNjTweetsFromSrv(tweetArray, refreshNewest);
         })
         .catch(err => {
-            showDialog("error", "api globalLatestTweets:"+err.toString());
+            showDialog("error", "api globalLatestTweets:" + err.toString());
         });
 }
 
@@ -162,9 +162,9 @@ function populateLatestTweets(newCachedTweet, insertAtHead) {
     let minCreateTime = BigInt(0);
     newCachedTweet.forEach(async tweet => {
 
-        if (!tweet.name|| tweet.name === "unknown" || tweet.profile_image_url === DefaultAvatarSrc) {
+        if (!tweet.name || tweet.name === "unknown" || tweet.profile_image_url === DefaultAvatarSrc) {
             const twitterInfo = await loadTwitterInfo(tweet.twitter_id, true)
-            if (!twitterInfo ) {
+            if (!twitterInfo) {
                 tweet.name = "unknown";
                 tweet.username = "unknown";
             } else {
@@ -274,46 +274,70 @@ function formatTime(createTime) {
     return new Date(createTime).toLocaleString();
 }
 
+function postTweetWithHash(sigData,tx) {
+     return PostToSrvByJson("/postTweet", sigData).then(resp => {
+        const refreshedTweet = JSON.parse(resp)
+        document.getElementById("tweets-content").value = '';
+        parseNjTweetsFromSrv([refreshedTweet], true);
+        hideLoading();
+    }).catch(err => {
+        console.log(err);
+        throw  new Error(err);
+    })
+}
+
 async function postTweet() {
     try {
-        const content = document.getElementById("tweets-content").value.trim();
-        if (!content) {
-            showDialog("tips", "content can't be empty")
-            return;
-        }
+        const { content, twitterID, web3Id, message } = getUserInput();
+        if (!content || !twitterID || !web3Id) return;
 
-        const twitterID = ninjaUserObj.tw_id;
-        if (!twitterID) {
-            showDialog("tips", "bind your twitter first")
-            return;
-        }
-        if (!metamaskObj) {
-            window.location.href = "/signIn";
-            return;
-        }
-        const web3Id = ninjaUserObj.eth_addr;
-        const tweet = new TweetContentToPost(content, (new Date()).getTime(), web3Id, twitterID);
-        const message = JSON.stringify(tweet);
-        const signature = await metamaskObj.request({
-            method: 'personal_sign',
-            params: [message, web3Id],
-        });
-        const messageHash = ethers.utils.hashMessage(message);
+        const signature = await signMessage(message, web3Id);
+        if (!signature) return;
 
-        console.log("tweetHash=>",messageHash,"sig=>",signature,  "web3Id=>",web3Id,"message\n",message);
+        const tweetHash = ethers.utils.hashMessage(message);
+        console.log("tweetHash=>", tweetHash, "sig=>", signature, "web3Id=>", web3Id, "message\n", message);
 
-        const sigData = new SignDataForPost(message, signature, messageHash)
-        PostToSrvByJson("/postTweet", sigData).then(resp => {
-            const refreshedTweet = JSON.parse(resp)
-            document.getElementById("tweets-content").value = '';
+        showWaiting("paying for tweet post");
+        const tx = await tweetVoteContract.publishTweet(tweetHash, signature, { value: tweetPostPrice });
+        console.log("Transaction Response: ", tx);
+        await postTweetWithHash(new SignDataForPost(message, signature, tx.hash));
+
+        const txReceipt = await tx.wait();
+        hideLoading();
+        if (!txReceipt.status) {
+            showDialog("tx failed", txReceipt);
+        }else{
             showDialog("success", "post success");
-            parseNjTweetsFromSrv([refreshedTweet], true);
-        }).catch(err => {
-            console.log(err);
-            showDialog("error", "api postTweet:"+err.toString())
-        })
+        }
+        updateTweetTxStatus(txReceipt.status);
     } catch (err) {
-        showDialog("error", "postTweet:"+err.toString())
+        hideLoading();
+        showDialog("error", "postTweet:" + err.toString());
     }
 }
+
+function getUserInput() {
+    const content = document.getElementById("tweets-content").value.trim();
+    if (!content) showDialog("tips", "content can't be empty");
+
+    const twitterID = ninjaUserObj.tw_id;
+    if (!twitterID) showDialog("tips", "bind your twitter first");
+
+    const web3Id = ninjaUserObj.eth_addr;
+    const tweet = new TweetContentToPost(content, (new Date()).getTime(), web3Id, twitterID);
+    return { content, twitterID, web3Id, message: JSON.stringify(tweet) };
+}
+
+async function signMessage(message, web3Id) {
+    if (!metamaskObj) {
+        window.location.href = "/signIn";
+        return null;
+    }
+    return await metamaskObj.request({
+        method: 'personal_sign',
+        params: [message, web3Id],
+    });
+}
+
+
 

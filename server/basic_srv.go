@@ -50,6 +50,11 @@ func (sp *SignDataByEth) ParseNinjaTweet() (*NinjaTweet, error) {
 	}
 	tweetContent.Signature = sp.Signature
 	tweetContent.PrefixedHash = prefixedHash
+	tx, ok := sp.PayLoad.(string)
+	if !ok || len(tx) == 0 {
+		return nil, fmt.Errorf("no payment tx for tweet")
+	}
+	tweetContent.TxHash = tx
 
 	return &tweetContent, nil
 }

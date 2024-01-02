@@ -117,6 +117,7 @@ function hideLoading() {
         document.body.removeChild(loadingFrame);
     }
 }
+
 function toHex(number) {
     return '0x' + number.toString(16);
 }
@@ -125,7 +126,7 @@ function toHex(number) {
 const __globalTargetChainNetworkID = toHex(421614);
 const __globalMetaMaskNetworkParam = new Map([
     [toHex(42161), {
-        chainId:  toHex(42161),
+        chainId: toHex(42161),
         chainName: 'Arbitrum LlamaNodes',
         nativeCurrency: {
             name: 'ETH',
@@ -171,11 +172,29 @@ const __globalMetaMaskNetworkParam = new Map([
 ]);
 
 class SignDataForPost {
-    constructor(msg, sig,payload) {
+    constructor(msg, sig, payload) {
         this.message = msg;
         this.signature = sig;
         this.pay_load = payload;
     }
 }
 
-const  DefaultAvatarSrc = "/assets/file/logo.png"
+const DefaultAvatarSrc = "/assets/file/logo.png"
+
+const __globalContractConf = new Map([
+    [toHex(421614), {
+        tweetVote: "0x63713037a9E337D7Db5D383070199B948598e0Da",
+        tweetVoteAbi: tweetVoteContractABI,
+        gameLottery: "0x57F0bbE85f5822911003A8fa425D5595D139FDFe",
+        gameLotteryAbi: gameContractABI,
+        kolKey: "",
+        kolKeyAbi: ""
+    }],
+    [toHex(42161), {
+        tweetVote: "",
+        tweetVoteAbi: "",
+        gameLottery: "",
+        gameLotteryAbi: "",
+        kolKey: "",
+        kolKeyAbi: ""
+    }]]);

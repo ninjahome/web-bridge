@@ -10,7 +10,7 @@ import (
 
 func TestCreateDefaultConfigFile(t *testing.T) {
 	cfg := &SysConf{
-		Log:      "debug",
+		LogLevel: "debug",
 		LocalRun: false,
 		HttpPort: "8880",
 		UrlHome:  "https://bridge.simplenets.org",
@@ -33,6 +33,11 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			TweetsPageSize: 20,
 			ProjectID:      DefaultTwitterProjectID,
 			KeyFilePath:    "dessage-c3b5c95267fb.json",
+		},
+		BlockChainConf: &BlockChainConf{
+			TweeTVoteContractAddress:  "0x63713037a9E337D7Db5D383070199B948598e0Da",
+			GamePluginContractAddress: "0x57F0bbE85f5822911003A8fa425D5595D139FDFe",
+			KolKeyContractAddress:     "",
 		},
 	}
 

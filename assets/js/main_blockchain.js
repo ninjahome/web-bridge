@@ -1,5 +1,8 @@
 let metamaskObj = null;
-
+let metamaskProvider;
+let tweetVoteContract;
+let lotteryGameContract;
+let tweetPostPrice;
 function setupMetamask() {
     metamaskObj = window.ethereum;
     metamaskObj.on('accountsChanged', metamaskAccountChanged);
@@ -10,6 +13,25 @@ function setupMetamask() {
     })
 }
 
+async function initializeContract() {
+    metamaskProvider = new ethers.providers.Web3Provider(metamaskObj);
+    const signer = metamaskProvider.getSigner(ninjaUserObj.eth_addr);
+    const conf = __globalContractConf.get(__globalTargetChainNetworkID);
+
+    if (!conf || !conf.tweetVote) {
+        return false;
+    }
+
+    tweetVoteContract = new ethers.Contract(conf.tweetVote, conf.tweetVoteAbi, signer);
+    lotteryGameContract = new ethers.Contract(conf.gameLottery, conf.gameLotteryAbi, signer);
+    try {
+    tweetPostPrice = await tweetVoteContract.tweetPostPrice();
+    } catch (error) {
+        console.error("Error getting tweet post price: ", error);
+        return  false;
+    }
+    return true;
+}
 
 async function metamaskChainChanged(chainId) {
     const chainBtn = document.getElementById('change-chain-id-button')
@@ -72,14 +94,3 @@ function switchToWorkChain() {
     });
 }
 
-async function signTweetAndPay(prefixedHash,signature ) {
-
-    const provider = new ethers.providers.Web3Provider(metamaskObj);
-    const signer = provider.getSigner();
-
-    const contract = new ethers.Contract(tweetExchangeContractAddress, tweetExchangeContractABI, signer);
-    const transaction = await contract.publishTweet(prefixedHash, signature, { value: ethers.utils.parseEther("0.001") });
-
-    // Wait for the transaction to be mined
-    await transaction.wait();
-}

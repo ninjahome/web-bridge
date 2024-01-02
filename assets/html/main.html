@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <title>Ninja User Info</title>
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    <script src="/assets/js/abi_tweet_vote.js"></script>
+    <script src="/assets/js/abi_game_lottery.js"></script>
     <script src="/assets/js/utils.js"></script>
     <script src="/assets/js/database.js"></script>
-    <script src="/assets/js/blockchain_base.js"></script>
     <script src="/assets/js/main.js"></script>
     <script src="/assets/js/main_twitter.js"></script>
     <script src="/assets/js/main_tweet.js"></script>
@@ -401,6 +402,7 @@
     window.onscroll = function() {
         throttle(() => loadMoreTweets(), 200);
     }
+
     let throttleTimer;
     function throttle(callback, time) {
         if (throttleTimer) return;
@@ -412,11 +414,12 @@
         }, time);
     }
 
-    function initMainPage() {
+    async function initMainPage() {
         checkSystemEnvironment();
         window.addEventListener('popstate', clearSessionStorage);
         window.addEventListener('replaceState', clearSessionStorage);
         setupBasicInfo();
+        await initializeContract();
         loadCachedGlobalTweets();
         loadGlobalLatestTweetsFromSrv(true);
     }

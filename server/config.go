@@ -71,6 +71,8 @@ type TwitterConf struct {
 func (c *TwitterConf) String() string {
 	s := "\n------twitter config------"
 	s += "\nclient id:" + c.ClientID
+	s += "\nfont path:" + c.FontPath
+	s += "\nfont size:" + fmt.Sprintf("%.1f", c.FontSize)
 	s += "\n--------------------------"
 	return s
 }
@@ -82,27 +84,44 @@ type FileStoreConf struct {
 }
 
 func (c *FileStoreConf) String() string {
-	s := "\n------twitter config------"
+	s := "\n------file store config------"
 	s += "\nproject id:" + c.ProjectID
 	s += "\nkey path :" + c.KeyFilePath
+	s += "\ntweet page size :" + fmt.Sprintf("%d", c.TweetsPageSize)
+	s += "\n--------------------------"
+	return s
+}
+
+type BlockChainConf struct {
+	TweeTVoteContractAddress  string `json:"tweet_vote_contract_address"`
+	GamePluginContractAddress string `json:"game_plugin_contract_address"`
+	KolKeyContractAddress     string `json:"kol_key_contract_address"`
+}
+
+func (c *BlockChainConf) String() string {
+	s := "\n------block chain config------"
+	s += "\ntweet vote:" + c.TweeTVoteContractAddress
+	s += "\ngame:" + c.GamePluginContractAddress
+	s += "\nkol key:" + c.KolKeyContractAddress
 	s += "\n--------------------------"
 	return s
 }
 
 type SysConf struct {
-	Log      string `json:"log"`
+	LogLevel string `json:"log_level"`
 	LocalRun bool   `json:"local_run"`
 	UrlHome  string `json:"url_home"`
 	HttpPort string `json:"http_port"`
 	*HttpConf
 	*TwitterConf
 	*FileStoreConf
+	*BlockChainConf
 	twOauthCfg *oauth2.Config
 }
 
 func (c *SysConf) String() any {
 	var s = "\n=======================system config==========================="
-	s += "\nlog level:" + c.Log
+	s += "\nlog level:" + c.LogLevel
 	s += "\nlocal mode:" + fmt.Sprintf("%t", c.LocalRun)
 	s += "\nhome:" + c.UrlHome
 	s += "\nhttp port:" + c.HttpPort
@@ -118,7 +137,7 @@ var (
 )
 
 func InitConf(c *SysConf) {
-	util.SetLogLevel(c.Log)
+	util.SetLogLevel(c.LogLevel)
 	if len(c.HttpPort) == 0 {
 		c.HttpPort = "80"
 	}

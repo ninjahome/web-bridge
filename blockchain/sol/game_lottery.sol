@@ -24,9 +24,10 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         uint256 bonus;
     }
     struct TweetTeam {
-        mapping(address => uint256) memMap;
-        address[] memList;
+        mapping(address => uint256) memVotes;
+        mapping(uint256 => address) memIndex;
         uint256 voteNo;
+        uint256 memCount;
     }
 
     struct BuyerInfo {
@@ -87,23 +88,34 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
      *                       admin operation
      *********************************************************************************/
     function adminOpenToOuterPlayer(bool isOpen) public isOwner {
+        require(__openToOuterPlayer != isOpen, "no need change");
         __openToOuterPlayer = isOpen;
         emit AdminOperated(isOpen ? 1 : 0, "game_open_to_outer_player");
     }
 
     function adminSetTicketPriceForOuter(uint256 priceInFinney) public isOwner {
         require(priceInFinney > __minValCheck, "invalid ticket price");
+        require(
+            __ticketPriceForOuter != priceInFinney * 1e6 gwei,
+            "no need change"
+        );
         __ticketPriceForOuter = priceInFinney * 1e6 gwei;
     }
 
     function adminSetServiceFeeRateForTicketBuy(uint8 newRate) public isOwner {
         require(newRate >= 0 && newRate <= 100, "invalid rate param");
+        require(__serviceFeeRateForTicketBuy != newRate, "no need change");
+
         __serviceFeeRateForTicketBuy = newRate;
         emit AdminOperated(newRate, "rate_of_service_fee_for_tciket_buy");
     }
 
     function adminChangeRoundTime(uint256 newTimeInMinutes) public isOwner {
         require(newTimeInMinutes > 0, "invalid time");
+        require(
+            __lotteryGameRoundTime != newTimeInMinutes * 1 minutes,
+            "no need change"
+        );
 
         __lotteryGameRoundTime = newTimeInMinutes * 1 minutes;
 
@@ -112,6 +124,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
 
     function adminChangeBonusRateToWinner(uint8 newRate) public isOwner {
         require(newRate >= 0 && newRate <= 100, "invalid rate");
+        require(__bonusRateToWinner != newRate, "no need change");
 
         __bonusRateToWinner = newRate;
 
@@ -121,7 +134,18 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     /********************************************************************************
      *                       lottery admin
      *********************************************************************************/
-
+    /**
+     * @dev Initiates the next round of the lottery game.
+     * @param hash The initial random hash for the new round.
+     * This function transitions the game to a new round. It carries over any unclaimed bonus from the current round to the next round.
+     * The provided hash is used as the starting point for the random number generation in the new round.
+     * Only callable by administrators of the contract to ensure controlled progression of game rounds.
+     * Emits a SkipToNewRound event upon successfully initiating a new round.
+     *
+     * Requirements:
+     * - The provided hash must not be the zero value.
+     * - The function must be called by an administrator.
+     */
     function skipToNextRound(bytes32 hash) public onlyAdmin noReentrant {
         require(hash != bytes32(0), "Hash cannot be the zero value");
 
@@ -143,8 +167,16 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         emit SkipToNewRound(hash, currentRoundNo);
     }
 
+    /*
+     * @dev Distributes the bonus to the team members of the winning ticket.
+     * @param val The total bonus value to be distributed.
+     * @param winner The buyer information of the winning ticket.
+     * @return The team hash of the winning team.
+     * This function calculates and distributes the bonus to each team member based on their votes.
+     * If the winner has no team (team hash is zero), the full bonus is allocated to the winner's account.
+     */
     function dispatchBonusToTeam(uint256 val, BuyerInfo memory winner)
-    private
+    internal
     returns (bytes32 teamHash)
     {
         if (winner.team == bytes32(0)) {
@@ -160,24 +192,37 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
 
         uint256 bonusPerVote = val / (totalVote - 1);
 
-        for (uint256 idx = 0; idx < team.memList.length; idx++) {
-            address teamMember = team.memList[idx];
-            uint256 vote = team.memMap[teamMember];
+        for (uint256 i = 0; i < team.memCount; i++) {
+            address teamMember = team.memIndex[i];
+            uint256 memberVoteCount = team.memVotes[teamMember];
 
-            if (teamMember == address(0) || vote == 0) {
+            if (teamMember == address(0) || memberVoteCount == 0) {
                 continue;
             }
             if (teamMember == winner.addr) {
-                vote -= 1;
+                memberVoteCount -= 1;
             }
-            balance[teamMember] += bonusPerVote * vote;
+            balance[teamMember] += bonusPerVote * memberVoteCount;
         }
 
         return winner.team;
     }
 
+    /**
+     * @dev Generates the winning ticket ID for the current lottery round based on a random number.
+     * @param random The random number provided to determine the winning ticket.
+     * @param currentHash A hash representing the current state of randomness.
+     * @return The ID of the winning ticket.
+     * This function calculates the winner of the current lottery round by using the provided random number.
+     * It ensures the integrity of the random number by checking it against the currentHash.
+     * The function computes a new hash from the given random number and other blockchain parameters, then uses this hash to select a winning ticket from all the tickets in the current round.
+     *
+     * Requirements:
+     * - There must be at least one ticket in the current round.
+     * - The provided hash must match the expected hash, ensuring the random number is valid.
+     */
     function generateWiner(uint256 random, bytes32 currentHash)
-    public
+    internal
     view
     returns (uint256)
     {
@@ -200,6 +245,14 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         return allTickets[idx];
     }
 
+    /**
+     * @dev Discovers and announces the winner of the current lottery round based on a random number.
+     * @param random The random number used to select the winning ticket.
+     * @param nextRoundRandomHash The hash for the next round's random number.
+     * This function determines the winning ticket based on the provided random number and assigns the winnings.
+     * It also prepares the game for the next round using the provided next round hash.
+     * Emits a DiscoverWinner event upon finding a winner.
+     */
     function discoverWinner(uint256 random, bytes32 nextRoundRandomHash)
     public
     onlyAdmin
@@ -256,7 +309,20 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     /********************************************************************************
      *                       lottery operation
      *********************************************************************************/
-
+    /**
+     * @dev Generates lottery tickets for a buyer in the current lottery round.
+     * @param no The number of tickets to be generated.
+     * @param buyer The address of the buyer purchasing the tickets.
+     * @param tweetHash The hash of the tweet associated with the ticket purchase.
+     * This function is responsible for generating a specified number of lottery tickets for a buyer.
+     * It records each ticket's information and associates it with the buyer's information.
+     * For each ticket, a unique ID is generated and mapped to the buyer's address and the corresponding tweet hash.
+     * The function increments the global ticket ID counter and updates mappings to track tickets of the buyer and tickets in the current round.
+     *
+     * Requirements:
+     * - The buyer's address and tweet hash must be valid.
+     * - The number of tickets requested must be greater than zero.
+     */
     function generateTicket(
         uint256 no,
         address buyer,
@@ -280,6 +346,16 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         __currentLotteryTicketID += no;
     }
 
+    /**
+     * @dev Processes the purchase of votes for a specific tweet, as part of the lottery game.
+     * @param tweetHash The hash of the tweet being voted on.
+     * @param tweetOwner The owner of the tweet.
+     * @param buyer The address of the buyer who is purchasing votes.
+     * @param voteNo The number of votes being purchased.
+     * This function increases the game's bonus pool with the value sent to the contract and generates lottery tickets for the buyer.
+     * It also updates the vote count in the relevant tweet team.
+     * Emits a TweetBought event upon successful execution.
+     */
     function tweetBought(
         bytes32 tweetHash,
         address tweetOwner,
@@ -301,16 +377,40 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         gameInfoRecord[currentRoundNo].bonus += val;
         generateTicket(voteNo, buyer, tweetHash);
 
-        TweetTeam storage team = tweetTeamMap[currentRoundNo][tweetHash];
-        if (team.memMap[buyer] == 0) {
-            team.memList.push(buyer);
-        }
-        team.memMap[buyer] += voteNo;
-        team.voteNo += voteNo;
+        updateTweetTeam(currentRoundNo, tweetHash, buyer, voteNo);
 
         emit TweetBought(tweetHash, tweetOwner, buyer, val, voteNo);
     }
 
+    function updateTweetTeam(
+        uint256 roundNo,
+        bytes32 tweetHash,
+        address buyer,
+        uint256 voteNo
+    ) internal {
+        TweetTeam storage team = tweetTeamMap[roundNo][tweetHash];
+        if (team.memVotes[buyer] == 0) {
+            team.memIndex[team.memCount] = buyer;
+            team.memCount += 1;
+        }
+        team.memVotes[buyer] += voteNo;
+        team.voteNo += voteNo;
+    }
+
+    /**
+     * @dev Allows external users to buy lottery tickets when the game is open to the public.
+     * @param ticketNo The number of tickets the external user wants to purchase.
+     * This function enables external users (non-platform users) to participate in the lottery game by purchasing tickets.
+     * It verifies if the game is open to external players and if the sent Ether matches the price of the requested number of tickets.
+     * The function calculates the service fee, records it, and adds the remainder of the Ether sent to the game's bonus pool.
+     * It then generates the requested number of tickets for the external user.
+     * Emits a TicketSold event upon successful ticket purchase.
+     *
+     * Requirements:
+     * - The number of tickets requested must be greater than zero.
+     * - The game must be open to external players.
+     * - The sent Ether must exactly match the total price of the requested tickets.
+     */
     function buyTicketFromOuter(uint256 ticketNo)
     public
     payable
@@ -345,12 +445,12 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     returns (address[] memory members)
     {
         TweetTeam storage team = tweetTeamMap[currentRoundNo][tweet];
-        if (team.memList.length == 0) {
+        if (team.memCount == 0) {
             return new address[](0);
         }
-        members = new address[](team.memList.length);
-        for (uint256 idx; idx < team.memList.length; idx++) {
-            members[idx] = team.memList[idx];
+        members = new address[](team.memCount);
+        for (uint256 idx = 0; idx < team.memCount; idx++) {
+            members[idx] = team.memIndex[idx];
         }
         return members;
     }
@@ -361,7 +461,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     returns (uint256, uint256)
     {
         TweetTeam storage team = tweetTeamMap[currentRoundNo][tweet];
-        return (team.memList.length, team.voteNo);
+        return (team.memCount, team.voteNo);
     }
 
     function teamMemberVoteNo(bytes32 tweet, address memAddr)
@@ -370,7 +470,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     returns (uint256)
     {
         TweetTeam storage team = tweetTeamMap[currentRoundNo][tweet];
-        return team.memMap[memAddr];
+        return team.memVotes[memAddr];
     }
 
     function historyTeamMembers(uint256 roundNo, bytes32 tweet)
@@ -379,12 +479,12 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     returns (address[] memory members)
     {
         TweetTeam storage team = tweetTeamMap[roundNo][tweet];
-        if (team.memList.length == 0) {
+        if (team.memCount == 0) {
             return new address[](0);
         }
-        members = new address[](team.memList.length);
-        for (uint256 idx; idx < team.memList.length; idx++) {
-            members[idx] = team.memList[idx];
+        members = new address[](team.memCount);
+        for (uint256 idx = 0; idx < team.memCount; idx++) {
+            members[idx] = team.memIndex[idx];
         }
         return members;
     }
@@ -395,7 +495,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     returns (uint256, uint256)
     {
         TweetTeam storage team = tweetTeamMap[roundNo][tweet];
-        return (team.memList.length, team.voteNo);
+        return (team.memCount, team.voteNo);
     }
 
     function historyTeamMemberVoteNo(
@@ -404,7 +504,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         address memAddr
     ) public view returns (uint256) {
         TweetTeam storage team = tweetTeamMap[roundNo][tweet];
-        return team.memMap[memAddr];
+        return team.memVotes[memAddr];
     }
 
     function currentTickets() public view returns (uint256[] memory) {
