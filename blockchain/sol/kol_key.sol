@@ -25,7 +25,19 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
         address[] list;
     }
 
+    struct KeyAuction {
+        uint256 id;
+        address seller;
+        address bidder;
+        address kol;
+        uint256 nonce;
+        uint256 amount;
+        uint256 price;
+        bool status;
+    }
+
     uint256 public __feeForKolKeyOp = 0.001 ether;
+    uint256 public __feeForKeyBiddig = 0.001 ether;
     uint8 public kolIncomeRatePerKeyBuy = 90;
     uint8 public serviceFeeRatePerKeyBuy = 10;
 
@@ -35,6 +47,10 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
 
     mapping(address => MapArray) private keyHoldersOfKol;
     mapping(address => MapArray) private kolsOfInKeyHolder;
+
+    uint256 public __currentAuctionID = 1e5;
+    KeyAuction[] public keyInAuction;
+    mapping(uint256 => uint256) public auctionIdxMap;
 
     event KolKeyOperation(
         address kol,
@@ -68,13 +84,45 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
     );
 
     event SystemSet(uint256 num, string op);
+    event KeyAuctionAction(
+        address kol,
+        address seller,
+        address buyer,
+        uint256 nonce,
+        uint256 amount,
+        uint256 pricePerKey,
+        string typ
+    );
+
+    event KeyTransfered(
+        address from,
+        address to,
+        address kol,
+        uint256 nonce,
+        uint256 amount
+    );
+
+    event KeyTransferedAll(address from, address to, address kol);
 
     receive() external payable {}
 
-    function removeFromArray(uint256 index, uint256[] storage array) internal {
-        require(index < array.length, "Index out of bounds");
+    function removeFromArray(uint256 indexPlusOne, uint256[] storage array)
+    internal
+    {
+        if (array.length == 0) {
+            return;
+        }
+        if (array.length == 1) {
+            array.pop();
+            return;
+        }
 
-        array[index] = array[array.length - 1];
+        require(
+            indexPlusOne >= 1 && indexPlusOne <= array.length,
+            "Index out of bounds"
+        );
+
+        array[indexPlusOne - 1] = array[array.length - 1];
         array.pop();
     }
 
@@ -87,6 +135,14 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
         __feeForKolKeyOp = newFeeInGwei;
 
         emit SystemSet(newFeeInGwei, "kol_operation_fee_changed");
+    }
+
+    function adminSetBddingFee(uint256 newFeeInGwei) public isOwner {
+        newFeeInGwei = newFeeInGwei * 1 gwei;
+        require(newFeeInGwei >= __minValCheck, "to small price");
+        __feeForKeyBiddig = newFeeInGwei;
+
+        emit SystemSet(newFeeInGwei, "bidding_fee_changed");
     }
 
     function adminSetKolIncomeRate(uint8 newRate) public isOwner {
@@ -107,6 +163,7 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
     function kolOpenKeySale(uint256 pricePerKey, int256 maxKeyNo)
     public
     payable
+    inRun
     {
         require(maxKeyNo != 0, "invalid max key no");
         require(msg.value == __feeForKolKeyOp, "fee of key setting changed");
@@ -131,7 +188,7 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
         );
     }
 
-    function kolSetKeyPrice(uint256 newPrice) public payable {
+    function kolSetKeyPrice(uint256 newPrice) public payable inRun {
         require(msg.value == __feeForKolKeyOp, "fee of key setting changed");
         require(newPrice >= __minValCheck, "too low price");
         KeySettings storage ks = KeySettingsRecord[msg.sender];
@@ -149,7 +206,7 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
         );
     }
 
-    function kolAddKeySupply(uint256 amount) public payable {
+    function kolAddKeySupply(uint256 amount) public payable inRun {
         require(msg.value == __feeForKolKeyOp, "fee of key setting changed");
         require(amount >= 1, "too small size");
         KeySettings storage ks = KeySettingsRecord[msg.sender];
@@ -168,7 +225,7 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
     }
 
     /********************************************************************************
-     *                       key operation
+     *                       value to kol key pool
      *********************************************************************************/
 
     function incomeToKolPool(address kol)
@@ -176,6 +233,7 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
     payable
     isValidAddress(kol)
     noReentrant
+    inRun
     {
         require(msg.value > __minValCheck, "too small funds");
         KeySettings storage ks = KeySettingsRecord[msg.sender];
@@ -202,6 +260,7 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
     isValidAddress(tweetOwner)
     noReentrant
     onlyAdmin
+    inRun
     {
         uint256 val = msg.value;
         require(val > __minValCheck, "invalid msg value");
@@ -226,11 +285,12 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
         return true;
     }
 
-    function KolIPRightsBought(address kolAddr, uint256 keyNo)
+    function buyKolKey(address kolAddr, uint256 keyNo)
     public
     payable
     isValidAddress(kolAddr)
     noReentrant
+    inRun
     {
         require(keyNo >= 1, "invalid key no");
 
@@ -249,7 +309,7 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
 
         KolKey storage b = keyBalance[msg.sender][kolAddr];
         b.nonceList.push(ks.nonce);
-        b.nonceToAmount[ks.nonce] = keymeta(keyNo, b.nonceList.length - 1);
+        b.nonceToAmount[ks.nonce] = keymeta(keyNo, b.nonceList.length);
 
         MapArray storage investors = keyHoldersOfKol[kolAddr];
         if (investors.filter[msg.sender] == false) {
@@ -273,6 +333,199 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
     }
 
     /********************************************************************************
+     *                       key auction
+     *********************************************************************************/
+
+    function transferKey(
+        address to,
+        address kol,
+        uint256 nonce,
+        uint256 amount
+    ) public isValidAddress(kol) inRun {
+        require(amount > 0, "invalid amount");
+        KolKey storage key = keyBalance[msg.sender][kol];
+        keymeta storage km = key.nonceToAmount[nonce];
+        require(km.amount >= amount, "no enough key to bid");
+
+        KolKey storage toKey = keyBalance[to][kol];
+        keymeta storage toKm = toKey.nonceToAmount[nonce];
+
+        if (toKm.amount > 0) {
+            km.amount -= amount;
+            toKm.amount += amount;
+        } else {
+            km.amount -= amount;
+            toKey.nonceList.push(nonce);
+            toKey.nonceToAmount[nonce] = keymeta(
+                amount,
+                toKey.nonceList.length
+            );
+        }
+
+        emit KeyTransfered(msg.sender, to, kol, nonce, amount);
+    }
+
+    function transferAllKey(address to, address kol)
+    public
+    isValidAddress(kol)
+    inRun
+    {
+        KolKey storage key = keyBalance[msg.sender][kol];
+        for (uint256 idx = 0; idx < key.nonceList.length; idx++) {
+            uint256 nonce = key.nonceList[idx];
+
+            keymeta memory km = key.nonceToAmount[nonce];
+
+            KolKey storage toKey = keyBalance[to][kol];
+            keymeta storage toKm = toKey.nonceToAmount[nonce];
+
+            if (toKm.amount > 0) {
+                toKm.amount += km.amount;
+            } else {
+                toKey.nonceList.push(nonce);
+                toKey.nonceToAmount[nonce] = keymeta(
+                    km.amount,
+                    toKey.nonceList.length
+                );
+            }
+            delete key.nonceToAmount[nonce];
+        }
+
+        delete key.nonceList;
+        delete keyBalance[msg.sender][kol];
+
+        emit KeyTransferedAll(msg.sender, to, kol);
+    }
+
+    function issueBid(
+        address kol,
+        uint256 nonce,
+        uint256 amount,
+        uint256 pricePerKey
+    ) public payable isValidAddress(kol) inRun {
+        require(msg.value == __feeForKeyBiddig, "bidding fee changed");
+        require(amount > 0, "invalid amount");
+        require(pricePerKey > __minValCheck, "too low price");
+
+        KolKey storage key = keyBalance[msg.sender][kol];
+        keymeta storage km = key.nonceToAmount[nonce];
+
+        require(km.amount >= amount, "no enough key to bid");
+
+        km.amount -= amount;
+        KeyAuction memory ka = KeyAuction(
+            __currentAuctionID,
+            msg.sender,
+            address(0),
+            kol,
+            nonce,
+            amount,
+            pricePerKey,
+            true
+        );
+
+        keyInAuction.push(ka);
+        auctionIdxMap[__currentAuctionID] = keyInAuction.length;
+        __currentAuctionID++;
+
+        recordServiceFee(__feeForKeyBiddig);
+
+        emit KeyAuctionAction(
+            kol,
+            msg.sender,
+            address(0),
+            nonce,
+            amount,
+            pricePerKey,
+            "new issue"
+        );
+    }
+
+    function bid(uint256 bidID) public payable inRun {
+        uint256 idx = auctionIdxMap[bidID];
+        require(idx >= 1, "no such auction");
+
+        KeyAuction storage ka = keyInAuction[idx - 1];
+        require(
+            ka.seller != address(0) && ka.id == bidID,
+            "invalid bid target"
+        );
+        require(ka.bidder == address(0) && ka.status, "bidding has finished");
+
+        uint256 val = ka.amount * ka.price;
+        require(msg.value == val + __feeForKeyBiddig, "insufficient funds");
+
+        ka.bidder = msg.sender;
+        ka.status = false;
+        KolKey storage toKey = keyBalance[msg.sender][ka.kol];
+        keymeta storage toKm = toKey.nonceToAmount[ka.nonce];
+        if (toKm.amount > 0) {
+            toKm.amount += ka.amount;
+        } else {
+            toKey.nonceList.push(ka.nonce);
+            toKey.nonceToAmount[ka.nonce] = keymeta(
+                ka.amount,
+                toKey.nonceList.length
+            );
+        }
+
+        payable(ka.seller).transfer(val);
+
+        recordServiceFee(__feeForKeyBiddig);
+
+        emit KeyAuctionAction(
+            ka.kol,
+            ka.seller,
+            msg.sender,
+            ka.nonce,
+            ka.amount,
+            ka.price,
+            "bid success"
+        );
+    }
+
+    function revokeBid(uint256 bidID) public payable inRun {
+        uint256 idx = auctionIdxMap[bidID];
+        require(idx >= 1, "no such auction");
+
+        require(msg.value == __feeForKeyBiddig, "fee needed");
+
+        KeyAuction storage ka = keyInAuction[idx - 1];
+        require(
+            ka.bidder == address(0) && ka.id == bidID && ka.status,
+            "can't be revoked"
+        );
+        require(ka.seller == msg.sender, "no rights");
+
+        KolKey storage toKey = keyBalance[msg.sender][ka.kol];
+        keymeta storage toKm = toKey.nonceToAmount[ka.nonce];
+        if (toKm.amount > 0) {
+            toKm.amount += ka.amount;
+        } else {
+            toKey.nonceList.push(ka.nonce);
+            toKey.nonceToAmount[ka.nonce] = keymeta(
+                ka.amount,
+                toKey.nonceList.length
+            );
+        }
+
+        delete auctionIdxMap[bidID];
+        ka.status = false;
+
+        recordServiceFee(__feeForKeyBiddig);
+
+        emit KeyAuctionAction(
+            ka.kol,
+            ka.seller,
+            msg.sender,
+            ka.nonce,
+            ka.amount,
+            ka.price,
+            "bid success"
+        );
+    }
+
+    /********************************************************************************
      *                       income withdraw
      *********************************************************************************/
 
@@ -280,6 +533,7 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
     public
     noReentrant
     isValidAddress(kol)
+    inRun
     {
         KeySettings storage ks = KeySettingsRecord[kol];
         KolKey storage key = keyBalance[msg.sender][kol];
@@ -305,10 +559,7 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
         ks.nonce++;
 
         key.nonceList.push(ks.nonce);
-        key.nonceToAmount[ks.nonce] = keymeta(
-            km.amount,
-            key.nonceList.length - 1
-        );
+        key.nonceToAmount[ks.nonce] = keymeta(km.amount, key.nonceList.length);
 
         uint256 reminders = minusWithdrawFee(val);
 
@@ -321,6 +572,7 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
     public
     noReentrant
     isValidAddress(kol)
+    inRun
     {
         privateWithdrawFromOneKol(kol, msg.sender, true);
     }
@@ -364,10 +616,7 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
         ks.nonce++;
 
         key.nonceList.push(ks.nonce);
-        key.nonceToAmount[ks.nonce] = keymeta(
-            totalKeyNo,
-            key.nonceList.length - 1
-        );
+        key.nonceToAmount[ks.nonce] = keymeta(totalKeyNo, key.nonceList.length);
 
         if (once) {
             uint256 reminders = minusWithdrawFee(val);
@@ -376,7 +625,7 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
         }
     }
 
-    function withDrawAllIncome() public noReentrant {
+    function withdrawAllIncome() public noReentrant inRun {
         MapArray storage kol = kolsOfInKeyHolder[msg.sender];
         require(kol.list.length > 0, "no investment");
 
@@ -490,5 +739,20 @@ contract KolKeys is ServiceFeeForWithdraw, TweetVotePlugInI {
     returns (KeySettings memory)
     {
         return KeySettingsRecord[kol];
+    }
+
+    function AuctionData(uint256 start, uint256 no)
+    public
+    view
+    returns (KeyAuction[] memory result)
+    {
+        result = new KeyAuction[](no);
+        uint256 end = start + no;
+        if (end >= keyInAuction.length) {
+            end = keyInAuction.length - 1;
+        }
+        for (uint256 idx = start; idx < end; idx++) {
+            result[0] = keyInAuction[idx];
+        }
     }
 }

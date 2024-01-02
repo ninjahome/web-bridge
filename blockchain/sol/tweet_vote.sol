@@ -107,7 +107,11 @@ contract TweetVote is TweetVoteAmin {
 
     constructor() payable {}
 
-    function publishTweet(bytes32 hash, bytes memory signature) public payable {
+    function publishTweet(bytes32 hash, bytes memory signature)
+    public
+    payable
+    inRun
+    {
         require(msg.value == tweetPostPrice, "tweet post fee cahnged");
         require(ownersOfAllTweets[hash] == address(0), "duplicate post");
         require(
@@ -126,6 +130,7 @@ contract TweetVote is TweetVoteAmin {
     public
     payable
     noReentrant
+    inRun
     {
         require(voteNo > 0 && voteNo < maxVotePerTweet, "vote no. invalid");
         uint256 amount = voteNo * tweetVotePrice;

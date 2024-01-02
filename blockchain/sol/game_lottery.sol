@@ -311,7 +311,12 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         emit TweetBought(tweetHash, tweetOwner, buyer, val, voteNo);
     }
 
-    function buyTicketFromOuter(uint256 ticketNo) public payable noReentrant {
+    function buyTicketFromOuter(uint256 ticketNo)
+    public
+    payable
+    noReentrant
+    inRun
+    {
         require(ticketNo > 0, "invalid ticket number");
         require(__openToOuterPlayer, "not open now");
         uint256 b = msg.value;

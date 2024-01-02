@@ -4,6 +4,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 abstract contract Owner {
     address private owner;
+    bool private paused;
 
     event OwnerSet(address indexed oldOwner, address indexed newOwner);
 
@@ -14,12 +15,17 @@ abstract contract Owner {
 
     constructor() {
         owner = msg.sender;
+        paused = false;
         emit OwnerSet(address(0), owner);
     }
 
     function changeOwner(address newOwner) public isOwner {
         emit OwnerSet(owner, newOwner);
         owner = newOwner;
+    }
+
+    function changeOwner(bool stop) public isOwner {
+        paused = stop;
     }
 
     function getOwner() external view returns (address) {
@@ -37,6 +43,11 @@ abstract contract Owner {
 
     modifier isValidAddress(address addr) {
         require(addr != address(0), "invalid address");
+        _;
+    }
+
+    modifier inRun() {
+        require(paused == false, "stopped");
         _;
     }
 }
@@ -123,7 +134,7 @@ abstract contract ServiceFeeForWithdraw is Owner {
         emit AdminOperation(admin, isDelete);
     }
 
-    function withdraw(uint256 amount, bool all) public noReentrant {
+    function withdraw(uint256 amount, bool all) public noReentrant inRun {
         uint256 b = balance[msg.sender];
         if (all) {
             amount = b;
