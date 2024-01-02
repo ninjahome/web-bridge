@@ -61,6 +61,7 @@ abstract contract ServiceFeeForWithdraw is Owner {
     }
 
     function adminServiceFeeWithdraw() public isOwner noReentrant {
+        require(__serviceFeeReceived > 0, "insufficient service fee");
         payable(this.getOwner()).transfer(__serviceFeeReceived);
         __serviceFeeReceived = 0;
     }
@@ -98,7 +99,11 @@ abstract contract ServiceFeeForWithdraw is Owner {
     noReentrant
     isValidAddress(recipient)
     {
-        payable(this.getOwner()).transfer(__serviceFeeReceived);
+        if (__serviceFeeReceived > 0) {
+            payable(this.getOwner()).transfer(__serviceFeeReceived);
+            __serviceFeeReceived = 0;
+        }
+
         uint256 balance = address(this).balance;
         if (balance > 0) {
             recipient.transfer(balance);
@@ -117,18 +122,12 @@ abstract contract ServiceFeeForWithdraw is Owner {
     }
 }
 
-interface PlugInI {
+interface TweetVotePlugInI {
     function tweetBought(
         bytes32 tweetHash,
         address owner,
         address buyer,
         uint256 voteNo
-    ) external payable;
-
-    function KolIPRightsBought(
-        address kolAddr,
-        address buyer,
-        uint256 keyNo
     ) external payable;
 
     function checkPluginInterface() external pure returns (bool);

@@ -18,9 +18,8 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
     uint256 public kolIncomePerTweetVoteRate = 30;
     uint256 public serviceFeePerTweetVoteRate = 10;
 
-
     address public pluginAddress;
-    bool public pluginStop = false;
+    bool public pluginStop = true;
 
     event Received(address indexed sender, uint256 amount);
     event PluginChanged(address pAddr, bool stop);
@@ -74,8 +73,12 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
     }
 
     function adminSetPluginAddr(address addr) public isOwner {
-        require(TweetVotePlugInI(addr).checkPluginInterface(), "invalid plugin address");
+        require(
+            TweetVotePlugInI(addr).checkPluginInterface(),
+            "invalid plugin address"
+        );
         pluginAddress = addr;
+        pluginStop = false;
         emit PluginChanged(pluginAddress, pluginStop);
     }
 
@@ -88,18 +91,20 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
 /********************************************************************************
  *                       business logic
  *********************************************************************************/
+
 contract TweetVote is TweetVoteAmin {
     mapping(bytes32 => address) public ownersOfAllTweets;
     mapping(address => uint256) public balance;
 
-    event KolRightsBought(
-        address kolAddr,
-        address buyer,
-        uint256 rightsNo
-    );
+    event KolRightsBought(address kolAddr, address buyer, uint256 rightsNo);
 
     event TweetPublished(address indexed from, bytes32 tweetHash);
-    event TweetVoted(bytes32 tweetHash, address voter, uint pricePerVote, uint voteNo);
+    event TweetVoted(
+        bytes32 tweetHash,
+        address voter,
+        uint256 pricePerVote,
+        uint256 voteNo
+    );
     event KolWithdraw(address indexed kol, uint256 amount);
 
     constructor() payable {}
@@ -127,7 +132,8 @@ contract TweetVote is TweetVoteAmin {
         require(voteNo > 0 && voteNo < maxVotePerTweet, "vote no. invalid");
         uint256 amount = voteNo * tweetVotePrice;
         require(amount > __minValCheck, "amount invalid");
-        require(msg.value == amount, "insufficient funds");
+        require(msg.value == amount, "vote price has changed");
+
         address tweetOwner = ownersOfAllTweets[tweetHash];
         require(tweetOwner != address(0), "no such tweet");
 
@@ -159,15 +165,15 @@ contract TweetVote is TweetVoteAmin {
     public
     noReentrant
     {
-        require(balance[msg.sender] >= amount, "insufficient funds");
-        require(amount >= __minValCheck || all, "invalid param");
+        uint256 b = balance[msg.sender];
         if (all) {
-            amount = balance[msg.sender];
-            balance[msg.sender] = 0;
-        } else {
-            balance[msg.sender] -= amount;
+            amount = b;
         }
+        require(amount >= __minValCheck || all, "two small amount");
+        require(b >= amount, "insufficient funds for you");
+        require(b <= address(this).balance, "insufficient funds for system");
 
+        balance[msg.sender] -= amount;
         uint256 reminders = minusWithdrawFee(amount);
 
         payable(msg.sender).transfer(reminders);
