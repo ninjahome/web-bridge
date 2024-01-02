@@ -3,9 +3,8 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 import "./common.sol";
-import "./tweet_exchange.sol";
 
-contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
+contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     uint256 public __lotteryGameRoundTime = 48 hours;
     uint256 public __currentLotteryTicketID = 100000;
     uint256 public __bonusRateToWinner = 50;
@@ -351,14 +350,6 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, PlugInI {
 
     function checkPluginInterface() external pure returns (bool) {
         return true;
-    }
-
-    function KolIPRightsBought(
-        address kolAddr,
-        address buyer,
-        uint256 keyNo
-    ) external payable {
-        emit KolIpRightBout(kolAddr, buyer, keyNo);
     }
 
     /********************************************************************************

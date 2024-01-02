@@ -3,9 +3,15 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 import "./common.sol";
-import "./tweet_exchange.sol";
 
-contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
+contract KolIPrights is ServiceFeeForWithdraw, TweetVotePlugInI {
+
+    struct IpRightSettings{
+        uint balance;
+        address kolAddr;
+        uint maxNo;
+    }
+
     struct KolKeyStatus {
         uint256 nonce;
         uint256 totalNo;
@@ -24,6 +30,10 @@ contract KolIPGame is ServiceFeeForWithdraw, PlugInI {
     mapping(address => MapArray) private __investorsOfSomeKol;
     mapping(address => MapArray) private __kolOfOneInvestor;
     mapping(address => KolKeyStatus) private __kolKeyStatusRecord;
+
+    uint256 public kolIncomePerIPRightBuyRate = 90;
+    uint256 public serviceFeePerKolIpRightRate = 10;
+
     mapping(address => mapping(address => BuyerKeyRecord))
     private __buyersKeyRecordOfKol;
     mapping(address => mapping(uint256 => uint256)) public incomePerNoncePerKey;
