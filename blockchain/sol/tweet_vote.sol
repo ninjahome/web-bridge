@@ -15,8 +15,8 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
 
     uint256 public maxVotePerTweet = 1e8;
 
-    uint256 public kolIncomePerTweetVoteRate = 30;
-    uint256 public serviceFeePerTweetVoteRate = 10;
+    uint8 public kolIncomePerTweetVoteRate = 30;
+    uint8 public serviceFeePerTweetVoteRate = 10;
 
     address public pluginAddress;
     bool public pluginStop = true;
@@ -45,7 +45,7 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
         emit SystemRateChanged(tweetVotePrice, "tweet_vote_price");
     }
 
-    function adminSetKolIncomePerTweetRate(uint256 newRate) public isOwner {
+    function adminSetKolIncomePerTweetRate(uint8 newRate) public isOwner {
         require(
             newRate + serviceFeePerTweetVoteRate <= 100,
             "rate is more than 100"
@@ -54,7 +54,7 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
         emit SystemRateChanged(newRate, "kol_income_per_tweet_vote_rate");
     }
 
-    function adminSetServiceFeeRateForPerTweetVote(uint256 newRate)
+    function adminSetServiceFeeRateForPerTweetVote(uint8 newRate)
     public
     isOwner
     {
@@ -94,8 +94,6 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
 
 contract TweetVote is TweetVoteAmin {
     mapping(bytes32 => address) public ownersOfAllTweets;
-    mapping(address => uint256) public balance;
-
     event KolRightsBought(address kolAddr, address buyer, uint256 rightsNo);
 
     event TweetPublished(address indexed from, bytes32 tweetHash);
@@ -124,7 +122,7 @@ contract TweetVote is TweetVoteAmin {
         emit TweetPublished(msg.sender, hash);
     }
 
-    function buyTweetRights(bytes32 tweetHash, uint256 voteNo)
+    function voteToTweets(bytes32 tweetHash, uint256 voteNo)
     public
     payable
     noReentrant
@@ -159,25 +157,6 @@ contract TweetVote is TweetVoteAmin {
         }
 
         emit TweetVoted(tweetHash, msg.sender, tweetVotePrice, voteNo);
-    }
-
-    function kolWithdrawTweetIncomes(uint256 amount, bool all)
-    public
-    noReentrant
-    {
-        uint256 b = balance[msg.sender];
-        if (all) {
-            amount = b;
-        }
-        require(amount >= __minValCheck || all, "two small amount");
-        require(b >= amount, "insufficient funds for you");
-        require(b <= address(this).balance, "insufficient funds for system");
-
-        balance[msg.sender] -= amount;
-        uint256 reminders = minusWithdrawFee(amount);
-
-        payable(msg.sender).transfer(reminders);
-        emit KolWithdraw(msg.sender, reminders);
     }
 
     function recoverSigner(bytes32 prefixedHash, bytes memory signature)

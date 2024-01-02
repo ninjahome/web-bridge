@@ -43,9 +43,10 @@ abstract contract Owner {
 
 abstract contract ServiceFeeForWithdraw is Owner {
     uint256 private __serviceFeeReceived;
-    uint256 private __withdrawFeeRate = 2;
+    uint8 private __withdrawFeeRate = 2;
     uint256 public constant __minValCheck = 1 gwei;
     mapping(address => bool) public __admins;
+    mapping(address => uint256) public balance;
 
     modifier onlyAdmin() {
         require(__admins[msg.sender] == true, "only admins operation");
@@ -55,6 +56,7 @@ abstract contract ServiceFeeForWithdraw is Owner {
     event AdminOperation(address admin, bool opType);
     event ServiceFeeChanged(uint256 newSerficeFeeRate);
     event UpgradeToNewRule(address newContract, uint256 balance);
+    event WithdrawService(address owner, uint256 balance);
 
     constructor() {
         __admins[msg.sender] = true;
@@ -66,7 +68,7 @@ abstract contract ServiceFeeForWithdraw is Owner {
         __serviceFeeReceived = 0;
     }
 
-    function adminSetWithdrawFeeRate(uint256 newRate) public isOwner {
+    function adminSetWithdrawFeeRate(uint8 newRate) public isOwner {
         require(newRate >= 0 && newRate <= 100, "rate invalid");
         __withdrawFeeRate = newRate;
         emit ServiceFeeChanged(newRate);
@@ -104,11 +106,11 @@ abstract contract ServiceFeeForWithdraw is Owner {
             __serviceFeeReceived = 0;
         }
 
-        uint256 balance = address(this).balance;
-        if (balance > 0) {
-            recipient.transfer(balance);
+        uint256 b = address(this).balance;
+        if (b > 0) {
+            recipient.transfer(b);
         }
-        emit UpgradeToNewRule(recipient, balance);
+        emit UpgradeToNewRule(recipient, b);
     }
 
     function adminOperation(address admin, bool isDelete) public isOwner {
@@ -119,6 +121,24 @@ abstract contract ServiceFeeForWithdraw is Owner {
         }
 
         emit AdminOperation(admin, isDelete);
+    }
+
+    function withdraw(uint256 amount, bool all) public noReentrant {
+        uint256 b = balance[msg.sender];
+        if (all) {
+            amount = b;
+        }
+        require(amount > __minValCheck, "too small amount");
+        require(b >= amount, "too much amount");
+        require(b <= address(this).balance, "insufficient founds");
+
+        balance[msg.sender] -= amount;
+
+        uint256 reminders = minusWithdrawFee(amount);
+
+        payable(msg.sender).transfer(reminders);
+
+        emit WithdrawService(msg.sender, reminders);
     }
 }
 

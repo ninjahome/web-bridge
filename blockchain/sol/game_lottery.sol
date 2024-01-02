@@ -7,14 +7,13 @@ import "./common.sol";
 contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     uint256 public __lotteryGameRoundTime = 48 hours;
     uint256 public __currentLotteryTicketID = 100000;
-    uint256 public __bonusRateToWinner = 50;
+    uint8 public __bonusRateToWinner = 50;
     bool public __openToOuterPlayer = false;
 
     uint256 public __ticketPriceForOuter = 1e6 gwei;
-    uint256 public __serviceFeeRateForTicketBuy = 5;
+    uint8 public __serviceFeeRateForTicketBuy = 5;
 
     uint256 public currentRoundNo = 0;
-    mapping(address => uint256) public bonusBalance;
 
     struct GameInfoOneRound {
         bytes32 randomHash;
@@ -97,10 +96,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         __ticketPriceForOuter = priceInFinney * 1e6 gwei;
     }
 
-    function adminSetServiceFeeRateForTicketBuy(uint256 newRate)
-    public
-    isOwner
-    {
+    function adminSetServiceFeeRateForTicketBuy(uint8 newRate) public isOwner {
         require(newRate >= 0 && newRate <= 100, "invalid rate param");
         __serviceFeeRateForTicketBuy = newRate;
         emit AdminOperated(newRate, "rate_of_service_fee_for_tciket_buy");
@@ -114,7 +110,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         emit AdminOperated(newTimeInMinutes, "game_round_time_in_minitues");
     }
 
-    function adminChangeBonusRateToWinner(uint256 newRate) public isOwner {
+    function adminChangeBonusRateToWinner(uint8 newRate) public isOwner {
         require(newRate >= 0 && newRate <= 100, "invalid rate");
 
         __bonusRateToWinner = newRate;
@@ -152,13 +148,13 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     returns (bytes32 teamHash)
     {
         if (winner.team == bytes32(0)) {
-            bonusBalance[winner.addr] += val;
+            balance[winner.addr] += val;
             return bytes32(0);
         }
         TweetTeam storage team = tweetTeamMap[currentRoundNo][winner.team];
         uint256 totalVote = team.voteNo;
         if (totalVote <= 1) {
-            bonusBalance[winner.addr] += val;
+            balance[winner.addr] += val;
             return bytes32(0);
         }
 
@@ -174,7 +170,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             if (teamMember == winner.addr) {
                 vote -= 1;
             }
-            bonusBalance[teamMember] += bonusPerVote * vote;
+            balance[teamMember] += bonusPerVote * vote;
         }
 
         return winner.team;
@@ -230,7 +226,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         gInfo.winTicketID = ticketId;
 
         uint256 bonusToWinner = ((gInfo.bonus / 100) * __bonusRateToWinner);
-        bonusBalance[winner.addr] += bonusToWinner;
+        balance[winner.addr] += bonusToWinner;
 
         uint256 bonusToTeam = gInfo.bonus - bonusToWinner;
         gInfo.winTeam = dispatchBonusToTeam(bonusToTeam, winner);
@@ -318,34 +314,17 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     function buyTicketFromOuter(uint256 ticketNo) public payable noReentrant {
         require(ticketNo > 0, "invalid ticket number");
         require(__openToOuterPlayer, "not open now");
-        uint256 balance = msg.value;
-        require(balance == __ticketPriceForOuter, "ticket price change");
+        uint256 b = msg.value;
+        require(b == __ticketPriceForOuter, "ticket price change");
 
-        uint256 serFee = (balance / 100) * __serviceFeeRateForTicketBuy;
+        uint256 serFee = (b / 100) * __serviceFeeRateForTicketBuy;
         recordServiceFee(serFee);
-        balance -= serFee;
+        b -= serFee;
 
-        gameInfoRecord[currentRoundNo].bonus += balance;
+        gameInfoRecord[currentRoundNo].bonus += b;
         generateTicket(ticketNo, msg.sender, bytes32(0));
 
         emit TicketSold(msg.sender, ticketNo, serFee);
-    }
-
-    function withdrawByWinner(uint256 amount, bool all) public noReentrant {
-        uint256 balance = bonusBalance[msg.sender];
-        if (all) {
-            amount = balance;
-        }
-        require(amount > __minValCheck, "too small amount");
-        require(balance >= amount, "too much amount");
-        require(balance <= address(this).balance, "insufficient founds");
-
-        bonusBalance[msg.sender] -= amount;
-        uint256 reminders = minusWithdrawFee(amount);
-
-        payable(msg.sender).transfer(reminders);
-
-        emit WinnerWithdrawBonus(msg.sender, reminders);
     }
 
     function checkPluginInterface() external pure returns (bool) {
