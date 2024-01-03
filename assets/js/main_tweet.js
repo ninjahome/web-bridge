@@ -188,118 +188,66 @@ function loadGlobalLatestTweetsFromSrv(refreshNewest) {
 function populateLatestTweets(newCachedTweet, insertAtHead) {
     const tweetsPark = document.querySelector('.tweets-park');
 
-    let maxCreateTime = BigInt(0);
-    let minCreateTime = minTweetIdCurShowed;
-    newCachedTweet.forEach(async tweet => {
+    newCachedTweet.forEach(tweet => {
+        const tweetCard = document.getElementById('tweetTemplate').cloneNode(true);
+        tweetCard.style.display = '';
+        tweetCard.id = "tweet-card-info-" + tweet.create_time;
 
-        if (!tweet.name || tweet.name === "unknown" || tweet.profile_image_url === DefaultAvatarSrc) {
-            const twitterInfo = await loadTwitterInfo(tweet.twitter_id, true)
-            if (!twitterInfo) {
-                tweet.name = "unknown";
-                tweet.username = "unknown";
-            } else {
-                tweet.name = twitterInfo.name;
-                tweet.username = twitterInfo.username;
-                tweet.profile_image_url = twitterInfo.profile_image_url;
-            }
-            TweetToShowOnWeb.syncToDb(tweet);
+        tweetCard.querySelector('.twitterAvatar').src = tweet.profile_image_url;
+        tweetCard.querySelector('.twitterName').textContent = tweet.name;
+        tweetCard.querySelector('.twitterUserName').textContent = '@' + tweet.username;
+        tweetCard.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
+        tweetCard.querySelector('.tweet-content').textContent = tweet.text;
+
+        tweetCard.querySelector('.tweetPaymentStatus').textContent = TXStatus.Str(tweet.payment_status);
+
+        if (ninjaUserObj.eth_addr === tweet.web3_id && tweet.payment_status === TXStatus.NoPay) {
+            const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
+            retryButton.classList.add('show');
         }
-
-        const timeSuffix = tweet.create_time;
-        const createTime = BigInt(tweet.create_time);
-
-        if (createTime > maxCreateTime) {
-            maxCreateTime = createTime;
-        }
-        if (createTime < minCreateTime || minCreateTime === BigInt(0)) {
-            minCreateTime = createTime;
-        }
-        // 创建 tweet-card 元素
-        const tweetCard = document.createElement('div');
-        tweetCard.classList.add('tweet-card');
-
-        // 设置 tweet-header 内容
-        const tweetHeader = document.createElement('div');
-        tweetHeader.classList.add('tweet-header');
-
-        const avatarImg = document.createElement('img');
-        avatarImg.src = tweet.profile_image_url;
-        avatarImg.alt = "Avatar";
-        avatarImg.id = `twitterAvatar-${timeSuffix}`;
-        tweetHeader.appendChild(avatarImg);
-
-        const nameSpan = document.createElement('span');
-        nameSpan.classList.add('name');
-        nameSpan.id = `twitterName-${timeSuffix}`;
-        nameSpan.textContent = tweet.name;
-        tweetHeader.appendChild(nameSpan);
-
-        const usernameSpan = document.createElement('span');
-        usernameSpan.classList.add('username');
-        usernameSpan.id = `twitterUserName-${timeSuffix}`;
-        usernameSpan.textContent = "@" + tweet.username;
-        tweetHeader.appendChild(usernameSpan);
-
-        const timeSpan = document.createElement('span');
-        timeSpan.classList.add('time');
-        timeSpan.id = `tweet-create-time-${timeSuffix}`;
-        timeSpan.textContent = formatTime(tweet.create_time);
-        tweetHeader.appendChild(timeSpan);
-
-        tweetCard.appendChild(tweetHeader);
-
-        // 设置 tweet-content
-        const tweetContent = document.createElement('div');
-        tweetContent.classList.add('tweet-content', 'tweet-content-collapsed');
-        tweetContent.id = `tweet-content-${timeSuffix}`;
-        tweetContent.textContent = tweet.text;
-        tweetCard.appendChild(tweetContent);
-
-        // 添加 Show more 按钮
-        const showMoreBtn = document.createElement('button');
-        showMoreBtn.classList.add('show-more');
-        showMoreBtn.textContent = "Show more";
-        showMoreBtn.onclick = function () {
-            showFullTweetContent.call(this);
-        };
-
-        // 设置 tweet-footer
-        const tweetFooter = document.createElement('div');
-        tweetFooter.classList.add('tweet-footer');
-
-        const tweetActionDiv = document.createElement('div');
-        tweetActionDiv.classList.add('tweet-action');
-        tweetActionDiv.innerHTML = `
-            <button>0.01 eth打赏</button>
-        `;
-        tweetFooter.appendChild(tweetActionDiv);
-
-        const tweetInfoDiv = document.createElement('div');
-        tweetInfoDiv.classList.add('tweet-info');
-        tweetInfoDiv.innerHTML = `
-        Payment Status:<span id="tweet-payment-status-${timeSuffix}">${TXStatus.Str(tweet.payment_status)}</span>
-        `;
-
-        tweetFooter.appendChild(tweetInfoDiv);
-
-        tweetCard.appendChild(tweetFooter);
 
         if (insertAtHead) {
             tweetsPark.insertBefore(tweetCard, tweetsPark.firstChild);
         } else {
             tweetsPark.appendChild(tweetCard);
         }
-        setTimeout(() => {
+    });
+
+    handleShowMoreButtons();
+}
+
+function handleShowMoreButtons() {
+    requestAnimationFrame(() => {
+        document.querySelectorAll('.tweet-card').forEach(tweetCard => {
+            const tweetContent = tweetCard.querySelector('.tweet-content');
+            const showMoreBtn = tweetCard.querySelector('.show-more');
+
             if (tweetContent.scrollHeight <= tweetContent.clientHeight) {
                 showMoreBtn.style.display = 'none';
             } else {
-                tweetCard.appendChild(showMoreBtn); // 只有在内容溢出时才添加按钮
+                tweetCard.appendChild(showMoreBtn);
             }
-        }, 0);
+        });
     });
+}
 
-    maxTweetIdCurShowed = maxCreateTime;
-    minTweetIdCurShowed = minCreateTime
+function updateTweetCardWhenStatusChanged(createTime,newStatus){
+    const tweetCardId = "tweet-card-info-" + createTime;
+    const tweetCard = document.getElementById(tweetCardId);
+    if(!tweetCard){
+        console.error('Tweet card not found for ID:', tweetCardId);
+        return;
+    }
+
+    const paymentStatusElement = tweetCard.querySelector('.tweetPaymentStatus');
+    if (!paymentStatusElement) {
+        console.error('Tweet payment status element not found');
+        return;
+    }
+
+    paymentStatusElement.textContent = TXStatus.Str(newStatus);
+    const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
+    retryButton.classList.remove('show');
 }
 
 function formatTime(createTime) {
@@ -319,38 +267,12 @@ async function postTweet() {
 
         showWaiting("posting to twitter");
         const resp = await PostToSrvByJson("/postTweet", new SignDataForPost(message, signature))
-        const refreshedTweet = JSON.parse(resp);
+        const basicTweet = JSON.parse(resp);
 
         document.getElementById("tweets-content").value = '';
-        parseNjTweetsFromSrv([refreshedTweet], true);
+        parseNjTweetsFromSrv([basicTweet], true);
 
-
-        changeLoadingTips("paying for tweet post")
-
-        tweetVoteContract.publishTweet(tweetHash, signature, {value: tweetPostPrice})
-            .then((txResponse) => {
-                console.log("Transaction Response: ", txResponse);
-                changeLoadingTips("waiting for blockchain packaging");
-                refreshedTweet.payment_status = TXStatus.Pending;
-                refreshedTweet.tx_hash = txResponse.hash;
-                updateTweetPaymentStatus(refreshedTweet)
-                return txResponse.wait();
-            })
-            .then((txReceipt) => {
-                console.log("Transaction Receipt: ", txReceipt);
-                hideLoading();
-                refreshedTweet.payment_status = txReceipt.status ? TXStatus.Success : TXStatus.Failed;
-                showDialog("transaction " + txReceipt.status ? "confirmed" : "failed");
-                updateTweetPaymentStatus(refreshedTweet)
-            }).catch((err) => {
-            hideLoading();
-            if (err.code === 4001) {
-                return;
-            }
-            console.error("transaction for tweet: ", err);
-            showDialog("transaction err:" + err.toString());
-        });
-
+        await processTweetPayment(basicTweet);
     } catch (err) {
         hideLoading();
         if (err.code === 4001) {
@@ -361,14 +283,45 @@ async function postTweet() {
     }
 }
 
-function updateTweetPaymentStatus(tweetObj) {
+async function processTweetPayment(tweet) {
+    try {
+        changeLoadingTips("paying for tweet post");
 
+        const txResponse = await tweetVoteContract.publishTweet(
+            tweet.prefixed_hash,
+            tweet.signature,
+            {value: tweetPostPrice}
+        );
+        console.log("Transaction Response: ", txResponse);
+
+        changeLoadingTips("waiting for blockchain packaging");
+        updateTweetPaymentStatus(tweet, TXStatus.Pending, txResponse.hash);
+
+        const txReceipt = await txResponse.wait();
+        console.log("Transaction Receipt: ", txReceipt);
+
+        const txStatus = txReceipt.status ? TXStatus.Success : TXStatus.Failed;
+        updateTweetPaymentStatus(tweet, txStatus, txResponse.hash);
+
+        hideLoading();
+        showDialog("transaction " + (txReceipt.status ? "confirmed" : "failed"));
+
+    } catch (err) {
+        console.error("Transaction error: ", err);
+        hideLoading();
+        if (err.code === 4001) {
+            return;
+        }
+        showDialog("Transaction error: " + err.toString());
+    }
+}
+
+function updateTweetPaymentStatus(tweetObj, status, hash) {
     PostToSrvByJson("/updateTweetPaymentStatus", {
-        create_time: tweetObj.create_time, status: tweetObj.payment_status, hash: tweetObj.tx_hash
+        create_time: tweetObj.create_time, status: status, hash: hash
     }).then(resp => {
         console.log(resp);
-        TweetToShowOnWeb.syncToDb(tweetObj);
-        document.getElementById("tweet-payment-status-" + tweetObj.create_time).innerText = TXStatus.Str(tweetObj.payment_status);
+       updateTweetCardWhenStatusChanged(tweetObj.create_time,status);
     }).catch(err => {
         console.log(err);
         showWaiting("error", "update payment status failed:" + err.toString());
@@ -397,5 +350,9 @@ async function signMessage(message, web3Id) {
     });
 }
 
+function voteToThisTweet() {
+}
 
+function payThisTweetAgain() {
 
+}

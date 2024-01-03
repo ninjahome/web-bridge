@@ -7,12 +7,8 @@
     <script src="/assets/js/abi_tweet_vote.js"></script>
     <script src="/assets/js/abi_game_lottery.js"></script>
     <script src="/assets/js/utils.js"></script>
-    <script src="/assets/js/loading.js"></script>
-    <script src="/assets/js/database.js"></script>
     <script src="/assets/js/main.js"></script>
-    <script src="/assets/js/main_twitter.js"></script>
     <script src="/assets/js/main_tweet.js"></script>
-    <script src="/assets/js/main_blockchain.js"></script>
 
     <style>
         .container {
@@ -287,6 +283,23 @@
             font-size: 1.25em; /* 稍微减小字体大小 */
         }
 
+        .tweetPaymentRetry {
+            display: none;
+            /* 其他所需的样式 */
+            background-color: #f44336; /* 例如，红色背景 */
+            color: white;
+            padding: 6px 12px;
+            margin: 4px 2px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* 当按钮需要显示时的样式 */
+        .tweetPaymentRetry.show {
+            display: inline-block;
+        }
+
     </style>
 </head>
 <body>
@@ -344,28 +357,26 @@
     </div>
     <div class="main-container">
         <div class="tweets-park">
-{{/*            <div class="tweet-card">*/}}
-{{/*                <div class="tweet-header">*/}}
-{{/*                    <img id="twitterAvatar" src="https://via.placeholder.com/40" alt="Avatar">*/}}
-{{/*                    <span id="twitterName" class="name">John Doe</span>*/}}
-{{/*                    <span id="twitterUserName" class="username">@johndoe</span>*/}}
-{{/*                    <span id="tweet-create-time" class="time">1h</span>*/}}
-{{/*                </div>*/}}
+            <div id="tweetTemplate" class="tweet-card" style="display: none;">
+                <div class="tweet-header">
+                    <img src="" alt="Avatar" class="twitterAvatar">
+                    <span class="name twitterName"></span>
+                    <span class="username twitterUserName"></span>
+                    <span class="time tweetCreateTime"></span>
+                </div>
+                <div class="tweet-content tweet-content-collapsed"></div>
+                <button class="show-more" onclick="showFullTweetContent.call(this)">Show more</button>
+                <div class="tweet-footer">
+                    <div class="tweet-action">
+                        <button onclick="voteToThisTweet.call(this)">0.01 eth打赏</button>
+                    </div>
+                    <div class="tweet-info">
+                        Payment Status: <span class="tweetPaymentStatus"></span>
+                        <button class="tweetPaymentRetry" onclick="payThisTweetAgain.call(this)">继续支付</button>
+                    </div>
+                </div>
+            </div>
 
-{{/*                <div id="tweet-content" class="tweet-content">*/}}
-{{/*                    世界上的强权，并与其东面安息帝国*/}}
-{{/*                </div>*/}}
-
-{{/*                <button class="show-more" onclick="showFullTweetContent.call(this)">Show more</button>*/}}
-{{/*                <div class="tweet-footer">*/}}
-{{/*                    <div class="tweet-action">*/}}
-{{/*                        <button>$10打赏</button>*/}}
-{{/*                        <span>总赏额：0.23 eth</span>*/}}
-{{/*                    </div>*/}}
-{{/*                    <div class="tweet-info">Web3 ID: <span id="tweet-owner-web3-id">0x00a7539cc7cc54f08a761175aa678005ef91f4dc</span>*/}}
-{{/*                    </div>*/}}
-{{/*                </div>*/}}
-{{/*            </div>*/}}
         </div>
         <div class="operation-area-right">
             <div id="lottery-card">
