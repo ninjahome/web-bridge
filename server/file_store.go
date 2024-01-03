@@ -210,8 +210,8 @@ type NinjaTweet struct {
 	TweetId       string   `json:"tweet_id,omitempty" firestore:"tweet_id"`
 	Signature     string   `json:"signature,omitempty" firestore:"signature"`
 	PrefixedHash  string   `json:"prefixed_hash" firestore:"prefixed_hash"`
-	TxHash        string   `json:"tx_hash" firestore:"tx_hash"`
 	PaymentStatus TxStatus `json:"payment_status" firestore:"payment_status"`
+	VoteCount     int      `json:"vote_count" firestore:"vote_count"`
 }
 
 type TweetsOfUser struct {
@@ -461,13 +461,37 @@ func (dm *DbManager) QueryGlobalLatestTweets(pageSize int, id int64, readNewest 
 	}
 }
 
-func (dm *DbManager) UpdateTweetPaymentStatus(createAt int64, s TxStatus, hash string) error {
+func (dm *DbManager) UpdateTweetPaymentStatus(createAt int64, s TxStatus) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
 	tweetsDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(fmt.Sprintf("%d", createAt))
 	_, err := tweetsDoc.Update(opCtx, []firestore.Update{
 		{Path: "payment_status", Value: s},
-		{Path: "tx_hash", Value: hash},
 	})
 	return err
+}
+
+func (dm *DbManager) UpdateTweetVoteStatic(createAt int64, amount int) (int, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	docRef := dm.fileCli.Collection(DBTableTweetsPosted).Doc(fmt.Sprintf("%d", createAt))
+
+	docSnapshot, err := docRef.Get(opCtx)
+	if err != nil {
+		util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to get tweet  document to update vote")
+		return 0, err
+	}
+	var existingData NinjaTweet
+	err = docSnapshot.DataTo(&existingData)
+	if err != nil {
+		util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to decode document data")
+		return 0, err
+	}
+
+	newFieldValue := existingData.VoteCount + amount
+	_, err = docRef.Update(opCtx, []firestore.Update{
+		{Path: "vote_count", Value: newFieldValue},
+	})
+
+	return newFieldValue, err
 }

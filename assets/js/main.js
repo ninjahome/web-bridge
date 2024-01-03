@@ -1,3 +1,5 @@
+const dbKeyCachedVoteContractMeta = "__db_key_cached_vote_contract_meta__"
+
 function checkSystemEnvironment() {
 
     if (typeof window.ethereum === 'undefined') {
@@ -97,18 +99,29 @@ let tweetVoteContract;
 let lotteryGameContract;
 
 class SmartContractSettings {
-    constructor(postPrice, votePrice, maxVote, pluginAddr, pluginStop, kolRate, feeRate) {
+    constructor(postPrice, votePrice,votePriceInEth, maxVote, pluginAddr, pluginStop, kolRate, feeRate) {
         this.postPrice = postPrice;
         this.votePrice = votePrice;
+        this.votePriceInEth = votePriceInEth;
         this.maxVote = maxVote;
         this.pluginAddr = pluginAddr;
         this.pluginStop = pluginStop;
         this.kolRate = kolRate;
         this.feeRate = feeRate;
     }
+    static sycToDb(obj){
+        localStorage.setItem(SmartContractSettings.DBKey(), JSON.stringify(obj));
+    }
+    static DBKey(){
+return dbKeyCachedVoteContractMeta;
+    }
+    static load() {
+        const storedVal = localStorage.getItem(SmartContractSettings.DBKey());
+        return storedVal ? JSON.parse(storedVal) : null;
+    }
 }
 
-let voteContractMeta = null;
+let voteContractMeta = SmartContractSettings.load();
 
 function setupMetamask() {
     metamaskObj = window.ethereum;
@@ -120,7 +133,7 @@ function setupMetamask() {
     })
 }
 
-function initializeContract() {
+async function initializeContract() {
     metamaskProvider = new ethers.providers.Web3Provider(metamaskObj);
     const signer = metamaskProvider.getSigner(ninjaUserObj.eth_addr);
     const conf = __globalContractConf.get(__globalTargetChainNetworkID);
@@ -131,11 +144,14 @@ function initializeContract() {
 
     const postPrice = ethers.utils.parseEther(conf.postPrice);
     const votePrice = ethers.utils.parseEther(conf.votePrice);
-    voteContractMeta = new SmartContractSettings(postPrice, votePrice);
     tweetVoteContract = new ethers.Contract(conf.tweetVote, conf.tweetVoteAbi, signer);
     lotteryGameContract = new ethers.Contract(conf.gameLottery, conf.gameLotteryAbi, signer);
-
-    loadVoteContractMeta().then(r=>{});
+    if (!voteContractMeta) {
+        await loadVoteContractMeta();
+    }else{
+        loadVoteContractMeta().then(r => {
+        });
+    }
     return true;
 }
 
@@ -144,11 +160,15 @@ async function loadVoteContractMeta() {
         const [
             postPrice, votePrice, maxVote, pluginAddr, pluginStop, kolRate, feeRate
         ] = await tweetVoteContract.systemSettings();
-        voteContractMeta = new SmartContractSettings(postPrice, votePrice,
+
+        const votePriceInEth = ethers.utils.formatUnits(votePrice, 'ether');
+        voteContractMeta = new SmartContractSettings(postPrice, votePrice,votePriceInEth,
             maxVote.toNumber(), pluginAddr, pluginStop, kolRate, feeRate);
+        SmartContractSettings.sycToDb(voteContractMeta);
 
         const tweetPostPriceInEth = ethers.utils.formatUnits(postPrice, 'ether');
         document.getElementById("tweet-post-with-eth-btn").innerText = "发布推文(" + tweetPostPriceInEth + " eth)"
+
         console.log(JSON.stringify(voteContractMeta));
     } catch (error) {
         console.error("Error getting system settings: ", error);

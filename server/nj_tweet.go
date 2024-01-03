@@ -45,7 +45,6 @@ func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) 
 type TweetPaymentStatus struct {
 	CreateTime int64    `json:"create_time"`
 	Status     TxStatus `json:"status"`
-	Hash       string   `json:"hash"`
 }
 
 func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo) {
@@ -57,15 +56,15 @@ func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo
 		return
 	}
 	if status.CreateTime == 0 {
-		util.LogInst().Warn().Str("hash", status.Hash).Msg("invalid tweet create time")
+		util.LogInst().Warn().Int64("create_time", status.CreateTime).Msg("invalid tweet create time")
 		http.Error(w, "invalid tweet create time", http.StatusBadRequest)
 		return
 	}
 
-	err = DbInst().UpdateTweetPaymentStatus(status.CreateTime, status.Status, status.Hash)
+	err = DbInst().UpdateTweetPaymentStatus(status.CreateTime, status.Status)
 	if err != nil {
 		util.LogInst().Err(err).Int64("create_time", status.CreateTime).
-			Str("status", status.Status.String()).Str("hash", status.Hash).
+			Str("status", status.Status.String()).
 			Msg("failed to update tweet payment status")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -77,6 +76,44 @@ func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo
 	w.Write(bts)
 
 	util.LogInst().Debug().Int64("create_time", status.CreateTime).
-		Str("status", status.Status.String()).Str("hash", status.Hash).
+		Str("status", status.Status.String()).
 		Msg(" update status of tweet payment success")
+}
+
+type TweetVoteAction struct {
+	CreateTime int64 `json:"create_time"`
+	VoteCount  int   `json:"vote_count"`
+}
+
+func updateTweetVoteStatic(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo) {
+	vote := &TweetVoteAction{}
+	var err = util.ReadRequest(r, vote)
+	if err != nil {
+		util.LogInst().Err(err).Msg("parsing payment status param failed ")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if vote.CreateTime == 0 {
+		util.LogInst().Warn().Int64("create_time", vote.CreateTime).Msg("invalid tweet create time")
+		http.Error(w, "invalid tweet create time", http.StatusBadRequest)
+		return
+	}
+	newVal, err := DbInst().UpdateTweetVoteStatic(vote.CreateTime, vote.VoteCount)
+	if err != nil {
+		util.LogInst().Err(err).Int64("create_time", vote.CreateTime).
+			Int("vote_count", vote.VoteCount).
+			Msg("failed to update tweet vote ")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	vote.VoteCount = newVal
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	bts, _ := json.Marshal(vote)
+	w.Write(bts)
+
+	util.LogInst().Debug().Int64("create_time", vote.CreateTime).
+		Int("vote_count", vote.VoteCount).
+		Msg(" update vote count of tweet success")
 }

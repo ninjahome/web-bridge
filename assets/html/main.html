@@ -300,6 +300,56 @@
             display: inline-block;
         }
 
+
+        /* 模态框样式 */
+        .modal {
+            display: none; /* 默认隐藏 */
+            position: fixed; /* 固定位置 */
+            z-index: 1; /* 置于顶层 */
+            left: 0;
+            top: 0;
+            width: 100%; /* 宽度 */
+            height: 100%; /* 高度 */
+            overflow: auto; /* 启用滚动条 */
+            background-color: rgb(0,0,0); /* 背景颜色 */
+            background-color: rgba(0,0,0,0.4); /* 黑色背景透明度 */
+        }
+
+        /* 模态内容 */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% 从顶部开始 */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* 宽度 */
+        }
+
+        /* 关闭按钮 */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .vote-count {
+            /* 投票数的样式 */
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        .vote-number {
+            /* 数字的特定样式 */
+            color: #4CAF50; /* 绿色 */
+            font-size: 1.1em;
+        }
+
     </style>
 </head>
 <body>
@@ -371,6 +421,7 @@
                         <button onclick="voteToThisTweet.call(this)">0.01 eth打赏</button>
                     </div>
                     <div class="tweet-info">
+                        <span class="vote-count">投票数: <span class="vote-number">0</span></span>
                         Payment Status: <span class="tweetPaymentStatus"></span>
                         <button class="tweetPaymentRetry" onclick="payThisTweetAgain.call(this)">继续支付</button>
                     </div>
@@ -406,6 +457,26 @@
         </div>
     </div>
 </div>
+<!-- 模态对话框 -->
+<div id="myModal" class="modal">
+    <!-- 模态内容 -->
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>推文投票</h2>
+        </div>
+        <div class="modal-body">
+            <p>票数：<input type="number" id="voteCount" value="1" min="1"></p>
+            <button id="decreaseVote" onclick="decreaseVote()">-</button>
+            <button id="increaseVote" onclick="increaseVote()">+</button>
+        </div>
+        <div class="modal-footer">
+            <button id="cancelButton" onclick="closeModal()">取消</button>
+            <button id="confirmButton" onclick="confirmModal()">确定</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let ninjaUserObj = {{ .NinjaUsrInfoJson }};
     document.addEventListener("DOMContentLoaded", initMainPage);
@@ -425,9 +496,9 @@
         }, time);
     }
 
-    function initMainPage() {
+    async function initMainPage() {
         checkSystemEnvironment();
-        initializeContract();
+        await initializeContract();
         window.addEventListener('popstate', clearSessionStorage);
         window.addEventListener('replaceState', clearSessionStorage);
         setupBasicInfo();
@@ -439,6 +510,34 @@
     }
     function showContractAddress(){
     }
+
+    let confirmCallback = null;
+    function openModal(callback) {
+        const modal = document.getElementById("myModal");
+        modal.style.display = "block";
+        confirmCallback = callback;
+    }
+    function confirmModal() {
+        if (confirmCallback) {
+            const voteCount = document.getElementById("voteCount").value;
+            confirmCallback(voteCount);
+        }
+        closeModal();
+    }
+    function closeModal() {
+        const modal = document.getElementById("myModal");
+        modal.style.display = "none";
+    }
+    function increaseVote() {
+        const voteCount = document.getElementById("voteCount");
+        voteCount.value = parseInt(voteCount.value) + 1;
+    }
+    function decreaseVote() {
+        const voteCountElement = document.getElementById("voteCount");
+        const newVoteCount = Math.max(1, parseInt(voteCountElement.value) - 1);
+        voteCountElement.value = newVoteCount.toString();
+    }
+
 </script>
 </body>
 </html>

@@ -23,6 +23,7 @@ var (
 		"/main":                     {mainPage, true},
 		"/postTweet":                {postTweets, true},
 		"/updateTweetPaymentStatus": {updateTweetTxStatus, true},
+		"/updateTweetVoteStatic":    {updateTweetVoteStatic, true},
 		"/buyRights":                {mainPage, true},
 		"/globalLatestTweets":       {globalTweetQuery, true},
 	}
