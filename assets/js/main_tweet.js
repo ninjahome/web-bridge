@@ -7,17 +7,18 @@ let maxTweetIdCurShowed = BigInt(0);
 let minTweetIdCurShowed = BigInt(0);
 
 const TXStatus = Object.freeze({
-    NoPay: 0,
-    Pending: 1,
-    Success: 2,
-    Failed: 3,
-    Str(val){
-        switch(val) {
-            case this.NoPay: return "not paid";
-            case this.Pending: return "pending";
-            case this.Success: return "success";
-            case this.Failed: return "failed";
-            default: return "unknown";
+    NoPay: 0, Pending: 1, Success: 2, Failed: 3, Str(val) {
+        switch (val) {
+            case this.NoPay:
+                return "not paid";
+            case this.Pending:
+                return "pending";
+            case this.Success:
+                return "success";
+            case this.Failed:
+                return "failed";
+            default:
+                return "unknown";
         }
     }
 });
@@ -62,12 +63,13 @@ class TweetToShowOnWeb {
         return dbKeyCachedTweetContentById + create_time;
     }
 
-    static syncToDb(obj){
+    static syncToDb(obj) {
         localStorage.setItem(TweetToShowOnWeb.DBKey(obj.create_time), JSON.stringify(obj));
     }
-    static load(tweetID){
+
+    static load(tweetID) {
         const storedVal = localStorage.getItem(TweetToShowOnWeb.DBKey(tweetID));
-        return storedVal?JSON.parse(storedVal):null;
+        return storedVal ? JSON.parse(storedVal) : null;
     }
 }
 
@@ -138,9 +140,9 @@ function loadCachedGlobalTweets() {
         return;
     }
 
-    const tweets = localTweetsIds .map(tweetID => {
-            return TweetToShowOnWeb.load(tweetID);
-        }) .filter(tweet => tweet !== null);
+    const tweets = localTweetsIds.map(tweetID => {
+        return TweetToShowOnWeb.load(tweetID);
+    }).filter(tweet => tweet !== null);
 
     if (tweets.length === 0) {
         return;
@@ -269,14 +271,14 @@ function populateLatestTweets(newCachedTweet, insertAtHead) {
         tweetActionDiv.classList.add('tweet-action');
         tweetActionDiv.innerHTML = `
             <button>0.01 eth打赏</button>
-            <span>总赏额：0.23 eth 产生彩票数：68张</span>
         `;
         tweetFooter.appendChild(tweetActionDiv);
 
         const tweetInfoDiv = document.createElement('div');
         tweetInfoDiv.classList.add('tweet-info');
-        tweetInfoDiv.innerHTML = `Payment Hash: <span id="tweet-payment-hash-${timeSuffix}">${tweet.tx_hash}</span> 
-Status:<span id="tweet-payment-status-${timeSuffix}">${TXStatus.Str(tweet.payment_status)}</span>`;
+        tweetInfoDiv.innerHTML = `
+        Payment Status:<span id="tweet-payment-status-${timeSuffix}">${TXStatus.Str(tweet.payment_status)}</span>
+        `;
 
         tweetFooter.appendChild(tweetInfoDiv);
 
@@ -362,9 +364,7 @@ async function postTweet() {
 function updateTweetPaymentStatus(tweetObj) {
 
     PostToSrvByJson("/updateTweetPaymentStatus", {
-        create_time: tweetObj.create_time,
-        status: tweetObj.payment_status,
-        hash: tweetObj.tx_hash
+        create_time: tweetObj.create_time, status: tweetObj.payment_status, hash: tweetObj.tx_hash
     }).then(resp => {
         console.log(resp);
         TweetToShowOnWeb.syncToDb(tweetObj);
@@ -393,8 +393,7 @@ async function signMessage(message, web3Id) {
         return null;
     }
     return await metamaskObj.request({
-        method: 'personal_sign',
-        params: [message, web3Id],
+        method: 'personal_sign', params: [message, web3Id],
     });
 }
 
