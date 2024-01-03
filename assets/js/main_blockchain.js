@@ -2,7 +2,8 @@ let metamaskObj = null;
 let metamaskProvider;
 let tweetVoteContract;
 let lotteryGameContract;
-let tweetPostPrice;
+let tweetPostPrice = 0.0;
+
 function setupMetamask() {
     metamaskObj = window.ethereum;
     metamaskObj.on('accountsChanged', metamaskAccountChanged);
@@ -13,7 +14,7 @@ function setupMetamask() {
     })
 }
 
-async function initializeContract() {
+function initializeContract() {
     metamaskProvider = new ethers.providers.Web3Provider(metamaskObj);
     const signer = metamaskProvider.getSigner(ninjaUserObj.eth_addr);
     const conf = __globalContractConf.get(__globalTargetChainNetworkID);
@@ -24,12 +25,14 @@ async function initializeContract() {
 
     tweetVoteContract = new ethers.Contract(conf.tweetVote, conf.tweetVoteAbi, signer);
     lotteryGameContract = new ethers.Contract(conf.gameLottery, conf.gameLotteryAbi, signer);
-    try {
-    tweetPostPrice = await tweetVoteContract.tweetPostPrice();
-    } catch (error) {
-        console.error("Error getting tweet post price: ", error);
-        return  false;
-    }
+    tweetPostPrice = tweetVoteContract.tweetPostPrice().then(price => {
+        tweetPostPrice = price;
+        const tweetPostPriceInEth = ethers.utils.formatUnits(price, 'ether');
+        document.getElementById("tweet-post-with-eth-btn").innerText = "发布推文(" + tweetPostPriceInEth + " eth)"
+    }).catch(err => {
+        console.error("Error getting tweet post price: ", err);
+    })
+
     return true;
 }
 

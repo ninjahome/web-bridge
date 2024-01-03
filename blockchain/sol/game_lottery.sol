@@ -13,6 +13,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     uint256 public __ticketPriceForOuter = 1e6 gwei;
     uint8 public __serviceFeeRateForTicketBuy = 5;
 
+    uint256 public totalBonus = 0 gwei;
     uint256 public currentRoundNo = 0;
 
     struct GameInfoOneRound {
@@ -285,6 +286,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         gInfo.winTeam = dispatchBonusToTeam(bonusToTeam, winner);
 
         currentRoundNo += 1;
+        totalBonus += gInfo.bonus;
 
         gameInfoRecord[currentRoundNo] = GameInfoOneRound({
             randomHash: nextRoundRandomHash,

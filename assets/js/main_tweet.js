@@ -6,6 +6,23 @@ let hasMoreTweetsToLoad = true;
 let maxTweetIdCurShowed = BigInt(0);
 let minTweetIdCurShowed = BigInt(0);
 
+const TXStatus = Object.freeze({
+    NoPay: 0,
+    Pending: 1,
+    Success: 2,
+    Failed: 3,
+    Str(val){
+        switch(val) {
+            case this.NoPay: return "not paid";
+            case this.Pending: return "pending";
+            case this.Success: return "success";
+            case this.Failed: return "failed";
+            default: return "unknown";
+        }
+    }
+});
+
+
 class TweetContentToPost {
     constructor(tweet_content, createAt, web3Id, twitterID, tweet_id, signature) {
         this.text = tweet_content;
@@ -19,12 +36,16 @@ class TweetContentToPost {
 
 class TweetToShowOnWeb {
     constructor(njTweet, njTwitter, blockChain) {
+
         this.text = njTweet.text;
         this.create_time = njTweet.create_time;
         this.web3_id = njTweet.web3_id;
         this.twitter_id = njTweet.twitter_id;
         this.tweet_id = njTweet.tweet_id;
         this.signature = njTweet.signature;
+        this.tx_hash = njTweet.tx_hash;
+        this.payment_status = njTweet.payment_status;
+
         if (njTwitter) {
             this.name = njTwitter.name;
             this.username = njTwitter.username;
@@ -39,6 +60,14 @@ class TweetToShowOnWeb {
 
     static DBKey(create_time) {
         return dbKeyCachedTweetContentById + create_time;
+    }
+
+    static syncToDb(obj){
+        localStorage.setItem(TweetToShowOnWeb.DBKey(obj.create_time), JSON.stringify(obj));
+    }
+    static load(tweetID){
+        const storedVal = localStorage.getItem(TweetToShowOnWeb.DBKey(tweetID));
+        return storedVal?JSON.parse(storedVal):null;
     }
 }
 
@@ -61,7 +90,13 @@ function showFullTweetContent() {
 function updateLocalCachedTweetList(newIDs) {
     const storedArray = JSON.parse(localStorage.getItem(dbKeyCachedGlobalTweets)) || [];
     const int64Array = storedArray.map(BigInt);
-    const mergedArray = int64Array.concat(newIDs);
+
+    const uniqueIDs = new Set(int64Array);
+
+    newIDs.forEach(id => uniqueIDs.add(BigInt(id)));
+
+    const mergedArray = Array.from(uniqueIDs);
+
     mergedArray.sort((a, b) => {
         if (a > b) return -1;
         if (a < b) return 1;
@@ -79,11 +114,13 @@ function parseNjTweetsFromSrv(tweetArray, refreshNewest) {
         }
         return;
     }
+    console.log(tweetArray)
     const newIDs = [];
     const localTweets = tweetArray.map(tweet => {
         let tw_data = TwitterBasicInfo.loadTwBasicInfo(tweet.twitter_id)
-        let obj = new TweetToShowOnWeb(tweet, tw_data, null);
-        localStorage.setItem(TweetToShowOnWeb.DBKey(obj.create_time), JSON.stringify(obj));
+        let blockchain = BlockChainData.load(tw_data.web3_id);
+        let obj = new TweetToShowOnWeb(tweet, tw_data, blockchain);
+        TweetToShowOnWeb.syncToDb(obj);
         newIDs.push(obj.create_time);
         return obj;
     });
@@ -101,23 +138,14 @@ function loadCachedGlobalTweets() {
         return;
     }
 
-    const tweets = localTweetsIds
-        .map(tweetID => {
-            const storedTweetData = localStorage.getItem(TweetToShowOnWeb.DBKey(tweetID));
-            if (!storedTweetData) {
-                return null;
-            }
-            try {
-                return JSON.parse(storedTweetData);
-            } catch (error) {
-                console.error('Error parsing tweet data:', error);
-                return null;
-            }
-        })
-        .filter(tweet => tweet !== null);
+    const tweets = localTweetsIds .map(tweetID => {
+            return TweetToShowOnWeb.load(tweetID);
+        }) .filter(tweet => tweet !== null);
+
     if (tweets.length === 0) {
         return;
     }
+
     populateLatestTweets(tweets, false);
 }
 
@@ -159,7 +187,7 @@ function populateLatestTweets(newCachedTweet, insertAtHead) {
     const tweetsPark = document.querySelector('.tweets-park');
 
     let maxCreateTime = BigInt(0);
-    let minCreateTime = BigInt(0);
+    let minCreateTime = minTweetIdCurShowed;
     newCachedTweet.forEach(async tweet => {
 
         if (!tweet.name || tweet.name === "unknown" || tweet.profile_image_url === DefaultAvatarSrc) {
@@ -172,7 +200,7 @@ function populateLatestTweets(newCachedTweet, insertAtHead) {
                 tweet.username = twitterInfo.username;
                 tweet.profile_image_url = twitterInfo.profile_image_url;
             }
-            localStorage.setItem(TweetToShowOnWeb.DBKey(tweet.create_time), JSON.stringify(tweet));
+            TweetToShowOnWeb.syncToDb(tweet);
         }
 
         const timeSuffix = tweet.create_time;
@@ -247,7 +275,9 @@ function populateLatestTweets(newCachedTweet, insertAtHead) {
 
         const tweetInfoDiv = document.createElement('div');
         tweetInfoDiv.classList.add('tweet-info');
-        tweetInfoDiv.innerHTML = `Web3 ID: <span id="tweet-owner-web3-id-${timeSuffix}">${tweet.web3_id}</span>`;
+        tweetInfoDiv.innerHTML = `Payment Hash: <span id="tweet-payment-hash-${timeSuffix}">${tweet.tx_hash}</span> 
+Status:<span id="tweet-payment-status-${timeSuffix}">${TXStatus.Str(tweet.payment_status)}</span>`;
+
         tweetFooter.appendChild(tweetInfoDiv);
 
         tweetCard.appendChild(tweetFooter);
@@ -274,21 +304,9 @@ function formatTime(createTime) {
     return new Date(createTime).toLocaleString();
 }
 
-function postTweetWithHash(sigData,tx) {
-     return PostToSrvByJson("/postTweet", sigData).then(resp => {
-        const refreshedTweet = JSON.parse(resp)
-        document.getElementById("tweets-content").value = '';
-        parseNjTweetsFromSrv([refreshedTweet], true);
-        hideLoading();
-    }).catch(err => {
-        console.log(err);
-        throw  new Error(err);
-    })
-}
-
 async function postTweet() {
     try {
-        const { content, twitterID, web3Id, message } = getUserInput();
+        const {content, twitterID, web3Id, message} = getUserInput();
         if (!content || !twitterID || !web3Id) return;
 
         const signature = await signMessage(message, web3Id);
@@ -297,23 +315,64 @@ async function postTweet() {
         const tweetHash = ethers.utils.hashMessage(message);
         console.log("tweetHash=>", tweetHash, "sig=>", signature, "web3Id=>", web3Id, "message\n", message);
 
-        showWaiting("paying for tweet post");
-        const tx = await tweetVoteContract.publishTweet(tweetHash, signature, { value: tweetPostPrice });
-        console.log("Transaction Response: ", tx);
-        await postTweetWithHash(new SignDataForPost(message, signature, tx.hash));
+        showWaiting("posting to twitter");
+        const resp = await PostToSrvByJson("/postTweet", new SignDataForPost(message, signature))
+        const refreshedTweet = JSON.parse(resp);
 
-        const txReceipt = await tx.wait();
-        hideLoading();
-        if (!txReceipt.status) {
-            showDialog("tx failed", txReceipt);
-        }else{
-            showDialog("success", "post success");
-        }
-        updateTweetTxStatus(txReceipt.status);
+        document.getElementById("tweets-content").value = '';
+        parseNjTweetsFromSrv([refreshedTweet], true);
+
+
+        changeLoadingTips("paying for tweet post")
+
+        tweetVoteContract.publishTweet(tweetHash, signature, {value: tweetPostPrice})
+            .then((txResponse) => {
+                console.log("Transaction Response: ", txResponse);
+                changeLoadingTips("waiting for blockchain packaging");
+                refreshedTweet.payment_status = TXStatus.Pending;
+                refreshedTweet.tx_hash = txResponse.hash;
+                updateTweetPaymentStatus(refreshedTweet)
+                return txResponse.wait();
+            })
+            .then((txReceipt) => {
+                console.log("Transaction Receipt: ", txReceipt);
+                hideLoading();
+                refreshedTweet.payment_status = txReceipt.status ? TXStatus.Success : TXStatus.Failed;
+                showDialog("transaction " + txReceipt.status ? "confirmed" : "failed");
+                updateTweetPaymentStatus(refreshedTweet)
+            }).catch((err) => {
+            hideLoading();
+            if (err.code === 4001) {
+                return;
+            }
+            console.error("transaction for tweet: ", err);
+            showDialog("transaction err:" + err.toString());
+        });
+
     } catch (err) {
         hideLoading();
+        if (err.code === 4001) {
+            return;
+        }
+        console.error("Error publishing tweet: ", err);
         showDialog("error", "postTweet:" + err.toString());
     }
+}
+
+function updateTweetPaymentStatus(tweetObj) {
+
+    PostToSrvByJson("/updateTweetPaymentStatus", {
+        create_time: tweetObj.create_time,
+        status: tweetObj.payment_status,
+        hash: tweetObj.tx_hash
+    }).then(resp => {
+        console.log(resp);
+        TweetToShowOnWeb.syncToDb(tweetObj);
+        document.getElementById("tweet-payment-status-" + tweetObj.create_time).innerText = TXStatus.Str(tweetObj.payment_status);
+    }).catch(err => {
+        console.log(err);
+        showWaiting("error", "update payment status failed:" + err.toString());
+    })
 }
 
 function getUserInput() {
@@ -325,7 +384,7 @@ function getUserInput() {
 
     const web3Id = ninjaUserObj.eth_addr;
     const tweet = new TweetContentToPost(content, (new Date()).getTime(), web3Id, twitterID);
-    return { content, twitterID, web3Id, message: JSON.stringify(tweet) };
+    return {content, twitterID, web3Id, message: JSON.stringify(tweet)};
 }
 
 async function signMessage(message, web3Id) {

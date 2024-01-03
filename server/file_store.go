@@ -178,15 +178,40 @@ type TwUserAccessTokenV2 struct {
 *
  ******************************************************************************************************/
 
+type TxStatus int8
+
+const (
+	TxStNotPay TxStatus = iota
+	TxStPending
+	TxStSuccess
+	TxStFailed
+)
+
+func (ts TxStatus) String() string {
+	switch ts {
+	case TxStNotPay:
+		return "not paid"
+	case TxStPending:
+		return "pending"
+	case TxStSuccess:
+		return "success"
+	case TxStFailed:
+		return "failed"
+	default:
+		return "unknown"
+	}
+}
+
 type NinjaTweet struct {
-	Txt          string `json:"text" firestore:"text"`
-	CreateAt     int64  `json:"create_time" firestore:"create_time"`
-	Web3ID       string `json:"web3_id" firestore:"web3_id"`
-	TweetUsrId   string `json:"twitter_id" firestore:"twitter_id"`
-	TweetId      string `json:"tweet_id,omitempty" firestore:"tweet_id"`
-	Signature    string `json:"signature,omitempty" firestore:"signature"`
-	PrefixedHash string `json:"prefixed_hash" firestore:"prefixed_hash"`
-	TxHash       string `json:"tx_hash" firestore:"tx_hash"`
+	Txt           string   `json:"text" firestore:"text"`
+	CreateAt      int64    `json:"create_time" firestore:"create_time"`
+	Web3ID        string   `json:"web3_id" firestore:"web3_id"`
+	TweetUsrId    string   `json:"twitter_id" firestore:"twitter_id"`
+	TweetId       string   `json:"tweet_id,omitempty" firestore:"tweet_id"`
+	Signature     string   `json:"signature,omitempty" firestore:"signature"`
+	PrefixedHash  string   `json:"prefixed_hash" firestore:"prefixed_hash"`
+	TxHash        string   `json:"tx_hash" firestore:"tx_hash"`
+	PaymentStatus TxStatus `json:"payment_status" firestore:"payment_status"`
 }
 
 type TweetsOfUser struct {
@@ -434,4 +459,15 @@ func (dm *DbManager) QueryGlobalLatestTweets(pageSize int, id int64, readNewest 
 		}
 		callback(&tweet)
 	}
+}
+
+func (dm *DbManager) UpdateTweetPaymentStatus(createAt int64, s TxStatus, hash string) error {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	tweetsDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(fmt.Sprintf("%d", createAt))
+	_, err := tweetsDoc.Update(opCtx, []firestore.Update{
+		{Path: "payment_status", Value: s},
+		{Path: "tx_hash", Value: hash},
+	})
+	return err
 }

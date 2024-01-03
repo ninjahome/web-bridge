@@ -41,3 +41,42 @@ func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) 
 		Str("eth-addr", nu.EthAddr).
 		Int("size", len(tweets)).Msg("global tweets query success")
 }
+
+type TweetPaymentStatus struct {
+	CreateTime int64    `json:"create_time"`
+	Status     TxStatus `json:"status"`
+	Hash       string   `json:"hash"`
+}
+
+func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo) {
+	status := &TweetPaymentStatus{}
+	var err = util.ReadRequest(r, status)
+	if err != nil {
+		util.LogInst().Err(err).Msg("parsing payment status param failed ")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if status.CreateTime == 0 {
+		util.LogInst().Warn().Str("hash", status.Hash).Msg("invalid tweet create time")
+		http.Error(w, "invalid tweet create time", http.StatusBadRequest)
+		return
+	}
+
+	err = DbInst().UpdateTweetPaymentStatus(status.CreateTime, status.Status, status.Hash)
+	if err != nil {
+		util.LogInst().Err(err).Int64("create_time", status.CreateTime).
+			Str("status", status.Status.String()).Str("hash", status.Hash).
+			Msg("failed to update tweet payment status")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	bts, _ := json.Marshal(status)
+	w.Write(bts)
+
+	util.LogInst().Debug().Int64("create_time", status.CreateTime).
+		Str("status", status.Status.String()).Str("hash", status.Hash).
+		Msg(" update status of tweet payment success")
+}

@@ -7,6 +7,7 @@
     <script src="/assets/js/abi_tweet_vote.js"></script>
     <script src="/assets/js/abi_game_lottery.js"></script>
     <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/loading.js"></script>
     <script src="/assets/js/database.js"></script>
     <script src="/assets/js/main.js"></script>
     <script src="/assets/js/main_twitter.js"></script>
@@ -338,7 +339,7 @@
             <textarea class="tweets-content" id="tweets-content">
             </textarea>
             </label>
-            <button onclick="postTweet()">发布推文(0.001 eth)</button>
+            <button id="tweet-post-with-eth-btn" onclick="postTweet()">发布推文</button>
         </div>
     </div>
     <div class="main-container">
@@ -419,7 +420,7 @@
         window.addEventListener('popstate', clearSessionStorage);
         window.addEventListener('replaceState', clearSessionStorage);
         setupBasicInfo();
-        await initializeContract();
+         initializeContract();
         loadCachedGlobalTweets();
         loadGlobalLatestTweetsFromSrv(true);
     }

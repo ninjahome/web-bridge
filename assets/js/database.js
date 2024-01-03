@@ -8,7 +8,7 @@ class NinjaUserBasicInfo {
 
     static syncToSessionDbForApiResponse(response) {
         const ninjaObj = JSON.parse(response)
-        if (!ninjaObj.eth_addr){
+        if (!ninjaObj.eth_addr) {
             throw new Error("invalid ninja user info")
         }
         setDataToSessionDB(sesDbKeyForCurrentUserEthAddr(), ninjaObj.eth_addr);
@@ -35,26 +35,30 @@ class TwitterBasicInfo {
         this.profile_image_url = avatarUrl;
         this.description = bio;
     }
-    static loadTwBasicInfo(TwitterID){
-       const storedData=  getDataFromSessionDB(sesDbKeyForTwitterUserData(TwitterID))
-        if (!storedData){
+
+    static loadTwBasicInfo(TwitterID) {
+        const storedData = getDataFromSessionDB(sesDbKeyForTwitterUserData(TwitterID))
+        if (!storedData) {
             return null
         }
-        return new TwitterBasicInfo(storedData.id,storedData.name, storedData.username,
+        return new TwitterBasicInfo(storedData.id, storedData.name, storedData.username,
             storedData.profile_image_url, storedData.description);
     }
-    static cacheTwBasicInfo(objStr){
+
+    static cacheTwBasicInfo(objStr) {
         const obj = JSON.parse(objStr)
-        if (!obj.id){
+        if (!obj.id) {
             throw new Error("invalid twitter basic info")
         }
         sessionStorage.setItem(sesDbKeyForTwitterUserData(obj.id), objStr);
         return obj;
     }
 }
+
 function sesDbKeyForTwitterUserData(TwitterID) {
     return "__session_database_key_for_twitter_user_data__:" + TwitterID
 }
+
 function sesDbKeyForNjUserData(ethAddr) {
     return "__session_database_key_for_ninja_user_data__:" + ethAddr
 }
@@ -74,4 +78,24 @@ function getDataFromSessionDB(key) {
 
 function clearSessionStorage() {
     sessionStorage.clear();
+}
+
+function lclDbKeyForBlockChainData(account) {
+    return "__local_database_key_for_block_chain_data__:" + account
+}
+
+class BlockChainData {
+    constructor(account) {
+        this.account = account;
+    }
+
+    static load(account) {
+        const storedData = localStorage.getItem(lclDbKeyForBlockChainData(account))
+        const obj = storedData ? JSON.parse(storedData) : null;
+        if (!obj) {
+            return null
+        }
+
+        return new BlockChainData(storedData.account);
+    }
 }
