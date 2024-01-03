@@ -38,6 +38,8 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			TweeTVoteContractAddress:  "0x63713037a9E337D7Db5D383070199B948598e0Da",
 			GamePluginContractAddress: "0x57F0bbE85f5822911003A8fa425D5595D139FDFe",
 			KolKeyContractAddress:     "",
+			InfuraKey:                 "",
+			InfuraUrl:                 "https://arbitrum-mainnet.infura.io/v3/", //https://arbitrum-sepolia.infura.io/v3/
 		},
 	}
 

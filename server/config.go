@@ -97,6 +97,8 @@ type BlockChainConf struct {
 	TweeTVoteContractAddress  string `json:"tweet_vote_contract_address"`
 	GamePluginContractAddress string `json:"game_plugin_contract_address"`
 	KolKeyContractAddress     string `json:"kol_key_contract_address"`
+	InfuraKey                 string `json:"infura_key"`
+	InfuraUrl                 string `json:"infura_url"`
 }
 
 func (c *BlockChainConf) String() string {
@@ -104,6 +106,8 @@ func (c *BlockChainConf) String() string {
 	s += "\ntweet vote:" + c.TweeTVoteContractAddress
 	s += "\ngame:" + c.GamePluginContractAddress
 	s += "\nkol key:" + c.KolKeyContractAddress
+	s += "\ninfura key:" + c.InfuraKey
+	s += "\ninfura url:" + c.InfuraUrl
 	s += "\n--------------------------"
 	return s
 }

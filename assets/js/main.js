@@ -95,7 +95,20 @@ let metamaskObj = null;
 let metamaskProvider;
 let tweetVoteContract;
 let lotteryGameContract;
-let tweetPostPrice = 0.0;
+
+class SmartContractSettings {
+    constructor(postPrice, votePrice, maxVote, pluginAddr, pluginStop, kolRate, feeRate) {
+        this.postPrice = postPrice;
+        this.votePrice = votePrice;
+        this.maxVote = maxVote;
+        this.pluginAddr = pluginAddr;
+        this.pluginStop = pluginStop;
+        this.kolRate = kolRate;
+        this.feeRate = feeRate;
+    }
+}
+
+let voteContractMeta = null;
 
 function setupMetamask() {
     metamaskObj = window.ethereum;
@@ -116,17 +129,30 @@ function initializeContract() {
         return false;
     }
 
+    const postPrice = ethers.utils.parseEther(conf.postPrice);
+    const votePrice = ethers.utils.parseEther(conf.votePrice);
+    voteContractMeta = new SmartContractSettings(postPrice, votePrice);
     tweetVoteContract = new ethers.Contract(conf.tweetVote, conf.tweetVoteAbi, signer);
     lotteryGameContract = new ethers.Contract(conf.gameLottery, conf.gameLotteryAbi, signer);
-    tweetPostPrice = tweetVoteContract.tweetPostPrice().then(price => {
-        tweetPostPrice = price;
-        const tweetPostPriceInEth = ethers.utils.formatUnits(price, 'ether');
-        document.getElementById("tweet-post-with-eth-btn").innerText = "发布推文(" + tweetPostPriceInEth + " eth)"
-    }).catch(err => {
-        console.error("Error getting tweet post price: ", err);
-    })
 
+    loadVoteContractMeta().then(r=>{});
     return true;
+}
+
+async function loadVoteContractMeta() {
+    try {
+        const [
+            postPrice, votePrice, maxVote, pluginAddr, pluginStop, kolRate, feeRate
+        ] = await tweetVoteContract.systemSettings();
+        voteContractMeta = new SmartContractSettings(postPrice, votePrice,
+            maxVote.toNumber(), pluginAddr, pluginStop, kolRate, feeRate);
+
+        const tweetPostPriceInEth = ethers.utils.formatUnits(postPrice, 'ether');
+        document.getElementById("tweet-post-with-eth-btn").innerText = "发布推文(" + tweetPostPriceInEth + " eth)"
+        console.log(JSON.stringify(voteContractMeta));
+    } catch (error) {
+        console.error("Error getting system settings: ", error);
+    }
 }
 
 async function metamaskChainChanged(chainId) {

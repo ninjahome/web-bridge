@@ -101,12 +101,14 @@ const DefaultAvatarSrc = "/assets/file/logo.png"
 
 const __globalContractConf = new Map([
     [toHex(421614), {
-        tweetVote: "0x63713037a9E337D7Db5D383070199B948598e0Da",
+        tweetVote: "0x6500Cda46979F1956a46486B1a88768cb425E23a",
         tweetVoteAbi: tweetVoteContractABI,
         gameLottery: "0x57F0bbE85f5822911003A8fa425D5595D139FDFe",
         gameLotteryAbi: gameContractABI,
         kolKey: "",
-        kolKeyAbi: ""
+        kolKeyAbi: "",
+        postPrice:"0.005",
+        votePrice:"0.005"
     }],
     [toHex(42161), {
         tweetVote: "",
@@ -114,7 +116,9 @@ const __globalContractConf = new Map([
         gameLottery: "",
         gameLotteryAbi: "",
         kolKey: "",
-        kolKeyAbi: ""
+        kolKeyAbi: "",
+        postPrice:"0.005",
+        votePrice:"0.005"
     }]]);
 
 

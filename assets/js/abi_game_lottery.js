@@ -1,5 +1,6 @@
 
-const gameContractABI =`[
+const gameContractABI =`
+[
     {
         "inputs": [
             {
@@ -888,6 +889,29 @@ const gameContractABI =`[
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "systemSettings",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "internalType": "bytes32",
@@ -1018,6 +1042,19 @@ const gameContractABI =`[
             }
         ],
         "name": "ticketsRecords",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "totalBonus",
         "outputs": [
             {
                 "internalType": "uint256",

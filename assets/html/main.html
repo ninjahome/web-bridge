@@ -376,7 +376,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
         <div class="operation-area-right">
             <div id="lottery-card">
@@ -426,12 +425,12 @@
         }, time);
     }
 
-    async function initMainPage() {
+    function initMainPage() {
         checkSystemEnvironment();
+        initializeContract();
         window.addEventListener('popstate', clearSessionStorage);
         window.addEventListener('replaceState', clearSessionStorage);
         setupBasicInfo();
-         initializeContract();
         loadCachedGlobalTweets();
         loadGlobalLatestTweetsFromSrv(true);
     }

@@ -43,6 +43,7 @@ class TweetToShowOnWeb {
         this.web3_id = njTweet.web3_id;
         this.twitter_id = njTweet.twitter_id;
         this.tweet_id = njTweet.tweet_id;
+        this.prefixed_hash = njTweet.prefixed_hash;
         this.signature = njTweet.signature;
         this.tx_hash = njTweet.tx_hash;
         this.payment_status = njTweet.payment_status;
@@ -187,17 +188,34 @@ function loadGlobalLatestTweetsFromSrv(refreshNewest) {
 
 function populateLatestTweets(newCachedTweet, insertAtHead) {
     const tweetsPark = document.querySelector('.tweets-park');
-
+    let maxCreateTime = BigInt(0);
+    let minCreateTime = minTweetIdCurShowed;
     newCachedTweet.forEach(tweet => {
         const tweetCard = document.getElementById('tweetTemplate').cloneNode(true);
         tweetCard.style.display = '';
-        tweetCard.id = "tweet-card-info-" + tweet.create_time;
+
+        const timeSuffix = tweet.create_time;
+        const createTime = BigInt(timeSuffix);
+        if (createTime > maxCreateTime) {
+            maxCreateTime = createTime;
+        }
+        if (createTime < minCreateTime || minCreateTime === BigInt(0)) {
+            minCreateTime = createTime;
+        }
+        tweetCard.id = "tweet-card-info-" + timeSuffix;
+
+        tweetCard.dataset.createTime = tweet.create_time;
+        tweetCard.dataset.signature = tweet.signature;
+        tweetCard.dataset.prefixedHash = tweet.prefixed_hash;
 
         tweetCard.querySelector('.twitterAvatar').src = tweet.profile_image_url;
         tweetCard.querySelector('.twitterName').textContent = tweet.name;
         tweetCard.querySelector('.twitterUserName').textContent = '@' + tweet.username;
         tweetCard.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
         tweetCard.querySelector('.tweet-content').textContent = tweet.text;
+
+        const tweetVotePriceInEth = ethers.utils.formatUnits(voteContractMeta.votePrice, 'ether');
+        tweetCard.querySelector('.tweet-action button').textContent = `打赏(${tweetVotePriceInEth} eth)`;
 
         tweetCard.querySelector('.tweetPaymentStatus').textContent = TXStatus.Str(tweet.payment_status);
 
@@ -212,7 +230,8 @@ function populateLatestTweets(newCachedTweet, insertAtHead) {
             tweetsPark.appendChild(tweetCard);
         }
     });
-
+    maxTweetIdCurShowed = maxCreateTime;
+    minTweetIdCurShowed = minCreateTime;
     handleShowMoreButtons();
 }
 
@@ -231,10 +250,10 @@ function handleShowMoreButtons() {
     });
 }
 
-function updateTweetCardWhenStatusChanged(createTime,newStatus){
+function updateTweetCardWhenStatusChanged(createTime, newStatus) {
     const tweetCardId = "tweet-card-info-" + createTime;
     const tweetCard = document.getElementById(tweetCardId);
-    if(!tweetCard){
+    if (!tweetCard) {
         console.error('Tweet card not found for ID:', tweetCardId);
         return;
     }
@@ -272,36 +291,36 @@ async function postTweet() {
         document.getElementById("tweets-content").value = '';
         parseNjTweetsFromSrv([basicTweet], true);
 
-        await processTweetPayment(basicTweet);
+        await processTweetPayment(basicTweet.create_time, basicTweet.prefixed_hash, basicTweet.signature);
     } catch (err) {
         hideLoading();
         if (err.code === 4001) {
             return;
         }
         console.error("Error publishing tweet: ", err);
-        showDialog("error", "postTweet:" + err.toString());
+        showDialog("Transaction error: " + err.code+":"+err.message);
     }
 }
 
-async function processTweetPayment(tweet) {
+async function processTweetPayment(create_time, prefixed_hash, signature) {
     try {
         changeLoadingTips("paying for tweet post");
 
         const txResponse = await tweetVoteContract.publishTweet(
-            tweet.prefixed_hash,
-            tweet.signature,
-            {value: tweetPostPrice}
+            prefixed_hash,
+            signature,
+            {value: voteContractMeta.postPrice}
         );
         console.log("Transaction Response: ", txResponse);
 
         changeLoadingTips("waiting for blockchain packaging");
-        updateTweetPaymentStatus(tweet, TXStatus.Pending, txResponse.hash);
+        updateTweetPaymentStatus(create_time, TXStatus.Pending, txResponse.hash);
 
         const txReceipt = await txResponse.wait();
         console.log("Transaction Receipt: ", txReceipt);
 
         const txStatus = txReceipt.status ? TXStatus.Success : TXStatus.Failed;
-        updateTweetPaymentStatus(tweet, txStatus, txResponse.hash);
+        updateTweetPaymentStatus(create_time, txStatus, txResponse.hash);
 
         hideLoading();
         showDialog("transaction " + (txReceipt.status ? "confirmed" : "failed"));
@@ -312,16 +331,20 @@ async function processTweetPayment(tweet) {
         if (err.code === 4001) {
             return;
         }
-        showDialog("Transaction error: " + err.toString());
+        if (err.data && err.data.message.includes("duplicate post")){
+            updateTweetPaymentStatus(create_time,TXStatus.Success,prefixed_hash);
+            return;
+        }
+        showDialog("Transaction error: " + err.code+":"+err.message);
     }
 }
 
-function updateTweetPaymentStatus(tweetObj, status, hash) {
+function updateTweetPaymentStatus(create_time, status, hash) {
     PostToSrvByJson("/updateTweetPaymentStatus", {
-        create_time: tweetObj.create_time, status: status, hash: hash
+        create_time: create_time, status: status, hash: hash
     }).then(resp => {
         console.log(resp);
-       updateTweetCardWhenStatusChanged(tweetObj.create_time,status);
+        updateTweetCardWhenStatusChanged(create_time, status);
     }).catch(err => {
         console.log(err);
         showWaiting("error", "update payment status failed:" + err.toString());
@@ -353,6 +376,26 @@ async function signMessage(message, web3Id) {
 function voteToThisTweet() {
 }
 
-function payThisTweetAgain() {
+async function payThisTweetAgain() {
+    try {
+        const tweetCard = this.closest('.tweet-card');
 
+        const createTime = Number(tweetCard.dataset.createTime);
+        const signature = tweetCard.dataset.signature;
+        const prefixedHash = tweetCard.dataset.prefixedHash;
+        console.log("Create Time: ", createTime);
+        console.log("signature: ", signature);
+        console.log("Prefixed Hash: ", prefixedHash);
+
+        showWaiting("prepare to pay");
+
+        await processTweetPayment(createTime, prefixedHash, signature)
+    } catch (err) {
+        console.error("Transaction error: ", err);
+        hideLoading();
+        if (err.code === 4001) {
+            return;
+        }
+        showDialog("Transaction error: " + err.code+":"+err.message);
+    }
 }

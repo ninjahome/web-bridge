@@ -537,4 +537,16 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     function tickList(address owner) public view returns (uint256[] memory) {
         return ticketsOfBuyer[currentRoundNo][owner];
     }
+
+    function systemSettings()
+    public
+    view
+    returns (
+        uint256,
+        uint256,
+        uint256
+    )
+    {
+        return (currentRoundNo, totalBonus, __ticketPriceForOuter);
+    }
 }

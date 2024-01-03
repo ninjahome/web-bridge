@@ -9,7 +9,6 @@ import "./common.sol";
  *********************************************************************************/
 contract TweetVoteAmin is ServiceFeeForWithdraw {
     uint256 public constant oneFinney = 1e6 gwei;
-
     uint256 public tweetPostPrice = 0.005 ether;
     uint256 public tweetVotePrice = 0.005 ether;
 
@@ -231,5 +230,29 @@ contract TweetVote is TweetVoteAmin {
         }
 
         return ecrecover(prefixedHash, v, r, s);
+    }
+
+    function systemSettings()
+    public
+    view
+    returns (
+        uint256,
+        uint256,
+        uint256,
+        address,
+        bool,
+        uint8,
+        uint8
+    )
+    {
+        return (
+            tweetPostPrice,
+            tweetVotePrice,
+            maxVotePerTweet,
+            pluginAddress,
+            pluginStop,
+            kolIncomePerTweetVoteRate,
+            serviceFeePerTweetVoteRate
+        );
     }
 }
