@@ -26,7 +26,7 @@ const (
 	DBTableTWUserAccTokenV2 = "twitter-user-access-token_v2"
 	DBTableWeb3Bindings     = "twitter-eth-binding"
 	DBTableTweetsPosted     = "tweets-posted"
-	DBTableTweetsOfUser     = "tweets-of-user"
+	DBTableTweetsStatus     = "tweets-status"
 )
 
 /*******************************************************************************************************
@@ -106,15 +106,6 @@ func (t *TWUserInfo) String() string {
 func (t *TWUserInfo) RawData() []byte {
 	bts, _ := json.Marshal(t)
 	return bts
-}
-
-func TWUsrInfoMust(str string) *TWUserInfo {
-	t := &TWUserInfo{}
-	err := json.Unmarshal([]byte(str), t)
-	if err != nil {
-		return t
-	}
-	return t
 }
 
 /*******************************************************************************************************
@@ -211,7 +202,11 @@ type NinjaTweet struct {
 	Signature     string   `json:"signature,omitempty" firestore:"signature"`
 	PrefixedHash  string   `json:"prefixed_hash" firestore:"prefixed_hash"`
 	PaymentStatus TxStatus `json:"payment_status" firestore:"payment_status"`
-	VoteCount     int      `json:"vote_count" firestore:"vote_count"`
+}
+
+type NjTweetStatus struct {
+	CreateTime int64 `json:"create_time" firestore:"create_time"`
+	VoteCount  int   `json:"vote_count" firestore:"vote_count"`
 }
 
 type TweetsOfUser struct {
@@ -410,24 +405,27 @@ func (dm *DbManager) GetTwAccessTokenV2(twitterId string) (*TwUserAccessTokenV2,
 func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
-	tweetsDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(fmt.Sprintf("%d", content.CreateAt))
+
+	var createTime = fmt.Sprintf("%d", content.CreateAt)
+	tweetsDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(createTime)
+
 	_, err := tweetsDoc.Set(opCtx, content)
 	if err != nil {
-		util.LogInst().Err(err).Msg("save tweet draft failed:" + content.String())
+		util.LogInst().Err(err).Msg("save ninja tweet failed:" + content.String())
 		return err
 	}
 
-	ownerDoc := dm.fileCli.Collection(DBTableTweetsOfUser).Doc(content.Signature)
+	var ts = NjTweetStatus{content.CreateAt, 0}
 
-	var newItem = make(map[string]struct{})
-	newItem[content.TweetId] = struct{}{}
-	_, err = ownerDoc.Set(opCtx, newItem, firestore.MergeAll)
+	statusDoc := dm.fileCli.Collection(DBTableTweetsStatus).Doc(createTime)
+	_, err = statusDoc.Set(opCtx, ts)
 	return err
 }
 
 func (dm *DbManager) QueryGlobalLatestTweets(pageSize int, id int64, readNewest bool, callback func(tweet *NinjaTweet)) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
+
 	var doc = dm.fileCli.Collection(DBTableTweetsPosted)
 	var iter *firestore.DocumentIterator
 	if readNewest {
@@ -460,6 +458,20 @@ func (dm *DbManager) QueryGlobalLatestTweets(pageSize int, id int64, readNewest 
 		callback(&tweet)
 	}
 }
+func (dm *DbManager) NjTweetDetails(createAt int64) (*NinjaTweet, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+
+	var doc = dm.fileCli.Collection(DBTableTweetsPosted).Doc(fmt.Sprintf("%d", createAt))
+	data, err := doc.Get(opCtx)
+	if err != nil {
+		util.LogInst().Err(err).Int64("create_time", createAt).Msg("query ninja tweet detail failed")
+		return nil, err
+	}
+	var obj NinjaTweet
+	err = data.DataTo(&obj)
+	return &obj, err
+}
 
 func (dm *DbManager) UpdateTweetPaymentStatus(createAt int64, s TxStatus) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
@@ -470,18 +482,30 @@ func (dm *DbManager) UpdateTweetPaymentStatus(createAt int64, s TxStatus) error 
 	})
 	return err
 }
-
 func (dm *DbManager) UpdateTweetVoteStatic(createAt int64, amount int) (int, error) {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
-	docRef := dm.fileCli.Collection(DBTableTweetsPosted).Doc(fmt.Sprintf("%d", createAt))
+	docRef := dm.fileCli.Collection(DBTableTweetsStatus).Doc(fmt.Sprintf("%d", createAt))
 
 	docSnapshot, err := docRef.Get(opCtx)
 	if err != nil {
-		util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to get tweet  document to update vote")
-		return 0, err
+		if status.Code(err) != codes.NotFound {
+			util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to get tweet document to update vote")
+			return 0, err
+		}
+
+		_, err := docRef.Set(opCtx, map[string]interface{}{
+			"vote_count":  amount,
+			"create_time": createAt,
+		})
+		if err != nil {
+			util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to create new document")
+			return 0, err
+		}
+		return amount, nil
 	}
-	var existingData NinjaTweet
+
+	var existingData NjTweetStatus
 	err = docSnapshot.DataTo(&existingData)
 	if err != nil {
 		util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to decode document data")
@@ -494,4 +518,29 @@ func (dm *DbManager) UpdateTweetVoteStatic(createAt int64, amount int) (int, err
 	})
 
 	return newFieldValue, err
+}
+
+func (dm *DbManager) QueryTweetStatus(createTimes []int64) (map[int64]*NjTweetStatus, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	iter := dm.fileCli.Collection(DBTableTweetsStatus).Where("create_time", "in", createTimes).Documents(opCtx)
+	result := make(map[int64]*NjTweetStatus)
+
+	for {
+		doc, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			return result, nil
+		}
+		if err != nil {
+			util.LogInst().Err(err).Msg("failed to fetch tweet status data")
+			return nil, err
+		}
+		var ts NjTweetStatus
+		err = doc.DataTo(&ts)
+		if err != nil {
+			util.LogInst().Err(err).Msg("data to tweet status object failed")
+			return nil, err
+		}
+		result[ts.CreateTime] = &ts // 假设 NjTweetStatus 结构体中有 CreateTime 字段
+	}
 }

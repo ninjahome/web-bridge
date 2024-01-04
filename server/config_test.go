@@ -24,6 +24,7 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 		TwitterConf: &TwitterConf{
 			FontPath:       "util/Noto_Sans_SC.ttf",
 			FontSize:       28.0,
+			MaxTxtPerImg:   1000,
 			ClientID:       "",
 			ClientSecret:   "",
 			ConsumerKey:    "",

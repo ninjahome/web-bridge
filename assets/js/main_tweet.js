@@ -47,7 +47,6 @@ class TweetToShowOnWeb {
         this.signature = njTweet.signature;
         this.tx_hash = njTweet.tx_hash;
         this.payment_status = njTweet.payment_status;
-        this.vote_no = njTweet.vote_no;
 
         if (njTwitter) {
             this.name = njTwitter.name;
@@ -131,11 +130,30 @@ function parseNjTweetsFromSrv(tweetArray, refreshNewest) {
         newIDs.push(obj.create_time);
         return obj;
     });
-    populateLatestTweets(localTweets, refreshNewest).then(r => {});
+
+    populateLatestTweets(localTweets, refreshNewest).then(async r => {
+        await queryLastStatusInfo(newIDs)
+    });
     updateLocalCachedTweetList(newIDs)
 }
 
+async function queryLastStatusInfo(ids) {
+    try {
+        const res = await PostToSrvByJson("/tweetStatusRealTime", {create_time:ids})
+        console.log(res);
+        const statusMap = JSON.parse(res);
+        for (let key in statusMap) {
+            let status = statusMap[key];
+            console.log("Create Time:", status.create_time, "Vote Count:", status.vote_count);
+            updateTweetCardVoteNo(status.create_time,status.vote_count);
+        }
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 function loadCachedGlobalTweets() {
+
     const storedData = localStorage.getItem(dbKeyCachedGlobalTweets)
     if (!storedData) {
         return;
@@ -146,14 +164,16 @@ function loadCachedGlobalTweets() {
     }
 
     const tweets = localTweetsIds.map(tweetID => {
-        return TweetToShowOnWeb.load(tweetID);
+        return TweetToShowOnWeb.load(tweetID)
     }).filter(tweet => tweet !== null);
 
     if (tweets.length === 0) {
         return;
     }
 
-    populateLatestTweets(tweets, false).then(r => {});
+    populateLatestTweets(tweets, false).then(async r => {
+        await queryLastStatusInfo(localTweetsIds)
+    });
 }
 
 function loadMoreTweets() {
@@ -233,13 +253,25 @@ async function populateLatestTweets(newCachedTweet, insertAtHead) {
         tweetCard.querySelector('.tweet-content').textContent = tweet.text;
 
         tweetCard.querySelector('.tweet-action button').textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
-        tweetCard.querySelector('.tweetPaymentStatus').textContent = TXStatus.Str(tweet.payment_status);
+        const statusElem = tweetCard.querySelector('.tweetPaymentStatus');
+        statusElem.textContent = TXStatus.Str(tweet.payment_status);
 
-        if (ninjaUserObj.eth_addr === tweet.web3_id && tweet.payment_status === TXStatus.NoPay) {
-            const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
-            retryButton.classList.add('show');
+        if (tweet.payment_status === TXStatus.NoPay){
+            if (ninjaUserObj.eth_addr === tweet.web3_id ) {
+                const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
+                retryButton.classList.add('show');
+            }else {
+                fetch("/reloadPaymentDetails?tweetID=" + tweet.create_time).then(response => response.json()).then(newTweetInfo=>{
+                    statusElem.textContent = TXStatus.Str(newTweetInfo.payment_status);
+                    tweet.payment_status = newTweetInfo.payment_status;
+                    TweetToShowOnWeb.syncToDb(newTweetInfo);
+                }).catch(err=>{
+                    console.log(err);
+                })
+            }
         }
-        tweetCard.querySelector('.vote-number').textContent = tweet.vote_no;
+
+        tweetCard.querySelector('.vote-number').textContent = 0;
 
         if (insertAtHead) {
             tweetsPark.insertBefore(tweetCard, tweetsPark.firstChild);
@@ -280,7 +312,7 @@ function updateTweetCardWhenStatusChanged(createTime, newStatus) {
         console.error('Tweet payment status element not found');
         return;
     }
-
+    tweetCard.dataset.paidStatus  = newStatus;
     paymentStatusElement.textContent = TXStatus.Str(newStatus);
     const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
     retryButton.classList.remove('show');
@@ -348,7 +380,7 @@ async function processTweetPayment(create_time, prefixed_hash, signature) {
         if (err.code === 4001) {
             return;
         }
-        if (err.data && err.data.message.includes("duplicate post")){
+        if (err.data && err.data.message && err.data.message.includes("duplicate post")){
             updateTweetPaymentStatus(create_time,TXStatus.Success,prefixed_hash);
             return;
         }
@@ -414,10 +446,7 @@ function updateTweetVoteStatic(create_time, voteCount) {
     }).then(resp => {
         console.log(resp);
         const countFormSrv = JSON.parse(resp);
-        const obj = TweetToShowOnWeb.load(create_time);
-        obj.vote_no = countFormSrv.vote_no;
-        updateTweetCardVoteNo(create_time, obj.vote_no);
-        TweetToShowOnWeb.syncToDb(obj);
+        updateTweetCardVoteNo(create_time, countFormSrv.vote_count);
     }).catch(err => {
         console.log(err);
         showWaiting("error", "update payment status failed:" + err.toString());
@@ -428,7 +457,8 @@ async function startToVote(voteCount,prefixedHash,createTime) {
     try {
         showWaiting("prepare to pay");
 
-        const amount = voteContractMeta.postPrice * voteCount;
+        const amount = voteContractMeta.postPrice.mul(voteCount);
+
         const txResponse = await tweetVoteContract.voteToTweets(
             prefixedHash,
             voteCount,

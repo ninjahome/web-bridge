@@ -11,7 +11,8 @@ function PostToSrvByJson(url, data) {
             .then(response => {
                 if (!response.ok) {
                     return response.text().then(text => {
-                        throw new Error(text || 'Server responded with an error');
+                        console.log(text )
+                        throw new Error('Server responded with an error:'+response.statusText);
                     });
                 }
                 return response.text();

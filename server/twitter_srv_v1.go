@@ -11,6 +11,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"unicode/utf8"
 )
 
 const (
@@ -81,22 +82,35 @@ func prepareTweet(njTweet *NinjaTweet, ut *TwUserAccessToken) (*TweetRequest, er
 	}
 
 	var token = ut.GetToken()
-	txtImg, err := util.ConvertLongTweetToImg(njTweet.Txt, _globalCfg.imgFont, _globalCfg.FontSize)
-	if err != nil {
-		util.LogInst().Err(err).Msg("convert txt to img failed:" + njTweet.String())
-		return nil, err
+	var txtLen = len(njTweet.Txt)
+	count := utf8.RuneCountInString(njTweet.Txt)
+	util.LogInst().Debug().Int("txt-len", txtLen).Int("txt-count", count).Send()
+
+	splitTxt := util.SplitIntoChunks(njTweet.Txt, _globalCfg.MaxTxtPerImg)
+	if len(splitTxt) > 4 {
+		return nil, fmt.Errorf("txt is too long")
+	}
+	mediaIDs := make([]string, 0)
+	for _, content := range splitTxt {
+		txtImg, err := util.ConvertLongTweetToImg(content, _globalCfg.imgFont, _globalCfg.FontSize)
+		if err != nil {
+			util.LogInst().Err(err).Msg("convert txt to img failed:" + njTweet.String())
+			return nil, err
+		}
+
+		mediaID, err := uploadMedia(token, txtImg)
+		if err != nil {
+			util.LogInst().Err(err).Msg("convert txt to img failed:" + njTweet.String())
+			return nil, err
+		}
+		mediaIDs = append(mediaIDs, mediaID)
 	}
 
-	mediaID, err := uploadMedia(token, txtImg)
-	if err != nil {
-		util.LogInst().Err(err).Msg("convert txt to img failed:" + njTweet.String())
-		return nil, err
-	}
 	combinedTxt = util.TruncateString(njTweet.Txt, appendStr)
 	var req = &TweetRequest{
 		Text: combinedTxt,
 		Media: &Media{
-			MediaIDs: []string{mediaID},
+			MediaIDs: mediaIDs,
 		},
 	}
 	return req, nil

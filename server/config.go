@@ -23,7 +23,9 @@ var (
 		"/main":                     {mainPage, true},
 		"/postTweet":                {postTweets, true},
 		"/updateTweetPaymentStatus": {updateTweetTxStatus, true},
+		"/reloadPaymentDetails":     {queryTweetDetails, false},
 		"/updateTweetVoteStatic":    {updateTweetVoteStatic, true},
+		"/tweetStatusRealTime":      {tweetStatusRealTime, true},
 		"/buyRights":                {mainPage, true},
 		"/globalLatestTweets":       {globalTweetQuery, true},
 	}
@@ -64,6 +66,7 @@ type TwitterConf struct {
 	imgFont        *truetype.Font
 	FontSize       float64 `json:"font_size"`
 	FontPath       string  `json:"font_path"`
+	MaxTxtPerImg   int     `json:"max_txt_per_img"`
 	ClientID       string  `json:"client_id"`
 	ClientSecret   string  `json:"client_secret"`
 	ConsumerKey    string  `json:"consumer_key"`

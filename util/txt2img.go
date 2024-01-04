@@ -7,6 +7,7 @@ import (
 	"golang.org/x/image/math/fixed"
 	"image"
 	"image/draw"
+	"unicode/utf8"
 )
 
 func calcTextHeight(txt string, maxWidth int, fontSize float64, face font.Face) (int, error) {
@@ -93,4 +94,30 @@ func ConvertLongTweetToImg(txt string, f *truetype.Font, fontSize float64) (imag
 	}
 
 	return img, nil
+}
+
+func SplitIntoChunks(text string, chunkSize int) []string {
+	var chunks []string
+	var chunk string
+
+	byteLength := len(text)
+	runeCount := utf8.RuneCountInString(text)
+
+	if float64(byteLength) < float64(runeCount)*1.5 {
+		chunkSize = int(float64(chunkSize) * 1.5)
+	}
+
+	for _, runeValue := range text {
+		chunk += string(runeValue)
+		if len([]rune(chunk)) == chunkSize {
+			chunks = append(chunks, chunk)
+			chunk = ""
+		}
+	}
+
+	if chunk != "" {
+		chunks = append(chunks, chunk)
+	}
+
+	return chunks
 }
