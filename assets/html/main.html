@@ -205,11 +205,13 @@
         #lottery-card .lottery-info p {
             margin: 10px 0;
         }
+
         .lottery-info p #total-prize {
             font-size: 1.5em; /* 或者使用更大的值，如2em，根据你的具体需求 */
             color: #d35400; /* 明亮的橙色，或者选择其他更醒目的颜色 */
             font-weight: bold; /* 加粗 */
         }
+
         #lottery-card .lottery-algorithm {
             margin-top: 20px;
         }
@@ -236,7 +238,7 @@
             padding: 20px; /* 内边距 */
             margin: 20px 0; /* 外边距 */
             max-width: 800px; /* 最大宽度 */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 盒子阴影 */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 盒子阴影 */
         }
 
         .algorithm-steps {
@@ -311,8 +313,8 @@
             width: 100%; /* 宽度 */
             height: 100%; /* 高度 */
             overflow: auto; /* 启用滚动条 */
-            background-color: rgb(0,0,0); /* 背景颜色 */
-            background-color: rgba(0,0,0,0.4); /* 黑色背景透明度 */
+            background-color: rgb(0, 0, 0); /* 背景颜色 */
+            background-color: rgba(0, 0, 0, 0.4); /* 黑色背景透明度 */
         }
 
         /* 模态内容 */
@@ -338,6 +340,7 @@
             text-decoration: none;
             cursor: pointer;
         }
+
         .vote-count {
             /* 投票数的样式 */
             margin-left: 10px;
@@ -430,28 +433,29 @@
         </div>
         <div class="operation-area-right">
             <div id="lottery-card">
-                <div id="lottery-card">
-                    <div class="lottery-info">
-                        <p>本期总奖池：<span id="total-prize">20.6880 eth</span></p>
-                        <p>本期开奖随机数hash：<span id="lottery-hash">0x9f60ec8488410d48e11f5e26fdf10c20ef1f4d22</span></p>
-                        <p>累计开奖金额：<span id="total-awards">68125.342 eth</span></p>
-                    </div>
-                    <button onclick="showPastLotteries()">往期开奖列表</button>
-                    <button onclick="showContractAddress()">智能合约地址</button>
-                    <div class="lottery-algorithm">
-                        <h3>开奖算法</h3>
-                        <ol class="algorithm-steps">
-                            <li><strong>第一步：</strong>产生随机数，并将随机数的hash值存放到区块链智能合约，公开可查。使用hash算法keccak256。</li>
-                            <li><strong>第二步：</strong>用户购买凭证，累计奖池，购买凭证存储在智能合约，公开可查。</li>
-                            <li><strong>第三步：</strong>执行抽奖操作，输入随机数，比对输入的随机数的hash与智能合约存储的hash是否一致。检查通过后进行中奖地址计算。
-                                <strong>计算方法：</strong>
-                                <div class="calculation-method">
-                                    购买地址列表[(随机数 + block.difficulty + 抽奖凭证数)%购买地址数]。
-                                </div>
-                            </li>
-                            <li><strong>第四步：</strong>奖池奖金转入中奖者地址，奖池清空，开启下一轮抽奖。</li>
-                        </ol>
-                    </div>
+                <div class="lottery-info">
+                    <p>当前第<span id="current-round">0</span>期</p>
+                    <p>本期总奖池：<span id="total-prize">20.6880 eth</span></p>
+                    <p>本期开奖随机数hash：<span id="lottery-hash">0x9f60ec8488410d48e11f5e26fdf10c20ef1f4d22</span></p>
+                    <p>本期开奖时间：<span id="lottery-discovery-time">00:00</span></p>
+                    <p>累计开奖金额：<span id="total-awards">68125.342 eth</span></p>
+                </div>
+                <button onclick="showPastLotteries()">往期开奖列表</button>
+                <button onclick="showContractAddress()">智能合约地址</button>
+                <div class="lottery-algorithm">
+                    <h3>开奖算法</h3>
+                    <ol class="algorithm-steps">
+                        <li><strong>第一步：</strong>产生随机数，并将随机数的hash值存放到区块链智能合约，公开可查。使用hash算法keccak256。
+                        </li>
+                        <li><strong>第二步：</strong>用户购买凭证，累计奖池，购买凭证存储在智能合约，公开可查。</li>
+                        <li><strong>第三步：</strong>执行抽奖操作，输入随机数，比对输入的随机数的hash与智能合约存储的hash是否一致。检查通过后进行中奖地址计算。
+                            <strong>计算方法：</strong>
+                            <div class="calculation-method">
+                                购买地址列表[(随机数 + block.difficulty + 抽奖凭证数)%购买地址数]。
+                            </div>
+                        </li>
+                        <li><strong>第四步：</strong>奖池奖金转入中奖者地址，奖池清空，开启下一轮抽奖。</li>
+                    </ol>
                 </div>
             </div>
         </div>
@@ -481,11 +485,12 @@
     let ninjaUserObj = {{ .NinjaUsrInfoJson }};
     document.addEventListener("DOMContentLoaded", initMainPage);
 
-    window.onscroll = function() {
+    window.onscroll = function () {
         throttle(() => loadMoreTweets(), 200);
     }
 
     let throttleTimer;
+
     function throttle(callback, time) {
         if (throttleTimer) return;
 
@@ -506,17 +511,20 @@
         loadGlobalLatestTweetsFromSrv(true);
     }
 
-    function showPastLotteries(){
+    function showPastLotteries() {
     }
-    function showContractAddress(){
+
+    function showContractAddress() {
     }
 
     let confirmCallback = null;
+
     function openModal(callback) {
         const modal = document.getElementById("myModal");
         modal.style.display = "block";
         confirmCallback = callback;
     }
+
     function confirmModal() {
         if (confirmCallback) {
             const voteCount = document.getElementById("voteCount").value;
@@ -524,14 +532,17 @@
         }
         closeModal();
     }
+
     function closeModal() {
         const modal = document.getElementById("myModal");
         modal.style.display = "none";
     }
+
     function increaseVote() {
         const voteCount = document.getElementById("voteCount");
         voteCount.value = parseInt(voteCount.value) + 1;
     }
+
     function decreaseVote() {
         const voteCountElement = document.getElementById("voteCount");
         const newVoteCount = Math.max(1, parseInt(voteCountElement.value) - 1);

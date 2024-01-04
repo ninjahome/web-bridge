@@ -92,14 +92,13 @@ function refreshTwitterInfo() {
     })
 }
 
-
 let metamaskObj = null;
 let metamaskProvider;
 let tweetVoteContract;
 let lotteryGameContract;
 
 class SmartContractSettings {
-    constructor(postPrice, votePrice,votePriceInEth, maxVote, pluginAddr, pluginStop, kolRate, feeRate) {
+    constructor(postPrice, votePrice, votePriceInEth, maxVote, pluginAddr, pluginStop, kolRate, feeRate) {
         this.postPrice = postPrice;
         this.votePrice = votePrice;
         this.votePriceInEth = votePriceInEth;
@@ -109,19 +108,45 @@ class SmartContractSettings {
         this.kolRate = kolRate;
         this.feeRate = feeRate;
     }
-    static sycToDb(obj){
+
+    static sycToDb(obj) {
         localStorage.setItem(SmartContractSettings.DBKey(), JSON.stringify(obj));
     }
-    static DBKey(){
-return dbKeyCachedVoteContractMeta;
+
+    static DBKey() {
+        return dbKeyCachedVoteContractMeta;
     }
+
     static load() {
         const storedVal = localStorage.getItem(SmartContractSettings.DBKey());
         return storedVal ? JSON.parse(storedVal) : null;
     }
 }
 
+class GameContractMeta {
+    constructor(curRound, totalBonus, ticketPrice, ticketPriceInEth) {
+        this.curRound = curRound;
+        this.totalBonus = totalBonus;
+        this.ticketPrice = ticketPrice;
+        this.ticketPriceInEth = ticketPriceInEth;
+    }
+}
+
+class GameRoundInfo {
+    constructor(round, randomHash, nextRoundTime, bonus, winner, winTeam, winTicket) {
+        this.round = round;
+        this.randomHash = randomHash;
+        this.nextRoundTime = nextRoundTime;
+        this.winner = winner;
+        this.winTeam = winTeam;
+        this.winTicket = winTicket;
+        this.bonus = bonus;
+    }
+}
+
 let voteContractMeta = SmartContractSettings.load();
+let gameContractMeta;
+let curGameMeta;
 
 function setupMetamask() {
     metamaskObj = window.ethereum;
@@ -139,20 +164,56 @@ async function initializeContract() {
     const conf = __globalContractConf.get(__globalTargetChainNetworkID);
 
     if (!conf || !conf.tweetVote) {
+        showDialog("error","blockchain setting err!")
         return false;
     }
 
-    const postPrice = ethers.utils.parseEther(conf.postPrice);
-    const votePrice = ethers.utils.parseEther(conf.votePrice);
     tweetVoteContract = new ethers.Contract(conf.tweetVote, conf.tweetVoteAbi, signer);
     lotteryGameContract = new ethers.Contract(conf.gameLottery, conf.gameLotteryAbi, signer);
+
     if (!voteContractMeta) {
         await loadVoteContractMeta();
-    }else{
+    } else {
         loadVoteContractMeta().then(r => {
         });
     }
+
+    loadGameContractMeta();
+
     return true;
+}
+
+function loadGameContractMeta() {
+
+    lotteryGameContract.systemSettings().then(([currentRoundNo, totalBonus, ticketPriceForOuter]) => {
+        const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
+        const ticketPriceInEth = ethers.utils.formatUnits(totalBonus, 'ether');
+        gameContractMeta = new GameContractMeta(currentRoundNo, totalBonusInEth, ticketPriceForOuter, ticketPriceInEth);
+        console.log(JSON.stringify(gameContractMeta));
+        loadCurGameMeta();
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+function loadCurGameMeta() {
+    lotteryGameContract.gameInfoRecord(gameContractMeta.curRound).then((gameInfo) => {
+        const curBonusInEth = ethers.utils.formatUnits(gameInfo.bonus, 'ether');
+        const dTime = gameInfo.discoverTime.toNumber() * 1000;
+        curGameMeta = new GameRoundInfo(gameContractMeta.curRound, gameInfo.randomHash, dTime, curBonusInEth);
+        fullFillGameBasicInfo();
+        console.log(JSON.stringify(curGameMeta));
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+function fullFillGameBasicInfo() {
+    document.getElementById("current-round").innerText = curGameMeta.round;
+    document.getElementById("total-prize").innerText = curGameMeta.bonus;
+    document.getElementById("lottery-hash").innerText = curGameMeta.randomHash;
+    document.getElementById("lottery-discovery-time").innerText = formatTime(curGameMeta.nextRoundTime);
+    document.getElementById("total-awards").innerText = gameContractMeta.totalBonus;
 }
 
 async function loadVoteContractMeta() {
@@ -162,7 +223,7 @@ async function loadVoteContractMeta() {
         ] = await tweetVoteContract.systemSettings();
 
         const votePriceInEth = ethers.utils.formatUnits(votePrice, 'ether');
-        voteContractMeta = new SmartContractSettings(postPrice, votePrice,votePriceInEth,
+        voteContractMeta = new SmartContractSettings(postPrice, votePrice, votePriceInEth,
             maxVote.toNumber(), pluginAddr, pluginStop, kolRate, feeRate);
         SmartContractSettings.sycToDb(voteContractMeta);
 

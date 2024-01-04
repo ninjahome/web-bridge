@@ -318,10 +318,6 @@ function updateTweetCardWhenStatusChanged(createTime, newStatus) {
     retryButton.classList.remove('show');
 }
 
-function formatTime(createTime) {
-    return new Date(createTime).toLocaleString();
-}
-
 async function postTweet() {
     try {
         const {content, twitterID, web3Id, message} = getUserInput();
@@ -373,7 +369,6 @@ async function processTweetPayment(create_time, prefixed_hash, signature) {
 
         hideLoading();
         showDialog("transaction " + (txReceipt.status ? "confirmed" : "failed"));
-
     } catch (err) {
         console.error("Transaction error: ", err);
         hideLoading();
@@ -478,6 +473,7 @@ async function startToVote(voteCount,prefixedHash,createTime) {
 
         hideLoading();
         updateTweetVoteStatic(createTime,voteCount);
+        loadCurGameMeta();
     } catch (err) {
         console.error("Transaction error: ", err);
         hideLoading();
