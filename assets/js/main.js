@@ -123,6 +123,46 @@ class SmartContractSettings {
     }
 }
 
+let voteContractMeta = SmartContractSettings.load();
+let gameContractMeta;
+let curGameMeta;
+let userGameInfo;
+
+function setupMetamask() {
+    metamaskObj = window.ethereum;
+    metamaskObj.on('accountsChanged', metamaskAccountChanged);
+    metamaskObj.on('chainChanged', metamaskChainChanged);
+    metamaskObj.request({method: 'eth_chainId'}).then(chainID => {
+        metamaskChainChanged(chainID).then(r => {
+        });
+    })
+}
+
+async function initializeContract() {
+    metamaskProvider = new ethers.providers.Web3Provider(metamaskObj);
+    const signer = metamaskProvider.getSigner(ninjaUserObj.eth_addr);
+    const conf = __globalContractConf.get(__globalTargetChainNetworkID);
+
+    if (!conf || !conf.tweetVote) {
+        showDialog("error", "blockchain setting err!")
+        return false;
+    }
+
+    tweetVoteContract = new ethers.Contract(conf.tweetVote, conf.tweetVoteAbi, signer);
+    lotteryGameContract = new ethers.Contract(conf.gameLottery, conf.gameLotteryAbi, signer);
+
+    if (!voteContractMeta) {
+        await loadVoteContractMeta();
+    } else {
+        loadVoteContractMeta().then(r => {
+        });
+    }
+
+    loadGameContractMeta();
+    return true;
+}
+
+
 class GameContractMeta {
     constructor(curRound, totalBonus, ticketPrice, ticketPriceInEth) {
         this.curRound = curRound;
@@ -144,53 +184,14 @@ class GameRoundInfo {
     }
 }
 
-let voteContractMeta = SmartContractSettings.load();
-let gameContractMeta;
-let curGameMeta;
-
-function setupMetamask() {
-    metamaskObj = window.ethereum;
-    metamaskObj.on('accountsChanged', metamaskAccountChanged);
-    metamaskObj.on('chainChanged', metamaskChainChanged);
-    metamaskObj.request({method: 'eth_chainId'}).then(chainID => {
-        metamaskChainChanged(chainID).then(r => {
-        });
-    })
-}
-
-async function initializeContract() {
-    metamaskProvider = new ethers.providers.Web3Provider(metamaskObj);
-    const signer = metamaskProvider.getSigner(ninjaUserObj.eth_addr);
-    const conf = __globalContractConf.get(__globalTargetChainNetworkID);
-
-    if (!conf || !conf.tweetVote) {
-        showDialog("error","blockchain setting err!")
-        return false;
-    }
-
-    tweetVoteContract = new ethers.Contract(conf.tweetVote, conf.tweetVoteAbi, signer);
-    lotteryGameContract = new ethers.Contract(conf.gameLottery, conf.gameLotteryAbi, signer);
-
-    if (!voteContractMeta) {
-        await loadVoteContractMeta();
-    } else {
-        loadVoteContractMeta().then(r => {
-        });
-    }
-
-    loadGameContractMeta();
-
-    return true;
-}
-
 function loadGameContractMeta() {
-
     lotteryGameContract.systemSettings().then(([currentRoundNo, totalBonus, ticketPriceForOuter]) => {
         const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
         const ticketPriceInEth = ethers.utils.formatUnits(totalBonus, 'ether');
         gameContractMeta = new GameContractMeta(currentRoundNo, totalBonusInEth, ticketPriceForOuter, ticketPriceInEth);
         console.log(JSON.stringify(gameContractMeta));
         loadCurGameMeta();
+         loadUserGameInfo().then(r => {});
     }).catch(err => {
         console.log(err);
     })
@@ -234,6 +235,80 @@ async function loadVoteContractMeta() {
     } catch (error) {
         console.error("Error getting system settings: ", error);
     }
+}
+
+
+class TeamDetails {
+    constructor(teamID, peopleNo, ticketNo, userTicketNo) {
+        this.teamID = teamID;
+        this.peopleNo = peopleNo;
+        this.ticketNo = ticketNo;
+        this.userTicketNo = userTicketNo;
+    }
+}
+
+class UserGameInfo {
+    constructor(ticketNo, ticketList, teamNo, teamArray, balance) {
+        this.ticketNo = ticketNo;
+        this.teamNo = teamNo;
+        this.ticketList = ticketList;
+        this.teamArray = teamArray;
+        this.balance = balance;
+    }
+}
+
+async function loadUserGameInfo() {
+    if (!ninjaUserObj.eth_addr) {
+        return;
+    }
+    try {
+        const [tickets, teamIds] = await lotteryGameContract.tickList(gameContractMeta.curRound, ninjaUserObj.eth_addr);
+        const uniqueItemsMap = new Map();
+        teamIds.forEach((teamId, index) => {
+            console.log(`Team ID ${index}:`, teamId);
+            uniqueItemsMap.set(teamId, true);
+        });
+        const uniqueArray = Array.from(uniqueItemsMap.keys());
+        const teamInfo = [];
+        for (const teamId of uniqueArray) {
+            const index = uniqueArray.indexOf(teamId);
+            const details = new TeamDetails(teamId)
+            const [pNo, tNo, mNo] = await lotteryGameContract.teamMembersCountForGame(gameContractMeta.curRound, teamId, ninjaUserObj.eth_addr);
+            const item = new TeamDetails(teamId, pNo, tNo, mNo);
+            teamInfo.push(item);
+        }
+
+        const b = await lotteryGameContract.balance(ninjaUserObj.eth_addr)
+        const bInEth = ethers.utils.formatUnits(b, 'ether');
+
+        userGameInfo = new UserGameInfo(tickets.length, tickets, teamInfo.length, teamInfo, bInEth);
+    } catch (error) {
+        console.error("Error getting user team info:", error);
+    }
+}
+
+function populateUserGameInfo() {
+
+    document.getElementById('"user-game-tickets-no"').innerText = userGameInfo.ticketNo;
+    document.getElementById('"user-game-team-no"').innerText = userGameInfo.teamNo;
+
+    const tbody = document.getElementById('team-details-body');
+    tbody.innerHTML = ''; // 清除现有的行
+
+    userGameInfo.teamArray.forEach(item => {
+        // 克隆模板行
+        const templateRow = document.getElementById('team-row-template').cloneNode(true);
+        templateRow.id = 'user-game-team-' + item.teamID;
+        templateRow.style.display = '';
+
+        // 填充数据
+        templateRow.querySelector('.team-id').textContent = item.teamID;
+        templateRow.querySelector('.team-people-no').textContent = item.peopleNo;
+        templateRow.querySelector('.team-ticket-no').textContent = item.ticketNo;
+        templateRow.querySelector('.team-my-ticket-no').textContent = item.userTicketNo;
+
+        tbody.appendChild(templateRow);
+    });
 }
 
 async function metamaskChainChanged(chainId) {

@@ -636,51 +636,12 @@ const gameContractABI =`
     },
     {
         "inputs": [],
-        "name": "currentBonus",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
         "name": "currentRoundNo",
         "outputs": [
             {
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "currentTicketNo",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "currentTickets",
-        "outputs": [
-            {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
             }
         ],
         "stateMutability": "view",
@@ -742,6 +703,11 @@ const gameContractABI =`
             {
                 "internalType": "uint256",
                 "name": "bonus",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "randomVal",
                 "type": "uint256"
             }
         ],
@@ -807,112 +773,16 @@ const gameContractABI =`
                         "internalType": "uint256",
                         "name": "bonus",
                         "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "randomVal",
+                        "type": "uint256"
                     }
                 ],
                 "internalType": "struct TweetLotteryGame.GameInfoOneRound[]",
                 "name": "infos",
                 "type": "tuple[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "roundNo",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bytes32",
-                "name": "tweet",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "address",
-                "name": "memAddr",
-                "type": "address"
-            }
-        ],
-        "name": "historyTeamMemberVoteNo",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "roundNo",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bytes32",
-                "name": "tweet",
-                "type": "bytes32"
-            }
-        ],
-        "name": "historyTeamMembers",
-        "outputs": [
-            {
-                "internalType": "address[]",
-                "name": "members",
-                "type": "address[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "roundNo",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bytes32",
-                "name": "tweet",
-                "type": "bytes32"
-            }
-        ],
-        "name": "historyTeamMembersCountForGame",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "round",
-                "type": "uint256"
-            }
-        ],
-        "name": "historyTickets",
-        "outputs": [
-            {
-                "internalType": "uint256[]",
-                "name": "",
-                "type": "uint256[]"
             }
         ],
         "stateMutability": "view",
@@ -962,26 +832,7 @@ const gameContractABI =`
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "tweet",
-                "type": "bytes32"
             },
-            {
-                "internalType": "address",
-                "name": "memAddr",
-                "type": "address"
-            }
-        ],
-        "name": "teamMemberVoteNo",
-        "outputs": [
             {
                 "internalType": "uint256",
                 "name": "",
@@ -993,6 +844,11 @@ const gameContractABI =`
     },
     {
         "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "roundNo",
+                "type": "uint256"
+            },
             {
                 "internalType": "bytes32",
                 "name": "tweet",
@@ -1013,13 +869,28 @@ const gameContractABI =`
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "roundNo",
+                "type": "uint256"
+            },
+            {
                 "internalType": "bytes32",
                 "name": "tweet",
                 "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "memAddr",
+                "type": "address"
             }
         ],
         "name": "teamMembersCountForGame",
         "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
             {
                 "internalType": "uint256",
                 "name": "",
@@ -1038,35 +909,9 @@ const gameContractABI =`
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "tid",
+                "name": "round",
                 "type": "uint256"
-            }
-        ],
-        "name": "tickInfos",
-        "outputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "address",
-                        "name": "addr",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "team",
-                        "type": "bytes32"
-                    }
-                ],
-                "internalType": "struct TweetLotteryGame.BuyerInfo",
-                "name": "",
-                "type": "tuple"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
+            },
             {
                 "internalType": "address",
                 "name": "owner",
@@ -1079,6 +924,11 @@ const gameContractABI =`
                 "internalType": "uint256[]",
                 "name": "",
                 "type": "uint256[]"
+            },
+            {
+                "internalType": "bytes32[]",
+                "name": "",
+                "type": "bytes32[]"
             }
         ],
         "stateMutability": "view",

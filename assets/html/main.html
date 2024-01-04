@@ -194,7 +194,7 @@
             flex: 1 0 38.2%;
         }
 
-        #lottery-card {
+        #system-lottery-card {
             background-color: #fff;
             padding: 20px;
             margin-top: 20px;
@@ -202,7 +202,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        #lottery-card .lottery-info p {
+        #system-lottery-card .lottery-info p {
             margin: 10px 0;
         }
 
@@ -212,11 +212,11 @@
             font-weight: bold; /* 加粗 */
         }
 
-        #lottery-card .lottery-algorithm {
+        #system-lottery-card .lottery-algorithm {
             margin-top: 20px;
         }
 
-        #lottery-card button {
+        #system-lottery-card button {
             background-color: #4CAF50;
             color: white;
             padding: 10px 15px;
@@ -227,7 +227,7 @@
             transition: background-color 0.3s;
         }
 
-        #lottery-card button:hover {
+        #system-lottery-card button:hover {
             background-color: #45a049;
         }
 
@@ -353,6 +353,22 @@
             font-size: 1.1em;
         }
 
+        #user-lottery-team-detail table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #user-lottery-team-detail th,
+        #user-lottery-team-detail td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #user-lottery-team-detail th {
+            background-color: #f2f2f2;
+        }
+
     </style>
 </head>
 <body>
@@ -432,13 +448,55 @@
             </div>
         </div>
         <div class="operation-area-right">
-            <div id="lottery-card">
+
+            <div id="user-lottery-card" style="margin-top: 20px;width: 400px;">
+                <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; background-color: #f9f9f9;">
+                    <h3 style="text-align: center;">彩票信息</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div>彩票:<span id="user-game-tickets-no">4</span>张</div>
+                        <button style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                            详情
+                        </button>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div>队伍:<span id="user-game-team-no">2</span>队</div>
+                        <div id="user-lottery-team-detail">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>队伍</th>
+                                    <th>人数</th>
+                                    <th>票数</th>
+                                    <th>我的</th>
+                                </tr>
+                                </thead>
+                                <tbody id="team-details-body">
+                                <tr id="team-row-template" style="display: none;">
+                                    <td class="team-id"></td>
+                                    <td class="team-people-no"></td>
+                                    <td class="team-ticket-no"></td>
+                                    <td class="team-my-ticket-no"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>未兑金额:<span>210.00</span> eth</div>
+                        <button style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                            提现
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="system-lottery-card">
                 <div class="lottery-info">
                     <p>当前第<span id="current-round">0</span>期</p>
-                    <p>本期总奖池：<span id="total-prize">20.6880 eth</span></p>
-                    <p>本期开奖随机数hash：<span id="lottery-hash">0x9f60ec8488410d48e11f5e26fdf10c20ef1f4d22</span></p>
+                    <p>本期总奖池：<span id="total-prize">0.00 eth</span></p>
+                    <p>本期开奖随机数hash：<span id="lottery-hash">0x00</span></p>
                     <p>本期开奖时间：<span id="lottery-discovery-time">00:00</span></p>
-                    <p>累计开奖金额：<span id="total-awards">68125.342 eth</span></p>
+                    <p>累计开奖金额：<span id="total-awards">0.00 eth</span></p>
                 </div>
                 <button onclick="showPastLotteries()">往期开奖列表</button>
                 <button onclick="showContractAddress()">智能合约地址</button>
