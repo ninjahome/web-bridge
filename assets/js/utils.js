@@ -1,3 +1,20 @@
+function formatTime(createTime) {
+    const date = new Date(createTime);
+
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+
+    return `${hours}:${minutes}:${seconds} ${day}/${month}`;
+}
+
+
+function toHex(number) {
+    return '0x' + number.toString(16);
+}
+
 function PostToSrvByJson(url, data) {
     const requestOptions = {
         method: 'POST',
@@ -11,7 +28,8 @@ function PostToSrvByJson(url, data) {
             .then(response => {
                 if (!response.ok) {
                     return response.text().then(text => {
-                        throw new Error(text || 'Server responded with an error');
+                        console.log(text )
+                        throw new Error('Server responded with an error:'+response.statusText);
                     });
                 }
                 return response.text();
@@ -34,12 +52,6 @@ async function GetToSrvByJson(url) {
     };
     return await fetch(url, requestOptions)
 }
-
-
-function toHex(number) {
-    return '0x' + number.toString(16);
-}
-
 
 const __globalTargetChainNetworkID = toHex(421614);
 const __globalMetaMaskNetworkParam = new Map([
@@ -103,7 +115,7 @@ const __globalContractConf = new Map([
     [toHex(421614), {
         tweetVote: "0x6500Cda46979F1956a46486B1a88768cb425E23a",
         tweetVoteAbi: tweetVoteContractABI,
-        gameLottery: "0x57F0bbE85f5822911003A8fa425D5595D139FDFe",
+        gameLottery: "0x842e751E5D5aCc9fB172812B7499e18Ac5Fb3F59",
         gameLotteryAbi: gameContractABI,
         kolKey: "",
         kolKeyAbi: "",

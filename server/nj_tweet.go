@@ -80,6 +80,22 @@ func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo
 		Msg(" update status of tweet payment success")
 }
 
+func queryTweetDetails(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo) {
+	var createTimeStr = r.URL.Query().Get("tweetID")
+	var createTime, _ = strconv.ParseInt(createTimeStr, 10, 64)
+	obj, err := DbInst().NjTweetDetails(createTime)
+	if err != nil {
+		util.LogInst().Err(err).Int64("id", createTime).Msg("query tweet detail failed")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	bts, _ := json.Marshal(obj)
+	w.Write(bts)
+	util.LogInst().Debug().Int64("id", createTime).Msg("query tweet detail success")
+}
+
 type TweetVoteAction struct {
 	CreateTime int64 `json:"create_time"`
 	VoteCount  int   `json:"vote_count"`
@@ -116,4 +132,34 @@ func updateTweetVoteStatic(w http.ResponseWriter, r *http.Request, _ *NinjaUsrIn
 	util.LogInst().Debug().Int64("create_time", vote.CreateTime).
 		Int("vote_count", vote.VoteCount).
 		Msg(" update vote count of tweet success")
+}
+
+type StatusQuery struct {
+	CreateTime []int64 `json:"create_time"`
+}
+
+func tweetStatusRealTime(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo) {
+	query := &StatusQuery{}
+
+	var err = util.ReadRequest(r, query)
+	if err != nil {
+		util.LogInst().Err(err).Msg("parsing payment status param failed ")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	res, err := DbInst().QueryTweetStatus(query.CreateTime)
+	if err != nil {
+		util.LogInst().Err(err).Msgf("query status failed %v", query.CreateTime)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	bts, _ := json.Marshal(res)
+	w.Write(bts)
+
+	util.LogInst().Debug().Int("create_time", len(query.CreateTime)).
+		Msg(" query vote status success")
 }

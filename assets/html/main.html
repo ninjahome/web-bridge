@@ -166,6 +166,7 @@
 
         .tweet-content-collapsed {
             overflow: hidden;
+            cursor: pointer;
             display: -webkit-box;
             -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
@@ -194,7 +195,7 @@
             flex: 1 0 38.2%;
         }
 
-        #lottery-card {
+        #system-lottery-card {
             background-color: #fff;
             padding: 20px;
             margin-top: 20px;
@@ -202,19 +203,21 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        #lottery-card .lottery-info p {
+        #system-lottery-card .lottery-info p {
             margin: 10px 0;
         }
+
         .lottery-info p #total-prize {
             font-size: 1.5em; /* 或者使用更大的值，如2em，根据你的具体需求 */
             color: #d35400; /* 明亮的橙色，或者选择其他更醒目的颜色 */
             font-weight: bold; /* 加粗 */
         }
-        #lottery-card .lottery-algorithm {
+
+        #system-lottery-card .lottery-algorithm {
             margin-top: 20px;
         }
 
-        #lottery-card button {
+        #system-lottery-card button {
             background-color: #4CAF50;
             color: white;
             padding: 10px 15px;
@@ -225,7 +228,7 @@
             transition: background-color 0.3s;
         }
 
-        #lottery-card button:hover {
+        #system-lottery-card button:hover {
             background-color: #45a049;
         }
 
@@ -236,7 +239,7 @@
             padding: 20px; /* 内边距 */
             margin: 20px 0; /* 外边距 */
             max-width: 800px; /* 最大宽度 */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 盒子阴影 */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 盒子阴影 */
         }
 
         .algorithm-steps {
@@ -285,7 +288,6 @@
 
         .tweetPaymentRetry {
             display: none;
-            /* 其他所需的样式 */
             background-color: #f44336; /* 例如，红色背景 */
             color: white;
             padding: 6px 12px;
@@ -295,14 +297,11 @@
             cursor: pointer;
         }
 
-        /* 当按钮需要显示时的样式 */
         .tweetPaymentRetry.show {
             display: inline-block;
         }
 
-
-        /* 模态框样式 */
-        .modal {
+        .vote-chose-modal-class {
             display: none; /* 默认隐藏 */
             position: fixed; /* 固定位置 */
             z-index: 1; /* 置于顶层 */
@@ -311,12 +310,11 @@
             width: 100%; /* 宽度 */
             height: 100%; /* 高度 */
             overflow: auto; /* 启用滚动条 */
-            background-color: rgb(0,0,0); /* 背景颜色 */
-            background-color: rgba(0,0,0,0.4); /* 黑色背景透明度 */
+            background-color: rgb(0, 0, 0); /* 背景颜色 */
+            background-color: rgba(0, 0, 0, 0.4); /* 黑色背景透明度 */
         }
 
-        /* 模态内容 */
-        .modal-content {
+        .vote-no-modal-content {
             background-color: #fefefe;
             margin: 15% auto; /* 15% 从顶部开始 */
             padding: 20px;
@@ -325,19 +323,20 @@
         }
 
         /* 关闭按钮 */
-        .close {
+        .vote-no-close {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
         }
 
-        .close:hover,
-        .close:focus {
+        .vote-no-close:hover,
+        .vote-no-close:focus {
             color: black;
             text-decoration: none;
             cursor: pointer;
         }
+
         .vote-count {
             /* 投票数的样式 */
             margin-left: 10px;
@@ -350,6 +349,137 @@
             font-size: 1.1em;
         }
 
+        #user-lottery-team-detail table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #user-lottery-team-detail th,
+        #user-lottery-team-detail td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #user-lottery-team-detail th {
+            background-color: #f2f2f2;
+        }
+
+        #user-lottery-team-detail {
+            max-width: 100%; /* 不超过父元素的宽度 */
+            overflow-x: auto; /* 如果表格宽度超出容器宽度，提供滚动条 */
+        }
+
+        .team-id {
+            max-width: 120px; /* 根据你的具体布局调整这个宽度 */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        /* 针对team-id第一个和最后一个子元素设置特定样式 */
+        .team-id::before,
+        .team-id::after {
+            direction: ltr; /* 恢复从左到右的文本方向 */
+            text-overflow: clip; /* 不显示省略号 */
+            white-space: nowrap; /* 不换行 */
+        }
+
+        .team-id::before {
+            float: left; /* 左浮动 */
+        }
+
+        .team-id::after {
+            float: right; /* 右浮动 */
+        }
+
+        .tweet-detail {
+            flex-grow: 1.618;
+            margin-bottom: 20px;
+            display: none; /* 默认隐藏 */
+            background-color: #fff; /* 背景色 */
+        }
+
+        .tweet-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 48px; /* 头像大小 */
+            height: 48px; /* 头像大小 */
+            border-radius: 50%; /* 圆形头像 */
+            margin-right: 10px;
+        }
+
+        .author-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .author-name {
+            font-weight: bold;
+        }
+
+        .author-username {
+            color: #657786; /* 用户名颜色 */
+        }
+
+        .tweet-text {
+            margin-top: 20px; /* 与头像的间距 */
+            line-height: 1.5; /* 行间距 */
+        }
+
+        .tweet-interaction {
+            color: #657786; /* 互动信息颜色 */
+            margin-top: 10px; /* 与推文内容的间距 */
+            font-size: 0.85rem; /* 字体大小 */
+        }
+
+        .back-button {
+            background-color: #1da1f2; /* 推特蓝 */
+            color: white;
+        }
+
+        .back-button:hover {
+            background-color: #1a91da;
+        }
+
+        .lottery-detail-modal {
+            display: none;
+            position: fixed;
+            z-index: 2;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .lottery-detail-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+        }
+
+        .lottery-detail-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .lottery-detail-close:hover,
+        .lottery-detail-close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -414,7 +544,7 @@
                     <span class="username twitterUserName"></span>
                     <span class="time tweetCreateTime"></span>
                 </div>
-                <div class="tweet-content tweet-content-collapsed"></div>
+                <div onclick="showTweetDetails.call(this)" class="tweet-content tweet-content-collapsed"></div>
                 <button class="show-more" onclick="showFullTweetContent.call(this)">Show more</button>
                 <div class="tweet-footer">
                     <div class="tweet-action">
@@ -428,52 +558,130 @@
                 </div>
             </div>
         </div>
+        <div id="tweet-detail" class="tweet-detail" style="display: none;">
+            <button id="back-button" class="back-button" onclick="backTowTweetPark()">返回</button>
+            <div class="tweet-author">
+                <img src="" alt="Avatar" class="author-avatar">
+                <div class="author-info">
+                    <span class="author-name"></span>
+                    <span class="author-username"></span>
+                    <div class="tweet-post-time"></div>
+                </div>
+            </div>
+
+            <div class="tweet-text"></div>
+
+            <div class="tweet-interaction">
+
+            </div>
+
+        </div>
         <div class="operation-area-right">
-            <div id="lottery-card">
-                <div id="lottery-card">
-                    <div class="lottery-info">
-                        <p>本期总奖池：<span id="total-prize">20.6880 eth</span></p>
-                        <p>本期开奖随机数hash：<span id="lottery-hash">0x9f60ec8488410d48e11f5e26fdf10c20ef1f4d22</span></p>
-                        <p>累计开奖金额：<span id="total-awards">68125.342 eth</span></p>
+            <div id="user-lottery-card" style="margin-top: 20px;width: 400px;">
+                <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; background-color: #f9f9f9;">
+                    <h3 style="text-align: center;">彩票信息</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <div>彩票:<span id="user-game-tickets-no">4</span>张</div>
+                        <button onclick="showUserTicketDetails()"
+                                style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                            详情
+                        </button>
                     </div>
-                    <button onclick="showPastLotteries()">往期开奖列表</button>
-                    <button onclick="showContractAddress()">智能合约地址</button>
-                    <div class="lottery-algorithm">
-                        <h3>开奖算法</h3>
-                        <ol class="algorithm-steps">
-                            <li><strong>第一步：</strong>产生随机数，并将随机数的hash值存放到区块链智能合约，公开可查。使用hash算法keccak256。</li>
-                            <li><strong>第二步：</strong>用户购买凭证，累计奖池，购买凭证存储在智能合约，公开可查。</li>
-                            <li><strong>第三步：</strong>执行抽奖操作，输入随机数，比对输入的随机数的hash与智能合约存储的hash是否一致。检查通过后进行中奖地址计算。
-                                <strong>计算方法：</strong>
-                                <div class="calculation-method">
-                                    购买地址列表[(随机数 + block.difficulty + 抽奖凭证数)%购买地址数]。
-                                </div>
-                            </li>
-                            <li><strong>第四步：</strong>奖池奖金转入中奖者地址，奖池清空，开启下一轮抽奖。</li>
-                        </ol>
+                    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 10px;">
+                        <div style="margin-bottom: 10px;">
+                            <div>队伍:<span id="user-game-team-no">2</span>队</div>
+                        </div>
+                        <div id="user-lottery-team-detail">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>队伍</th>
+                                    <th>人数</th>
+                                    <th>票数</th>
+                                    <th>我的</th>
+                                </tr>
+                                </thead>
+                                <tr id="team-row-template" style="display: none;">
+                                    <td class="team-id"></td>
+                                    <td class="team-people-no"></td>
+                                    <td class="team-ticket-no"></td>
+                                    <td class="team-my-ticket-no"></td>
+                                </tr>
+                                <tbody id="team-details-body">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>未兑金额:<span id="user-game-balance">210.00</span> eth</div>
+                        <button onclick="withdrawUserBalance()" style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                            提现
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="system-lottery-card">
+                <div class="lottery-info">
+                    <p>当前第<span id="current-round">0</span>期</p>
+                    <p>本期总奖池：<span id="total-prize">0.00 eth</span></p>
+                    <p>本期开奖随机数hash：<span id="lottery-hash">0x00</span></p>
+                    <p>本期开奖时间：<span id="lottery-discovery-time">00:00</span></p>
+                    <p>累计开奖金额：<span id="total-awards">0.00 eth</span></p>
+                </div>
+                <button onclick="showPastLotteries()">往期开奖列表</button>
+                <button onclick="showContractAddress()">智能合约地址</button>
+                <div class="lottery-algorithm">
+                    <h3>开奖算法</h3>
+                    <ol class="algorithm-steps">
+                        <li><strong>第一步：</strong>产生随机数，并将随机数的hash值存放到区块链智能合约，公开可查。使用hash算法keccak256。
+                        </li>
+                        <li><strong>第二步：</strong>用户购买凭证，累计奖池，购买凭证存储在智能合约，公开可查。</li>
+                        <li><strong>第三步：</strong>执行抽奖操作，输入随机数，比对输入的随机数的hash与智能合约存储的hash是否一致。检查通过后进行中奖地址计算。
+                            <strong>计算方法：</strong>
+                            <div class="calculation-method">
+                                购买地址列表[(随机数 + block.difficulty + 抽奖凭证数)%购买地址数]。
+                            </div>
+                        </li>
+                        <li><strong>第四步：</strong>奖池奖金转入中奖者地址，奖池清空，开启下一轮抽奖。</li>
+                    </ol>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- 模态对话框 -->
-<div id="myModal" class="modal">
-    <!-- 模态内容 -->
-    <div class="modal-content">
-        <div class="modal-header">
-            <span class="close" onclick="closeModal()">&times;</span>
+<div id="vote-no-chose-modal" class="vote-chose-modal-class">
+    <div class="vote-no-modal-content">
+        <div class="vote-no-modal-header">
+            <span class="vote-no-close" onclick="closeVoteModal()">&times;</span>
             <h2>推文投票</h2>
         </div>
-        <div class="modal-body">
+        <div class="vote-no-modal-body">
             <p>票数：<input type="number" id="voteCount" value="1" min="1"></p>
             <button id="decreaseVote" onclick="decreaseVote()">-</button>
             <button id="increaseVote" onclick="increaseVote()">+</button>
         </div>
-        <div class="modal-footer">
-            <button id="cancelButton" onclick="closeModal()">取消</button>
-            <button id="confirmButton" onclick="confirmModal()">确定</button>
+        <div class="vote-no-modal-footer">
+            <button id="cancelButton" onclick="closeVoteModal()">取消</button>
+            <button id="confirmButton" onclick="confirmVoteModal()">确定</button>
         </div>
+    </div>
+</div>
+
+<div id="lottery-detail-modal" class="lottery-detail-modal">
+    <!-- 模态内容 -->
+    <div class="lottery-detail-modal-content">
+        <span class="lottery-detail-close" onclick="closeLotteryModal()">&times;</span>
+        <h2>彩票详情</h2>
+        <table id="lottery-table">
+            <thead>
+            <tr>
+                <th>彩票编号</th>
+                <th>所属编队</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -481,11 +689,12 @@
     let ninjaUserObj = {{ .NinjaUsrInfoJson }};
     document.addEventListener("DOMContentLoaded", initMainPage);
 
-    window.onscroll = function() {
+    window.onscroll = function () {
         throttle(() => loadMoreTweets(), 200);
     }
 
     let throttleTimer;
+
     function throttle(callback, time) {
         if (throttleTimer) return;
 
@@ -506,38 +715,60 @@
         loadGlobalLatestTweetsFromSrv(true);
     }
 
-    function showPastLotteries(){
+    function showPastLotteries() {
     }
-    function showContractAddress(){
+
+    function showContractAddress() {
     }
 
     let confirmCallback = null;
-    function openModal(callback) {
-        const modal = document.getElementById("myModal");
+
+    function openVoteModal(callback) {
+        const modal = document.getElementById("vote-no-chose-modal");
         modal.style.display = "block";
         confirmCallback = callback;
     }
-    function confirmModal() {
+
+    function confirmVoteModal() {
         if (confirmCallback) {
             const voteCount = document.getElementById("voteCount").value;
             confirmCallback(voteCount);
         }
-        closeModal();
+        closeVoteModal();
     }
-    function closeModal() {
-        const modal = document.getElementById("myModal");
+
+    function closeVoteModal() {
+        const modal = document.getElementById("vote-no-chose-modal");
         modal.style.display = "none";
     }
+
     function increaseVote() {
         const voteCount = document.getElementById("voteCount");
         voteCount.value = parseInt(voteCount.value) + 1;
     }
+
     function decreaseVote() {
         const voteCountElement = document.getElementById("voteCount");
         const newVoteCount = Math.max(1, parseInt(voteCountElement.value) - 1);
         voteCountElement.value = newVoteCount.toString();
     }
 
+    function openLotteryModal(lotteryNumbers, teamNumbers) {
+        const tbody = document.querySelector('#lottery-table tbody');
+        tbody.innerHTML = '';
+
+        lotteryNumbers.forEach((number, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${number}</td><td>${teamNumbers[index]}</td>`;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('lottery-detail-modal').style.display = 'block';
+    }
+
+    function closeLotteryModal() {
+        document.getElementById('lottery-detail-modal').style.display = 'none';
+    }
 </script>
 </body>
 </html>

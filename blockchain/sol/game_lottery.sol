@@ -23,6 +23,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         bytes32 winTeam;
         uint256 winTicketID;
         uint256 bonus;
+        uint256 randomVal;
     }
     struct TweetTeam {
         mapping(address => uint256) memVotes;
@@ -75,7 +76,8 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             winner: address(0),
             winTeam: bytes32(0),
             winTicketID: 0,
-            bonus: msg.value
+            bonus: msg.value,
+            randomVal: 0
         });
         gameInfoRecord[currentRoundNo] = newRoundInfo;
     }
@@ -156,7 +158,8 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             winner: address(0),
             winTeam: bytes32(0),
             winTicketID: 0,
-            bonus: 0
+            bonus: 0,
+            randomVal: 0
         });
 
         newRoundInfo.bonus += gameInfoRecord[currentRoundNo].bonus;
@@ -276,6 +279,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         BuyerInfo memory winner = buyerInfoRecords[buyerHash];
         require(winner.addr != address(0), "invalid winner address");
 
+        gInfo.randomVal = random;
         gInfo.winner = winner.addr;
         gInfo.winTicketID = ticketId;
 
@@ -294,7 +298,8 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             winner: address(0),
             winTeam: bytes32(0),
             winTicketID: 0,
-            bonus: 0
+            bonus: 0,
+            randomVal: 0
         });
 
         emit DiscoverWinner(
@@ -441,104 +446,12 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     /********************************************************************************
      *                       basic query
      *********************************************************************************/
-    function teamMembers(bytes32 tweet)
-    public
-    view
-    returns (address[] memory members)
-    {
-        TweetTeam storage team = tweetTeamMap[currentRoundNo][tweet];
-        if (team.memCount == 0) {
-            return new address[](0);
-        }
-        members = new address[](team.memCount);
-        for (uint256 idx = 0; idx < team.memCount; idx++) {
-            members[idx] = team.memIndex[idx];
-        }
-        return members;
-    }
 
-    function teamMembersCountForGame(bytes32 tweet)
-    public
-    view
-    returns (uint256, uint256)
-    {
-        TweetTeam storage team = tweetTeamMap[currentRoundNo][tweet];
-        return (team.memCount, team.voteNo);
-    }
-
-    function teamMemberVoteNo(bytes32 tweet, address memAddr)
-    public
-    view
-    returns (uint256)
-    {
-        TweetTeam storage team = tweetTeamMap[currentRoundNo][tweet];
-        return team.memVotes[memAddr];
-    }
-
-    function historyTeamMembers(uint256 roundNo, bytes32 tweet)
-    public
-    view
-    returns (address[] memory members)
-    {
-        TweetTeam storage team = tweetTeamMap[roundNo][tweet];
-        if (team.memCount == 0) {
-            return new address[](0);
-        }
-        members = new address[](team.memCount);
-        for (uint256 idx = 0; idx < team.memCount; idx++) {
-            members[idx] = team.memIndex[idx];
-        }
-        return members;
-    }
-
-    function historyTeamMembersCountForGame(uint256 roundNo, bytes32 tweet)
-    public
-    view
-    returns (uint256, uint256)
-    {
-        TweetTeam storage team = tweetTeamMap[roundNo][tweet];
-        return (team.memCount, team.voteNo);
-    }
-
-    function historyTeamMemberVoteNo(
+    function teamMembersCountForGame(
         uint256 roundNo,
         bytes32 tweet,
         address memAddr
-    ) public view returns (uint256) {
-        TweetTeam storage team = tweetTeamMap[roundNo][tweet];
-        return team.memVotes[memAddr];
-    }
-
-    function currentTickets() public view returns (uint256[] memory) {
-        return ticketsRecords[currentRoundNo];
-    }
-
-    function historyTickets(uint256 round)
-    public
-    view
-    returns (uint256[] memory)
-    {
-        return ticketsRecords[round];
-    }
-
-    function currentTicketNo() public view returns (uint256) {
-        return ticketsRecords[currentRoundNo].length;
-    }
-
-    function currentBonus() public view returns (uint256) {
-        return gameInfoRecord[currentRoundNo].bonus;
-    }
-
-    function tickInfos(uint256 tid) public view returns (BuyerInfo memory) {
-        bytes32 buyerHash = buyerInfoIdxForTickets[tid];
-        return buyerInfoRecords[buyerHash];
-    }
-
-    function tickList(address owner) public view returns (uint256[] memory) {
-        return ticketsOfBuyer[currentRoundNo][owner];
-    }
-
-    function systemSettings()
+    )
     public
     view
     returns (
@@ -547,6 +460,69 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         uint256
     )
     {
-        return (currentRoundNo, totalBonus, __ticketPriceForOuter);
+        TweetTeam storage team = tweetTeamMap[roundNo][tweet];
+        return (team.memCount, team.voteNo, team.memVotes[memAddr]);
+    }
+
+    function teamMembers(uint256 roundNo, bytes32 tweet)
+    public
+    view
+    returns (address[] memory members)
+    {
+        TweetTeam storage team = tweetTeamMap[roundNo][tweet];
+        if (team.memCount == 0) {
+            return new address[](0);
+        }
+        members = new address[](team.memCount);
+        for (uint256 idx = 0; idx < team.memCount; idx++) {
+            members[idx] = team.memIndex[idx];
+        }
+        return members;
+    }
+
+    function historyRoundInfo(uint256 from, uint256 to)
+    public
+    view
+    returns (GameInfoOneRound[] memory infos)
+    {
+        infos = new GameInfoOneRound[](to - from + 1);
+        for (uint256 i = from; i <= to; i++) {
+            infos[i] = gameInfoRecord[i];
+        }
+        return infos;
+    }
+
+    function tickList(uint256 round, address owner)
+    public
+    view
+    returns (uint256[] memory, bytes32[] memory)
+    {
+        uint256[] memory list = ticketsOfBuyer[round][owner];
+        bytes32[] memory teamHash = new bytes32[](list.length);
+        for (uint256 x = 0; x < list.length; x++) {
+            uint256 tid = list[x];
+            bytes32 buyerHash = buyerInfoIdxForTickets[tid];
+            BuyerInfo memory bi = buyerInfoRecords[buyerHash];
+            teamHash[x] = bi.team;
+        }
+        return (list, teamHash);
+    }
+
+    function systemSettings()
+    public
+    view
+    returns (
+        uint256,
+        uint256,
+        uint256,
+        uint256
+    )
+    {
+        return (
+            currentRoundNo,
+            totalBonus,
+            ticketsRecords[currentRoundNo].length,
+            __ticketPriceForOuter
+        );
     }
 }

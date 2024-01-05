@@ -10,6 +10,7 @@
 	"session_key": "",
 	"font_size": 28,
 	"font_path": "util/Noto_Sans_SC.ttf",
+	"max_txt_per_img": 800,
 	"client_id": "",
 	"client_secret": "",
 	"consumer_key": "",

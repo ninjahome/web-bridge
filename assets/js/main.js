@@ -92,14 +92,13 @@ function refreshTwitterInfo() {
     })
 }
 
-
 let metamaskObj = null;
 let metamaskProvider;
 let tweetVoteContract;
 let lotteryGameContract;
 
 class SmartContractSettings {
-    constructor(postPrice, votePrice,votePriceInEth, maxVote, pluginAddr, pluginStop, kolRate, feeRate) {
+    constructor(postPrice, votePrice, votePriceInEth, maxVote, pluginAddr, pluginStop, kolRate, feeRate) {
         this.postPrice = postPrice;
         this.votePrice = votePrice;
         this.votePriceInEth = votePriceInEth;
@@ -109,12 +108,15 @@ class SmartContractSettings {
         this.kolRate = kolRate;
         this.feeRate = feeRate;
     }
-    static sycToDb(obj){
+
+    static sycToDb(obj) {
         localStorage.setItem(SmartContractSettings.DBKey(), JSON.stringify(obj));
     }
-    static DBKey(){
-return dbKeyCachedVoteContractMeta;
+
+    static DBKey() {
+        return dbKeyCachedVoteContractMeta;
     }
+
     static load() {
         const storedVal = localStorage.getItem(SmartContractSettings.DBKey());
         return storedVal ? JSON.parse(storedVal) : null;
@@ -122,6 +124,9 @@ return dbKeyCachedVoteContractMeta;
 }
 
 let voteContractMeta = SmartContractSettings.load();
+let gameContractMeta;
+let curGameMeta;
+let userGameInfo;
 
 function setupMetamask() {
     metamaskObj = window.ethereum;
@@ -139,20 +144,77 @@ async function initializeContract() {
     const conf = __globalContractConf.get(__globalTargetChainNetworkID);
 
     if (!conf || !conf.tweetVote) {
+        showDialog("error", "blockchain setting err!")
         return false;
     }
 
-    const postPrice = ethers.utils.parseEther(conf.postPrice);
-    const votePrice = ethers.utils.parseEther(conf.votePrice);
     tweetVoteContract = new ethers.Contract(conf.tweetVote, conf.tweetVoteAbi, signer);
     lotteryGameContract = new ethers.Contract(conf.gameLottery, conf.gameLotteryAbi, signer);
+
     if (!voteContractMeta) {
         await loadVoteContractMeta();
-    }else{
+    } else {
         loadVoteContractMeta().then(r => {
         });
     }
+
+    loadGameContractMeta();
     return true;
+}
+
+
+class GameContractMeta {
+    constructor(curRound, totalBonus, ticketPrice, ticketPriceInEth) {
+        this.curRound = curRound;
+        this.totalBonus = totalBonus;
+        this.ticketPrice = ticketPrice;
+        this.ticketPriceInEth = ticketPriceInEth;
+    }
+}
+
+class GameRoundInfo {
+    constructor(round, randomHash, nextRoundTime, bonus, winner, winTeam, winTicket) {
+        this.round = round;
+        this.randomHash = randomHash;
+        this.nextRoundTime = nextRoundTime;
+        this.winner = winner;
+        this.winTeam = winTeam;
+        this.winTicket = winTicket;
+        this.bonus = bonus;
+    }
+}
+
+function loadGameContractMeta() {
+    lotteryGameContract.systemSettings().then(([currentRoundNo, totalBonus, ticketPriceForOuter]) => {
+        const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
+        const ticketPriceInEth = ethers.utils.formatUnits(totalBonus, 'ether');
+        gameContractMeta = new GameContractMeta(currentRoundNo, totalBonusInEth, ticketPriceForOuter, ticketPriceInEth);
+        // console.log(JSON.stringify(gameContractMeta));
+        loadCurGameMeta();
+         loadUserGameInfo().then(r => {});
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+function loadCurGameMeta() {
+    lotteryGameContract.gameInfoRecord(gameContractMeta.curRound).then((gameInfo) => {
+        const curBonusInEth = ethers.utils.formatUnits(gameInfo.bonus, 'ether');
+        const dTime = gameInfo.discoverTime.toNumber() * 1000;
+        curGameMeta = new GameRoundInfo(gameContractMeta.curRound, gameInfo.randomHash, dTime, curBonusInEth);
+        fullFillGameBasicInfo();
+        // console.log(JSON.stringify(curGameMeta));
+    }).catch(err => {
+        console.log(err);
+    })
+}
+
+function fullFillGameBasicInfo() {
+    document.getElementById("current-round").innerText = curGameMeta.round;
+    document.getElementById("total-prize").innerText = curGameMeta.bonus;
+    document.getElementById("lottery-hash").innerText = curGameMeta.randomHash;
+    document.getElementById("lottery-discovery-time").innerText = formatTime(curGameMeta.nextRoundTime);
+    document.getElementById("total-awards").innerText = gameContractMeta.totalBonus;
 }
 
 async function loadVoteContractMeta() {
@@ -162,17 +224,92 @@ async function loadVoteContractMeta() {
         ] = await tweetVoteContract.systemSettings();
 
         const votePriceInEth = ethers.utils.formatUnits(votePrice, 'ether');
-        voteContractMeta = new SmartContractSettings(postPrice, votePrice,votePriceInEth,
+        voteContractMeta = new SmartContractSettings(postPrice, votePrice, votePriceInEth,
             maxVote.toNumber(), pluginAddr, pluginStop, kolRate, feeRate);
         SmartContractSettings.sycToDb(voteContractMeta);
 
         const tweetPostPriceInEth = ethers.utils.formatUnits(postPrice, 'ether');
         document.getElementById("tweet-post-with-eth-btn").innerText = "发布推文(" + tweetPostPriceInEth + " eth)"
 
-        console.log(JSON.stringify(voteContractMeta));
+        // console.log(JSON.stringify(voteContractMeta));
     } catch (error) {
         console.error("Error getting system settings: ", error);
     }
+}
+
+
+class TeamDetails {
+    constructor(teamID, peopleNo, ticketNo, userTicketNo) {
+        this.teamID = teamID;
+        this.peopleNo = peopleNo;
+        this.ticketNo = ticketNo;
+        this.userTicketNo = userTicketNo;
+    }
+}
+
+class UserGameInfo {
+    constructor(ticketNo, teamNo, teamArray, balance, ticketList,ticketTeam) {
+        this.ticketNo = ticketNo;
+        this.teamNo = teamNo;
+        this.teamArray = teamArray;
+        this.balance = balance;
+        this.ticketList = ticketList;
+        this.ticketTeam = ticketTeam;
+    }
+}
+
+async function loadUserGameInfo() {
+    if (!ninjaUserObj.eth_addr) {
+        return;
+    }
+    try {
+        const [tickets, teamIds] = await lotteryGameContract.tickList(gameContractMeta.curRound, ninjaUserObj.eth_addr);
+        const uniqueItemsMap = new Map();
+        teamIds.forEach((teamId, index) => {
+            // console.log(`Team ID ${index}:`, teamId);
+            uniqueItemsMap.set(teamId, true);
+        });
+        const uniqueArray = Array.from(uniqueItemsMap.keys());
+        const teamInfo = [];
+        for (const teamId of uniqueArray) {
+            const index = uniqueArray.indexOf(teamId);
+            const details = new TeamDetails(teamId)
+            const [pNo, tNo, mNo] = await lotteryGameContract.teamMembersCountForGame(gameContractMeta.curRound, teamId, ninjaUserObj.eth_addr);
+            const item = new TeamDetails(teamId, pNo, tNo, mNo);
+            teamInfo.push(item);
+        }
+
+        const b = await lotteryGameContract.balance(ninjaUserObj.eth_addr)
+        const bInEth = ethers.utils.formatUnits(b, 'ether');
+
+        userGameInfo = new UserGameInfo(tickets.length,  teamInfo.length, teamInfo, bInEth,tickets,teamIds);
+        populateUserGameInfo();
+    } catch (error) {
+        console.error("Error getting user team info:", error);
+    }
+}
+
+function populateUserGameInfo() {
+
+    document.getElementById('user-game-tickets-no').innerText = userGameInfo.ticketNo;
+    document.getElementById('user-game-team-no').innerText = userGameInfo.teamNo;
+    document.getElementById('user-game-balance').innerText = userGameInfo.balance;
+
+    const tbody = document.getElementById('team-details-body');
+    tbody.innerHTML = '';
+
+    userGameInfo.teamArray.forEach(item => {
+        const templateRow = document.getElementById('team-row-template').cloneNode(true);
+        templateRow.id = 'user-game-team-' + item.teamID;
+        templateRow.style.display = '';
+
+        templateRow.querySelector('.team-id').textContent = item.teamID;
+        templateRow.querySelector('.team-people-no').textContent = item.peopleNo;
+        templateRow.querySelector('.team-ticket-no').textContent = item.ticketNo;
+        templateRow.querySelector('.team-my-ticket-no').textContent = item.userTicketNo;
+
+        tbody.appendChild(templateRow);
+    });
 }
 
 async function metamaskChainChanged(chainId) {
@@ -204,7 +341,6 @@ async function metamaskAccBalance() {
     return formattedBalance + ' eth';
 }
 
-
 function metamaskAccountChanged(accounts) {
     if (accounts.length === 0) {
         window.location.href = "/signOut";
@@ -234,4 +370,55 @@ function switchToWorkChain() {
             showDialog("error", "add to network failed:" + err.toString());
         });
     });
+}
+
+function showTweetDetails(){
+    document.querySelector('.tweets-park').style.display = 'none';
+    const detail = document.querySelector('#tweet-detail');
+    detail.style.display = 'block';
+
+    const tweetCard = this.closest('.tweet-card');
+
+    const obj = JSON.parse(tweetCard.dataset.rawObj) ;
+    console.log(obj);
+
+    detail.querySelector('.author-avatar').src = obj.profile_image_url;
+    detail.querySelector('.author-name').textContent = obj.name || 'Unknown';
+    detail.querySelector('.author-username').textContent = '@' + obj.username || 'No username';
+    detail.querySelector('.tweet-text').textContent = obj.text;
+    detail.querySelector('.tweet-post-time').textContent = formatTime(obj.create_time);
+}
+
+function backTowTweetPark(){
+    document.querySelector('.tweets-park').style.display = 'block';
+    document.querySelector('#tweet-detail').style.display = 'none';
+}
+
+function showUserTicketDetails(){
+    if (!userGameInfo.ticketNo){
+        showDialog("tips","no details to show");
+        return
+    }
+    openLotteryModal(userGameInfo.ticketList, userGameInfo.ticketTeam);
+}
+
+async function withdrawUserBalance() {
+    if (userGameInfo.balance <= 0) {
+        showDialog("tips", "balance too low");
+        return;
+    }
+
+    const txResponse = await lotteryGameContract.withdraw("0x00", true);
+    console.log("Transaction Response: ", txResponse);
+    showWaiting("prepare to withdraw:"+txResponse.hash);
+
+    const txReceipt = await txResponse.wait();
+    console.log("Transaction Receipt: ", txReceipt);
+
+    showDialog("Transaction: "+ txReceipt.status ? "success":"failed");
+    hideLoading();
+    if (!txReceipt.status){
+        return;
+    }
+    await loadUserGameInfo();
 }
