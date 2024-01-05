@@ -288,7 +288,6 @@
 
         .tweetPaymentRetry {
             display: none;
-            /* 其他所需的样式 */
             background-color: #f44336; /* 例如，红色背景 */
             color: white;
             padding: 6px 12px;
@@ -298,14 +297,11 @@
             cursor: pointer;
         }
 
-        /* 当按钮需要显示时的样式 */
         .tweetPaymentRetry.show {
             display: inline-block;
         }
 
-
-        /* 模态框样式 */
-        .modal {
+        .vote-chose-modal-class {
             display: none; /* 默认隐藏 */
             position: fixed; /* 固定位置 */
             z-index: 1; /* 置于顶层 */
@@ -318,8 +314,7 @@
             background-color: rgba(0, 0, 0, 0.4); /* 黑色背景透明度 */
         }
 
-        /* 模态内容 */
-        .modal-content {
+        .vote-no-modal-content {
             background-color: #fefefe;
             margin: 15% auto; /* 15% 从顶部开始 */
             padding: 20px;
@@ -328,15 +323,15 @@
         }
 
         /* 关闭按钮 */
-        .close {
+        .vote-no-close {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
         }
 
-        .close:hover,
-        .close:focus {
+        .vote-no-close:hover,
+        .vote-no-close:focus {
             color: black;
             text-decoration: none;
             cursor: pointer;
@@ -369,6 +364,7 @@
         #user-lottery-team-detail th {
             background-color: #f2f2f2;
         }
+
         #user-lottery-team-detail {
             max-width: 100%; /* 不超过父元素的宽度 */
             overflow-x: auto; /* 如果表格宽度超出容器宽度，提供滚动条 */
@@ -450,6 +446,40 @@
             background-color: #1a91da;
         }
 
+        .lottery-detail-modal {
+            display: none;
+            position: fixed;
+            z-index: 2;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0, 0, 0);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .lottery-detail-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+        }
+
+        .lottery-detail-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .lottery-detail-close:hover,
+        .lottery-detail-close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -552,7 +582,8 @@
                     <h3 style="text-align: center;">彩票信息</h3>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <div>彩票:<span id="user-game-tickets-no">4</span>张</div>
-                        <button style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                        <button onclick="showUserTicketDetails()"
+                                style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
                             详情
                         </button>
                     </div>
@@ -583,7 +614,7 @@
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>未兑金额:<span id="user-game-balance">210.00</span> eth</div>
-                        <button style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                        <button onclick="withdrawUserBalance()" style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
                             提现
                         </button>
                     </div>
@@ -618,23 +649,42 @@
         </div>
     </div>
 </div>
-<div id="vote-no-chose-modal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <span class="close" onclick="closeModal()">&times;</span>
+<div id="vote-no-chose-modal" class="vote-chose-modal-class">
+    <div class="vote-no-modal-content">
+        <div class="vote-no-modal-header">
+            <span class="vote-no-close" onclick="closeVoteModal()">&times;</span>
             <h2>推文投票</h2>
         </div>
-        <div class="modal-body">
+        <div class="vote-no-modal-body">
             <p>票数：<input type="number" id="voteCount" value="1" min="1"></p>
             <button id="decreaseVote" onclick="decreaseVote()">-</button>
             <button id="increaseVote" onclick="increaseVote()">+</button>
         </div>
-        <div class="modal-footer">
-            <button id="cancelButton" onclick="closeModal()">取消</button>
-            <button id="confirmButton" onclick="confirmModal()">确定</button>
+        <div class="vote-no-modal-footer">
+            <button id="cancelButton" onclick="closeVoteModal()">取消</button>
+            <button id="confirmButton" onclick="confirmVoteModal()">确定</button>
         </div>
     </div>
 </div>
+
+<div id="lottery-detail-modal" class="lottery-detail-modal">
+    <!-- 模态内容 -->
+    <div class="lottery-detail-modal-content">
+        <span class="lottery-detail-close" onclick="closeLotteryModal()">&times;</span>
+        <h2>彩票详情</h2>
+        <table id="lottery-table">
+            <thead>
+            <tr>
+                <th>彩票编号</th>
+                <th>所属编队</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <script>
     let ninjaUserObj = {{ .NinjaUsrInfoJson }};
     document.addEventListener("DOMContentLoaded", initMainPage);
@@ -673,21 +723,21 @@
 
     let confirmCallback = null;
 
-    function openModal(callback) {
+    function openVoteModal(callback) {
         const modal = document.getElementById("vote-no-chose-modal");
         modal.style.display = "block";
         confirmCallback = callback;
     }
 
-    function confirmModal() {
+    function confirmVoteModal() {
         if (confirmCallback) {
             const voteCount = document.getElementById("voteCount").value;
             confirmCallback(voteCount);
         }
-        closeModal();
+        closeVoteModal();
     }
 
-    function closeModal() {
+    function closeVoteModal() {
         const modal = document.getElementById("vote-no-chose-modal");
         modal.style.display = "none";
     }
@@ -703,6 +753,22 @@
         voteCountElement.value = newVoteCount.toString();
     }
 
+    function openLotteryModal(lotteryNumbers, teamNumbers) {
+        const tbody = document.querySelector('#lottery-table tbody');
+        tbody.innerHTML = '';
+
+        lotteryNumbers.forEach((number, index) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${number}</td><td>${teamNumbers[index]}</td>`;
+            tbody.appendChild(tr);
+        });
+
+        document.getElementById('lottery-detail-modal').style.display = 'block';
+    }
+
+    function closeLotteryModal() {
+        document.getElementById('lottery-detail-modal').style.display = 'none';
+    }
 </script>
 </body>
 </html>

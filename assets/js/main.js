@@ -341,7 +341,6 @@ async function metamaskAccBalance() {
     return formattedBalance + ' eth';
 }
 
-
 function metamaskAccountChanged(accounts) {
     if (accounts.length === 0) {
         window.location.href = "/signOut";
@@ -393,4 +392,33 @@ function showTweetDetails(){
 function backTowTweetPark(){
     document.querySelector('.tweets-park').style.display = 'block';
     document.querySelector('#tweet-detail').style.display = 'none';
+}
+
+function showUserTicketDetails(){
+    if (!userGameInfo.ticketNo){
+        showDialog("tips","no details to show");
+        return
+    }
+    openLotteryModal(userGameInfo.ticketList, userGameInfo.ticketTeam);
+}
+
+async function withdrawUserBalance() {
+    if (userGameInfo.balance <= 0) {
+        showDialog("tips", "balance too low");
+        return;
+    }
+
+    const txResponse = await lotteryGameContract.withdraw("0x00", true);
+    console.log("Transaction Response: ", txResponse);
+    showWaiting("prepare to withdraw:"+txResponse.hash);
+
+    const txReceipt = await txResponse.wait();
+    console.log("Transaction Receipt: ", txReceipt);
+
+    showDialog("Transaction: "+ txReceipt.status ? "success":"failed");
+    hideLoading();
+    if (!txReceipt.status){
+        return;
+    }
+    await loadUserGameInfo();
 }
