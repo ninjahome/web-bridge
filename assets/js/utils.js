@@ -28,8 +28,8 @@ function PostToSrvByJson(url, data) {
             .then(response => {
                 if (!response.ok) {
                     return response.text().then(text => {
-                        console.log(text )
-                        throw new Error('Server responded with an error:'+response.statusText);
+                        console.log(text)
+                        throw new Error('Server responded with an error:' + response.statusText);
                     });
                 }
                 return response.text();
@@ -63,7 +63,7 @@ const __globalMetaMaskNetworkParam = new Map([
             symbol: 'ETH',
             decimals: 18
         },
-        rpcUrls: ['https://arbitrum.llamarpc.com'],
+        rpcUrls: ['https://arbitrum-mainnet.infura.io/v3/eced40c03c2a447887b73369aee4fbbe', 'https://arbitrum.llamarpc.com'],
         blockExplorerUrls: ['https://arbiscan.io'],
     }],
     [toHex(421613), {
@@ -74,7 +74,7 @@ const __globalMetaMaskNetworkParam = new Map([
             symbol: 'AETH',
             decimals: 18
         },
-        rpcUrls: ['https://endpoints.omniatech.io/v1/arbitrum/goerli/public'],
+        rpcUrls: ['https://arbitrum-goerli.infura.io/v3/eced40c03c2a447887b73369aee4fbbe', 'https://endpoints.omniatech.io/v1/arbitrum/goerli/public'],
         blockExplorerUrls: ['https://goerli.arbiscan.io'],
     }],
     [toHex(421614), {
@@ -85,7 +85,7 @@ const __globalMetaMaskNetworkParam = new Map([
             symbol: 'ETH',
             decimals: 18
         },
-        rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
+        rpcUrls: ['https://arbitrum-sepolia.infura.io/v3/eced40c03c2a447887b73369aee4fbbe', 'https://sepolia-rollup.arbitrum.io/rpc'],
         blockExplorerUrls: ['https://sepolia.arbiscan.io'],
     }],
     [toHex(5777), {
@@ -119,8 +119,8 @@ const __globalContractConf = new Map([
         gameLotteryAbi: gameContractABI,
         kolKey: "",
         kolKeyAbi: "",
-        postPrice:"0.005",
-        votePrice:"0.005"
+        postPrice: "0.005",
+        votePrice: "0.005"
     }],
     [toHex(42161), {
         tweetVote: "",
@@ -129,8 +129,8 @@ const __globalContractConf = new Map([
         gameLotteryAbi: "",
         kolKey: "",
         kolKeyAbi: "",
-        postPrice:"0.005",
-        votePrice:"0.005"
+        postPrice: "0.005",
+        votePrice: "0.005"
     }]]);
 
 
@@ -361,4 +361,16 @@ class BlockChainData {
 
         return new BlockChainData(storedData.account);
     }
+}
+
+
+function checkMetamaskErr(err){
+    if (err.code === 4001) {
+        return null;
+    }
+    const  code = err.code;
+    if (!err.data ||!err.data.message){
+        return code+err.message;
+    }
+    return "code:"+err.data.code+" " + err.data.message;
 }

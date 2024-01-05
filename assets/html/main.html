@@ -639,7 +639,7 @@
                         <li><strong>第三步：</strong>执行抽奖操作，输入随机数，比对输入的随机数的hash与智能合约存储的hash是否一致。检查通过后进行中奖地址计算。
                             <strong>计算方法：</strong>
                             <div class="calculation-method">
-                                购买地址列表[(随机数 + block.difficulty + 抽奖凭证数)%购买地址数]。
+                                购买地址列表[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数]。
                             </div>
                         </li>
                         <li><strong>第四步：</strong>奖池奖金转入中奖者地址，奖池清空，开启下一轮抽奖。</li>

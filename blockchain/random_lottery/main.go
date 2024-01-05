@@ -6,7 +6,7 @@ import (
 	"github.com/ninjahome/web-bridge/util"
 )
 
-func main() {
+func testData() {
 	passphraseFlag := flag.String("p", "", "Encryption passphrase")
 	decryptFlag := flag.Bool("d", false, "Decrypt mode")
 	encryptedDataFlag := flag.String("e", "", "Encrypted data for decryption")
@@ -25,4 +25,18 @@ func main() {
 	}
 	fmt.Println(util.DecryptRandomData(*encryptedDataFlag, *passphraseFlag))
 	return
+}
+
+func main() {
+	//walletFile := flag.String("wallet", "", "wallet path")
+	//
+	//fmt.Print("Enter Password: ")
+	//passwordBytes, err := terminal.ReadPassword(int(os.Stdin.Fd()))
+	//if err != nil {
+	//	fmt.Println("\nError reading password")
+	//	return
+	//}
+	//
+	//password := string(passwordBytes)
+
 }

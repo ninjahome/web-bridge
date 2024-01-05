@@ -120,7 +120,7 @@ function parseNjTweetsFromSrv(tweetArray, refreshNewest) {
         }
         return;
     }
-    console.log(tweetArray)
+    // console.log(tweetArray)
     const newIDs = [];
     const localTweets = tweetArray.map(tweet => {
         const tw_data = TwitterBasicInfo.loadTwBasicInfo(tweet.twitter_id)
@@ -338,12 +338,13 @@ async function postTweet() {
 
         await processTweetPayment(basicTweet.create_time, basicTweet.prefixed_hash, basicTweet.signature);
     } catch (err) {
+        console.error("Error publishing tweet: ", err);
         hideLoading();
-        if (err.code === 4001) {
+        const newErr = checkMetamaskErr(err);
+        if (!newErr){
             return;
         }
-        console.error("Error publishing tweet: ", err);
-        showDialog("Transaction error: " + err.code+":"+err.message);
+        showDialog(newErr);
     }
 }
 
@@ -372,14 +373,16 @@ async function processTweetPayment(create_time, prefixed_hash, signature) {
     } catch (err) {
         console.error("Transaction error: ", err);
         hideLoading();
-        if (err.code === 4001) {
+        const newErr = checkMetamaskErr(err);
+        if (!newErr){
             return;
         }
-        if (err.data && err.data.message && err.data.message.includes("duplicate post")){
+
+        if (newErr.includes("duplicate post")){
             updateTweetPaymentStatus(create_time,TXStatus.Success,prefixed_hash);
             return;
         }
-        showDialog("Transaction error: " + err.code+":"+err.message);
+        showDialog(newErr);
     }
 }
 
@@ -478,10 +481,11 @@ async function startToVote(voteCount,prefixedHash,createTime) {
     } catch (err) {
         console.error("Transaction error: ", err);
         hideLoading();
-        if (err.code === 4001) {
+        const errDetail = checkMetamaskErr(err);
+        if (!errDetail){
             return;
         }
-        showDialog("Transaction error: " + err.code + ":" + err.message);
+        showDialog(errDetail);
     }
 }
 async function voteToThisTweet() {
@@ -523,9 +527,10 @@ async function payThisTweetAgain() {
     } catch (err) {
         console.error("Transaction error: ", err);
         hideLoading();
-        if (err.code === 4001) {
+        const newErr = checkMetamaskErr(err);
+        if (!newErr){
             return;
         }
-        showDialog("Transaction error: " + err.code+":"+err.message);
+        showDialog(newErr);
     }
 }
