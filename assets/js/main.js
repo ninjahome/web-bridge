@@ -189,7 +189,7 @@ function loadGameContractMeta() {
         const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
         const ticketPriceInEth = ethers.utils.formatUnits(totalBonus, 'ether');
         gameContractMeta = new GameContractMeta(currentRoundNo, totalBonusInEth, ticketPriceForOuter, ticketPriceInEth);
-        console.log(JSON.stringify(gameContractMeta));
+        // console.log(JSON.stringify(gameContractMeta));
         loadCurGameMeta();
          loadUserGameInfo().then(r => {});
     }).catch(err => {
@@ -203,7 +203,7 @@ function loadCurGameMeta() {
         const dTime = gameInfo.discoverTime.toNumber() * 1000;
         curGameMeta = new GameRoundInfo(gameContractMeta.curRound, gameInfo.randomHash, dTime, curBonusInEth);
         fullFillGameBasicInfo();
-        console.log(JSON.stringify(curGameMeta));
+        // console.log(JSON.stringify(curGameMeta));
     }).catch(err => {
         console.log(err);
     })
@@ -231,7 +231,7 @@ async function loadVoteContractMeta() {
         const tweetPostPriceInEth = ethers.utils.formatUnits(postPrice, 'ether');
         document.getElementById("tweet-post-with-eth-btn").innerText = "发布推文(" + tweetPostPriceInEth + " eth)"
 
-        console.log(JSON.stringify(voteContractMeta));
+        // console.log(JSON.stringify(voteContractMeta));
     } catch (error) {
         console.error("Error getting system settings: ", error);
     }
@@ -266,7 +266,7 @@ async function loadUserGameInfo() {
         const [tickets, teamIds] = await lotteryGameContract.tickList(gameContractMeta.curRound, ninjaUserObj.eth_addr);
         const uniqueItemsMap = new Map();
         teamIds.forEach((teamId, index) => {
-            console.log(`Team ID ${index}:`, teamId);
+            // console.log(`Team ID ${index}:`, teamId);
             uniqueItemsMap.set(teamId, true);
         });
         const uniqueArray = Array.from(uniqueItemsMap.keys());
@@ -371,4 +371,26 @@ function switchToWorkChain() {
             showDialog("error", "add to network failed:" + err.toString());
         });
     });
+}
+
+function showTweetDetails(){
+    document.querySelector('.tweets-park').style.display = 'none';
+    const detail = document.querySelector('#tweet-detail');
+    detail.style.display = 'block';
+
+    const tweetCard = this.closest('.tweet-card');
+
+    const obj = JSON.parse(tweetCard.dataset.rawObj) ;
+    console.log(obj);
+
+    detail.querySelector('.author-avatar').src = obj.profile_image_url;
+    detail.querySelector('.author-name').textContent = obj.name || 'Unknown';
+    detail.querySelector('.author-username').textContent = '@' + obj.username || 'No username';
+    detail.querySelector('.tweet-text').textContent = obj.text;
+    detail.querySelector('.tweet-post-time').textContent = formatTime(obj.create_time);
+}
+
+function backTowTweetPark(){
+    document.querySelector('.tweets-park').style.display = 'block';
+    document.querySelector('#tweet-detail').style.display = 'none';
 }

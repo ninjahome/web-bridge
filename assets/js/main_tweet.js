@@ -140,11 +140,11 @@ function parseNjTweetsFromSrv(tweetArray, refreshNewest) {
 async function queryLastStatusInfo(ids) {
     try {
         const res = await PostToSrvByJson("/tweetStatusRealTime", {create_time:ids})
-        console.log(res);
+        // console.log(res);
         const statusMap = JSON.parse(res);
         for (let key in statusMap) {
             let status = statusMap[key];
-            console.log("Create Time:", status.create_time, "Vote Count:", status.vote_count);
+            // console.log("Create Time:", status.create_time, "Vote Count:", status.vote_count);
             updateTweetCardVoteNo(status.create_time,status.vote_count);
         }
     } catch (err) {
@@ -240,7 +240,7 @@ async function populateLatestTweets(newCachedTweet, insertAtHead) {
             minCreateTime = createTime;
         }
         tweetCard.id = "tweet-card-info-" + timeSuffix;
-
+        tweetCard.dataset.rawObj = JSON.stringify(tweet);
         tweetCard.dataset.createTime = tweet.create_time;
         tweetCard.dataset.signature = tweet.signature;
         tweetCard.dataset.prefixedHash = tweet.prefixed_hash;

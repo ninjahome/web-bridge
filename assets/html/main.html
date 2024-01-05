@@ -166,6 +166,7 @@
 
         .tweet-content-collapsed {
             overflow: hidden;
+            cursor: pointer;
             display: -webkit-box;
             -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
@@ -396,6 +397,59 @@
         .team-id::after {
             float: right; /* 右浮动 */
         }
+
+        .tweet-detail {
+            flex-grow: 1.618;
+            margin-bottom: 20px;
+            display: none; /* 默认隐藏 */
+            background-color: #fff; /* 背景色 */
+        }
+
+        .tweet-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 48px; /* 头像大小 */
+            height: 48px; /* 头像大小 */
+            border-radius: 50%; /* 圆形头像 */
+            margin-right: 10px;
+        }
+
+        .author-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .author-name {
+            font-weight: bold;
+        }
+
+        .author-username {
+            color: #657786; /* 用户名颜色 */
+        }
+
+        .tweet-text {
+            margin-top: 20px; /* 与头像的间距 */
+            line-height: 1.5; /* 行间距 */
+        }
+
+        .tweet-interaction {
+            color: #657786; /* 互动信息颜色 */
+            margin-top: 10px; /* 与推文内容的间距 */
+            font-size: 0.85rem; /* 字体大小 */
+        }
+
+        .back-button {
+            background-color: #1da1f2; /* 推特蓝 */
+            color: white;
+        }
+
+        .back-button:hover {
+            background-color: #1a91da;
+        }
+
     </style>
 </head>
 <body>
@@ -460,7 +514,7 @@
                     <span class="username twitterUserName"></span>
                     <span class="time tweetCreateTime"></span>
                 </div>
-                <div class="tweet-content tweet-content-collapsed"></div>
+                <div onclick="showTweetDetails.call(this)" class="tweet-content tweet-content-collapsed"></div>
                 <button class="show-more" onclick="showFullTweetContent.call(this)">Show more</button>
                 <div class="tweet-footer">
                     <div class="tweet-action">
@@ -474,8 +528,25 @@
                 </div>
             </div>
         </div>
-        <div class="operation-area-right">
+        <div id="tweet-detail" class="tweet-detail" style="display: none;">
+            <button id="back-button" class="back-button" onclick="backTowTweetPark()">返回</button>
+            <div class="tweet-author">
+                <img src="" alt="Avatar" class="author-avatar">
+                <div class="author-info">
+                    <span class="author-name"></span>
+                    <span class="author-username"></span>
+                    <div class="tweet-post-time"></div>
+                </div>
+            </div>
 
+            <div class="tweet-text"></div>
+
+            <div class="tweet-interaction">
+
+            </div>
+
+        </div>
+        <div class="operation-area-right">
             <div id="user-lottery-card" style="margin-top: 20px;width: 400px;">
                 <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; background-color: #f9f9f9;">
                     <h3 style="text-align: center;">彩票信息</h3>
@@ -518,7 +589,6 @@
                     </div>
                 </div>
             </div>
-
             <div id="system-lottery-card">
                 <div class="lottery-info">
                     <p>当前第<span id="current-round">0</span>期</p>
@@ -548,9 +618,7 @@
         </div>
     </div>
 </div>
-<!-- 模态对话框 -->
-<div id="myModal" class="modal">
-    <!-- 模态内容 -->
+<div id="vote-no-chose-modal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
             <span class="close" onclick="closeModal()">&times;</span>
@@ -567,7 +635,6 @@
         </div>
     </div>
 </div>
-
 <script>
     let ninjaUserObj = {{ .NinjaUsrInfoJson }};
     document.addEventListener("DOMContentLoaded", initMainPage);
@@ -607,7 +674,7 @@
     let confirmCallback = null;
 
     function openModal(callback) {
-        const modal = document.getElementById("myModal");
+        const modal = document.getElementById("vote-no-chose-modal");
         modal.style.display = "block";
         confirmCallback = callback;
     }
@@ -621,7 +688,7 @@
     }
 
     function closeModal() {
-        const modal = document.getElementById("myModal");
+        const modal = document.getElementById("vote-no-chose-modal");
         modal.style.display = "none";
     }
 
