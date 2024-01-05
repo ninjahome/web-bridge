@@ -442,6 +442,7 @@ function updateTweetVoteStatic(create_time, voteCount) {
         console.log(resp);
         const countFormSrv = JSON.parse(resp);
         updateTweetCardVoteNo(create_time, countFormSrv.vote_count);
+        loadUserGameInfo().then(r => {});
     }).catch(err => {
         console.log(err);
         showWaiting("error", "update payment status failed:" + err.toString());
@@ -460,10 +461,10 @@ async function startToVote(voteCount,prefixedHash,createTime) {
             {value: amount}
         );
         console.log("Transaction Response: ", txResponse);
+        changeLoadingTips("waiting for blockchain packaging:"+txResponse.hash);
 
         const txReceipt = await txResponse.wait();
         console.log("Transaction Receipt: ", txReceipt);
-        changeLoadingTips("waiting for blockchain packaging:"+txReceipt.hash);
 
         showDialog("Transaction: "+ txReceipt.status ? "success":"failed");
 

@@ -368,7 +368,34 @@
         #user-lottery-team-detail th {
             background-color: #f2f2f2;
         }
+        #user-lottery-team-detail {
+            max-width: 100%; /* 不超过父元素的宽度 */
+            overflow-x: auto; /* 如果表格宽度超出容器宽度，提供滚动条 */
+        }
 
+        .team-id {
+            max-width: 120px; /* 根据你的具体布局调整这个宽度 */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        /* 针对team-id第一个和最后一个子元素设置特定样式 */
+        .team-id::before,
+        .team-id::after {
+            direction: ltr; /* 恢复从左到右的文本方向 */
+            text-overflow: clip; /* 不显示省略号 */
+            white-space: nowrap; /* 不换行 */
+        }
+
+        .team-id::before {
+            float: left; /* 左浮动 */
+        }
+
+        .team-id::after {
+            float: right; /* 右浮动 */
+        }
     </style>
 </head>
 <body>
@@ -458,8 +485,10 @@
                             详情
                         </button>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <div>队伍:<span id="user-game-team-no">2</span>队</div>
+                    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 10px;">
+                        <div style="margin-bottom: 10px;">
+                            <div>队伍:<span id="user-game-team-no">2</span>队</div>
+                        </div>
                         <div id="user-lottery-team-detail">
                             <table>
                                 <thead>
@@ -470,19 +499,19 @@
                                     <th>我的</th>
                                 </tr>
                                 </thead>
-                                <tbody id="team-details-body">
                                 <tr id="team-row-template" style="display: none;">
                                     <td class="team-id"></td>
                                     <td class="team-people-no"></td>
                                     <td class="team-ticket-no"></td>
                                     <td class="team-my-ticket-no"></td>
                                 </tr>
+                                <tbody id="team-details-body">
                                 </tbody>
                             </table>
                         </div>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>未兑金额:<span>210.00</span> eth</div>
+                        <div>未兑金额:<span id="user-game-balance">210.00</span> eth</div>
                         <button style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
                             提现
                         </button>

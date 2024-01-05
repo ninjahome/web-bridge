@@ -248,12 +248,13 @@ class TeamDetails {
 }
 
 class UserGameInfo {
-    constructor(ticketNo, ticketList, teamNo, teamArray, balance) {
+    constructor(ticketNo, teamNo, teamArray, balance, ticketList,ticketTeam) {
         this.ticketNo = ticketNo;
         this.teamNo = teamNo;
-        this.ticketList = ticketList;
         this.teamArray = teamArray;
         this.balance = balance;
+        this.ticketList = ticketList;
+        this.ticketTeam = ticketTeam;
     }
 }
 
@@ -281,7 +282,8 @@ async function loadUserGameInfo() {
         const b = await lotteryGameContract.balance(ninjaUserObj.eth_addr)
         const bInEth = ethers.utils.formatUnits(b, 'ether');
 
-        userGameInfo = new UserGameInfo(tickets.length, tickets, teamInfo.length, teamInfo, bInEth);
+        userGameInfo = new UserGameInfo(tickets.length,  teamInfo.length, teamInfo, bInEth,tickets,teamIds);
+        populateUserGameInfo();
     } catch (error) {
         console.error("Error getting user team info:", error);
     }
@@ -289,19 +291,18 @@ async function loadUserGameInfo() {
 
 function populateUserGameInfo() {
 
-    document.getElementById('"user-game-tickets-no"').innerText = userGameInfo.ticketNo;
-    document.getElementById('"user-game-team-no"').innerText = userGameInfo.teamNo;
+    document.getElementById('user-game-tickets-no').innerText = userGameInfo.ticketNo;
+    document.getElementById('user-game-team-no').innerText = userGameInfo.teamNo;
+    document.getElementById('user-game-balance').innerText = userGameInfo.balance;
 
     const tbody = document.getElementById('team-details-body');
-    tbody.innerHTML = ''; // 清除现有的行
+    tbody.innerHTML = '';
 
     userGameInfo.teamArray.forEach(item => {
-        // 克隆模板行
         const templateRow = document.getElementById('team-row-template').cloneNode(true);
         templateRow.id = 'user-game-team-' + item.teamID;
         templateRow.style.display = '';
 
-        // 填充数据
         templateRow.querySelector('.team-id').textContent = item.teamID;
         templateRow.querySelector('.team-people-no').textContent = item.peopleNo;
         templateRow.querySelector('.team-ticket-no').textContent = item.ticketNo;
