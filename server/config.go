@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
+	"github.com/ninjahome/web-bridge/blockchain"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
 	"html/template"
@@ -97,25 +98,6 @@ func (c *FileStoreConf) String() string {
 	return s
 }
 
-type BlockChainConf struct {
-	TweeTVoteContractAddress  string `json:"tweet_vote_contract_address"`
-	GamePluginContractAddress string `json:"game_plugin_contract_address"`
-	KolKeyContractAddress     string `json:"kol_key_contract_address"`
-	InfuraKey                 string `json:"infura_key"`
-	InfuraUrl                 string `json:"infura_url"`
-}
-
-func (c *BlockChainConf) String() string {
-	s := "\n------block chain config------"
-	s += "\ntweet vote:" + c.TweeTVoteContractAddress
-	s += "\ngame:" + c.GamePluginContractAddress
-	s += "\nkol key:" + c.KolKeyContractAddress
-	s += "\ninfura key:" + c.InfuraKey
-	s += "\ninfura url:" + c.InfuraUrl
-	s += "\n--------------------------"
-	return s
-}
-
 type SysConf struct {
 	LogLevel string `json:"log_level"`
 	LocalRun bool   `json:"local_run"`
@@ -124,7 +106,7 @@ type SysConf struct {
 	*HttpConf
 	*TwitterConf
 	*FileStoreConf
-	*BlockChainConf
+	*blockchain.Conf
 	twOauthCfg *oauth2.Config
 }
 

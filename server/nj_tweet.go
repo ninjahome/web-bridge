@@ -160,6 +160,6 @@ func tweetStatusRealTime(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo
 	bts, _ := json.Marshal(res)
 	w.Write(bts)
 
-	util.LogInst().Debug().Int("create_time", len(query.CreateTime)).
+	util.LogInst().Debug().Int("create_time len", len(query.CreateTime)).
 		Msg(" query vote status success")
 }

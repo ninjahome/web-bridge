@@ -63,7 +63,7 @@ const __globalMetaMaskNetworkParam = new Map([
             symbol: 'ETH',
             decimals: 18
         },
-        rpcUrls: ['https://arbitrum-mainnet.infura.io/v3/eced40c03c2a447887b73369aee4fbbe', 'https://arbitrum.llamarpc.com'],
+        rpcUrls: ['https://arbitrum.llamarpc.com'],
         blockExplorerUrls: ['https://arbiscan.io'],
     }],
     [toHex(421613), {
@@ -74,7 +74,7 @@ const __globalMetaMaskNetworkParam = new Map([
             symbol: 'AETH',
             decimals: 18
         },
-        rpcUrls: ['https://arbitrum-goerli.infura.io/v3/eced40c03c2a447887b73369aee4fbbe', 'https://endpoints.omniatech.io/v1/arbitrum/goerli/public'],
+        rpcUrls: ['https://endpoints.omniatech.io/v1/arbitrum/goerli/public'],
         blockExplorerUrls: ['https://goerli.arbiscan.io'],
     }],
     [toHex(421614), {
@@ -85,7 +85,7 @@ const __globalMetaMaskNetworkParam = new Map([
             symbol: 'ETH',
             decimals: 18
         },
-        rpcUrls: ['https://arbitrum-sepolia.infura.io/v3/eced40c03c2a447887b73369aee4fbbe', 'https://sepolia-rollup.arbitrum.io/rpc'],
+        rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
         blockExplorerUrls: ['https://sepolia.arbiscan.io'],
     }],
     [toHex(5777), {

@@ -26,6 +26,9 @@ const (
 )
 
 var (
+	Version             string
+	Commit              string
+	BuildTime           string
 	ErrSignInvalid      = errors.New("invalid signature")
 	ErrSignNoAddr       = errors.New("no public address found")
 	ErrSignNotMatch     = errors.New("signature address not match")
