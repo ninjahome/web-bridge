@@ -211,7 +211,7 @@ function loadCurGameMeta() {
 
 function fullFillGameBasicInfo() {
     document.getElementById("current-round").innerText = curGameMeta.round;
-    document.getElementById("total-prize").innerText = curGameMeta.bonus;
+    document.getElementById("total-prize").innerText = curGameMeta.bonus +" eth";
     document.getElementById("lottery-hash").innerText = curGameMeta.randomHash;
     document.getElementById("lottery-discovery-time").innerText = formatTime(curGameMeta.nextRoundTime);
     document.getElementById("total-awards").innerText = gameContractMeta.totalBonus;
@@ -232,11 +232,17 @@ async function loadVoteContractMeta() {
         document.getElementById("tweet-post-with-eth-btn").innerText = "发布推文(" + tweetPostPriceInEth + " eth)"
 
         // console.log(JSON.stringify(voteContractMeta));
+        await loadKolTweetIncome();
     } catch (error) {
         console.error("Error getting system settings: ", error);
     }
 }
 
+async function loadKolTweetIncome() {
+    const b = await tweetVoteContract.balance(ninjaUserObj.eth_addr);
+    const bInEth = ethers.utils.formatUnits(b, 'ether');
+    document.getElementById("user-tweet-income").innerText =  bInEth + " eth";
+}
 
 class TeamDetails {
     constructor(teamID, peopleNo, ticketNo, userTicketNo) {
@@ -372,6 +378,24 @@ function switchToWorkChain() {
     });
 }
 
+function setupTweetPaymentStatus(obj, retryButton,statusElem){
+    if (obj.payment_status === TXStatus.NoPay){
+        if (ninjaUserObj.eth_addr === obj.web3_id ) {
+            retryButton.classList.add('show');
+        }else {
+            fetch("/reloadPaymentDetails?tweetID=" + obj.create_time)
+                .then(response => response.json())
+                .then(newTweetInfo=>{
+                    statusElem.textContent = TXStatus.Str(newTweetInfo.payment_status);
+                    obj.payment_status = newTweetInfo.payment_status;
+                    TweetToShowOnWeb.syncToDb(newTweetInfo);
+                }).catch(err=>{
+                console.log(err);
+            })
+        }
+    }
+}
+
 function showTweetDetails(){
     document.querySelector('.tweets-park').style.display = 'none';
     const detail = document.querySelector('#tweet-detail');
@@ -380,13 +404,31 @@ function showTweetDetails(){
     const tweetCard = this.closest('.tweet-card');
 
     const obj = JSON.parse(tweetCard.dataset.rawObj) ;
-    console.log(obj);
+    // console.log(obj);
+
+    detail.dataset.dataFromTweetCard = tweetCard.dataset.rawObj;
 
     detail.querySelector('.author-avatar').src = obj.profile_image_url;
     detail.querySelector('.author-name').textContent = obj.name || 'Unknown';
     detail.querySelector('.author-username').textContent = '@' + obj.username || 'No username';
     detail.querySelector('.tweet-text').textContent = obj.text;
     detail.querySelector('.tweet-post-time').textContent = formatTime(obj.create_time);
+    detail.querySelector('#tweet-prefixed-hash').textContent = obj.prefixed_hash;
+
+    detail.querySelector('.tweet-action button').textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
+    const statusElem = detail.querySelector('.tweetPaymentStatus');
+    statusElem.textContent = TXStatus.Str(obj.payment_status);
+
+    const retryButton = detail.querySelector('.tweetPaymentRetry')
+
+    setupTweetPaymentStatus(obj, retryButton, statusElem);
+
+    detail.querySelector('.vote-number').textContent = '0';
+    queryLastStatusInfo([obj.create_time],function (id, no) {
+        detail.querySelector('.vote-number').textContent = no;
+        updateTweetCardVoteNo(id,no);
+    }).then(r=>{})
+
 }
 
 function backTowTweetPark(){
@@ -402,7 +444,7 @@ function showUserTicketDetails(){
     openLotteryModal(userGameInfo.ticketList, userGameInfo.ticketTeam);
 }
 
-async function withdrawUserBalance() {
+async function withdrawUserBonus() {
     if (userGameInfo.balance <= 0) {
         showDialog("tips", "balance too low");
         return;

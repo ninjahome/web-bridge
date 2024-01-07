@@ -16,7 +16,7 @@
             height: 100vh;
         }
 
-        .left-side {
+        .left-menu-area {
             display: flex;
             flex-direction: column;
             min-width: 200px;
@@ -25,9 +25,9 @@
             background-color: #f2f2f2;
         }
 
-        .left-upper {
+        .left-user-info-area {
             height: 40%;
-            max-height: 360px;
+            max-height: 480px;
             min-height: 240px;
             background-color: #d9d9d9;
             padding: 20px;
@@ -38,7 +38,7 @@
             overflow: hidden;
         }
 
-        .left-upper img {
+        .left-user-info-area img {
             width: 60px;
             height: 60px;
             margin-bottom: 10px;
@@ -172,7 +172,7 @@
             -webkit-box-orient: vertical;
         }
 
-        .left-lower {
+        .left-tweet-post-area {
             position: relative;
         }
 
@@ -184,7 +184,7 @@
             padding-bottom: 30px;
         }
 
-        .left-lower button {
+        .left-tweet-post-area button {
             position: absolute;
             right: 10px;
             bottom: 5px;
@@ -480,17 +480,18 @@
             text-decoration: none;
             cursor: pointer;
         }
+        #operation-area-btn {
+            display: flex;
+            flex-direction: column;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="left-side">
-        <div class="left-upper">
-            <!-- 图片占位符 -->
+    <div class="left-menu-area">
+        <div class="left-user-info-area">
             <img id="user-twitter-logo" src="/assets/file/logo.png" alt="Logo">
-
-            <!-- Web3 ID -->
             <div class="field">
                 <div class="field-label">Web3 ID:</div>
                 <div class="field-value" id="basic-web3-id">0x123...</div>
@@ -499,7 +500,6 @@
                 <div class="field-label">积分:</div>
                 <div class="field-value" id="dessage-web3-token">2.00 dsg</div>
             </div>
-            <!-- Balance -->
             <div class="field">
                 <div class="field-label">Balance:</div>
                 <div class="field-value" id="basic-web3-balance">0.0 ETH</div>
@@ -522,12 +522,20 @@
                 </div>
             </div>
 
-            <div id="operation-area">
+            <div id="operation-area-btn">
                 <button onclick="refreshTwitterInfo()">同步推特</button>
                 <button onclick="quitFromService()">退出</button>
+                <button onclick="clearCachedData()">清空缓存</button>
+                <button onclick="showUserVotedTweets()">我投票的推文</button>
+                <button onclick="showUserPostedTweets()">我的推文</button>
+                <div class="tweet-income-for-user" >
+                    推文收入:<span id="user-tweet-income">0.02 eth</span>
+                    <button onclick="withdrawFromUserTweetIncome()">提现</button>
+                </div>
+
             </div>
         </div>
-        <div class="left-lower">
+        <div class="left-tweet-post-area">
             <label for="tweets">
             <textarea class="tweets-content" id="tweets-content">
             </textarea>
@@ -572,7 +580,18 @@
             <div class="tweet-text"></div>
 
             <div class="tweet-interaction">
-
+                <div class="tweet-action">
+                    <button onclick="voteToThisTweet2.call(this)">0.01 eth打赏</button>
+                </div>
+                <div class="tweet-info">
+                    <span class="vote-count">投票数: <span class="vote-number">0</span></span>
+                    Payment Status: <span class="tweetPaymentStatus"></span>
+                    <button class="tweetPaymentRetry" onclick="payThisTweetAgain.call(this)">继续支付</button>
+                    <div class="tweet-prefixed-hash">
+                        <span class="vote-count">推文Hash:</span>
+                        <span id="tweet-prefixed-hash"></span>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -614,7 +633,7 @@
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>未兑金额:<span id="user-game-balance">210.00</span> eth</div>
-                        <button onclick="withdrawUserBalance()" style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                        <button onclick="withdrawUserBonus()" style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
                             提现
                         </button>
                     </div>
@@ -768,6 +787,12 @@
 
     function closeLotteryModal() {
         document.getElementById('lottery-detail-modal').style.display = 'none';
+    }
+
+    function clearCachedData(){
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = "/signIn";
     }
 </script>
 </body>

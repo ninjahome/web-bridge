@@ -137,7 +137,7 @@ function parseNjTweetsFromSrv(tweetArray, refreshNewest) {
     updateLocalCachedTweetList(newIDs)
 }
 
-async function queryLastStatusInfo(ids) {
+async function queryLastStatusInfo(ids, callback) {
     try {
         const res = await PostToSrvByJson("/tweetStatusRealTime", {create_time:ids})
         // console.log(res);
@@ -146,6 +146,9 @@ async function queryLastStatusInfo(ids) {
             let status = statusMap[key];
             // console.log("Create Time:", status.create_time, "Vote Count:", status.vote_count);
             updateTweetCardVoteNo(status.create_time,status.vote_count);
+            if (callback){
+                callback(status.create_time,status.vote_count);
+            }
         }
     } catch (err) {
         console.log(err)
@@ -255,21 +258,9 @@ async function populateLatestTweets(newCachedTweet, insertAtHead) {
         tweetCard.querySelector('.tweet-action button').textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
         const statusElem = tweetCard.querySelector('.tweetPaymentStatus');
         statusElem.textContent = TXStatus.Str(tweet.payment_status);
+        const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
 
-        if (tweet.payment_status === TXStatus.NoPay){
-            if (ninjaUserObj.eth_addr === tweet.web3_id ) {
-                const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
-                retryButton.classList.add('show');
-            }else {
-                fetch("/reloadPaymentDetails?tweetID=" + tweet.create_time).then(response => response.json()).then(newTweetInfo=>{
-                    statusElem.textContent = TXStatus.Str(newTweetInfo.payment_status);
-                    tweet.payment_status = newTweetInfo.payment_status;
-                    TweetToShowOnWeb.syncToDb(newTweetInfo);
-                }).catch(err=>{
-                    console.log(err);
-                })
-            }
-        }
+        setupTweetPaymentStatus(tweet, retryButton, statusElem);
 
         tweetCard.querySelector('.vote-number').textContent = 0;
 
@@ -279,6 +270,7 @@ async function populateLatestTweets(newCachedTweet, insertAtHead) {
             tweetsPark.appendChild(tweetCard);
         }
     }
+
     maxTweetIdCurShowed = maxCreateTime;
     minTweetIdCurShowed = minCreateTime;
     handleShowMoreButtons();
@@ -442,7 +434,7 @@ function updateTweetVoteStatic(create_time, voteCount) {
     PostToSrvByJson("/updateTweetVoteStatic", {
         create_time: create_time, vote_count: Number(voteCount),
     }).then(resp => {
-        console.log(resp);
+        // console.log(resp);
         const countFormSrv = JSON.parse(resp);
         updateTweetCardVoteNo(create_time, countFormSrv.vote_count);
         loadUserGameInfo().then(r => {});
@@ -488,6 +480,30 @@ async function startToVote(voteCount,prefixedHash,createTime) {
         showDialog(errDetail);
     }
 }
+
+async function voteToThisTweet2() {
+    const detail = this.closest('.tweet-detail');
+    const obj = JSON.parse(detail.dataset.dataFromTweetCard) ;
+    // console.log(obj);
+    const paidStatus = obj.payment_status;
+    const createTime = Number(obj.create_time);
+    const prefixedHash = obj.prefixed_hash;
+
+    if (Number(paidStatus) !==2){
+        showDialog("tips","can't vote to unpaid tweet")
+        return;
+    }
+
+    openVoteModal(function(voteCount) {
+        // console.log("用户选择的票数:", voteCount);
+        startToVote(voteCount, prefixedHash,createTime).then(r=>{
+            const detail = document.querySelector('#tweet-detail');
+            const origNo = detail.querySelector('.vote-number').textContent;
+            detail.querySelector('.vote-number').textContent = (Number(origNo)+Number(voteCount)).toString();
+        });
+    });
+}
+
 async function voteToThisTweet() {
     const tweetCard = this.closest('.tweet-card');
 
@@ -506,7 +522,7 @@ async function voteToThisTweet() {
 
     openVoteModal(function(voteCount) {
         console.log("用户选择的票数:", voteCount);
-        startToVote(voteCount, prefixedHash,createTime);
+        startToVote(voteCount, prefixedHash,createTime);s
     });
 }
 
@@ -533,4 +549,19 @@ async function payThisTweetAgain() {
         }
         showDialog(newErr);
     }
+}
+
+
+function showUserVotedTweets(){
+
+}
+
+
+function showUserPostedTweets(){
+
+}
+
+
+function withdrawFromUserTweetIncome(){
+
 }
