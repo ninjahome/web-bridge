@@ -78,7 +78,8 @@ func main() {
 
 	walletFile := flag.String("wallet", "dessage.key", "wallet file")
 	confFile := flag.String("conf", "config.json", "config file ")
-	firstRoundRandom := flag.String("random", "", "first round random number")
+	startRoundRandom := flag.String("random", "", "start round random number")
+	startRoundNo := flag.Int("rand-no", 0, "start round no")
 	version := flag.Bool("version", false, "game_lottery --version")
 	flag.Parse()
 
@@ -94,8 +95,8 @@ func main() {
 	key := readWallet(*walletFile)
 
 	gs := NewGame(key, cf)
-	if len(*firstRoundRandom) > 0 {
-		if err := gs.SetupFirstRound(*firstRoundRandom); err != nil {
+	if len(*startRoundRandom) > 0 {
+		if err := gs.SetupFirstRound(*startRoundRandom, *startRoundNo); err != nil {
 			panic(err)
 		}
 	}
@@ -404,12 +405,12 @@ func (gs *GameService) saveDiscoverInfo(no *big.Int, nextRandom GameRandomMeta) 
 	return err
 }
 
-func (gs *GameService) SetupFirstRound(s string) error {
+func (gs *GameService) SetupFirstRound(startRandom string, roundNo int) error {
 	opCtx, cancel := context.WithTimeout(gs.ctx, server.DefaultDBTimeOut)
 	defer cancel()
-	randomDoc := gs.fileCli.Collection(DBTableGameRandom).Doc(big.NewInt(0).String())
+	randomDoc := gs.fileCli.Collection(DBTableGameRandom).Doc(big.NewInt(int64(roundNo)).String())
 	nextRandom := GameRandomMeta{
-		EncryptedRandom: s,
+		EncryptedRandom: startRandom,
 		LastRoundStatus: TxStatusSuccess,
 	}
 	_, err := randomDoc.Set(opCtx, nextRandom)
