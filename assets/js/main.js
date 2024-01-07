@@ -191,7 +191,8 @@ function loadGameContractMeta() {
         gameContractMeta = new GameContractMeta(currentRoundNo, totalBonusInEth, ticketPriceForOuter, ticketPriceInEth);
         // console.log(JSON.stringify(gameContractMeta));
         loadCurGameMeta();
-         loadUserGameInfo().then(r => {});
+        loadUserGameInfo().then(r => {
+        });
     }).catch(err => {
         console.log(err);
     })
@@ -211,7 +212,7 @@ function loadCurGameMeta() {
 
 function fullFillGameBasicInfo() {
     document.getElementById("current-round").innerText = curGameMeta.round;
-    document.getElementById("total-prize").innerText = curGameMeta.bonus +" eth";
+    document.getElementById("total-prize").innerText = curGameMeta.bonus + " eth";
     document.getElementById("lottery-hash").innerText = curGameMeta.randomHash;
     document.getElementById("lottery-discovery-time").innerText = formatTime(curGameMeta.nextRoundTime);
     document.getElementById("total-awards").innerText = gameContractMeta.totalBonus;
@@ -241,7 +242,8 @@ async function loadVoteContractMeta() {
 async function loadKolTweetIncome() {
     const b = await tweetVoteContract.balance(ninjaUserObj.eth_addr);
     const bInEth = ethers.utils.formatUnits(b, 'ether');
-    document.getElementById("user-tweet-income").innerText =  bInEth + " eth";
+    document.getElementById("user-tweet-income").innerText = bInEth + " eth";
+    return bInEth;
 }
 
 class TeamDetails {
@@ -254,7 +256,7 @@ class TeamDetails {
 }
 
 class UserGameInfo {
-    constructor(ticketNo, teamNo, teamArray, balance, ticketList,ticketTeam) {
+    constructor(ticketNo, teamNo, teamArray, balance, ticketList, ticketTeam) {
         this.ticketNo = ticketNo;
         this.teamNo = teamNo;
         this.teamArray = teamArray;
@@ -288,7 +290,7 @@ async function loadUserGameInfo() {
         const b = await lotteryGameContract.balance(ninjaUserObj.eth_addr)
         const bInEth = ethers.utils.formatUnits(b, 'ether');
 
-        userGameInfo = new UserGameInfo(tickets.length,  teamInfo.length, teamInfo, bInEth,tickets,teamIds);
+        userGameInfo = new UserGameInfo(tickets.length, teamInfo.length, teamInfo, bInEth, tickets, teamIds);
         populateUserGameInfo();
     } catch (error) {
         console.error("Error getting user team info:", error);
@@ -378,32 +380,33 @@ function switchToWorkChain() {
     });
 }
 
-function setupTweetPaymentStatus(obj, retryButton,statusElem){
-    if (obj.payment_status === TXStatus.NoPay){
-        if (ninjaUserObj.eth_addr === obj.web3_id ) {
+function setupTweetPaymentStatus(obj, retryButton, statusElem) {
+    if (obj.payment_status === TXStatus.NoPay) {
+        if (ninjaUserObj.eth_addr === obj.web3_id) {
             retryButton.classList.add('show');
-        }else {
+        } else {
             fetch("/reloadPaymentDetails?tweetID=" + obj.create_time)
                 .then(response => response.json())
-                .then(newTweetInfo=>{
+                .then(newTweetInfo => {
                     statusElem.textContent = TXStatus.Str(newTweetInfo.payment_status);
                     obj.payment_status = newTweetInfo.payment_status;
                     TweetToShowOnWeb.syncToDb(newTweetInfo);
-                }).catch(err=>{
+                }).catch(err => {
                 console.log(err);
             })
         }
     }
+    retryButton.onclick = () => payThisTweetAgain(obj);
 }
 
-function showTweetDetails(){
+function showTweetDetails() {
     document.querySelector('.tweets-park').style.display = 'none';
     const detail = document.querySelector('#tweet-detail');
     detail.style.display = 'block';
 
     const tweetCard = this.closest('.tweet-card');
 
-    const obj = JSON.parse(tweetCard.dataset.rawObj) ;
+    const obj = JSON.parse(tweetCard.dataset.rawObj);
     // console.log(obj);
 
     detail.dataset.dataFromTweetCard = tweetCard.dataset.rawObj;
@@ -415,7 +418,10 @@ function showTweetDetails(){
     detail.querySelector('.tweet-post-time').textContent = formatTime(obj.create_time);
     detail.querySelector('#tweet-prefixed-hash').textContent = obj.prefixed_hash;
 
-    detail.querySelector('.tweet-action button').textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
+    const voteBtn = detail.querySelector('.tweet-action-vote');
+    voteBtn.textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
+    voteBtn.onclick = () => voteToThisTweet(obj);
+
     const statusElem = detail.querySelector('.tweetPaymentStatus');
     statusElem.textContent = TXStatus.Str(obj.payment_status);
 
@@ -424,43 +430,50 @@ function showTweetDetails(){
     setupTweetPaymentStatus(obj, retryButton, statusElem);
 
     detail.querySelector('.vote-number').textContent = '0';
-    queryLastStatusInfo([obj.create_time],function (id, no) {
+    queryLastStatusInfo([obj.create_time], function (id, no) {
         detail.querySelector('.vote-number').textContent = no;
-        updateTweetCardVoteNo(id,no);
-    }).then(r=>{})
+        updateTweetCardVoteNo(id, no);
+    }).then(r => {
+    })
 
 }
 
-function backTowTweetPark(){
+function backTowTweetPark() {
     document.querySelector('.tweets-park').style.display = 'block';
     document.querySelector('#tweet-detail').style.display = 'none';
 }
 
-function showUserTicketDetails(){
-    if (!userGameInfo.ticketNo){
-        showDialog("tips","no details to show");
+function showUserTicketDetails() {
+    if (!userGameInfo.ticketNo) {
+        showDialog("tips", "no details to show");
         return
     }
     openLotteryModal(userGameInfo.ticketList, userGameInfo.ticketTeam);
 }
 
 async function withdrawUserBonus() {
-    if (userGameInfo.balance <= 0) {
-        showDialog("tips", "balance too low");
+
+    if (!userGameInfo.balance || userGameInfo.balance <= 0) {
+        showDialog("tips", "balance invalid");
         return;
     }
 
-    const txResponse = await lotteryGameContract.withdraw("0x00", true);
-    console.log("Transaction Response: ", txResponse);
-    showWaiting("prepare to withdraw:"+txResponse.hash);
-
-    const txReceipt = await txResponse.wait();
-    console.log("Transaction Receipt: ", txReceipt);
-
-    showDialog("Transaction: "+ txReceipt.status ? "success":"failed");
-    hideLoading();
-    if (!txReceipt.status){
-        return;
-    }
+    await withdrawAction(lotteryGameContract);
     await loadUserGameInfo();
+}
+
+async function withdrawAction(contract) {
+    try {
+        const txResponse = await lotteryGameContract.withdraw("0x00", true);
+        console.log("Transaction Response: ", txResponse);
+        showWaiting("prepare to withdraw:" + txResponse.hash);
+
+        const txReceipt = await txResponse.wait();
+        console.log("Transaction Receipt: ", txReceipt);
+
+        showDialog("Transaction: " + txReceipt.status ? "success" : "failed");
+        hideLoading();
+    } catch (err) {
+        checkMetamaskErr(err);
+    }
 }

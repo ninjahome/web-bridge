@@ -113,9 +113,9 @@ const DefaultAvatarSrc = "/assets/file/logo.png"
 
 const __globalContractConf = new Map([
     [toHex(421614), {
-        tweetVote: "0x6500Cda46979F1956a46486B1a88768cb425E23a",
+        tweetVote: "0x84fEC37062FeEF21287fe72d34b421e4f3F97dd2",
         tweetVoteAbi: tweetVoteContractABI,
-        gameLottery: "0x842e751E5D5aCc9fB172812B7499e18Ac5Fb3F59",
+        gameLottery: "0x3f76CFBb40D3ac93Ee6841CD98eef0ab857C2890",
         gameLotteryAbi: gameContractABI,
         kolKey: "",
         kolKeyAbi: "",
@@ -363,14 +363,22 @@ class BlockChainData {
     }
 }
 
+function checkMetamaskErr(err) {
+    console.error("Transaction error: ", err);
+    hideLoading();
 
-function checkMetamaskErr(err){
     if (err.code === 4001) {
         return null;
     }
-    const  code = err.code;
-    if (!err.data ||!err.data.message){
-        return code+err.message;
+
+    let code = err.code;
+    if (!err.data || !err.data.message) {
+        code = code + err.message;
+    } else {
+        code = "code:" + err.data.code + " " + err.data.message
     }
-    return "code:"+err.data.code+" " + err.data.message;
+
+
+    showDialog(code);
+    return code;
 }

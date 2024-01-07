@@ -59,7 +59,7 @@ class TweetToShowOnWeb {
             this.profile_image_url = DefaultAvatarSrc;
         }
 
-        if(blockChain){
+        if (blockChain) {
         }
     }
 
@@ -139,15 +139,15 @@ function parseNjTweetsFromSrv(tweetArray, refreshNewest) {
 
 async function queryLastStatusInfo(ids, callback) {
     try {
-        const res = await PostToSrvByJson("/tweetStatusRealTime", {create_time:ids})
+        const res = await PostToSrvByJson("/tweetStatusRealTime", {create_time: ids})
         // console.log(res);
         const statusMap = JSON.parse(res);
         for (let key in statusMap) {
             let status = statusMap[key];
             // console.log("Create Time:", status.create_time, "Vote Count:", status.vote_count);
-            updateTweetCardVoteNo(status.create_time,status.vote_count);
-            if (callback){
-                callback(status.create_time,status.vote_count);
+            updateTweetCardVoteNo(status.create_time, status.vote_count);
+            if (callback) {
+                callback(status.create_time, status.vote_count);
             }
         }
     } catch (err) {
@@ -249,13 +249,16 @@ async function populateLatestTweets(newCachedTweet, insertAtHead) {
         tweetCard.dataset.prefixedHash = tweet.prefixed_hash;
         tweetCard.dataset.paidStatus = tweet.payment_status;
 
+        tweetCard.querySelector('.tweet-header').id = "tweet-header-" + tweet.create_time;
         tweetCard.querySelector('.twitterAvatar').src = tweet.profile_image_url;
         tweetCard.querySelector('.twitterName').textContent = tweet.name;
         tweetCard.querySelector('.twitterUserName').textContent = '@' + tweet.username;
         tweetCard.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
         tweetCard.querySelector('.tweet-content').textContent = tweet.text;
 
-        tweetCard.querySelector('.tweet-action button').textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
+        const voteBtn = tweetCard.querySelector('.tweet-action-vote');
+        voteBtn.textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
+        voteBtn.onclick = () => voteToThisTweet(tweet);
         const statusElem = tweetCard.querySelector('.tweetPaymentStatus');
         statusElem.textContent = TXStatus.Str(tweet.payment_status);
         const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
@@ -304,7 +307,7 @@ function updateTweetCardWhenStatusChanged(createTime, newStatus) {
         console.error('Tweet payment status element not found');
         return;
     }
-    tweetCard.dataset.paidStatus  = newStatus;
+    tweetCard.dataset.paidStatus = newStatus;
     paymentStatusElement.textContent = TXStatus.Str(newStatus);
     const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
     retryButton.classList.remove('show');
@@ -330,13 +333,7 @@ async function postTweet() {
 
         await processTweetPayment(basicTweet.create_time, basicTweet.prefixed_hash, basicTweet.signature);
     } catch (err) {
-        console.error("Error publishing tweet: ", err);
-        hideLoading();
-        const newErr = checkMetamaskErr(err);
-        if (!newErr){
-            return;
-        }
-        showDialog(newErr);
+        checkMetamaskErr(err);
     }
 }
 
@@ -351,7 +348,7 @@ async function processTweetPayment(create_time, prefixed_hash, signature) {
         );
         console.log("Transaction Response: ", txResponse);
 
-        changeLoadingTips("waiting for blockchain packaging:"+txResponse.hash);
+        changeLoadingTips("waiting for blockchain packaging:" + txResponse.hash);
         updateTweetPaymentStatus(create_time, TXStatus.Pending, txResponse.hash);
 
         const txReceipt = await txResponse.wait();
@@ -363,18 +360,10 @@ async function processTweetPayment(create_time, prefixed_hash, signature) {
         hideLoading();
         showDialog("transaction " + (txReceipt.status ? "confirmed" : "failed"));
     } catch (err) {
-        console.error("Transaction error: ", err);
-        hideLoading();
         const newErr = checkMetamaskErr(err);
-        if (!newErr){
-            return;
+        if (newErr.includes("duplicate post")) {
+            updateTweetPaymentStatus(create_time, TXStatus.Success, prefixed_hash);
         }
-
-        if (newErr.includes("duplicate post")){
-            updateTweetPaymentStatus(create_time,TXStatus.Success,prefixed_hash);
-            return;
-        }
-        showDialog(newErr);
     }
 }
 
@@ -415,7 +404,7 @@ async function signMessage(message, web3Id) {
     });
 }
 
-function updateTweetCardVoteNo(createTime, totalNo){
+function updateTweetCardVoteNo(createTime, totalNo) {
     const tweetCardId = "tweet-card-info-" + createTime;
     const tweetCard = document.getElementById(tweetCardId);
     if (!tweetCard) {
@@ -430,6 +419,7 @@ function updateTweetCardVoteNo(createTime, totalNo){
 
     paymentStatusElement.textContent = totalNo;
 }
+
 function updateTweetVoteStatic(create_time, voteCount) {
     PostToSrvByJson("/updateTweetVoteStatic", {
         create_time: create_time, vote_count: Number(voteCount),
@@ -437,14 +427,15 @@ function updateTweetVoteStatic(create_time, voteCount) {
         // console.log(resp);
         const countFormSrv = JSON.parse(resp);
         updateTweetCardVoteNo(create_time, countFormSrv.vote_count);
-        loadUserGameInfo().then(r => {});
+        loadUserGameInfo().then(r => {
+        });
     }).catch(err => {
         console.log(err);
         showWaiting("error", "update payment status failed:" + err.toString());
     })
 }
 
-async function startToVote(voteCount,prefixedHash,createTime) {
+async function startToVote(voteCount, prefixedHash, createTime) {
     try {
         showWaiting("prepare to pay");
 
@@ -456,83 +447,53 @@ async function startToVote(voteCount,prefixedHash,createTime) {
             {value: amount}
         );
         console.log("Transaction Response: ", txResponse);
-        changeLoadingTips("waiting for blockchain packaging:"+txResponse.hash);
+        changeLoadingTips("waiting for blockchain packaging:" + txResponse.hash);
 
         const txReceipt = await txResponse.wait();
         console.log("Transaction Receipt: ", txReceipt);
 
-        showDialog("Transaction: "+ txReceipt.status ? "success":"failed");
+        showDialog("Transaction: " + txReceipt.status ? "success" : "failed");
 
-        if (!txReceipt.status){
+        if (!txReceipt.status) {
             return;
         }
 
         hideLoading();
-        updateTweetVoteStatic(createTime,voteCount);
+        updateTweetVoteStatic(createTime, voteCount);
         loadCurGameMeta();
     } catch (err) {
-        console.error("Transaction error: ", err);
-        hideLoading();
-        const errDetail = checkMetamaskErr(err);
-        if (!errDetail){
-            return;
-        }
-        showDialog(errDetail);
+        checkMetamaskErr(err);
     }
 }
 
-async function voteToThisTweet2() {
-    const detail = this.closest('.tweet-detail');
-    const obj = JSON.parse(detail.dataset.dataFromTweetCard) ;
-    // console.log(obj);
+async function voteToThisTweet(obj) {
+    console.log(obj);
     const paidStatus = obj.payment_status;
     const createTime = Number(obj.create_time);
     const prefixedHash = obj.prefixed_hash;
 
-    if (Number(paidStatus) !==2){
-        showDialog("tips","can't vote to unpaid tweet")
+    if (Number(paidStatus) !== 2) {
+        showDialog("tips", "can't vote to unpaid tweet")
         return;
     }
 
-    openVoteModal(function(voteCount) {
+    openVoteModal(function (voteCount) {
         // console.log("用户选择的票数:", voteCount);
-        startToVote(voteCount, prefixedHash,createTime).then(r=>{
+        startToVote(voteCount, prefixedHash, createTime).then(r => {
             const detail = document.querySelector('#tweet-detail');
             const origNo = detail.querySelector('.vote-number').textContent;
-            detail.querySelector('.vote-number').textContent = (Number(origNo)+Number(voteCount)).toString();
+            detail.querySelector('.vote-number').textContent = (Number(origNo) + Number(voteCount)).toString();
         });
     });
 }
 
-async function voteToThisTweet() {
-    const tweetCard = this.closest('.tweet-card');
-
-    const createTime = Number(tweetCard.dataset.createTime);
-    const prefixedHash = tweetCard.dataset.prefixedHash;
-    const paidStatus = tweetCard.dataset.paidStatus;
-
-    console.log("Create Time: ", createTime);
-    console.log("paidStatus: ", paidStatus);
-    console.log("Prefixed Hash: ", prefixedHash);
-
-    if (Number(paidStatus) !==2){
-        showDialog("tips","can't vote to unpaid tweet")
-        return;
-    }
-
-    openVoteModal(function(voteCount) {
-        // console.log("用户选择的票数:", voteCount);
-        startToVote(voteCount, prefixedHash,createTime);
-    });
-}
-
-async function payThisTweetAgain() {
+async function payThisTweetAgain(tweet) {
     try {
-        const tweetCard = this.closest('.tweet-card');
 
-        const createTime = Number(tweetCard.dataset.createTime);
-        const signature = tweetCard.dataset.signature;
-        const prefixedHash = tweetCard.dataset.prefixedHash;
+        const createTime = Number(tweet.create_time);
+        const prefixedHash = tweet.prefixed_hash;
+        const signature = tweet.signature;
+
         console.log("Create Time: ", createTime);
         console.log("signature: ", signature);
         console.log("Prefixed Hash: ", prefixedHash);
@@ -541,27 +502,29 @@ async function payThisTweetAgain() {
 
         await processTweetPayment(createTime, prefixedHash, signature)
     } catch (err) {
-        console.error("Transaction error: ", err);
-        hideLoading();
-        const newErr = checkMetamaskErr(err);
-        if (!newErr){
-            return;
-        }
-        showDialog(newErr);
+        checkMetamaskErr(err);
     }
 }
 
-
-function showUserVotedTweets(){
-
-}
-
-
-function showUserPostedTweets(){
+function showUserVotedTweets() {
 
 }
 
 
-function withdrawFromUserTweetIncome(){
+function showUserPostedTweets() {
 
+}
+
+
+async function withdrawFromUserTweetIncome() {
+    const bInEth = await loadKolTweetIncome();
+
+    if (bInEth <= 0) {
+        showDialog("tips", "balance too low");
+        return;
+    }
+
+    await withdrawAction(tweetVoteContract);
+
+    await loadKolTweetIncome();
 }

@@ -7,6 +7,7 @@
     <script src="/assets/js/abi_tweet_vote.js"></script>
     <script src="/assets/js/abi_game_lottery.js"></script>
     <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/main_comm.js"></script>
     <script src="/assets/js/main.js"></script>
     <script src="/assets/js/main_tweet.js"></script>
 
@@ -480,10 +481,46 @@
             text-decoration: none;
             cursor: pointer;
         }
+
         #operation-area-btn {
             display: flex;
             flex-direction: column;
         }
+
+        .hover-card img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .hover-card-content {
+            margin-left: 60px;
+        }
+
+        .buy-key-button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .hover-card {
+            display: none; /* 默认不显示 */
+            position: absolute;
+            z-index: 5;
+            padding: 10px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            top: 100%; /* 定位到 tweet-header 下方 */
+            left: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -528,7 +565,7 @@
                 <button onclick="clearCachedData()">清空缓存</button>
                 <button onclick="showUserVotedTweets()">我投票的推文</button>
                 <button onclick="showUserPostedTweets()">我的推文</button>
-                <div class="tweet-income-for-user" >
+                <div class="tweet-income-for-user">
                     推文收入:<span id="user-tweet-income">0.02 eth</span>
                     <button onclick="withdrawFromUserTweetIncome()">提现</button>
                 </div>
@@ -546,7 +583,8 @@
     <div class="main-container">
         <div class="tweets-park">
             <div id="tweetTemplate" class="tweet-card" style="display: none;">
-                <div class="tweet-header">
+                <div class="tweet-header" onmouseenter="showHoverCard.call(this)"
+                     onmouseleave="hideHoverCard.call(this)">
                     <img src="" alt="Avatar" class="twitterAvatar">
                     <span class="name twitterName"></span>
                     <span class="username twitterUserName"></span>
@@ -556,16 +594,17 @@
                 <button class="show-more" onclick="showFullTweetContent.call(this)">Show more</button>
                 <div class="tweet-footer">
                     <div class="tweet-action">
-                        <button onclick="voteToThisTweet.call(this)">0.01 eth打赏</button>
+                        <button class="tweet-action-vote">0.01 eth打赏</button>
                     </div>
                     <div class="tweet-info">
                         <span class="vote-count">投票数: <span class="vote-number">0</span></span>
                         Payment Status: <span class="tweetPaymentStatus"></span>
-                        <button class="tweetPaymentRetry" onclick="payThisTweetAgain.call(this)">继续支付</button>
+                        <button class="tweetPaymentRetry" >继续支付</button>
                     </div>
                 </div>
             </div>
         </div>
+
         <div id="tweet-detail" class="tweet-detail" style="display: none;">
             <button id="back-button" class="back-button" onclick="backTowTweetPark()">返回</button>
             <div class="tweet-author">
@@ -581,20 +620,20 @@
 
             <div class="tweet-interaction">
                 <div class="tweet-action">
-                    <button onclick="voteToThisTweet2.call(this)">0.01 eth打赏</button>
+                    <button class="tweet-action-vote">0.01 eth打赏</button>
                 </div>
                 <div class="tweet-info">
                     <span class="vote-count">投票数: <span class="vote-number">0</span></span>
                     Payment Status: <span class="tweetPaymentStatus"></span>
-                    <button class="tweetPaymentRetry" onclick="payThisTweetAgain.call(this)">继续支付</button>
+                    <button class="tweetPaymentRetry">继续支付</button>
                     <div class="tweet-prefixed-hash">
                         <span class="vote-count">推文Hash:</span>
                         <span id="tweet-prefixed-hash"></span>
                     </div>
                 </div>
             </div>
-
         </div>
+
         <div class="operation-area-right">
             <div id="user-lottery-card" style="margin-top: 20px;width: 400px;">
                 <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; background-color: #f9f9f9;">
@@ -633,7 +672,8 @@
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>未兑金额:<span id="user-game-balance">210.00</span> eth</div>
-                        <button onclick="withdrawUserBonus()" style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
+                        <button onclick="withdrawUserBonus()"
+                                style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
                             提现
                         </button>
                     </div>
@@ -704,25 +744,21 @@
     </div>
 </div>
 
+<div class="hover-card" id="hover-card">
+    <img src="" alt="Avatar" id="hover-avatar">
+    <div class="hover-card-content">
+        <div id="hover-name"></div>
+        <div>推文总数: <span id="hover-tweet-count"></span></div>
+        <div>投票数: <span id="hover-vote-count"></span></div>
+    </div>
+    <button class="buy-key-button">购买Key</button>
+</div>
+
+
 <script>
     let ninjaUserObj = {{ .NinjaUsrInfoJson }};
     document.addEventListener("DOMContentLoaded", initMainPage);
 
-    window.onscroll = function () {
-        throttle(() => loadMoreTweets(), 200);
-    }
-
-    let throttleTimer;
-
-    function throttle(callback, time) {
-        if (throttleTimer) return;
-
-        throttleTimer = setTimeout(() => {
-            callback();
-            clearTimeout(throttleTimer);
-            throttleTimer = null;
-        }, time);
-    }
 
     async function initMainPage() {
         checkSystemEnvironment();
@@ -740,60 +776,42 @@
     function showContractAddress() {
     }
 
-    let confirmCallback = null;
+    function showHoverCard() {
+        const tweetCard = this.closest('.tweet-card');
+        const obj = JSON.parse(tweetCard.dataset.rawObj);
 
-    function openVoteModal(callback) {
-        const modal = document.getElementById("vote-no-chose-modal");
-        modal.style.display = "block";
-        confirmCallback = callback;
+        const hoverCard = document.getElementById('hover-card');
+        const rect = this.getBoundingClientRect();
+        const avatar = this.querySelector('img').src;
+        const name = this.querySelector('.name').textContent;
+        const tweetCount = '0'; // obj.tweet_no;
+        const voteCount = '0'; // obj.vote_count;
+
+        // 设置悬浮卡片内容
+        document.getElementById('hover-avatar').src = avatar;
+        document.getElementById('hover-name').textContent = name;
+        document.getElementById('hover-tweet-count').textContent = tweetCount;
+        document.getElementById('hover-vote-count').textContent = voteCount;
+
+        // 设置悬浮卡片的位置
+        hoverCard.style.display = 'block';
+        hoverCard.style.left = `${rect.left}px`;
+        hoverCard.style.top = `${rect.bottom + window.scrollY}px`;
     }
 
-    function confirmVoteModal() {
-        if (confirmCallback) {
-            const voteCount = document.getElementById("voteCount").value;
-            confirmCallback(voteCount);
+    function hideHoverCard() {
+        // 检查鼠标是否在 hover-card 或 tweet-header 上
+        const hoverCard = document.getElementById('hover-card');
+
+        if (!hoverCard.matches(':hover') && !this.matches(':hover')) {
+            hoverCard.style.display = 'none';
         }
-        closeVoteModal();
+        // setTimeout(() => {
+        //
+        // }, 300);
     }
 
-    function closeVoteModal() {
-        const modal = document.getElementById("vote-no-chose-modal");
-        modal.style.display = "none";
-    }
 
-    function increaseVote() {
-        const voteCount = document.getElementById("voteCount");
-        voteCount.value = parseInt(voteCount.value) + 1;
-    }
-
-    function decreaseVote() {
-        const voteCountElement = document.getElementById("voteCount");
-        const newVoteCount = Math.max(1, parseInt(voteCountElement.value) - 1);
-        voteCountElement.value = newVoteCount.toString();
-    }
-
-    function openLotteryModal(lotteryNumbers, teamNumbers) {
-        const tbody = document.querySelector('#lottery-table tbody');
-        tbody.innerHTML = '';
-
-        lotteryNumbers.forEach((number, index) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td>${number}</td><td>${teamNumbers[index]}</td>`;
-            tbody.appendChild(tr);
-        });
-
-        document.getElementById('lottery-detail-modal').style.display = 'block';
-    }
-
-    function closeLotteryModal() {
-        document.getElementById('lottery-detail-modal').style.display = 'none';
-    }
-
-    function clearCachedData(){
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.href = "/signIn";
-    }
 </script>
 </body>
 </html>
