@@ -19,7 +19,7 @@
 	"key_file_path": "dessage-c3b5c95267fb.json",
 	"tweets_page_size": 20,
 	"tweet_vote_contract_address": "0x63713037a9E337D7Db5D383070199B948598e0Da",
-	"game_contract": "0x57F0bbE85f5822911003A8fa425D5595D139FDFe",
+	"game_plugin_contract_address": "0x57F0bbE85f5822911003A8fa425D5595D139FDFe",
 	"kol_key_contract_address": "",
 	"infura_url": "https://arbitrum-mainnet.infura.io/v3/",
 	"game_time_in_minute": 10,

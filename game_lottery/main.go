@@ -12,7 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ninjahome/web-bridge/blockchain/sol/ethapi"
+	"github.com/ninjahome/web-bridge/blockchain/ethapi"
 	"github.com/ninjahome/web-bridge/server"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/crypto/ssh/terminal"
@@ -70,7 +70,7 @@ func readWallet(filePath string) *keystore.Key {
 			fmt.Println("failed to decrypt wallet:", err.Error())
 			continue
 		}
-
+		fmt.Println("open wallet success:", key.Address.String())
 		return key
 	}
 }
@@ -287,28 +287,11 @@ func (gs *GameService) getTxClient() (*ethclient.Client, *bind.TransactOpts, err
 		return nil, nil, err
 	}
 
-	nonce, err := client.PendingNonceAt(context.Background(), gs.key.Address)
-	if err != nil {
-		util.LogInst().Err(err).Msg("pending nonce failed")
-		return nil, nil, err
-	}
-
-	gasPrice, err := client.SuggestGasPrice(context.Background())
-	if err != nil {
-		util.LogInst().Err(err).Msg("suggest gas failed")
-		return nil, nil, err
-	}
-
 	auth, err := bind.NewKeyedTransactorWithChainID(gs.key.PrivateKey, big.NewInt(gs.conf.ChainID))
 	if err != nil {
 		util.LogInst().Err(err).Msg("suggest gas failed")
 		return nil, nil, err
 	}
-
-	auth.Nonce = big.NewInt(int64(nonce))
-	auth.Value = big.NewInt(0)
-	auth.GasLimit = uint64(300000)
-	auth.GasPrice = gasPrice
 
 	return client, auth, nil
 }

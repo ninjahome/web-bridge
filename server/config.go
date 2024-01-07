@@ -99,7 +99,7 @@ func (c *FileStoreConf) String() string {
 
 type BlockChainConf struct {
 	TweeTVoteContractAddress string `json:"tweet_vote_contract_address"`
-	GameContract             string `json:"game_contract"`
+	GameContract             string `json:"game_plugin_contract_address"`
 	KolKeyContractAddress    string `json:"kol_key_contract_address"`
 	InfuraUrl                string `json:"infura_url"`
 	GameTimeInMinute         int    `json:"game_time_in_minute,omitempty"`
@@ -113,8 +113,8 @@ func (c *BlockChainConf) String() string {
 	s += "\ngame:" + c.GameContract
 	s += "\nkol key:" + c.KolKeyContractAddress
 	s += "\ninfura url:" + c.InfuraUrl
-	s += "\ngame check time:" + fmt.Sprintf("%d", c.GameTimeInMinute)
-	s += "\ntransaction check time:" + fmt.Sprintf("%d", c.TxCheckerInSeconds)
+	s += "\ngame check time(minutes):" + fmt.Sprintf("%d", c.GameTimeInMinute)
+	s += "\ntransaction check time(seconds):" + fmt.Sprintf("%d", c.TxCheckerInSeconds)
 	s += "\nchain id:" + fmt.Sprintf("%d", c.ChainID)
 	s += "\n--------------------------"
 	return s
