@@ -18,6 +18,7 @@ var logLevel = "debug"
 func LogInst() *zerolog.Logger {
 	logOnce.Do(func() {
 
+		//TODO::refactor numbers
 		logFile := &lumberjack.Logger{
 			Filename:   "game.log", // 日志文件路径
 			MaxSize:    100,        // 文件最大大小（MB）
