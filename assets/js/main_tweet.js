@@ -258,7 +258,7 @@ async function populateLatestTweets(newCachedTweet, insertAtHead) {
 
         const voteBtn = tweetCard.querySelector('.tweet-action-vote');
         voteBtn.textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
-        voteBtn.onclick = () => voteToThisTweet(tweet);
+        voteBtn.onclick = () => voteToThisTweet(tweet.create_time);
         const statusElem = tweetCard.querySelector('.tweetPaymentStatus');
         statusElem.textContent = TXStatus.Str(tweet.payment_status);
         const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
@@ -361,7 +361,7 @@ async function processTweetPayment(create_time, prefixed_hash, signature) {
         showDialog("transaction " + (txReceipt.status ? "confirmed" : "failed"));
     } catch (err) {
         const newErr = checkMetamaskErr(err);
-        if (newErr.includes("duplicate post")) {
+        if (newErr && newErr.includes("duplicate post")) {
             updateTweetPaymentStatus(create_time, TXStatus.Success, prefixed_hash);
         }
     }
@@ -466,10 +466,15 @@ async function startToVote(voteCount, prefixedHash, createTime) {
     }
 }
 
-async function voteToThisTweet(obj) {
-    console.log(obj);
+async function voteToThisTweet(create_time) {
+    console.log(create_time);
+    const obj = TweetToShowOnWeb.load(create_time)
+    if (!obj){
+        showDialog("tips","please reload page")
+        return;
+    }
     const paidStatus = obj.payment_status;
-    const createTime = Number(obj.create_time);
+    const createTime = Number(create_time);
     const prefixedHash = obj.prefixed_hash;
 
     if (Number(paidStatus) !== 2) {

@@ -464,7 +464,7 @@ async function withdrawUserBonus() {
 
 async function withdrawAction(contract) {
     try {
-        const txResponse = await lotteryGameContract.withdraw("0x00", true);
+        const txResponse = await contract.withdraw("0x00", true);
         console.log("Transaction Response: ", txResponse);
         showWaiting("prepare to withdraw:" + txResponse.hash);
 

@@ -113,7 +113,7 @@ const DefaultAvatarSrc = "/assets/file/logo.png"
 
 const __globalContractConf = new Map([
     [toHex(421614), {
-        tweetVote: "0x84fEC37062FeEF21287fe72d34b421e4f3F97dd2",
+        tweetVote: "0xa3a39F3415d2024834Ef22258FC14e5cdcc3E857",
         tweetVoteAbi: tweetVoteContractABI,
         gameLottery: "0x3f76CFBb40D3ac93Ee6841CD98eef0ab857C2890",
         gameLotteryAbi: gameContractABI,
