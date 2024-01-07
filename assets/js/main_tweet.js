@@ -521,8 +521,8 @@ async function voteToThisTweet() {
     }
 
     openVoteModal(function(voteCount) {
-        console.log("用户选择的票数:", voteCount);
-        startToVote(voteCount, prefixedHash,createTime);s
+        // console.log("用户选择的票数:", voteCount);
+        startToVote(voteCount, prefixedHash,createTime);
     });
 }
 

@@ -191,7 +191,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         uint256 totalVote = team.voteNo;
         if (totalVote <= 1) {
             balance[winner.addr] += val;
-            return bytes32(0);
+            return winner.team;
         }
 
         uint256 bonusPerVote = val / (totalVote - 1);
