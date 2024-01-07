@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/diode"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"os"
 	"sync"
@@ -17,16 +18,19 @@ var logLevel = "debug"
 func LogInst() *zerolog.Logger {
 	logOnce.Do(func() {
 
-		file, err := os.OpenFile("game.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			panic(err)
+		logFile := &lumberjack.Logger{
+			Filename:   "game.log", // 日志文件路径
+			MaxSize:    100,        // 文件最大大小（MB）
+			MaxBackups: 5,          // 保留旧文件的最大个数
+			MaxAge:     128,        // 保留旧文件的最大天数
+			Compress:   true,       // 是否压缩/归档旧文件
 		}
 
 		writer := diode.NewWriter(os.Stderr, 1000, 10*time.Millisecond, func(missed int) {
 			fmt.Printf("Logger Dropped %d messages", missed)
 		})
 
-		multi := io.MultiWriter(writer, file)
+		multi := io.MultiWriter(writer, logFile)
 		out := zerolog.ConsoleWriter{Out: multi}
 		out.TimeFormat = time.StampMilli
 		logLvl, err := zerolog.ParseLevel(logLevel)
