@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ninjahome/web-bridge/blockchain"
 	"github.com/ninjahome/web-bridge/util"
 	"os"
 	"testing"
@@ -36,12 +35,14 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			ProjectID:      DefaultTwitterProjectID,
 			KeyFilePath:    "dessage-c3b5c95267fb.json",
 		},
-		BlockChainConf: &blockchain.Conf{
+		BlockChainConf: &BlockChainConf{
 			TweeTVoteContractAddress: "0x63713037a9E337D7Db5D383070199B948598e0Da",
 			GameContract:             "0x57F0bbE85f5822911003A8fa425D5595D139FDFe",
 			KolKeyContractAddress:    "",
-			InfuraKey:                "",
 			InfuraUrl:                "https://arbitrum-mainnet.infura.io/v3/", //https://arbitrum-sepolia.infura.io/v3/
+			GameTimeInMinute:         10,
+			TxCheckerInSeconds:       15,
+			ChainID:                  421614,
 		},
 	}
 

@@ -7,10 +7,10 @@ PLATFORM := $(shell uname -o)
 COMMIT := $(shell git rev-parse HEAD)
 VERSION ?= $(shell git describe --tags ${COMMIT} 2> /dev/null || echo "$(COMMIT)")
 BUILD_TIME := $(shell LANG=en_US date +"%F_%T_%z")
-ROOT := github.com/ninjahome/web-bridge/util
+ROOT := github.com/ninjahome/web-bridge/blockchain/game_lottery
 LD_FLAGS := -X $(ROOT).Version=$(VERSION) -X $(ROOT).Commit=$(COMMIT) -X $(ROOT).BuildTime=$(BUILD_TIME)
 
-NAME := dessage-web.exe
+NAME := game_lottery.exe
 OS := windows
 
 ifeq ($(PLATFORM), Msys)
@@ -19,7 +19,7 @@ else ifeq ($(PLATFORM), Cygwin)
     INCLUDE := ${shell echo "$(GOPATH)"|sed -e 's/\\/\//g'}
 else
 	INCLUDE := $(GOPATH)
-	NAME=dessage-web
+	NAME=game_lottery
 	OS=linux
 endif
 
@@ -33,7 +33,7 @@ endif
 
 BINDIR=$(INCLUDE)/bin
 
-all: pbs sol build
+all: pbs ../sol build
 
 build:
 	GOOS=$(OS) GOARCH=amd64 $(GOBUILD) -o $(BINDIR)/$(NAME)
@@ -42,7 +42,7 @@ pbs:
 	cd pbs/ && $(MAKE)
 
 sol:
-	cd blockchain/sol/ && $(MAKE)
+	cd ../sol/ && $(MAKE)
 
 target:=mac
 

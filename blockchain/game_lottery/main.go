@@ -36,10 +36,29 @@ const (
 	TxStatusFailed
 )
 
+var (
+	Version   string
+	Commit    string
+	BuildTime string
+)
+
 func main() {
+
 	walletFile := flag.String("wallet", "dessage.key", "wallet file")
 	confFile := flag.String("conf", "game.conf", "config file ")
 	firstRoundRandom := flag.String("random", "", "first round random number")
+	version := flag.Bool("version", false, "game_lottery --version")
+	flag.Parse()
+
+	if *version {
+		fmt.Println("\n==================================================")
+		fmt.Printf("Version:\t%s\n", util.Version)
+		fmt.Printf("Build:\t\t%s\n", util.BuildTime)
+		fmt.Printf("Commit:\t\t%s\n", util.Commit)
+		fmt.Println("==================================================")
+		return
+	}
+
 	cf := new(server.SysConf)
 
 	bts, err := os.ReadFile(*confFile)
@@ -380,6 +399,7 @@ func (gs *GameService) SetupFirstRound(s string) error {
 	randomDoc := gs.fileCli.Collection(DBTableGameRandom).Doc(big.NewInt(0).String())
 	nextRandom := GameRandomMeta{
 		EncryptedRandom: s,
+		LastRoundStatus: TxStatusSuccess,
 	}
 	_, err := randomDoc.Set(opCtx, nextRandom)
 	return err

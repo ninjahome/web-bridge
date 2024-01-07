@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
-	"github.com/ninjahome/web-bridge/blockchain"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
 	"html/template"
@@ -98,6 +97,29 @@ func (c *FileStoreConf) String() string {
 	return s
 }
 
+type BlockChainConf struct {
+	TweeTVoteContractAddress string `json:"tweet_vote_contract_address"`
+	GameContract             string `json:"game_contract"`
+	KolKeyContractAddress    string `json:"kol_key_contract_address"`
+	InfuraUrl                string `json:"infura_url"`
+	GameTimeInMinute         int    `json:"game_time_in_minute,omitempty"`
+	TxCheckerInSeconds       int    `json:"tx_checker_in_seconds,omitempty"`
+	ChainID                  int64  `json:"chain_id,omitempty"`
+}
+
+func (c *BlockChainConf) String() string {
+	s := "\n------block chain config------"
+	s += "\ntweet vote:" + c.TweeTVoteContractAddress
+	s += "\ngame:" + c.GameContract
+	s += "\nkol key:" + c.KolKeyContractAddress
+	s += "\ninfura url:" + c.InfuraUrl
+	s += "\ngame check time:" + fmt.Sprintf("%d", c.GameTimeInMinute)
+	s += "\ntransaction check time:" + fmt.Sprintf("%d", c.TxCheckerInSeconds)
+	s += "\nchain id:" + fmt.Sprintf("%d", c.ChainID)
+	s += "\n--------------------------"
+	return s
+}
+
 type SysConf struct {
 	LogLevel string `json:"log_level"`
 	LocalRun bool   `json:"local_run"`
@@ -106,8 +128,8 @@ type SysConf struct {
 	*HttpConf
 	*TwitterConf
 	*FileStoreConf
-	*blockchain.Conf
 	twOauthCfg *oauth2.Config
+	*BlockChainConf
 }
 
 func (c *SysConf) String() any {

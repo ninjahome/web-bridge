@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/hopwesley/fdlimit"
 	"github.com/ninjahome/web-bridge/server"
+	"github.com/ninjahome/web-bridge/util"
 	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
@@ -18,10 +19,7 @@ const (
 )
 
 var (
-	param     = &startParam{}
-	Version   string
-	Commit    string
-	BuildTime string
+	param = &startParam{}
 )
 
 type startParam struct {
@@ -56,9 +54,9 @@ func mainRun(_ *cobra.Command, _ []string) {
 
 	if param.version {
 		fmt.Println("\n==================================================")
-		fmt.Printf("Version:\t%s\n", Version)
-		fmt.Printf("Build:\t\t%s\n", BuildTime)
-		fmt.Printf("Commit:\t\t%s\n", Commit)
+		fmt.Printf("Version:\t%s\n", util.Version)
+		fmt.Printf("Build:\t\t%s\n", util.BuildTime)
+		fmt.Printf("Commit:\t\t%s\n", util.Commit)
 		fmt.Println("==================================================")
 		return
 	}
