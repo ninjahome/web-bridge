@@ -33,7 +33,7 @@ endif
 
 BINDIR=$(INCLUDE)/bin
 
-all: pbs ../sol build
+all: pbs ../blockchain/sol build
 
 build:
 	GOOS=$(OS) GOARCH=amd64 $(GOBUILD) -o $(BINDIR)/$(NAME)
@@ -42,7 +42,7 @@ pbs:
 	cd pbs/ && $(MAKE)
 
 sol:
-	cd ../sol/ && $(MAKE)
+	cd blockchain/sol/ && $(MAKE)
 
 target:=mac
 
