@@ -7,7 +7,7 @@ PLATFORM := $(shell uname -o)
 COMMIT := $(shell git rev-parse HEAD)
 VERSION ?= $(shell git describe --tags ${COMMIT} 2> /dev/null || echo "$(COMMIT)")
 BUILD_TIME := $(shell LANG=en_US date +"%F_%T_%z")
-ROOT := github.com/ninjahome/web-bridge/game_lottery
+ROOT := github.com/ninjahome/web-bridge/util
 LD_FLAGS := -X $(ROOT).Version=$(VERSION) -X $(ROOT).Commit=$(COMMIT) -X $(ROOT).BuildTime=$(BUILD_TIME)
 
 NAME := game_lottery.exe

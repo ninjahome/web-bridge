@@ -141,6 +141,7 @@ func (c *SysConf) String() any {
 	s += "\n" + c.HttpConf.String()
 	s += "\n" + c.TwitterConf.String()
 	s += "\n" + c.FileStoreConf.String()
+	s += "\n" + c.BlockChainConf.String()
 	s += "\n=============================================================="
 	return s
 }

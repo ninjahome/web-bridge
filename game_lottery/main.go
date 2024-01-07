@@ -3,7 +3,6 @@ package main
 import (
 	"cloud.google.com/go/firestore"
 	"context"
-	"crypto/ecdsa"
 	"encoding/hex"
 	"encoding/json"
 	"flag"
@@ -12,7 +11,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ninjahome/web-bridge/blockchain/sol/ethapi"
 	"github.com/ninjahome/web-bridge/server"
@@ -36,16 +34,50 @@ const (
 	TxStatusFailed
 )
 
-var (
-	Version   string
-	Commit    string
-	BuildTime string
-)
+func initConfig(filePath string) *server.SysConf {
+	cf := new(server.SysConf)
 
+	bts, err := os.ReadFile(filePath)
+	if err != nil {
+		panic(err)
+	}
+	if err = json.Unmarshal(bts, &cf); err != nil {
+		panic(err)
+	}
+	util.SetLogLevel(cf.LogLevel)
+	fmt.Println(cf.String())
+	return cf
+}
+
+func readWallet(filePath string) *keystore.Key {
+	for {
+		fmt.Print("Enter Password: ")
+		passwordBytes, err := terminal.ReadPassword(int(os.Stdin.Fd()))
+		if err != nil {
+			fmt.Println("\nError reading password:" + err.Error())
+			continue
+		}
+
+		password := string(passwordBytes)
+
+		jsonBytes, err := os.ReadFile(filePath)
+		if err != nil {
+			panic(err)
+		}
+
+		key, err := keystore.DecryptKey(jsonBytes, password)
+		if err != nil {
+			fmt.Println("failed to decrypt wallet:", err.Error())
+			continue
+		}
+
+		return key
+	}
+}
 func main() {
 
 	walletFile := flag.String("wallet", "dessage.key", "wallet file")
-	confFile := flag.String("conf", "game.conf", "config file ")
+	confFile := flag.String("conf", "config.json", "config file ")
 	firstRoundRandom := flag.String("random", "", "first round random number")
 	version := flag.Bool("version", false, "game_lottery --version")
 	flag.Parse()
@@ -58,46 +90,17 @@ func main() {
 		fmt.Println("==================================================")
 		return
 	}
+	cf := initConfig(*confFile)
+	key := readWallet(*walletFile)
 
-	cf := new(server.SysConf)
-
-	bts, err := os.ReadFile(*confFile)
-	if err != nil {
-		panic(err)
-	}
-	if err = json.Unmarshal(bts, &cf); err != nil {
-		panic(err)
-	}
-
-	if err != nil {
-		panic(err)
-	}
-	fmt.Print("Enter Password: ")
-	passwordBytes, err := terminal.ReadPassword(int(os.Stdin.Fd()))
-	if err != nil {
-		fmt.Println("\nError reading password")
-		return
-	}
-
-	password := string(passwordBytes)
-
-	jsonBytes, err := os.ReadFile(*walletFile)
-	if err != nil {
-		panic(err)
-	}
-
-	key, err := keystore.DecryptKey(jsonBytes, password)
-	if err != nil {
-		panic(err)
-	}
-
-	gs := NewGame(key.PrivateKey, cf)
-	go gs.Server()
+	gs := NewGame(key, cf)
 	if len(*firstRoundRandom) > 0 {
 		if err := gs.SetupFirstRound(*firstRoundRandom); err != nil {
 			panic(err)
 		}
 	}
+
+	go gs.Server()
 
 	waitShutdownSignal()
 }
@@ -121,7 +124,7 @@ func waitShutdownSignal() {
 }
 
 type GameService struct {
-	privateKey  *ecdsa.PrivateKey
+	key         *keystore.Key
 	conf        *server.SysConf
 	checker     *time.Ticker
 	fileCli     *firestore.Client
@@ -134,7 +137,7 @@ type GameRandomMeta struct {
 	EncryptedRandom string `json:"encrypted_random"  firestore:"encrypted_random"`
 	RandomHash      string `json:"random_hash"  firestore:"random_hash"`
 	RandomLastRound string `json:"random_last_round"  firestore:"random_last_round"`
-	DiscoverHash    string `json:"discover_hash"  firestore:"discover_hash"`
+	DiscoverTxHash  string `json:"discover_hash"  firestore:"discover_hash"`
 	LastRoundStatus int8   `json:"last_round_status"  firestore:"last_round_status"`
 }
 
@@ -144,7 +147,7 @@ type GameResult struct {
 	Success bool   `json:"success"`
 }
 
-func NewGame(key *ecdsa.PrivateKey, cf *server.SysConf) *GameService {
+func NewGame(key *keystore.Key, cf *server.SysConf) *GameService {
 	util.SetLogLevel(cf.LogLevel)
 	ctx := context.Background()
 	var client *firestore.Client
@@ -159,11 +162,18 @@ func NewGame(key *ecdsa.PrivateKey, cf *server.SysConf) *GameService {
 		panic(err)
 	}
 	t := time.NewTicker(time.Duration(cf.GameTimeInMinute) * time.Minute)
-	return &GameService{privateKey: key, conf: cf, checker: t, fileCli: client, ctx: ctx, txResult: make(chan *GameResult, 1)}
+	return &GameService{key: key,
+		conf:     cf,
+		checker:  t,
+		fileCli:  client,
+		ctx:      ctx,
+		txResult: make(chan *GameResult, 1)}
 }
 
 func (gs *GameService) performGameCheck() (*big.Int, bool) {
+	util.LogInst().Info().Msg("time to check game status")
 	if gs.isWaitingTx {
+		util.LogInst().Info().Msg("game checking:waiting for transaction packaging")
 		return nil, false
 	}
 	curNo, nextTime, err := gs.gameTimeOn()
@@ -172,10 +182,10 @@ func (gs *GameService) performGameCheck() (*big.Int, bool) {
 		return nil, false
 	}
 
-	util.LogInst().Info().Msg("start to check game time")
-
-	ti := time.Now().Add(10 * time.Minute)
+	ti := time.Now().Add(time.Duration(gs.conf.GameTimeInMinute) * time.Minute)
 	if ti.Sub(*nextTime) <= 0 {
+		util.LogInst().Debug().Str("current-round", curNo.String()).
+			Str("next-time", nextTime.String()).Msg("time is not on")
 		return curNo, false
 	}
 	util.LogInst().Info().Int64("round-no", curNo.Int64()).Msg("start to find winner")
@@ -183,7 +193,7 @@ func (gs *GameService) performGameCheck() (*big.Int, bool) {
 }
 
 func (gs *GameService) Server() {
-
+	util.LogInst().Info().Msg("game server start.......")
 	for {
 		select {
 		case <-gs.checker.C:
@@ -193,9 +203,13 @@ func (gs *GameService) Server() {
 				continue
 			}
 
-			curRandomNumber, _ := gs.loadCurrentEncryptedRandom(curNo)
-
-			nextRandomEncrypted, nextHash, err := util.GenerateRandomData(gs.privateKey.D.Bytes())
+			curRandomNumber, err := gs.loadCurrentEncryptedRandom(curNo)
+			if err != nil {
+				util.LogInst().Err(err).Str("current-round", curNo.String()).Msg("failed to load random raw data")
+				continue
+			}
+			privateBytes := gs.key.PrivateKey.D.Bytes()
+			nextRandomEncrypted, nextHash, err := util.GenerateRandomData(privateBytes)
 			if err != nil {
 				util.LogInst().Err(err).Msg("generate random for next round failed")
 				continue
@@ -210,7 +224,7 @@ func (gs *GameService) Server() {
 			var meta = GameRandomMeta{
 				RandomHash:      hex.EncodeToString(nextHash),
 				EncryptedRandom: nextRandomEncrypted,
-				DiscoverHash:    tx,
+				DiscoverTxHash:  tx,
 				LastRoundStatus: TxStatusInit,
 			}
 			err = gs.saveDiscoverInfo(curNo, meta)
@@ -219,6 +233,10 @@ func (gs *GameService) Server() {
 			}
 
 		case result := <-gs.txResult:
+			util.LogInst().Debug().Bool("status", result.Success).
+				Str("current-round", result.RoundNo).
+				Msg("transaction package success")
+
 			err := gs.updateDiscoverInfo(result)
 			if err != nil {
 				util.LogInst().Err(err).Msg("update discover result failed")
@@ -230,6 +248,7 @@ func (gs *GameService) Server() {
 func (gs *GameService) gameTimeOn() (*big.Int, *time.Time, error) {
 	cli, err := ethclient.Dial(gs.conf.InfuraUrl)
 	if err != nil {
+		util.LogInst().Err(err).Msg("dial eth failed")
 		return nil, nil, err
 	}
 	defer cli.Close()
@@ -237,23 +256,27 @@ func (gs *GameService) gameTimeOn() (*big.Int, *time.Time, error) {
 	contractAddress := common.HexToAddress(gs.conf.GameContract)
 	game, err := ethapi.NewTweetLotteryGame(contractAddress, cli)
 	if err != nil {
+		util.LogInst().Err(err).Str("contract-address", gs.conf.GameContract).Msg("failed create game obj")
 		return nil, nil, err
 	}
 
-	if err != nil {
-		return nil, nil, err
-	}
 	roundNo, err := game.CurrentRoundNo(nil)
-
 	if err != nil {
+		util.LogInst().Err(err).Str("contract-address", gs.conf.GameContract).Msg("failed to fetch current round no from blockchain")
 		return nil, nil, err
 	}
+
 	result, err := game.GameInfoRecord(nil, roundNo)
 	if err != nil {
+		util.LogInst().Err(err).Str("current-round", roundNo.String()).
+			Msg("failed to fetch game info of current round")
 		return nil, nil, err
 	}
 
 	discoverTime := time.Unix(result.DiscoverTime.Int64(), 0)
+	util.LogInst().Debug().Str("current-round", roundNo.String()).
+		Str("discover-time", discoverTime.String()).
+		Msg("query game info success")
 	return roundNo, &discoverTime, nil
 }
 
@@ -264,15 +287,7 @@ func (gs *GameService) getTxClient() (*ethclient.Client, *bind.TransactOpts, err
 		return nil, nil, err
 	}
 
-	publicKey := gs.privateKey.Public()
-	publicKeyECDSA, ok := publicKey.(*ecdsa.PublicKey)
-	if !ok {
-		util.LogInst().Warn().Msg("cannot assert type: publicKey is not of type *ecdsa.PublicKey")
-		return nil, nil, err
-	}
-
-	fromAddress := crypto.PubkeyToAddress(*publicKeyECDSA)
-	nonce, err := client.PendingNonceAt(context.Background(), fromAddress)
+	nonce, err := client.PendingNonceAt(context.Background(), gs.key.Address)
 	if err != nil {
 		util.LogInst().Err(err).Msg("pending nonce failed")
 		return nil, nil, err
@@ -284,7 +299,7 @@ func (gs *GameService) getTxClient() (*ethclient.Client, *bind.TransactOpts, err
 		return nil, nil, err
 	}
 
-	auth, err := bind.NewKeyedTransactorWithChainID(gs.privateKey, big.NewInt(gs.conf.ChainID))
+	auth, err := bind.NewKeyedTransactorWithChainID(gs.key.PrivateKey, big.NewInt(gs.conf.ChainID))
 	if err != nil {
 		util.LogInst().Err(err).Msg("suggest gas failed")
 		return nil, nil, err
@@ -299,14 +314,21 @@ func (gs *GameService) getTxClient() (*ethclient.Client, *bind.TransactOpts, err
 }
 
 func (gs *GameService) discoverWinner(random *big.Int, nextRoundRandomHash []byte, curNo *big.Int) (string, error) {
+	util.LogInst().Info().Str("current-no", curNo.String()).Msg("start to discover winner")
 	client, auth, err := gs.getTxClient()
 	if err != nil {
 		util.LogInst().Err(err).Msg("get transaction client failed")
 		return "", err
 	}
+	defer client.Close()
 
 	contractAddress := common.HexToAddress(gs.conf.GameContract)
 	game, err := ethapi.NewTweetLotteryGame(contractAddress, client)
+	if err != nil {
+		util.LogInst().Err(err).Str("contract-address", gs.conf.GameContract).
+			Msg("failed to create game from contract")
+		return "", err
+	}
 	var byteArray [32]byte
 	copy(byteArray[:32], nextRoundRandomHash)
 
@@ -333,29 +355,34 @@ func (gs *GameService) waitTransactionResult(tx *types.Transaction, client *ethc
 		RoundNo: curNo.String(),
 		Random:  random.String(),
 	}
+
 	for {
+		util.LogInst().Debug().Str("current-no", curNo.String()).
+			Str("tx-hash", tx.Hash().String()).
+			Msg("check receipt status")
 		select {
 		case <-queryTicker.C:
 			receipt, err := client.TransactionReceipt(context.Background(), tx.Hash())
 			if err != nil {
-				util.LogInst().Err(err).Msg("Error checking transaction receipt:")
+				util.LogInst().Err(err).Str("current-no", curNo.String()).
+					Str("tx-hash", tx.Hash().String()).
+					Msg("Error checking transaction receipt:")
 				continue
 			}
 
 			if receipt == nil {
-				util.LogInst().Info().Msg("transaction is in process")
+				util.LogInst().Info().Str("current-no", curNo.String()).
+					Str("tx-hash", tx.Hash().String()).Msg("transaction is in process")
 				continue
 			}
 
-			if receipt.Status != types.ReceiptStatusSuccessful {
-				util.LogInst().Warn().Msg("transaction failed, block number:")
-				result.Success = false
-				gs.txResult <- &result
-			}
+			result.Success = receipt.Status == types.ReceiptStatusSuccessful
 
-			util.LogInst().Warn().Msg("winner discover success")
-			result.Success = true
+			util.LogInst().Warn().Str("current-no", curNo.String()).
+				Str("tx-hash", tx.Hash().String()).Bool("tx-status", result.Success).
+				Msg("winner discover transaction finished")
 			gs.txResult <- &result
+			return
 		}
 	}
 }
@@ -376,12 +403,13 @@ func (gs *GameService) loadCurrentEncryptedRandom(no *big.Int) (*big.Int, error)
 		return nil, err
 	}
 
-	privateKeyBytes := gs.privateKey.D.Bytes()
+	privateKeyBytes := gs.key.PrivateKey.D.Bytes()
 	curRandomNumber, err := util.DecryptRandomData(gr.EncryptedRandom, privateKeyBytes)
 	if err != nil {
 		util.LogInst().Err(err).Msg("decrypt random of current round from encrypted data failed")
 		return nil, err
 	}
+	util.LogInst().Debug().Str("current-round", no.String()).Msg("random raw data load success")
 	return curRandomNumber, nil
 }
 
@@ -417,6 +445,5 @@ func (gs *GameService) updateDiscoverInfo(result *GameResult) error {
 		{Path: "random_last_round", Value: result.Random},
 		{Path: "last_round_status", Value: resultStatus},
 	})
-
 	return err
 }
