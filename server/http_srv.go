@@ -45,8 +45,8 @@ func NewMainService() *MainService {
 	}
 	r.HandleFunc("/twitter/{web3-id}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		username := vars["web3-id"]
-		fmt.Fprintf(w, "Profile of user: %s", username)
+		web3ID := vars["web3-id"]
+		userProfile(w, r, web3ID)
 	})
 
 	for route, twService := range cfgActionRouter {

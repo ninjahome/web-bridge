@@ -10,7 +10,7 @@ BUILD_TIME := $(shell LANG=en_US date +"%F_%T_%z")
 ROOT := github.com/ninjahome/web-bridge/util
 LD_FLAGS := -X $(ROOT).Version=$(VERSION) -X $(ROOT).Commit=$(COMMIT) -X $(ROOT).BuildTime=$(BUILD_TIME)
 
-NAME := dessage-web.exe
+NAME := dessage-twitter.exe
 OS := windows
 
 ifeq ($(PLATFORM), Msys)
@@ -19,7 +19,7 @@ else ifeq ($(PLATFORM), Cygwin)
     INCLUDE := ${shell echo "$(GOPATH)"|sed -e 's/\\/\//g'}
 else
 	INCLUDE := $(GOPATH)
-	NAME=dessage-web
+	NAME=dessage-twitter
 	OS=linux
 endif
 
@@ -45,6 +45,9 @@ sol:
 	cd blockchain/sol/ && $(MAKE)
 
 target:=mac
+
+tar:
+	tar -czvf assets.tar.gz assets
 
 mac:
 	GOOS=darwin go build -ldflags '-w -s' -o $(NAME).mac  -ldflags="$(LD_FLAGS)"

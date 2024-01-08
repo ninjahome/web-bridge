@@ -249,7 +249,7 @@ func verifyTwitterCredentials(ut *TwUserAccessToken) (*VerifiedTwitterUser, erro
 	if err := json.NewDecoder(resp.Body).Decode(&verifiedUser); err != nil {
 		return nil, err
 	}
-	bts, _ := json.Marshal(verifiedUser)
-	util.LogInst().Debug().Msg(string(bts))
+	//bts, _ := json.Marshal(verifiedUser)
+	//util.LogInst().Debug().Msg(string(bts))
 	return &verifiedUser, nil
 }
