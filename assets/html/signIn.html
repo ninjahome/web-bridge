@@ -4,77 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
+    <link rel="icon" href="/assets/file/favicon.ico" type="image/x-icon">
     <script src="/assets/js/utils.js"></script>
 </head>
 <style>
-    body {
-        font-family: Arial, sans-serif;
+    * {
         margin: 0;
         padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Helvetica, Arial, sans-serif;
         display: flex;
         height: 100vh;
     }
 
+    .left-container, .right-container {
+        /* 使用 box-sizing: border-box; 可以让 padding 和 border 包含在宽度内 */
+        box-sizing: border-box;
+    }
+
+    @media (max-width: 1000px) {
+        .left-container {
+            display: none; /* 当屏幕宽度小于1000px时隐藏左侧容器 */
+        }
+
+        .right-container {
+            width: 100%; /* 使右侧容器填满整个可用空间 */
+        }
+    }
+
     .left-container {
-        flex: 4;
+        flex: 3;
         background-color: #f0f0f0;
         align-items: center;
         justify-content: center;
-        position: relative;
-        display: inline-block;
     }
 
     .left-container img {
+        max-height: 100%;
         max-width: 100%;
-    }
-
-    .info-section {
-        position: absolute;
-
-        top: 20px; /* 距离顶部的距离 */
-        left: 20px; /* 距离左侧的距离 */
-        color: #ffffff; /* 文字颜色 */
-        align-items: center; /* 在交叉轴上居中对齐 */
-        justify-content: center; /* 在主轴上居中对齐 */
-        text-align: center; /* 设置文本水平居中 */
-    }
-
-    .info-section > div {
-        margin-right: 20px; /* 设置元素之间的右边距，可根据需要调整 */
-        display: flex;
-        flex-direction: column;
-        align-items: center; /* 在交叉轴上居中对齐 */
-    }
-
-    .product-description {
-        font-size: 16px;
-    }
-
-    .logo {
-        width: 48px;
-        display: block;
-        margin: 0 auto; /* 使图片水平居中 */
-    }
-
-    .product-description {
-        font-family: Helvetica, Arial, sans-serif;
-        color: #1F1E1E;
-        font-size: 14px;
-    }
-    /* 设置背景图的样式 */
-    img {
-        max-width: 100%;
-        height: auto;
         display: block;
     }
+
     /* 右侧的样式 */
     .right-container {
-        flex: 6;
+        flex: 7;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
         background-color: #F9F9FA;
+        padding-top: 240px;
+    }
+
+    .container {
+        margin: 48px;
+    }
+    .info-section {
+        margin-bottom: 12px;
+    }
+
+    .logo {
+        width: 52px;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .cached-twitter-name {
+        font-size: 20px;
+        font-weight: bold;
+        color: #1F1E1E;
+    }
+
+    .product-description {
+        color: #1F1E1E;
+        font-size: 16px;
+        margin-top: 4px;
     }
 
     .web3-id-label {
@@ -84,39 +90,36 @@
         padding: 16px 0; /* 添加一些内边距，使内容不紧贴边框 */
         display: inline-block; /* 使背景色和边框只包裹内容 */
         word-wrap: break-word; /* 在超出宽度时自动换行 */
+        margin-bottom: 16px;
     }
 
     button {
         width: 386px;
-        height: 52px;
+        height: 46px;
         font-size: 16px;
         font-weight: bold;
         color: white;
-        background-color: #4848D8;
-        margin: 16px 0;
+        background-color: #1B1B1D;
         border: none;
+        margin-bottom: 16px;
     }
 
 </style>
 <body>
 <div class="left-container">
-    <!-- 信息展示部分 -->
-    <div class="info-section">
-        <div>
-            <img id="cached-twitter-logo" src="/assets/file/logo.png" alt="Dessage Logo" class="logo">
-            <div class="product-description">A dapp powered by Ninja Protocol and Blockchain.</div>
-        </div>
-        <div class="cached-twitter-name" id="cached-twitter-name">Dessage</div>
-    </div>
     <!-- 背景图 -->
     <img src="/assets/file/left-image.jpg" alt="">
 </div>
 <div class="right-container">
     <div class="container">
+        <!-- 信息展示部分 -->
+        <div class="info-section">
+            <img id="cached-twitter-logo" src="/assets/file/logo.png" alt="Dessage Logo" class="logo">
+            <div class="cached-twitter-name" id="cached-twitter-name">Dessage</div>
+            <div class="product-description">A dapp powered by Ninja Protocol and Blockchain.</div>
+        </div>
         <!-- 登录部分 -->
         <div class="login-section">
-            <img src="/assets/file/2nd.png">
-            <h1 style="margin-top: 4px; margin-bottom: 16px;">web3 ID已生成,请登录</h1>
             <div class="web3-id-label" id="web3-id-label"><strong style="margin-left: 8px; margin-bottom: 4px; display: inline-block; font-size: 14px">Web3 ID:</strong> <span id="web3-id" style="margin: 0 8px">Your Blockchain Address</span></div>
             <div id="metamask-div">
                 <button class="metamask-button" id="metamask-button" onclick="connectToMetamask()">Connect with Metamask
@@ -270,7 +273,6 @@
             hideLoading();
         }
     }
-
 </script>
 </body>
 </html>
