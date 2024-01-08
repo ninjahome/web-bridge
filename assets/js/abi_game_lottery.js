@@ -4,6 +4,63 @@ const gameContractABI =`
     {
         "inputs": [
             {
+                "internalType": "uint8",
+                "name": "newRate",
+                "type": "uint8"
+            }
+        ],
+        "name": "adminChangeBonusRateToWinner",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "newTimeInMinutes",
+                "type": "uint256"
+            }
+        ],
+        "name": "adminChangeRoundTime",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bool",
+                "name": "isOpen",
+                "type": "bool"
+            }
+        ],
+        "name": "adminOpenToOuterPlayer",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "admin",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "isDelete",
+                "type": "bool"
+            }
+        ],
+        "name": "adminOperation",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "bytes32",
                 "name": "hash",
                 "type": "bytes32"
@@ -49,6 +106,122 @@ const gameContractABI =`
         ],
         "name": "AdminOperation",
         "type": "event"
+    },
+    {
+        "inputs": [],
+        "name": "adminServiceFeeWithdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "newRate",
+                "type": "uint8"
+            }
+        ],
+        "name": "adminSetServiceFeeRateForTicketBuy",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "priceInFinney",
+                "type": "uint256"
+            }
+        ],
+        "name": "adminSetTicketPriceForOuter",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint8",
+                "name": "newRate",
+                "type": "uint8"
+            }
+        ],
+        "name": "adminSetWithdrawFeeRate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address payable",
+                "name": "recipient",
+                "type": "address"
+            }
+        ],
+        "name": "adminUpgradeToNewRule",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "ticketNo",
+                "type": "uint256"
+            }
+        ],
+        "name": "buyTicketFromOuter",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bool",
+                "name": "stop",
+                "type": "bool"
+            }
+        ],
+        "name": "changeOwner",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "changeOwner",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "random",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "nextRoundRandomHash",
+                "type": "bytes32"
+            }
+        ],
+        "name": "discoverWinner",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
     },
     {
         "anonymous": false,
@@ -176,6 +349,19 @@ const gameContractABI =`
         "type": "event"
     },
     {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "hash",
+                "type": "bytes32"
+            }
+        ],
+        "name": "skipToNextRound",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
         "anonymous": false,
         "inputs": [
             {
@@ -199,6 +385,34 @@ const gameContractABI =`
         ],
         "name": "TicketSold",
         "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32",
+                "name": "tweetHash",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "tweetOwner",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "buyer",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "voteNo",
+                "type": "uint256"
+            }
+        ],
+        "name": "tweetBought",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
     },
     {
         "anonymous": false,
@@ -276,6 +490,24 @@ const gameContractABI =`
         "type": "event"
     },
     {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bool",
+                "name": "all",
+                "type": "bool"
+            }
+        ],
+        "name": "withdraw",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
         "anonymous": false,
         "inputs": [
             {
@@ -293,6 +525,10 @@ const gameContractABI =`
         ],
         "name": "WithdrawService",
         "type": "event"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
     },
     {
         "inputs": [
@@ -407,122 +643,6 @@ const gameContractABI =`
     {
         "inputs": [
             {
-                "internalType": "uint8",
-                "name": "newRate",
-                "type": "uint8"
-            }
-        ],
-        "name": "adminChangeBonusRateToWinner",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "newTimeInMinutes",
-                "type": "uint256"
-            }
-        ],
-        "name": "adminChangeRoundTime",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "bool",
-                "name": "isOpen",
-                "type": "bool"
-            }
-        ],
-        "name": "adminOpenToOuterPlayer",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "admin",
-                "type": "address"
-            },
-            {
-                "internalType": "bool",
-                "name": "isDelete",
-                "type": "bool"
-            }
-        ],
-        "name": "adminOperation",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "adminServiceFeeWithdraw",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint8",
-                "name": "newRate",
-                "type": "uint8"
-            }
-        ],
-        "name": "adminSetServiceFeeRateForTicketBuy",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "priceInFinney",
-                "type": "uint256"
-            }
-        ],
-        "name": "adminSetTicketPriceForOuter",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint8",
-                "name": "newRate",
-                "type": "uint8"
-            }
-        ],
-        "name": "adminSetWithdrawFeeRate",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address payable",
-                "name": "recipient",
-                "type": "address"
-            }
-        ],
-        "name": "adminUpgradeToNewRule",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "address",
                 "name": "",
                 "type": "address"
@@ -537,19 +657,6 @@ const gameContractABI =`
             }
         ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "ticketNo",
-                "type": "uint256"
-            }
-        ],
-        "name": "buyTicketFromOuter",
-        "outputs": [],
-        "stateMutability": "payable",
         "type": "function"
     },
     {
@@ -596,32 +703,6 @@ const gameContractABI =`
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "bool",
-                "name": "stop",
-                "type": "bool"
-            }
-        ],
-        "name": "changeOwner",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
-            }
-        ],
-        "name": "changeOwner",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
         "inputs": [],
         "name": "checkPluginInterface",
         "outputs": [
@@ -645,24 +726,6 @@ const gameContractABI =`
             }
         ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "random",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bytes32",
-                "name": "nextRoundRandomHash",
-                "type": "bytes32"
-            }
-        ],
-        "name": "discoverWinner",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -802,19 +865,6 @@ const gameContractABI =`
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "hash",
-                "type": "bytes32"
-            }
-        ],
-        "name": "skipToNextRound",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
         "inputs": [],
         "name": "systemSettings",
         "outputs": [
@@ -909,6 +959,30 @@ const gameContractABI =`
         "inputs": [
             {
                 "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "ticketsRecords",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
                 "name": "round",
                 "type": "uint256"
             },
@@ -935,30 +1009,6 @@ const gameContractABI =`
         "type": "function"
     },
     {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "ticketsRecords",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
         "inputs": [],
         "name": "totalBonus",
         "outputs": [
@@ -969,52 +1019,6 @@ const gameContractABI =`
             }
         ],
         "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "bytes32",
-                "name": "tweetHash",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "address",
-                "name": "tweetOwner",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "buyer",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "voteNo",
-                "type": "uint256"
-            }
-        ],
-        "name": "tweetBought",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "amount",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bool",
-                "name": "all",
-                "type": "bool"
-            }
-        ],
-        "name": "withdraw",
-        "outputs": [],
-        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -1029,10 +1033,6 @@ const gameContractABI =`
         ],
         "stateMutability": "view",
         "type": "function"
-    },
-    {
-        "stateMutability": "payable",
-        "type": "receive"
     }
 ]
 `;

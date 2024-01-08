@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ninjahome/web-bridge/server/database"
 	"github.com/ninjahome/web-bridge/util"
 	"html/template"
 	"net/http"
@@ -30,8 +31,8 @@ func (sp *SignDataByEth) RawData() string {
 	return string(bts)
 }
 
-func (sp *SignDataByEth) ParseNinjaTweet() (*NinjaTweet, error) {
-	var tweetContent NinjaTweet
+func (sp *SignDataByEth) ParseNinjaTweet() (*database.NinjaTweet, error) {
+	var tweetContent database.NinjaTweet
 	var err = json.Unmarshal([]byte(sp.Message), &tweetContent)
 	if err != nil {
 		util.LogInst().Err(err).Msg("Error parsing tweet ")
@@ -50,12 +51,12 @@ func (sp *SignDataByEth) ParseNinjaTweet() (*NinjaTweet, error) {
 	}
 	tweetContent.Signature = sp.Signature
 	tweetContent.PrefixedHash = prefixedHash
-	tweetContent.PaymentStatus = TxStNotPay
+	tweetContent.PaymentStatus = database.TxStNotPay
 
 	return &tweetContent, nil
 }
 
-func queryTwBasicById(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {
+func queryTwBasicById(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 	var needSyncFromTwitter = r.URL.Query().Get("forceSync")
 	forceSync, err := strconv.ParseBool(needSyncFromTwitter)
 	if err != nil {
@@ -70,7 +71,7 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) 
 		return
 	}
 
-	var userdata *TWUserInfo
+	var userdata *database.TWUserInfo
 	if forceSync {
 		if twitterID != nu.TwID && forceSync {
 			util.LogInst().Warn().Str("twitter-id-query", twitterID).
@@ -95,14 +96,14 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) 
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		userdata = &TWUserInfo{
+		userdata = &database.TWUserInfo{
 			ID:                   twitterUser.IDStr,
 			Name:                 twitterUser.Name,
 			ScreenName:           twitterUser.ScreenName,
 			Description:          twitterUser.Description,
 			ProfileImageUrlHttps: twitterUser.ProfileImageUrlHttps,
 		}
-		err = DbInst().UpdateBasicInfo(userdata)
+		err = database.DbInst().UpdateBasicInfo(userdata)
 		if err != nil {
 			util.LogInst().Warn().Str("twitter-id", twitterID).
 				Str("eth-addr", nu.EthAddr).Msg("update twitter new user data failed")
@@ -110,7 +111,7 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) 
 			return
 		}
 	} else {
-		userdata, err = DbInst().TwitterBasicInfo(twitterID)
+		userdata, err = database.DbInst().TwitterBasicInfo(twitterID)
 		if err != nil {
 			util.LogInst().Err(err).Str("twitter-id", twitterID).
 				Str("eth-addr", nu.EthAddr).Msg("query twitter data failed")
@@ -125,7 +126,7 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) 
 		Str("eth-addr", nu.EthAddr).Msg("query twitter basic info success")
 }
 
-func mainPage(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {
+func mainPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 
 	data := struct {
 		NinjaUsrInfoJson template.JS
@@ -140,19 +141,19 @@ func mainPage(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {
 	}
 }
 
-func signOut(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo) {
+func signOut(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
 	_ = SMInst().Del(sesKeyForRightCheck, r, w)
 	http.Redirect(w, r, "/signIn", http.StatusFound)
 }
 
-func validateUsrRights(r *http.Request) *NinjaUsrInfo {
+func validateUsrRights(r *http.Request) *database.NinjaUsrInfo {
 	var data, err = SMInst().Get(sesKeyForRightCheck, r)
 	if err != nil {
 		util.LogInst().Warn().Msgf("%s", err.Error())
 		return nil
 	}
 
-	var njUser, errNu = NJUsrInfoMust(data.([]byte))
+	var njUser, errNu = database.NJUsrInfoMust(data.([]byte))
 	if errNu != nil {
 		util.LogInst().Warn().Msgf("ninja user not found")
 		return nil
@@ -160,7 +161,7 @@ func validateUsrRights(r *http.Request) *NinjaUsrInfo {
 	return njUser
 }
 
-func bindingWeb3ID(w http.ResponseWriter, r *http.Request, origNu *NinjaUsrInfo) {
+func bindingWeb3ID(w http.ResponseWriter, r *http.Request, origNu *database.NinjaUsrInfo) {
 	param := &SignDataByEth{}
 	err := util.ReadRequest(r, param)
 	if err != nil {
@@ -173,7 +174,7 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request, origNu *NinjaUsrInfo)
 		http.Error(w, "lost payload in sign data", http.StatusBadRequest)
 		return
 	}
-	twUsrData := &TWUserInfo{}
+	twUsrData := &database.TWUserInfo{}
 	err = json.Unmarshal([]byte(param.PayLoad.(string)), twUsrData)
 	if err != nil {
 		util.LogInst().Err(err).Msg("parse twitter data failed")
@@ -204,13 +205,13 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request, origNu *NinjaUsrInfo)
 		Str("twitter-id", data.TwID).
 		Int64("bind-time", data.BindTime).Msg("sign data success")
 
-	bindDataToStore := &Web3Binding{
+	bindDataToStore := &database.Web3Binding{
 		TwitterID: data.TwID,
 		EthAddr:   data.EthAddr,
 		SignUpAt:  data.BindTime,
 		Signature: param.Signature,
 	}
-	newNu, err := DbInst().BindingWeb3ID(bindDataToStore, twUsrData)
+	newNu, err := database.DbInst().BindingWeb3ID(bindDataToStore, twUsrData)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save binding data  failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)

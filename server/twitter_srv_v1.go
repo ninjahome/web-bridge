@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dghubble/oauth1"
+	"github.com/ninjahome/web-bridge/server/database"
 	"github.com/ninjahome/web-bridge/util"
 	"image"
 	"image/jpeg"
@@ -19,7 +20,7 @@ const (
 	accessPointMedia = "https://upload.twitter.com/1.1/media/upload.json"
 )
 
-func checkTwitterRights(twitterUid string, r *http.Request) (*TwUserAccessToken, error) {
+func checkTwitterRights(twitterUid string, r *http.Request) (*database.TwUserAccessToken, error) {
 	if len(twitterUid) == 0 {
 		util.LogInst().Warn().Msg("no twitter id for ninja user:" + twitterUid)
 		return nil, fmt.Errorf("bind twitter first")
@@ -28,7 +29,7 @@ func checkTwitterRights(twitterUid string, r *http.Request) (*TwUserAccessToken,
 	if err == nil {
 		return ut, nil
 	}
-	ut, err = DbInst().GetTwAccessToken(twitterUid)
+	ut, err = database.DbInst().GetTwAccessToken(twitterUid)
 	if err != nil {
 		util.LogInst().Err(err).Str("twitter-id", twitterUid).Msg("access token not in db")
 		return nil, err
@@ -71,7 +72,7 @@ func twitterApiPost(url string, token *oauth1.Token,
 	return nil
 }
 
-func prepareTweet(njTweet *NinjaTweet, ut *TwUserAccessToken) (*TweetRequest, error) {
+func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) (*TweetRequest, error) {
 
 	var appendStr = _globalCfg.GetNjProtocolAd(njTweet.CreateAt)
 	var combinedTxt = njTweet.Txt + appendStr
@@ -116,7 +117,7 @@ func prepareTweet(njTweet *NinjaTweet, ut *TwUserAccessToken) (*TweetRequest, er
 	return req, nil
 }
 
-func postTweets(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {
+func postTweets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 	var ut, err = checkTwitterRights(nu.TwID, r)
 	if err != nil {
 		util.LogInst().Err(err).Msg("load access token failed")
@@ -153,7 +154,7 @@ func postTweets(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {
 	}
 
 	njTweet.TweetId = tweetResponse.Data.ID
-	err = DbInst().SaveTweet(njTweet)
+	err = database.DbInst().SaveTweet(njTweet)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save posted tweet failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)

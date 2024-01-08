@@ -10,6 +10,37 @@ function formatTime(createTime) {
     return `${hours}:${minutes}:${seconds} ${day}/${month}`;
 }
 
+function startCountdown(targetTime,callback) {
+    const countdownInterval = setInterval(() => {
+        const now = new Date().getTime();
+        const timeLeft = targetTime - now;
+
+        if (timeLeft <= 0) {
+            clearInterval(countdownInterval);
+            callback('正在开奖中');
+            return;
+        }
+
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        let countdownText = '';
+        if (days > 0) {
+            countdownText += days + '天 ';
+        }
+        if (hours > 0) {
+            countdownText += hours + '小时 ';
+        }
+        if (minutes > 0) {
+            countdownText += minutes + '分 ';
+        }
+        countdownText += seconds + '秒';
+
+        callback(countdownText);
+    }, 1000);
+}
 
 function toHex(number) {
     return '0x' + number.toString(16);
@@ -28,8 +59,8 @@ function PostToSrvByJson(url, data) {
             .then(response => {
                 if (!response.ok) {
                     return response.text().then(text => {
-                        console.log(text )
-                        throw new Error('Server responded with an error:'+response.statusText);
+                        console.log(text)
+                        throw new Error('Server responded with an error:' + response.statusText);
                     });
                 }
                 return response.text();
@@ -113,24 +144,20 @@ const DefaultAvatarSrc = "/assets/file/logo.png"
 
 const __globalContractConf = new Map([
     [toHex(421614), {
-        tweetVote: "0x6500Cda46979F1956a46486B1a88768cb425E23a",
-        tweetVoteAbi: tweetVoteContractABI,
-        gameLottery: "0x842e751E5D5aCc9fB172812B7499e18Ac5Fb3F59",
-        gameLotteryAbi: gameContractABI,
+        tweetVote: "0xa3a39F3415d2024834Ef22258FC14e5cdcc3E857",
+        gameLottery: "0x6f8A1140abA568B2eA0985E136FbaB34eEd2e392",
         kolKey: "",
         kolKeyAbi: "",
-        postPrice:"0.005",
-        votePrice:"0.005"
+        postPrice: "0.005",
+        votePrice: "0.005"
     }],
     [toHex(42161), {
         tweetVote: "",
-        tweetVoteAbi: "",
         gameLottery: "",
-        gameLotteryAbi: "",
         kolKey: "",
         kolKeyAbi: "",
-        postPrice:"0.005",
-        votePrice:"0.005"
+        postPrice: "0.005",
+        votePrice: "0.005"
     }]]);
 
 
@@ -361,4 +388,24 @@ class BlockChainData {
 
         return new BlockChainData(storedData.account);
     }
+}
+
+function checkMetamaskErr(err) {
+    console.error("Transaction error: ", err);
+    hideLoading();
+
+    if (err.code === 4001) {
+        return null;
+    }
+
+    let code = err.code;
+    if (!err.data || !err.data.message) {
+        code = code + err.message;
+    } else {
+        code = "code:" + err.data.code + " " + err.data.message
+    }
+
+
+    showDialog(code);
+    return code;
 }

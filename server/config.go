@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
+	"github.com/ninjahome/web-bridge/server/database"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
 	"html/template"
@@ -39,7 +40,7 @@ var (
 )
 
 type LogicAction struct {
-	Action    func(w http.ResponseWriter, r *http.Request, token *NinjaUsrInfo)
+	Action    func(w http.ResponseWriter, r *http.Request, token *database.NinjaUsrInfo)
 	NeedToken bool
 }
 
@@ -82,50 +83,38 @@ func (c *TwitterConf) String() string {
 	return s
 }
 
-type FileStoreConf struct {
-	ProjectID      string `json:"project_id"`
-	KeyFilePath    string `json:"key_file_path"`
-	TweetsPageSize int    `json:"tweets_page_size"`
-}
-
-func (c *FileStoreConf) String() string {
-	s := "\n------file store config------"
-	s += "\nproject id:" + c.ProjectID
-	s += "\nkey path :" + c.KeyFilePath
-	s += "\ntweet page size :" + fmt.Sprintf("%d", c.TweetsPageSize)
-	s += "\n--------------------------"
-	return s
-}
-
 type BlockChainConf struct {
-	TweeTVoteContractAddress  string `json:"tweet_vote_contract_address"`
-	GamePluginContractAddress string `json:"game_plugin_contract_address"`
-	KolKeyContractAddress     string `json:"kol_key_contract_address"`
-	InfuraKey                 string `json:"infura_key"`
-	InfuraUrl                 string `json:"infura_url"`
+	TweeTVoteContractAddress string `json:"tweet_vote_contract_address"`
+	GameContract             string `json:"game_plugin_contract_address"`
+	KolKeyContractAddress    string `json:"kol_key_contract_address"`
+	InfuraUrl                string `json:"infura_url"`
+	GameTimeInMinute         int    `json:"game_time_in_minute,omitempty"`
+	TxCheckerInSeconds       int    `json:"tx_checker_in_seconds,omitempty"`
+	ChainID                  int64  `json:"chain_id,omitempty"`
 }
 
 func (c *BlockChainConf) String() string {
 	s := "\n------block chain config------"
 	s += "\ntweet vote:" + c.TweeTVoteContractAddress
-	s += "\ngame:" + c.GamePluginContractAddress
+	s += "\ngame:" + c.GameContract
 	s += "\nkol key:" + c.KolKeyContractAddress
-	s += "\ninfura key:" + c.InfuraKey
 	s += "\ninfura url:" + c.InfuraUrl
+	s += "\ngame check time(minutes):" + fmt.Sprintf("%d", c.GameTimeInMinute)
+	s += "\ntransaction check time(seconds):" + fmt.Sprintf("%d", c.TxCheckerInSeconds)
+	s += "\nchain id:" + fmt.Sprintf("%d", c.ChainID)
 	s += "\n--------------------------"
 	return s
 }
 
 type SysConf struct {
 	LogLevel string `json:"log_level"`
-	LocalRun bool   `json:"local_run"`
 	UrlHome  string `json:"url_home"`
 	HttpPort string `json:"http_port"`
 	*HttpConf
 	*TwitterConf
-	*FileStoreConf
-	*BlockChainConf
+	*database.FileStoreConf
 	twOauthCfg *oauth2.Config
+	*BlockChainConf
 }
 
 func (c *SysConf) String() any {
@@ -137,6 +126,7 @@ func (c *SysConf) String() any {
 	s += "\n" + c.HttpConf.String()
 	s += "\n" + c.TwitterConf.String()
 	s += "\n" + c.FileStoreConf.String()
+	s += "\n" + c.BlockChainConf.String()
 	s += "\n=============================================================="
 	return s
 }
@@ -153,8 +143,7 @@ func InitConf(c *SysConf) {
 	fmt.Println(c.String())
 
 	_globalCfg = c
-
-	_ = DbInst()
+	database.InitConf(c.FileStoreConf)
 
 	twitterSignUpCallbackURL = _globalCfg.UrlHome + "/tw_callback"
 	conf := _globalCfg.TwitterConf

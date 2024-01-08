@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/ninjahome/web-bridge/server/database"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
 	"io"
@@ -83,7 +84,7 @@ func postTweetsV2(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var tweetContent NinjaTweet
+	var tweetContent database.NinjaTweet
 	err = json.Unmarshal([]byte(param.Message), &tweetContent)
 	if err != nil {
 		util.LogInst().Err(err).Msg("Error parsing tweet ")
@@ -118,7 +119,7 @@ func postTweetsV2(w http.ResponseWriter, r *http.Request) {
 	}
 	tweetContent.TweetId = tweetResponse.Data.ID
 
-	err = DbInst().SaveTweet(&tweetContent)
+	err = database.DbInst().SaveTweet(&tweetContent)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save tweet failed")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -133,7 +134,7 @@ func postTweetsV2(w http.ResponseWriter, r *http.Request) {
 		Str("tweet-id", tweetContent.TweetId).Msg("Tweet posted successfully")
 }
 
-func checkTwitterRightsV2(w http.ResponseWriter, r *http.Request) (*TwUserAccessTokenV2, error) {
+func checkTwitterRightsV2(w http.ResponseWriter, r *http.Request) (*database.TwUserAccessTokenV2, error) {
 	var ninjaUsr = validateUsrRights(r)
 	if ninjaUsr == nil {
 		return nil, fmt.Errorf("sign in first")
@@ -146,11 +147,11 @@ func checkTwitterRightsV2(w http.ResponseWriter, r *http.Request) (*TwUserAccess
 	}
 	var token, errToken = getAccessTokenFromSessionV2(r)
 	if errToken == nil {
-		return &TwUserAccessTokenV2{
+		return &database.TwUserAccessTokenV2{
 			twitterUid, token,
 		}, nil
 	}
-	ut, err := DbInst().GetTwAccessTokenV2(twitterUid)
+	ut, err := database.DbInst().GetTwAccessTokenV2(twitterUid)
 	if err != nil {
 		util.LogInst().Err(err).Str("twitter-id", twitterUid).Msg("access token not in db")
 		return nil, err
@@ -162,7 +163,7 @@ func checkTwitterRightsV2(w http.ResponseWriter, r *http.Request) (*TwUserAccess
 			util.LogInst().Err(err).Str("twitter-id", twitterUid).Msg("refresh token failed")
 			return nil, err
 		}
-		err = DbInst().SaveTwAccessTokenV2(ut)
+		err = database.DbInst().SaveTwAccessTokenV2(ut)
 		if err != nil {
 			util.LogInst().Err(err).Str("twitter-id", twitterUid).Msg("save refreshed token failed")
 			return nil, err

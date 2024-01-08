@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/gorilla/mux"
 	"github.com/ninjahome/web-bridge/util"
 	"log"
 	"net/http"
@@ -17,6 +18,7 @@ const (
 )
 
 type MainService struct {
+	router *mux.Router
 }
 
 func httpRecover(url string) {
@@ -30,23 +32,28 @@ func httpRecover(url string) {
 }
 
 func NewMainService() *MainService {
-	bh := &MainService{}
-
-	http.Handle("/"+staticFileDir+"/", http.StripPrefix("/"+staticFileDir+"/", http.HandlerFunc(bh.assetsRouter)))
+	r := mux.NewRouter()
+	bh := &MainService{
+		router: r,
+	}
+	r.PathPrefix("/" + staticFileDir + "/").Handler(http.StripPrefix("/"+staticFileDir+"/", http.FileServer(http.Dir(staticFileDir))))
 
 	for route, fileName := range cfgHtmlFileRouter {
-		http.HandleFunc(route, bh.simpleRouter(fileName))
+		r.HandleFunc(route, func(w http.ResponseWriter, r *http.Request) {
+			bh.assetsStaticFile(w, r, fileName)
+		})
 	}
+	r.HandleFunc("/twitter/{web3-id}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		web3ID := vars["web3-id"]
+		userProfile(w, r, web3ID)
+	})
 
 	for route, twService := range cfgActionRouter {
 		var url, action = route, twService
-		http.HandleFunc(url, func(writer http.ResponseWriter, request *http.Request) {
+		r.HandleFunc(route, func(writer http.ResponseWriter, request *http.Request) {
 			defer httpRecover(url)
 			util.LogInst().Debug().Str("url", url).Send()
-			if request.Method != http.MethodPost && request.Method != http.MethodGet {
-				http.Error(writer, "", http.StatusMethodNotAllowed)
-				return
-			}
 
 			if request.ContentLength > util.MaxReqContentLen {
 				err := fmt.Errorf("content length too large (%d>%d)", request.ContentLength, util.MaxReqContentLen)
@@ -64,7 +71,7 @@ func NewMainService() *MainService {
 				return
 			}
 			action.Action(writer, request, token)
-		})
+		}).Methods("GET", "POST")
 	}
 
 	return bh
@@ -77,10 +84,10 @@ func (bh *MainService) Start() {
 			panic("HTTPS needs ssl key and cert files")
 		}
 		fmt.Print("HTTPS Mode")
-		panic(http.ListenAndServeTLS(":443", cfg.SSLCertFile, cfg.SSLKeyFile, nil))
+		panic(http.ListenAndServeTLS(":443", cfg.SSLCertFile, cfg.SSLKeyFile, bh.router))
 	} else {
 		fmt.Print("Simple HTTP")
-		panic(http.ListenAndServe(":"+cfg.HttpPort, nil))
+		panic(http.ListenAndServe(":"+cfg.HttpPort, bh.router))
 	}
 }
 

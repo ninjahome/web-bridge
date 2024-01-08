@@ -149,9 +149,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
      * - The provided hash must not be the zero value.
      * - The function must be called by an administrator.
      */
-    function skipToNextRound(bytes32 hash) public onlyAdmin noReentrant {
-        require(hash != bytes32(0), "Hash cannot be the zero value");
-
+    function skip(bytes32 hash) private {
         GameInfoOneRound memory newRoundInfo = GameInfoOneRound({
             randomHash: hash,
             discoverTime: block.timestamp + __lotteryGameRoundTime,
@@ -167,6 +165,12 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         currentRoundNo += 1;
 
         gameInfoRecord[currentRoundNo] = newRoundInfo;
+    }
+
+    function skipToNextRound(bytes32 hash) public onlyAdmin noReentrant {
+        require(hash != bytes32(0), "Hash cannot be the zero value");
+
+        skip(hash);
 
         emit SkipToNewRound(hash, currentRoundNo);
     }
@@ -191,7 +195,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         uint256 totalVote = team.voteNo;
         if (totalVote <= 1) {
             balance[winner.addr] += val;
-            return bytes32(0);
+            return winner.team;
         }
 
         uint256 bonusPerVote = val / (totalVote - 1);
@@ -266,11 +270,15 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
 
         require(gInfo.randomHash != bytes32(0), "random not set");
         require(gInfo.winner == address(0), "can't have winner before game");
-        require(gInfo.bonus > __minValCheck, "no bonus");
         require(
             block.timestamp >= (gInfo.discoverTime - 10 minutes),
             "not time"
         );
+
+        if (gInfo.bonus <= __minValCheck) {
+            skip(nextRoundRandomHash);
+            return;
+        }
 
         uint256 ticketId = generateWiner(random, gInfo.randomHash);
 

@@ -1,1 +1,1 @@
-nohup go run main.go &
+nohup ./dessage-web.lnx > srv.log &
