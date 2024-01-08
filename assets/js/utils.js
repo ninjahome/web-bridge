@@ -317,33 +317,7 @@ class NinjaUserBasicInfo {
     }
 }
 
-class TwitterBasicInfo {
-    constructor(id, name, username, avatarUrl, bio) {
-        this.id = id;
-        this.name = name;
-        this.username = username;
-        this.profile_image_url = avatarUrl;
-        this.description = bio;
-    }
 
-    static loadTwBasicInfo(TwitterID) {
-        const storedData = getDataFromSessionDB(sesDbKeyForTwitterUserData(TwitterID))
-        if (!storedData) {
-            return null
-        }
-        return new TwitterBasicInfo(storedData.id, storedData.name, storedData.username,
-            storedData.profile_image_url, storedData.description);
-    }
-
-    static cacheTwBasicInfo(objStr) {
-        const obj = JSON.parse(objStr)
-        if (!obj.id) {
-            throw new Error("invalid twitter basic info")
-        }
-        sessionStorage.setItem(sesDbKeyForTwitterUserData(obj.id), objStr);
-        return obj;
-    }
-}
 
 function sesDbKeyForTwitterUserData(TwitterID) {
     return "__session_database_key_for_twitter_user_data__:" + TwitterID
@@ -404,7 +378,6 @@ function checkMetamaskErr(err) {
     } else {
         code = "code:" + err.data.code + " " + err.data.message
     }
-
 
     showDialog(code);
     return code;

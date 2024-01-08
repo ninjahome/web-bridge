@@ -51,7 +51,7 @@ func newDb() *DbManager {
 	var err error
 	if __dbConf.LocalRun {
 		_ = os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080")
-		client, err = firestore.NewClientWithDatabase(ctx, __dbConf.ProjectID, "dessage")
+		client, err = firestore.NewClientWithDatabase(ctx, __dbConf.ProjectID, __dbConf.DatabaseID)
 	} else {
 		client, err = firestore.NewClientWithDatabase(ctx, __dbConf.ProjectID,
 			__dbConf.DatabaseID, option.WithCredentialsFile(__dbConf.KeyFilePath))
