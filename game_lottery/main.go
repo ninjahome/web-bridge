@@ -79,7 +79,7 @@ func main() {
 	walletFile := flag.String("wallet", "dessage.key", "wallet file")
 	confFile := flag.String("conf", "config.json", "config file ")
 	startRoundRandom := flag.String("random", "", "start round random number")
-	startRoundNo := flag.Int("rand-no", 0, "start round no")
+	startRoundNo := flag.Int("round-no", 0, "start round no")
 	version := flag.Bool("version", false, "game_lottery --version")
 	flag.Parse()
 

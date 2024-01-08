@@ -81,6 +81,7 @@
             display: flex;
             align-items: center;
             margin-bottom: 10px;
+            cursor: pointer;
         }
 
         .tweet-header img {
@@ -744,7 +745,7 @@
     </div>
 </div>
 
-<div class="hover-card" id="hover-card">
+<div class="hover-card" id="hover-card" onmouseleave="hideHoverCard(this)">
     <img src="" alt="Avatar" id="hover-avatar">
     <div class="hover-card-content">
         <div id="hover-name"></div>
@@ -799,16 +800,19 @@
         hoverCard.style.top = `${rect.bottom + window.scrollY}px`;
     }
 
-    function hideHoverCard() {
+    function hideHoverCard(obj) {
+        // console.log(obj);
+        if(obj){
+            obj.style.display = 'none';
+            return;
+        }
         // 检查鼠标是否在 hover-card 或 tweet-header 上
         const hoverCard = document.getElementById('hover-card');
-
-        if (!hoverCard.matches(':hover') && !this.matches(':hover')) {
-            hoverCard.style.display = 'none';
-        }
-        // setTimeout(() => {
-        //
-        // }, 300);
+        setTimeout(() => {
+            if (!hoverCard.matches(':hover') && !this.matches(':hover')) {
+                hoverCard.style.display = 'none';
+            }
+        }, 300);
     }
 
 

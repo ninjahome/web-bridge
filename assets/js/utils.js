@@ -115,7 +115,7 @@ const __globalContractConf = new Map([
     [toHex(421614), {
         tweetVote: "0xa3a39F3415d2024834Ef22258FC14e5cdcc3E857",
         tweetVoteAbi: tweetVoteContractABI,
-        gameLottery: "0x3f76CFBb40D3ac93Ee6841CD98eef0ab857C2890",
+        gameLottery: "0x2daD86e755B4ed845395cbcC4f1176672a4A5419",
         gameLotteryAbi: gameContractABI,
         kolKey: "",
         kolKeyAbi: "",

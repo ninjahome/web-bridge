@@ -266,11 +266,15 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
 
         require(gInfo.randomHash != bytes32(0), "random not set");
         require(gInfo.winner == address(0), "can't have winner before game");
-        require(gInfo.bonus > __minValCheck, "no bonus");
         require(
             block.timestamp >= (gInfo.discoverTime - 10 minutes),
             "not time"
         );
+
+        if (gInfo.bonus <= __minValCheck) {
+            skipToNextRound(nextRoundRandomHash);
+            return;
+        }
 
         uint256 ticketId = generateWiner(random, gInfo.randomHash);
 
