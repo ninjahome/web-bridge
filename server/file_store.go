@@ -18,15 +18,16 @@ import (
 )
 
 const (
-	DefaultTwitterProjectID = "dessage"
-	DefaultDBTimeOut        = 10 * time.Second
-	DBTableNJUser           = "ninja-user"
-	DBTableTWUser           = "twitter-user"
-	DBTableTWUserAccToken   = "twitter-user-access-token"
-	DBTableTWUserAccTokenV2 = "twitter-user-access-token_v2"
-	DBTableWeb3Bindings     = "twitter-eth-binding"
-	DBTableTweetsPosted     = "tweets-posted"
-	DBTableTweetsStatus     = "tweets-status"
+	DefaultFirestoreProjectID = "dessage"
+	DefaultDatabaseID         = "dessage-twitter"
+	DefaultDBTimeOut          = 10 * time.Second
+	DBTableNJUser             = "ninja-user"
+	DBTableTWUser             = "twitter-user"
+	DBTableTWUserAccToken     = "twitter-user-access-token"
+	DBTableTWUserAccTokenV2   = "twitter-user-access-token_v2"
+	DBTableWeb3Bindings       = "twitter-eth-binding"
+	DBTableTweetsPosted       = "tweets-posted"
+	DBTableTweetsStatus       = "tweets-status"
 )
 
 /*******************************************************************************************************
@@ -56,9 +57,10 @@ func newDb() *DbManager {
 	var err error
 	if _globalCfg.LocalRun {
 		_ = os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080")
-		client, err = firestore.NewClient(ctx, _globalCfg.ProjectID)
+		client, err = firestore.NewClientWithDatabase(ctx, _globalCfg.ProjectID, "dessage")
 	} else {
-		client, err = firestore.NewClient(ctx, _globalCfg.ProjectID, option.WithCredentialsFile(_globalCfg.KeyFilePath))
+		client, err = firestore.NewClientWithDatabase(ctx, _globalCfg.ProjectID,
+			_globalCfg.DatabaseID, option.WithCredentialsFile(_globalCfg.KeyFilePath))
 	}
 	if err != nil {
 		panic(err)

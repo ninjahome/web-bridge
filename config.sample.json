@@ -16,6 +16,7 @@
 	"consumer_key": "",
 	"consumer_secret": "",
 	"project_id": "dessage",
+	"database_id": "dessage-twitter",
 	"key_file_path": "dessage-c3b5c95267fb.json",
 	"tweets_page_size": 20,
 	"tweet_vote_contract_address": "0x63713037a9E337D7Db5D383070199B948598e0Da",

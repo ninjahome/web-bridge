@@ -32,7 +32,8 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 		},
 		FileStoreConf: &FileStoreConf{
 			TweetsPageSize: 20,
-			ProjectID:      DefaultTwitterProjectID,
+			ProjectID:      DefaultFirestoreProjectID,
+			DatabaseID:     DefaultDatabaseID,
 			KeyFilePath:    "dessage-c3b5c95267fb.json",
 		},
 		BlockChainConf: &BlockChainConf{

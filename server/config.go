@@ -84,6 +84,7 @@ func (c *TwitterConf) String() string {
 
 type FileStoreConf struct {
 	ProjectID      string `json:"project_id"`
+	DatabaseID     string `json:"database_id"`
 	KeyFilePath    string `json:"key_file_path"`
 	TweetsPageSize int    `json:"tweets_page_size"`
 }
