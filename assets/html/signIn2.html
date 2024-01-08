@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .background-image {
+            width: 50%;
+            /* Background image would be set here using a URL */
+            background-image: url('background-image-url.jpg');
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* Add other styles such as padding, etc. */
+        }
+        .login-area {
+            width: 50%;
+            background-color: #fff; /* Example color */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* Add other styles such as padding, etc. */
+        }
+        /* Add styles for text, logos, and button */
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="background-image">
+        <!-- Add your text and logos here -->
+        <p>Some text on the background</p>
+        <img src="logo-url.png" alt="Logo">
+    </div>
+    <div class="login-area">
+        <!-- Add your text, logos, and login form here -->
+        <img src="login-logo-url.png" alt="Login Logo">
+        <p>Login to your account</p>
+        <form action="login-endpoint" method="post">
+            <!-- Input fields for login here -->
+            <input type="text" placeholder="Username">
+            <input type="password" placeholder="Password">
+            <button type="submit">Sign In</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>
