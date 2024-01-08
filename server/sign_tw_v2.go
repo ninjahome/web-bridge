@@ -169,7 +169,7 @@ func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request, _ *database.Nin
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	result := &database.TwAPIResponse{}
+	result := &TwAPIResponse{}
 	err = twitterGetWithAccessToken(token, accessUserURLV2, result)
 	if err != nil {
 		util.LogInst().Err(err).Msgf("get twitter info failed")

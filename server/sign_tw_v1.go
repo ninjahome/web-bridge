@@ -178,7 +178,7 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request, _ *database.Ninja
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	result := &database.TwAPIResponse{
+	result := &TwAPIResponse{
 		EthAddr:  ethAddr.(string),
 		SignUpAt: time.Now().UnixMilli(),
 		TwitterData: &database.TWUserInfo{
