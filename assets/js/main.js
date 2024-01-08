@@ -148,8 +148,8 @@ async function initializeContract() {
         return false;
     }
 
-    tweetVoteContract = new ethers.Contract(conf.tweetVote, conf.tweetVoteAbi, signer);
-    lotteryGameContract = new ethers.Contract(conf.gameLottery, conf.gameLotteryAbi, signer);
+    tweetVoteContract = new ethers.Contract(conf.tweetVote, tweetVoteContractABI, signer);
+    lotteryGameContract = new ethers.Contract(conf.gameLottery, gameContractABI, signer);
 
     if (!voteContractMeta) {
         await loadVoteContractMeta();
@@ -214,8 +214,11 @@ function fullFillGameBasicInfo() {
     document.getElementById("current-round").innerText = curGameMeta.round;
     document.getElementById("total-prize").innerText = curGameMeta.bonus + " eth";
     document.getElementById("lottery-hash").innerText = curGameMeta.randomHash;
-    document.getElementById("lottery-discovery-time").innerText = formatTime(curGameMeta.nextRoundTime);
     document.getElementById("total-awards").innerText = gameContractMeta.totalBonus;
+
+    startCountdown(curGameMeta.nextRoundTime,function (txt) {
+        document.getElementById("lottery-discovery-time").innerText = txt;
+    });
 }
 
 async function loadVoteContractMeta() {

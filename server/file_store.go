@@ -19,7 +19,7 @@ import (
 
 const (
 	DefaultFirestoreProjectID = "dessage"
-	DefaultDatabaseID         = "dessage-twitter"
+	DefaultDatabaseID         = "dessage-release"
 	DefaultDBTimeOut          = 10 * time.Second
 	DBTableNJUser             = "ninja-user"
 	DBTableTWUser             = "twitter-user"

@@ -39,11 +39,15 @@ func NewMainService() *MainService {
 	r.PathPrefix("/" + staticFileDir + "/").Handler(http.StripPrefix("/"+staticFileDir+"/", http.FileServer(http.Dir(staticFileDir))))
 
 	for route, fileName := range cfgHtmlFileRouter {
-		//http.HandleFunc(route, bh.simpleRouter(fileName))
 		r.HandleFunc(route, func(w http.ResponseWriter, r *http.Request) {
 			bh.assetsStaticFile(w, r, fileName)
 		})
 	}
+	r.HandleFunc("/twitter/{web3-id}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		username := vars["web3-id"]
+		fmt.Fprintf(w, "Profile of user: %s", username)
+	})
 
 	for route, twService := range cfgActionRouter {
 		var url, action = route, twService

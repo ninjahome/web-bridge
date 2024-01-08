@@ -149,9 +149,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
      * - The provided hash must not be the zero value.
      * - The function must be called by an administrator.
      */
-    function skipToNextRound(bytes32 hash) public onlyAdmin noReentrant {
-        require(hash != bytes32(0), "Hash cannot be the zero value");
-
+    function skip(bytes32 hash) private {
         GameInfoOneRound memory newRoundInfo = GameInfoOneRound({
             randomHash: hash,
             discoverTime: block.timestamp + __lotteryGameRoundTime,
@@ -167,6 +165,12 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         currentRoundNo += 1;
 
         gameInfoRecord[currentRoundNo] = newRoundInfo;
+    }
+
+    function skipToNextRound(bytes32 hash) public onlyAdmin noReentrant {
+        require(hash != bytes32(0), "Hash cannot be the zero value");
+
+        skip(hash);
 
         emit SkipToNewRound(hash, currentRoundNo);
     }
@@ -272,7 +276,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         );
 
         if (gInfo.bonus <= __minValCheck) {
-            skipToNextRound(nextRoundRandomHash);
+            skip(nextRoundRandomHash);
             return;
         }
 
