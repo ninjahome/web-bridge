@@ -4,818 +4,128 @@
     <meta charset="UTF-8">
     <title>Ninja User Info</title>
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
-    <script src="/assets/js/abi_tweet_vote.js"></script>
-    <script src="/assets/js/abi_game_lottery.js"></script>
     <script src="/assets/js/utils.js"></script>
-    <script src="/assets/js/main_comm.js"></script>
-    <script src="/assets/js/main.js"></script>
-    <script src="/assets/js/main_tweet.js"></script>
-
+    <script src="/assets/js/main_metamask.js"></script>
+    <script src="/assets/js/main_nj.js"></script>
+    <script src="/assets/js/main_twitter.js"></script>
     <style>
         .container {
-            display: flex;
-            height: 100vh;
+            display: flex; /* 启用flex布局 */
+            height: 100vh; /* 容器高度设置为视窗高度 */
         }
 
         .left-menu-area {
-            display: flex;
-            flex-direction: column;
-            min-width: 200px;
-            max-width: 320px;
-            width: 20%;
-            background-color: #f2f2f2;
+            flex: 1; /* 左边菜单区域占据剩余空间的一部分 */
+            background-color: #f4f4f4; /* 背景色，可根据需要调整 */
+            padding: 10px; /* 内边距 */
         }
 
-        .left-user-info-area {
-            height: 40%;
-            max-height: 480px;
-            min-height: 240px;
-            background-color: #d9d9d9;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: start;
-            align-items: center;
-            overflow: hidden;
+        .middle-content-area {
+            flex: 3; /* 中间主要内容区域占据剩余空间的两部分 */
+            background-color: #fff; /* 背景色，可根据需要调整 */
+            padding: 10px; /* 内边距 */
+            border-left: 1px solid #ddd; /* 左边框线 */
+            border-right: 1px solid #ddd; /* 右边框线 */
         }
 
-        .left-user-info-area img {
-            width: 60px;
-            height: 60px;
-            margin-bottom: 10px;
-            border-radius: 50%;
+        .right-operation-area {
+            flex: 1; /* 右边操作区域占据剩余空间的一部分 */
+            background-color: #f4f4f4; /* 背景色，可根据需要调整 */
+            padding: 10px; /* 内边距 */
         }
 
-        .field {
-            text-align: center;
-            width: 100%;
-            margin-bottom: 5px;
+        .menu-list-left-area {
+            list-style: none;
+            padding: 0;
         }
 
-        .field-label {
-            font-weight: bold;
-        }
-
-        .field-value {
-            font-style: italic;
-        }
-
-        .main-container {
-            display: flex;
-            flex-direction: row;
-            width: 80%;
-            height: 100%;
-            padding: 20px;
-            background-color: #fff;
-            align-items: flex-start;
-            justify-content: space-between;
-        }
-
-        .tweets-park {
-            flex-grow: 1.618;
-            background-color: #e6e6e6;
-            margin-bottom: 20px;
-        }
-
-        .tweet-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-
-        .tweet-header img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        .tweet-header .name {
-            font-weight: bold;
-        }
-
-        .tweet-header .username {
-            color: #555;
-            margin-left: 5px;
-        }
-
-        .tweet-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .tweet-footer .tweet-action {
-            display: flex;
-            align-items: center;
-        }
-
-        .tweet-card {
-            min-height: 100px;
-            max-height: 400px;
-            overflow: hidden;
-            border: 1px solid #ccc;
-            padding: 15px;
-            margin-bottom: 20px;
-            background-color: #f9f9f9;
-            transition: max-height 0.3s ease;
-        }
-
-        .tweet-footer .tweet-info {
-            font-style: italic;
-        }
-
-        .tweet-action button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 6px 12px;
-            margin: 4px 2px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .tweet-action button:hover {
-            background-color: #45a049;
-        }
-
-        .show-more {
-            background-color: #4CAF50;
-            color: white;
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            text-align: center;
-            display: block;
-            margin: 10px auto;
-        }
-
-        .show-more:hover {
-            background-color: #45a049;
-        }
-
-        .tweet-content {
-            display: -webkit-box;
-            -webkit-line-clamp: 5;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .tweet-content-collapsed {
-            overflow: hidden;
-            cursor: pointer;
-            display: -webkit-box;
-            -webkit-line-clamp: 5;
-            -webkit-box-orient: vertical;
-        }
-
-        .left-tweet-post-area {
-            position: relative;
-        }
-
-        .tweets-content {
-            width: 100%;
-            min-height: 200px;
-            max-height: 400px;
-            resize: vertical;
-            padding-bottom: 30px;
-        }
-
-        .left-tweet-post-area button {
-            position: absolute;
-            right: 10px;
-            bottom: 5px;
-            z-index: 10;
-        }
-
-        .operation-area-right {
-            flex: 1 0 38.2%;
-        }
-
-        #system-lottery-card {
-            background-color: #fff;
-            padding: 20px;
-            margin-top: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        #system-lottery-card .lottery-info p {
-            margin: 10px 0;
-        }
-
-        .lottery-info p #total-prize {
-            font-size: 1.5em; /* 或者使用更大的值，如2em，根据你的具体需求 */
-            color: #d35400; /* 明亮的橙色，或者选择其他更醒目的颜色 */
-            font-weight: bold; /* 加粗 */
-        }
-
-        #system-lottery-card .lottery-algorithm {
-            margin-top: 20px;
-        }
-
-        #system-lottery-card button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            margin: 10px 5px 0 0;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        #system-lottery-card button:hover {
-            background-color: #45a049;
-        }
-
-        .lottery-algorithm {
-            background-color: #f8f8f8; /* 背景色 */
-            border: 1px solid #eaeaea; /* 边框 */
-            border-radius: 4px; /* 边框圆角 */
-            padding: 20px; /* 内边距 */
-            margin: 20px 0; /* 外边距 */
-            max-width: 800px; /* 最大宽度 */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 盒子阴影 */
-        }
-
-        .algorithm-steps {
-            list-style-type: none; /* 移除列表标记 */
-            padding: 0; /* 移除内边距 */
-            counter-reset: step-counter; /* 设置一个计数器 */
-        }
-
-        .algorithm-steps li {
-            counter-increment: step-counter; /* 增加计数器的值 */
-            margin-bottom: 10px; /* 底部外边距 */
-            padding-left: 20px; /* 左边内边距 */
-            position: relative; /* 为伪元素定位准备 */
-        }
-
-        .algorithm-steps li::before {
-            content: counter(step-counter); /* 插入计数器的值 */
-            position: absolute; /* 绝对定位 */
-            left: 0; /* 左对齐 */
-            top: 0; /* 顶部对齐 */
-            background-color: #4CAF50; /* 背景色 */
-            color: white; /* 文字颜色 */
-            border-radius: 50%; /* 圆形 */
-            width: 20px; /* 宽度 */
-            height: 20px; /* 高度 */
-            text-align: center; /* 文字居中 */
-            line-height: 20px; /* 行高，使文字垂直居中 */
-            font-weight: bold; /* 字体加粗 */
-        }
-
-        .lottery-algorithm h3 {
-            text-align: center; /* 标题居中 */
-            margin-bottom: 20px; /* 标题与列表之间的间距 */
-        }
-
-        .calculation-method {
-            background-color: #e7f4e4; /* 浅绿色背景 */
-            border-left: 3px solid #4CAF50; /* 左侧边框 */
-            padding: 8px 16px; /* 内边距 */
-            margin: 10px 0; /* 外边距 */
-            font-family: monospace; /* 等宽字体 */
-            display: block; /* 块级元素，确保换行 */
-            text-indent: 20px; /* 首行缩进 */
-            font-size: 1.25em; /* 稍微减小字体大小 */
-        }
-
-        .tweetPaymentRetry {
-            display: none;
-            background-color: #f44336; /* 例如，红色背景 */
-            color: white;
-            padding: 6px 12px;
-            margin: 4px 2px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .tweetPaymentRetry.show {
-            display: inline-block;
-        }
-
-        .vote-chose-modal-class {
-            display: none; /* 默认隐藏 */
-            position: fixed; /* 固定位置 */
-            z-index: 1; /* 置于顶层 */
-            left: 0;
-            top: 0;
-            width: 100%; /* 宽度 */
-            height: 100%; /* 高度 */
-            overflow: auto; /* 启用滚动条 */
-            background-color: rgb(0, 0, 0); /* 背景颜色 */
-            background-color: rgba(0, 0, 0, 0.4); /* 黑色背景透明度 */
-        }
-
-        .vote-no-modal-content {
-            background-color: #fefefe;
-            margin: 15% auto; /* 15% 从顶部开始 */
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* 宽度 */
-        }
-
-        /* 关闭按钮 */
-        .vote-no-close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .vote-no-close:hover,
-        .vote-no-close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .vote-count {
-            /* 投票数的样式 */
-            margin-left: 10px;
-            font-weight: bold;
-        }
-
-        .vote-number {
-            /* 数字的特定样式 */
-            color: #4CAF50; /* 绿色 */
-            font-size: 1.1em;
-        }
-
-        #user-lottery-team-detail table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        #user-lottery-team-detail th,
-        #user-lottery-team-detail td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        #user-lottery-team-detail th {
-            background-color: #f2f2f2;
-        }
-
-        #user-lottery-team-detail {
-            max-width: 100%; /* 不超过父元素的宽度 */
-            overflow-x: auto; /* 如果表格宽度超出容器宽度，提供滚动条 */
-        }
-
-        .team-id {
-            max-width: 120px; /* 根据你的具体布局调整这个宽度 */
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-
-        /* 针对team-id第一个和最后一个子元素设置特定样式 */
-        .team-id::before,
-        .team-id::after {
-            direction: ltr; /* 恢复从左到右的文本方向 */
-            text-overflow: clip; /* 不显示省略号 */
-            white-space: nowrap; /* 不换行 */
-        }
-
-        .team-id::before {
-            float: left; /* 左浮动 */
-        }
-
-        .team-id::after {
-            float: right; /* 右浮动 */
-        }
-
-        .tweet-detail {
-            flex-grow: 1.618;
-            margin-bottom: 20px;
-            display: none; /* 默认隐藏 */
-            background-color: #fff; /* 背景色 */
-        }
-
-        .tweet-author {
-            display: flex;
-            align-items: center;
-        }
-
-        .author-avatar {
-            width: 48px; /* 头像大小 */
-            height: 48px; /* 头像大小 */
-            border-radius: 50%; /* 圆形头像 */
-            margin-right: 10px;
-        }
-
-        .author-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .author-name {
-            font-weight: bold;
-        }
-
-        .author-username {
-            color: #657786; /* 用户名颜色 */
-        }
-
-        .tweet-text {
-            margin-top: 20px; /* 与头像的间距 */
-            line-height: 1.5; /* 行间距 */
-        }
-
-        .tweet-interaction {
-            color: #657786; /* 互动信息颜色 */
-            margin-top: 10px; /* 与推文内容的间距 */
-            font-size: 0.85rem; /* 字体大小 */
-        }
-
-        .back-button {
-            background-color: #1da1f2; /* 推特蓝 */
-            color: white;
-        }
-
-        .back-button:hover {
-            background-color: #1a91da;
-        }
-
-        .lottery-detail-modal {
-            display: none;
-            position: fixed;
-            z-index: 2;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0, 0, 0);
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        .lottery-detail-modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 50%;
-        }
-
-        .lottery-detail-close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .lottery-detail-close:hover,
-        .lottery-detail-close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        #operation-area-btn {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .hover-card img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-        }
-
-        .hover-card-content {
-            margin-left: 60px;
-        }
-
-        .buy-key-button {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            padding: 5px 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .hover-card {
-            display: none; /* 默认不显示 */
-            position: absolute;
-            z-index: 5;
+        .menu-item-left-area {
             padding: 10px;
-            background: white;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            border-radius: 5px;
-            top: 100%; /* 定位到 tweet-header 下方 */
-            left: 0;
+            cursor: pointer;
+            color: #333; /* 默认颜色 */
+        }
+
+        .menu-item-left-area:hover {
+            background-color: #a7a7af; /* 鼠标悬停时的颜色 */
+        }
+
+        .menu-item-left-area.active {
+            color: #1DA1F2; /* 被选中的菜单项颜色 */
+        }
+
+        .content-in-middle-area {
+            display: none; /* 默认隐藏所有内容 */
+        }
+
+        .content-in-middle-area.active {
+            display: block; /* 显示激活的内容 */
         }
 
     </style>
 </head>
 <body>
-
 <div class="container">
+
     <div class="left-menu-area">
-        <div class="left-user-info-area">
-            <img id="user-twitter-logo" src="/assets/file/logo.png" alt="Logo">
-            <div class="field">
-                <div class="field-label">Web3 ID:</div>
-                <div class="field-value" id="basic-web3-id">0x123...</div>
-            </div>
-            <div class="field">
-                <div class="field-label">积分:</div>
-                <div class="field-value" id="dessage-web3-token">2.00 dsg</div>
-            </div>
-            <div class="field">
-                <div class="field-label">Balance:</div>
-                <div class="field-value" id="basic-web3-balance">0.0 ETH</div>
-                <div>
-                    <button class="change-chain-id-button" id="change-chain-id-button"
-                            onclick="switchToWorkChain()">Switch To Arbitrum
-                    </button>
-                </div>
-            </div>
+        <img src="/assets/file/logo.png" style="width: 40px;height: 40px" alt="avatar">
 
-            <!-- Twitter -->
-            <div class="field">
-                <div class="field-label">Twitter:</div>
-                <div class="field-value" id="basic-twitter-name">@username</div>
-                <div class="field-value" id="basic-twitter-verified">Premium</div>
-                <div>
-                    <button class="sign-up-by-twitter-button" id="sign-up-by-twitter-button"
-                            onclick="signUpByTwitter()">Bridge Twitter
-                    </button>
-                </div>
-            </div>
+        <ul class="menu-list-left-area">
+            <li onclick="menuOnClicked.call(this)" class="menu-item-left-area active" data-content="middle-div-home">
+                主页
+            </li>
+            <li onclick="menuOnClicked.call(this)" class="menu-item-left-area" data-content="middle-div-leaderboard">
+                排行榜
+            </li>
+            <li onclick="menuOnClicked.call(this)" class="menu-item-left-area" data-content="middle-div-web3">Web3身份
+            </li>
+            <li onclick="menuOnClicked.call(this)" class="menu-item-left-area" data-content="middle-div-income">
+                我的收入
+            </li>
+            <li onclick="menuOnClicked.call(this)" class="menu-item-left-area" data-content="middle-div-settings">设置
+            </li>
+            <li onclick="openKolKeyPage()" class="menu-item-left-area" data-content="middle-div-userKolKey">
+                我的Key
+            </li>
+        </ul>
+    </div>
+    <div class="middle-content-area">
+        <div id="middle-div-home" class="content-in-middle-area active">主页内容</div>
+        <div id="middle-div-leaderboard" class="content-in-middle-area">排行榜内容</div>
+        <div id="middle-div-web3" class="content-in-middle-area">Web3身份内容</div>
+        <div id="middle-div-income" class="content-in-middle-area">我的收入内容</div>
+        <div id="middle-div-settings" class="content-in-middle-area">设置内容</div>
+        <div id="middle-div-userKolKey" class="content-in-middle-area">我的Key内容</div>
+    </div>
 
-            <div id="operation-area-btn">
-                <button onclick="refreshTwitterInfo()">同步推特</button>
-                <button onclick="quitFromService()">退出</button>
-                <button onclick="clearCachedData()">清空缓存</button>
-                <button onclick="showUserVotedTweets()">我投票的推文</button>
-                <button onclick="showUserPostedTweets()">我的推文</button>
-                <div class="tweet-income-for-user">
-                    推文收入:<span id="user-tweet-income">0.02 eth</span>
-                    <button onclick="withdrawFromUserTweetIncome()">提现</button>
-                </div>
-
-            </div>
-        </div>
-        <div class="left-tweet-post-area">
-            <label for="tweets">
-            <textarea class="tweets-content" id="tweets-content">
-            </textarea>
-            </label>
-            <button id="tweet-post-with-eth-btn" onclick="postTweet()">发布推文</button>
+    <div class="right-operation-area">
+        <div id="web3-environment-operate-area" class="web3-environment-operate-area" style="display: block;background: #a7a7af">
+            <button id="bridge-to-twitter" style="display: block" onclick="bindingTwitter()">绑定twitter</button>
+            <button id="switch-to-arbitrum" style="display: block" onclick="switchToWorkChain()">切换到Arb网络</button>
         </div>
     </div>
-    <div class="main-container">
-        <div class="tweets-park">
-            <div id="tweetTemplate" class="tweet-card" style="display: none;">
-                <div class="tweet-header" onmouseenter="showHoverCard.call(this)"
-                     onmouseleave="hideHoverCard.call(this)">
-                    <img src="" alt="Avatar" class="twitterAvatar">
-                    <span class="name twitterName"></span>
-                    <span class="username twitterUserName"></span>
-                    <span class="time tweetCreateTime"></span>
-                </div>
-                <div onclick="showTweetDetails.call(this)" class="tweet-content tweet-content-collapsed"></div>
-                <button class="show-more" onclick="showFullTweetContent.call(this)">Show more</button>
-                <div class="tweet-footer">
-                    <div class="tweet-action">
-                        <button class="tweet-action-vote">0.01 eth打赏</button>
-                    </div>
-                    <div class="tweet-info">
-                        <span class="vote-count">投票数: <span class="vote-number">0</span></span>
-                        Payment Status: <span class="tweetPaymentStatus"></span>
-                        <button class="tweetPaymentRetry" >继续支付</button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div id="tweet-detail" class="tweet-detail" style="display: none;">
-            <button id="back-button" class="back-button" onclick="backTowTweetPark()">返回</button>
-            <div class="tweet-author">
-                <img src="" alt="Avatar" class="author-avatar">
-                <div class="author-info">
-                    <span class="author-name"></span>
-                    <span class="author-username"></span>
-                    <div class="tweet-post-time"></div>
-                </div>
-            </div>
-
-            <div class="tweet-text"></div>
-
-            <div class="tweet-interaction">
-                <div class="tweet-action">
-                    <button class="tweet-action-vote">0.01 eth打赏</button>
-                </div>
-                <div class="tweet-info">
-                    <span class="vote-count">投票数: <span class="vote-number">0</span></span>
-                    Payment Status: <span class="tweetPaymentStatus"></span>
-                    <button class="tweetPaymentRetry">继续支付</button>
-                    <div class="tweet-prefixed-hash">
-                        <span class="vote-count">推文Hash:</span>
-                        <span id="tweet-prefixed-hash"></span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="operation-area-right">
-            <div id="user-lottery-card" style="margin-top: 20px;width: 400px;">
-                <div style="border: 1px solid #ccc; padding: 15px; margin-bottom: 20px; background-color: #f9f9f9;">
-                    <h3 style="text-align: center;">彩票信息</h3>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <div>彩票:<span id="user-game-tickets-no">4</span>张</div>
-                        <button onclick="showUserTicketDetails()"
-                                style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
-                            详情
-                        </button>
-                    </div>
-                    <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 10px;">
-                        <div style="margin-bottom: 10px;">
-                            <div>队伍:<span id="user-game-team-no">2</span>队</div>
-                        </div>
-                        <div id="user-lottery-team-detail">
-                            <table>
-                                <thead>
-                                <tr>
-                                    <th>队伍</th>
-                                    <th>人数</th>
-                                    <th>票数</th>
-                                    <th>我的</th>
-                                </tr>
-                                </thead>
-                                <tr id="team-row-template" style="display: none;">
-                                    <td class="team-id"></td>
-                                    <td class="team-people-no"></td>
-                                    <td class="team-ticket-no"></td>
-                                    <td class="team-my-ticket-no"></td>
-                                </tr>
-                                <tbody id="team-details-body">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>未兑金额:<span id="user-game-balance">210.00</span> eth</div>
-                        <button onclick="withdrawUserBonus()"
-                                style="background-color: #4CAF50; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer;">
-                            提现
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div id="system-lottery-card">
-                <div class="lottery-info">
-                    <p>当前第<span id="current-round">0</span>期</p>
-                    <p>本期总奖池：<span id="total-prize">0.00 eth</span></p>
-                    <p>本期开奖随机数hash：<span id="lottery-hash">0x00</span></p>
-                    <p>本期开奖时间：<span id="lottery-discovery-time">00:00</span></p>
-                    <p>累计开奖金额：<span id="total-awards">0.00 eth</span></p>
-                </div>
-                <button onclick="showPastLotteries()">往期开奖列表</button>
-                <button onclick="showContractAddress()">智能合约地址</button>
-                <div class="lottery-algorithm">
-                    <h3>开奖算法</h3>
-                    <ol class="algorithm-steps">
-                        <li><strong>第一步：</strong>产生随机数，并将随机数的hash值存放到区块链智能合约，公开可查。使用hash算法keccak256。
-                        </li>
-                        <li><strong>第二步：</strong>用户购买凭证，累计奖池，购买凭证存储在智能合约，公开可查。</li>
-                        <li><strong>第三步：</strong>执行抽奖操作，输入随机数，比对输入的随机数的hash与智能合约存储的hash是否一致。检查通过后进行中奖地址计算。
-                            <strong>计算方法：</strong>
-                            <div class="calculation-method">
-                                购买地址列表[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数]。
-                            </div>
-                        </li>
-                        <li><strong>第四步：</strong>奖池奖金转入中奖者地址，奖池清空，开启下一轮抽奖。</li>
-                    </ol>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
-<div id="vote-no-chose-modal" class="vote-chose-modal-class">
-    <div class="vote-no-modal-content">
-        <div class="vote-no-modal-header">
-            <span class="vote-no-close" onclick="closeVoteModal()">&times;</span>
-            <h2>推文投票</h2>
-        </div>
-        <div class="vote-no-modal-body">
-            <p>票数：<input type="number" id="voteCount" value="1" min="1"></p>
-            <button id="decreaseVote" onclick="decreaseVote()">-</button>
-            <button id="increaseVote" onclick="increaseVote()">+</button>
-        </div>
-        <div class="vote-no-modal-footer">
-            <button id="cancelButton" onclick="closeVoteModal()">取消</button>
-            <button id="confirmButton" onclick="confirmVoteModal()">确定</button>
-        </div>
-    </div>
-</div>
-
-<div id="lottery-detail-modal" class="lottery-detail-modal">
-    <!-- 模态内容 -->
-    <div class="lottery-detail-modal-content">
-        <span class="lottery-detail-close" onclick="closeLotteryModal()">&times;</span>
-        <h2>彩票详情</h2>
-        <table id="lottery-table">
-            <thead>
-            <tr>
-                <th>彩票编号</th>
-                <th>所属编队</th>
-            </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<div class="hover-card" id="hover-card" onmouseleave="hideHoverCard(this)">
-    <img src="" alt="Avatar" id="hover-avatar">
-    <div class="hover-card-content">
-        <div id="hover-name"></div>
-        <div>推文总数: <span id="hover-tweet-count"></span></div>
-        <div>投票数: <span id="hover-vote-count"></span></div>
-    </div>
-    <button class="buy-key-button">购买Key</button>
-</div>
-
-
 <script>
     let ninjaUserObj = {{ .NinjaUsrInfoJson }};
     document.addEventListener("DOMContentLoaded", initMainPage);
 
-
-    async function initMainPage() {
-        checkSystemEnvironment();
-        await initializeContract();
-        window.addEventListener('popstate', clearSessionStorage);
-        window.addEventListener('replaceState', clearSessionStorage);
-        setupBasicInfo();
-        loadCachedGlobalTweets();
-        loadGlobalLatestTweetsFromSrv(true);
+    function initMainPage() {
+        checkMetaMaskEnvironment();
     }
 
-    function showPastLotteries() {
+    function menuOnClicked() {
+        document.querySelectorAll('.menu-item-left-area').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+
+        const contentId = this.getAttribute('data-content');
+        document.querySelectorAll('.content-in-middle-area').forEach(c => c.classList.remove('active'));
+
+        document.getElementById(contentId).classList.add('active');
     }
 
-    function showContractAddress() {
+    function openKolKeyPage() {
+        window.location.href = "/kol_key";
     }
-
-    function showHoverCard() {
-        const tweetCard = this.closest('.tweet-card');
-        const obj = JSON.parse(tweetCard.dataset.rawObj);
-
-        const hoverCard = document.getElementById('hover-card');
-        const rect = this.getBoundingClientRect();
-        const avatar = this.querySelector('img').src;
-        const name = this.querySelector('.name').textContent;
-        const tweetCount = '0'; // obj.tweet_no;
-        const voteCount = '0'; // obj.vote_count;
-
-        // 设置悬浮卡片内容
-        document.getElementById('hover-avatar').src = avatar;
-        document.getElementById('hover-name').textContent = name;
-        document.getElementById('hover-tweet-count').textContent = tweetCount;
-        document.getElementById('hover-vote-count').textContent = voteCount;
-
-        // 设置悬浮卡片的位置
-        hoverCard.style.display = 'block';
-        hoverCard.style.left = `${rect.left}px`;
-        hoverCard.style.top = `${rect.bottom + window.scrollY}px`;
-    }
-
-    function hideHoverCard(obj) {
-        // console.log(obj);
-        if(obj){
-            obj.style.display = 'none';
-            return;
-        }
-        // 检查鼠标是否在 hover-card 或 tweet-header 上
-        const hoverCard = document.getElementById('hover-card');
-        setTimeout(() => {
-            if (!hoverCard.matches(':hover') && !this.matches(':hover')) {
-                hoverCard.style.display = 'none';
-            }
-        }, 300);
-    }
-
-
 </script>
 </body>
 </html>

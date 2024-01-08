@@ -22,6 +22,7 @@ var (
 		"/queryTwBasicById":         {queryTwBasicById, true},
 		"/signOut":                  {signOut, false},
 		"/main":                     {mainPage, true},
+		"/kol_key":                  {showKolKeyPage, true},
 		"/postTweet":                {postTweets, true},
 		"/updateTweetPaymentStatus": {updateTweetTxStatus, true},
 		"/reloadPaymentDetails":     {queryTweetDetails, false},

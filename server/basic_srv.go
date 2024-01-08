@@ -126,6 +126,16 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request, nu *database2.Ninj
 		Str("eth-addr", nu.EthAddr).Msg("query twitter basic info success")
 }
 
+func showKolKeyPage(w http.ResponseWriter, r *http.Request, nu *database2.NinjaUsrInfo) {
+	var kolBasicInfo any = nil
+	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "kol_key.html", kolBasicInfo)
+	if err != nil {
+		util.LogInst().Err(err).Msg("main html failed")
+		http.Redirect(w, r, "/signIn", http.StatusFound)
+		return
+	}
+}
+
 func mainPage(w http.ResponseWriter, r *http.Request, nu *database2.NinjaUsrInfo) {
 
 	data := struct {

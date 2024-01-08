@@ -6,6 +6,7 @@ function checkSystemEnvironment() {
         window.location.href = "/signIn";
         return
     }
+
     setupMetamask();
 }
 
@@ -361,7 +362,7 @@ function metamaskAccountChanged(accounts) {
 }
 
 
-function switchToWorkChain() {
+function switchToWorkChainOK() {
     metamaskObj.request({
         method: 'wallet_switchEthereumChain',
         params: [{chainId: __globalTargetChainNetworkID}],
