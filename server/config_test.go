@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ninjahome/web-bridge/server/database"
 	"github.com/ninjahome/web-bridge/util"
 	"os"
 	"testing"
@@ -11,7 +12,6 @@ import (
 func TestCreateDefaultConfigFile(t *testing.T) {
 	cfg := &SysConf{
 		LogLevel: "debug",
-		LocalRun: false,
 		HttpPort: "8880",
 		UrlHome:  "https://bridge.simplenets.org",
 		HttpConf: &HttpConf{
@@ -30,11 +30,12 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			ConsumerKey:    "",
 			ConsumerSecret: "",
 		},
-		FileStoreConf: &FileStoreConf{
+		FileStoreConf: &database.FileStoreConf{
 			TweetsPageSize: 20,
-			ProjectID:      DefaultFirestoreProjectID,
-			DatabaseID:     DefaultDatabaseID,
+			ProjectID:      database.DefaultFirestoreProjectID,
+			DatabaseID:     database.DefaultDatabaseID,
 			KeyFilePath:    "dessage-c3b5c95267fb.json",
+			LocalRun:       false,
 		},
 		BlockChainConf: &BlockChainConf{
 			TweeTVoteContractAddress: "0x63713037a9E337D7Db5D383070199B948598e0Da",

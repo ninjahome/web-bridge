@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
+	"github.com/ninjahome/web-bridge/server/database"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
 	"html/template"
@@ -39,7 +40,7 @@ var (
 )
 
 type LogicAction struct {
-	Action    func(w http.ResponseWriter, r *http.Request, token *NinjaUsrInfo)
+	Action    func(w http.ResponseWriter, r *http.Request, token *database.NinjaUsrInfo)
 	NeedToken bool
 }
 
@@ -82,22 +83,6 @@ func (c *TwitterConf) String() string {
 	return s
 }
 
-type FileStoreConf struct {
-	ProjectID      string `json:"project_id"`
-	DatabaseID     string `json:"database_id"`
-	KeyFilePath    string `json:"key_file_path"`
-	TweetsPageSize int    `json:"tweets_page_size"`
-}
-
-func (c *FileStoreConf) String() string {
-	s := "\n------file store config------"
-	s += "\nproject id:" + c.ProjectID
-	s += "\nkey path :" + c.KeyFilePath
-	s += "\ntweet page size :" + fmt.Sprintf("%d", c.TweetsPageSize)
-	s += "\n--------------------------"
-	return s
-}
-
 type BlockChainConf struct {
 	TweeTVoteContractAddress string `json:"tweet_vote_contract_address"`
 	GameContract             string `json:"game_plugin_contract_address"`
@@ -123,12 +108,11 @@ func (c *BlockChainConf) String() string {
 
 type SysConf struct {
 	LogLevel string `json:"log_level"`
-	LocalRun bool   `json:"local_run"`
 	UrlHome  string `json:"url_home"`
 	HttpPort string `json:"http_port"`
 	*HttpConf
 	*TwitterConf
-	*FileStoreConf
+	*database.FileStoreConf
 	twOauthCfg *oauth2.Config
 	*BlockChainConf
 }
@@ -159,8 +143,7 @@ func InitConf(c *SysConf) {
 	fmt.Println(c.String())
 
 	_globalCfg = c
-
-	_ = DbInst()
+	database.InitConf(c.FileStoreConf)
 
 	twitterSignUpCallbackURL = _globalCfg.UrlHome + "/tw_callback"
 	conf := _globalCfg.TwitterConf

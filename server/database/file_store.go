@@ -1,4 +1,4 @@
-package server
+package database
 
 import (
 	"cloud.google.com/go/firestore"
@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/dghubble/oauth1"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/iterator"
@@ -55,12 +56,12 @@ func newDb() *DbManager {
 	ctx, cancel := context.WithCancel(context.Background())
 	var client *firestore.Client
 	var err error
-	if _globalCfg.LocalRun {
+	if __dbConf.LocalRun {
 		_ = os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080")
-		client, err = firestore.NewClientWithDatabase(ctx, _globalCfg.ProjectID, "dessage")
+		client, err = firestore.NewClientWithDatabase(ctx, __dbConf.ProjectID, "dessage")
 	} else {
-		client, err = firestore.NewClientWithDatabase(ctx, _globalCfg.ProjectID,
-			_globalCfg.DatabaseID, option.WithCredentialsFile(_globalCfg.KeyFilePath))
+		client, err = firestore.NewClientWithDatabase(ctx, __dbConf.ProjectID,
+			__dbConf.DatabaseID, option.WithCredentialsFile(__dbConf.KeyFilePath))
 	}
 	if err != nil {
 		panic(err)
@@ -165,6 +166,15 @@ type TwUserAccessToken struct {
 type TwUserAccessTokenV2 struct {
 	UserId string `json:"user_id" firestore:"user_id"`
 	*oauth2.Token
+}
+
+func (ut *TwUserAccessToken) GetToken() *oauth1.Token {
+	return oauth1.NewToken(ut.OauthToken, ut.OauthTokenSecret)
+}
+
+func (ut *TwUserAccessToken) String() string {
+	bts, _ := json.Marshal(ut)
+	return string(bts)
 }
 
 /*******************************************************************************************************

@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/ninjahome/web-bridge/server/database"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
 	"io"
@@ -42,7 +43,7 @@ func parseStateParam(str string) *stateParam {
 	return &stateParam{ethAddr: strArr[0], stateNo: strArr[1]}
 }
 
-func signUpByTwitterV2(w http.ResponseWriter, r *http.Request, nu *NinjaUsrInfo) {
+func signUpByTwitterV2(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 
 	codeVerifier := util.RandomBytesInHex(32)
 
@@ -102,7 +103,7 @@ func exchangeWithCodeVerifier(conf *oauth2.Config, code string, codeVerifier str
 	return &token, nil
 }
 
-func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo) {
+func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
 	util.LogInst().Info().Msg("call back from twitter")
 
 	errStr := r.URL.Query().Get("error")
@@ -152,7 +153,7 @@ func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request, _ *NinjaUsrIn
 	http.Redirect(w, r, "/signUpSuccessByTwV2", http.StatusFound)
 }
 
-func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo) {
+func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
 	stateStr, _ := SMInst().Get(sesKeyForStateV2, r)
 	defer SMInst().Del(sesKeyForStateV2, r, w)
 	state := parseStateParam(stateStr.(string))
@@ -168,7 +169,7 @@ func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	result := &TwAPIResponse{}
+	result := &database.TwAPIResponse{}
 	err = twitterGetWithAccessToken(token, accessUserURLV2, result)
 	if err != nil {
 		util.LogInst().Err(err).Msgf("get twitter info failed")
@@ -177,11 +178,11 @@ func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request, _ *NinjaUsrInfo
 	}
 	result.EthAddr = state.ethAddr
 	result.SignUpAt = time.Now().UnixMilli()
-	ut := &TwUserAccessTokenV2{
+	ut := &database.TwUserAccessTokenV2{
 		UserId: result.TwitterData.ID,
 		Token:  token,
 	}
-	err = DbInst().SaveTwAccessTokenV2(ut)
+	err = database.DbInst().SaveTwAccessTokenV2(ut)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save user access token failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)

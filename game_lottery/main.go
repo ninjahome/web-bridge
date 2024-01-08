@@ -14,6 +14,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ninjahome/web-bridge/blockchain/ethapi"
 	"github.com/ninjahome/web-bridge/server"
+	"github.com/ninjahome/web-bridge/server/database"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/crypto/ssh/terminal"
 	"google.golang.org/api/option"
@@ -372,7 +373,7 @@ func (gs *GameService) waitTransactionResult(tx *types.Transaction, client *ethc
 }
 
 func (gs *GameService) loadCurrentEncryptedRandom(no *big.Int) (*big.Int, error) {
-	opCtx, cancel := context.WithTimeout(gs.ctx, server.DefaultDBTimeOut)
+	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
 	defer cancel()
 	randomDoc := gs.fileCli.Collection(DBTableGameRandom).Doc(no.String())
 	doc, err := randomDoc.Get(opCtx)
@@ -398,7 +399,7 @@ func (gs *GameService) loadCurrentEncryptedRandom(no *big.Int) (*big.Int, error)
 }
 
 func (gs *GameService) saveDiscoverInfo(no *big.Int, nextRandom GameRandomMeta) error {
-	opCtx, cancel := context.WithTimeout(gs.ctx, server.DefaultDBTimeOut)
+	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
 	defer cancel()
 	randomDoc := gs.fileCli.Collection(DBTableGameRandom).Doc(no.Add(no, big.NewInt(1)).String())
 	_, err := randomDoc.Set(opCtx, nextRandom)
@@ -406,7 +407,7 @@ func (gs *GameService) saveDiscoverInfo(no *big.Int, nextRandom GameRandomMeta) 
 }
 
 func (gs *GameService) SetupFirstRound(startRandom string, roundNo int) error {
-	opCtx, cancel := context.WithTimeout(gs.ctx, server.DefaultDBTimeOut)
+	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
 	defer cancel()
 	randomDoc := gs.fileCli.Collection(DBTableGameRandom).Doc(big.NewInt(int64(roundNo)).String())
 	nextRandom := GameRandomMeta{
@@ -418,7 +419,7 @@ func (gs *GameService) SetupFirstRound(startRandom string, roundNo int) error {
 }
 
 func (gs *GameService) updateDiscoverInfo(result *GameResult) error {
-	opCtx, cancel := context.WithTimeout(gs.ctx, server.DefaultDBTimeOut)
+	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
 	defer cancel()
 	randomDoc := gs.fileCli.Collection(DBTableGameRandom).Doc(result.RoundNo)
 	var resultStatus = TxStatusFailed
