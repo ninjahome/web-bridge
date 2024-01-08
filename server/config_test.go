@@ -3,7 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ninjahome/web-bridge/server/database"
+	database2 "github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"os"
 	"testing"
@@ -30,10 +30,10 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			ConsumerKey:    "",
 			ConsumerSecret: "",
 		},
-		FileStoreConf: &database.FileStoreConf{
+		FileStoreConf: &database2.FileStoreConf{
 			TweetsPageSize: 20,
-			ProjectID:      database.DefaultFirestoreProjectID,
-			DatabaseID:     database.DefaultDatabaseID,
+			ProjectID:      database2.DefaultFirestoreProjectID,
+			DatabaseID:     database2.DefaultDatabaseID,
 			KeyFilePath:    "dessage-c3b5c95267fb.json",
 			LocalRun:       false,
 		},

@@ -2,13 +2,13 @@ package server
 
 import (
 	"encoding/json"
-	"github.com/ninjahome/web-bridge/server/database"
+	database2 "github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"net/http"
 	"strconv"
 )
 
-func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database2.NinjaUsrInfo) {
 	var startIDStr = r.URL.Query().Get("startID")
 	var newestStr = r.URL.Query().Get("isRefresh")
 	startID, err1 := strconv.ParseInt(startIDStr, 10, 64)
@@ -21,8 +21,8 @@ func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 		http.Error(w, err1.Error(), http.StatusBadRequest)
 		return
 	}
-	var tweets = make([]*database.NinjaTweet, 0)
-	var err = database.DbInst().QueryGlobalLatestTweets(_globalCfg.TweetsPageSize, startID, newest, func(tweet *database.NinjaTweet) {
+	var tweets = make([]*database2.NinjaTweet, 0)
+	var err = database2.DbInst().QueryGlobalLatestTweets(_globalCfg.TweetsPageSize, startID, newest, func(tweet *database2.NinjaTweet) {
 		tweets = append(tweets, tweet)
 	})
 	if err != nil {
@@ -44,11 +44,11 @@ func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 }
 
 type TweetPaymentStatus struct {
-	CreateTime int64             `json:"create_time"`
-	Status     database.TxStatus `json:"status"`
+	CreateTime int64              `json:"create_time"`
+	Status     database2.TxStatus `json:"status"`
 }
 
-func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
+func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, _ *database2.NinjaUsrInfo) {
 	status := &TweetPaymentStatus{}
 	var err = util.ReadRequest(r, status)
 	if err != nil {
@@ -62,7 +62,7 @@ func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, _ *database.Nin
 		return
 	}
 
-	err = database.DbInst().UpdateTweetPaymentStatus(status.CreateTime, status.Status)
+	err = database2.DbInst().UpdateTweetPaymentStatus(status.CreateTime, status.Status)
 	if err != nil {
 		util.LogInst().Err(err).Int64("create_time", status.CreateTime).
 			Str("status", status.Status.String()).
@@ -81,10 +81,10 @@ func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, _ *database.Nin
 		Msg(" update status of tweet payment success")
 }
 
-func queryTweetDetails(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
+func queryTweetDetails(w http.ResponseWriter, r *http.Request, _ *database2.NinjaUsrInfo) {
 	var createTimeStr = r.URL.Query().Get("tweetID")
 	var createTime, _ = strconv.ParseInt(createTimeStr, 10, 64)
-	obj, err := database.DbInst().NjTweetDetails(createTime)
+	obj, err := database2.DbInst().NjTweetDetails(createTime)
 	if err != nil {
 		util.LogInst().Err(err).Int64("id", createTime).Msg("query tweet detail failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -102,7 +102,7 @@ type TweetVoteAction struct {
 	VoteCount  int   `json:"vote_count"`
 }
 
-func updateTweetVoteStatic(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
+func updateTweetVoteStatic(w http.ResponseWriter, r *http.Request, _ *database2.NinjaUsrInfo) {
 	vote := &TweetVoteAction{}
 	var err = util.ReadRequest(r, vote)
 	if err != nil {
@@ -115,7 +115,7 @@ func updateTweetVoteStatic(w http.ResponseWriter, r *http.Request, _ *database.N
 		http.Error(w, "invalid tweet create time", http.StatusBadRequest)
 		return
 	}
-	newVal, err := database.DbInst().UpdateTweetVoteStatic(vote.CreateTime, vote.VoteCount)
+	newVal, err := database2.DbInst().UpdateTweetVoteStatic(vote.CreateTime, vote.VoteCount)
 	if err != nil {
 		util.LogInst().Err(err).Int64("create_time", vote.CreateTime).
 			Int("vote_count", vote.VoteCount).
@@ -139,7 +139,7 @@ type StatusQuery struct {
 	CreateTime []int64 `json:"create_time"`
 }
 
-func tweetStatusRealTime(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
+func tweetStatusRealTime(w http.ResponseWriter, r *http.Request, _ *database2.NinjaUsrInfo) {
 	query := &StatusQuery{}
 
 	var err = util.ReadRequest(r, query)
@@ -149,7 +149,7 @@ func tweetStatusRealTime(w http.ResponseWriter, r *http.Request, _ *database.Nin
 		return
 	}
 
-	res, err := database.DbInst().QueryTweetStatus(query.CreateTime)
+	res, err := database2.DbInst().QueryTweetStatus(query.CreateTime)
 	if err != nil {
 		util.LogInst().Err(err).Msgf("query status failed %v", query.CreateTime)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

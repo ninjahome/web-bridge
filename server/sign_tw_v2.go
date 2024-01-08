@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/ninjahome/web-bridge/server/database"
+	database2 "github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
 	"io"
@@ -43,7 +43,7 @@ func parseStateParam(str string) *stateParam {
 	return &stateParam{ethAddr: strArr[0], stateNo: strArr[1]}
 }
 
-func signUpByTwitterV2(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+func signUpByTwitterV2(w http.ResponseWriter, r *http.Request, nu *database2.NinjaUsrInfo) {
 
 	codeVerifier := util.RandomBytesInHex(32)
 
@@ -103,7 +103,7 @@ func exchangeWithCodeVerifier(conf *oauth2.Config, code string, codeVerifier str
 	return &token, nil
 }
 
-func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
+func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request, _ *database2.NinjaUsrInfo) {
 	util.LogInst().Info().Msg("call back from twitter")
 
 	errStr := r.URL.Query().Get("error")
@@ -153,7 +153,7 @@ func twitterSignCallBackV2(w http.ResponseWriter, r *http.Request, _ *database.N
 	http.Redirect(w, r, "/signUpSuccessByTwV2", http.StatusFound)
 }
 
-func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
+func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request, _ *database2.NinjaUsrInfo) {
 	stateStr, _ := SMInst().Get(sesKeyForStateV2, r)
 	defer SMInst().Del(sesKeyForStateV2, r, w)
 	state := parseStateParam(stateStr.(string))
@@ -178,11 +178,11 @@ func signUpSuccessByTwV2(w http.ResponseWriter, r *http.Request, _ *database.Nin
 	}
 	result.EthAddr = state.ethAddr
 	result.SignUpAt = time.Now().UnixMilli()
-	ut := &database.TwUserAccessTokenV2{
+	ut := &database2.TwUserAccessTokenV2{
 		UserId: result.TwitterData.ID,
 		Token:  token,
 	}
-	err = database.DbInst().SaveTwAccessTokenV2(ut)
+	err = database2.DbInst().SaveTwAccessTokenV2(ut)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save user access token failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)

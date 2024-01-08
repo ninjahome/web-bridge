@@ -1,6 +1,8 @@
 package server
 
-import "github.com/ninjahome/web-bridge/server/database"
+import (
+	"github.com/ninjahome/web-bridge/database"
+)
 
 type TwAPIResponse struct {
 	TwitterData *database.TWUserInfo `json:"data"`
