@@ -206,14 +206,15 @@ function showFullTweetContent() {
 }
 
 function showTweetDetail() {
-    document.querySelector('.tweets-park').style.display = 'none';
     const detail = document.querySelector('#tweet-detail');
     detail.style.display = 'block';
 
     const tweetCard = this.closest('.tweet-card');
+    tweetCard.parentNode.style.display = 'none';
 
     const create_time = Number(tweetCard.dataset.createTime);
-    console.log(create_time);
+    // console.log(create_time);
+
     const obj = cachedGlobalTweets.TweetMaps.get(create_time)
     if (!obj){
         showDialog("error","can't find tweet obj");

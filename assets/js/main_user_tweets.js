@@ -52,8 +52,12 @@ function fillUserPostedTweetsList(newest) {
 
         const tweetCard = document.getElementById('tweetTemplateForUserSelf').cloneNode(true);
         tweetCard.style.display = '';
+
         tweetCard.querySelector('.tweet-header').id = "tweet-header-for-user-" + tweet.create_time;
         tweetCard.id = "tweet-card-for-user-" + tweet.create_time;
+
+        tweetCard.dataset.createTime = tweet.create_time;
+
         setupCommonTweetHeader(tweetCard, tweet);
 
         const contentArea = tweetCard.querySelector('.tweet-content');

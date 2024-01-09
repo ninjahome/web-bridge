@@ -551,6 +551,7 @@
         const contentId = this.getAttribute('data-content');
         document.querySelectorAll('.content-in-middle-area').forEach(c => c.classList.remove('active'));
         document.getElementById(contentId).classList.add('active');
+
         document.getElementById("tweet-detail").style.display = 'none';
 
         if (contentId === "middle-div-user-tweets") {
