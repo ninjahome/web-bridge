@@ -15,6 +15,12 @@ class MemCachedTweets{
         this.MinID = BigInt(0);
         this.TweetMaps = new Map();
         this.moreOldTweets = true;
+        this.isLoading = false;
+        this.CachedItem = [];
+    }
+
+    canLoadMoreOldData(){
+        return this.moreOldTweets && !this.isLoading
     }
 }
 
@@ -72,7 +78,6 @@ class TweetVoteContractSetting {
     }
 }
 
-
 class GameContractMeta {
     constructor(curRound, totalBonus,ticketNo, ticketPrice, ticketPriceInEth) {
         this.curRound = curRound;
@@ -80,5 +85,31 @@ class GameContractMeta {
         this.ticketNo = ticketNo;
         this.ticketPrice = ticketPrice;
         this.ticketPriceInEth = ticketPriceInEth;
+    }
+}
+
+const TXStatus = Object.freeze({
+    NoPay: 0, Pending: 1, Success: 2, Failed: 3, Str(val) {
+        switch (val) {
+            case this.NoPay:
+                return "not paid";
+            case this.Pending:
+                return "pending";
+            case this.Success:
+                return "success";
+            case this.Failed:
+                return "failed";
+            default:
+                return "unknown";
+        }
+    }
+});
+
+class TweetQueryParam{
+    constructor(startID, needNewest,web3ID,voted) {
+        this.start_id = startID;
+        this.web3_id = web3ID;
+        this.newest = needNewest;
+        this.voted = voted;
     }
 }

@@ -12,7 +12,9 @@
     <script src="/assets/js/main_metamask.js"></script>
     <script src="/assets/js/main_nj.js"></script>
     <script src="/assets/js/main_twitter.js"></script>
-    <style>
+    <script src="/assets/js/main_user_tweets.js"></script>
+
+    <style about="frame div">
         .container {
             display: flex; /* 启用flex布局 */
             height: 100vh; /* 容器高度设置为视窗高度 */
@@ -65,8 +67,8 @@
             display: block; /* 显示激活的内容 */
         }
 
-
-
+    </style>
+    <style about="tweet park">
         .tweets-park {
             flex-grow: 1.618;
             background-color: #e6e6e6;
@@ -106,7 +108,8 @@
             display: flex;
             align-items: center;
         }
-
+    </style>
+    <style about="tweet card">
         .tweet-card {
             min-height: 100px;
             max-height: 400px;
@@ -169,6 +172,7 @@
             -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
         }
+
         .tweetPaymentRetry {
             display: none;
             background-color: #f44336; /* 例如，红色背景 */
@@ -184,6 +188,149 @@
             display: inline-block;
         }
     </style>
+    <style about="user profile detail vid">
+        .hover-card img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .hover-card-content {
+            margin-left: 60px;
+        }
+
+        .buy-key-button {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            padding: 5px 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .hover-card {
+            display: none; /* 默认不显示 */
+            position: absolute;
+            z-index: 5;
+            padding: 10px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            top: 100%; /* 定位到 tweet-header 下方 */
+            left: 0;
+        }
+    </style>
+    <style about="tweet vote div">
+        .vote-chose-modal-class {
+            display: none; /* 默认隐藏 */
+            position: fixed; /* 固定位置 */
+            z-index: 1; /* 置于顶层 */
+            left: 0;
+            top: 0;
+            width: 100%; /* 宽度 */
+            height: 100%; /* 高度 */
+            overflow: auto; /* 启用滚动条 */
+            background-color: rgb(0, 0, 0); /* 背景颜色 */
+            background-color: rgba(0, 0, 0, 0.4); /* 黑色背景透明度 */
+        }
+
+        .vote-no-modal-content {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% 从顶部开始 */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* 宽度 */
+        }
+
+        /* 关闭按钮 */
+        .vote-no-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .vote-no-close:hover,
+        .vote-no-close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+    </style>
+    <style about="tweet post div">
+
+        .modal-for-tweet-post {
+            padding: 20px; /* 增加内边距 */
+            display: none; /* 默认隐藏 */
+            position: fixed; /* 固定定位 */
+            left: 50%; /* 水平居中 */
+            top: 50%; /* 垂直居中 */
+            transform: translate(-50%, -50%); /* 校正到完全居中 */
+            z-index: 2; /* 确保在页面内容上方 */
+            background-color: #fff; /* 背景颜色 */
+            border-radius: 10px; /* 边框圆角 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 盒子阴影 */
+            width: 80%; /* 宽度，可根据需要调整 */
+            max-width: 500px; /* 最大宽度 */
+        }
+
+        .tweets-content-txt-area {
+            width: 100%; /* 文本区域宽度 */
+            height: 150px; /* 文本区域高度 */
+            padding: 10px; /* 内边距 */
+            border: 1px solid #ccc; /* 边框 */
+            border-radius: 5px; /* 边框圆角 */
+            margin-bottom: 10px; /* 下边距 */
+            resize: none; /* 禁止调整大小 */
+        }
+
+        #tweet-post-with-eth-btn {
+            background-color: #1DA1F2; /* 推特蓝色 */
+            color: white; /* 字体颜色 */
+            border: none; /* 无边框 */
+            padding: 10px 20px; /* 内边距 */
+            border-radius: 5px; /* 边框圆角 */
+            cursor: pointer; /* 鼠标样式 */
+            width: 100%; /* 宽度 */
+        }
+
+        #tweet-post-with-eth-btn:hover {
+            background-color: #1991db; /* 悬停时背景颜色 */
+        }
+
+        .show-post-tweet-div {
+            background-color: #1DA1F2; /* 推特蓝色 */
+            color: white; /* 字体颜色 */
+            border: none; /* 无边框 */
+            padding: 10px 20px; /* 内边距 */
+            border-radius: 10%; /* 圆形按钮 */
+            cursor: pointer; /* 鼠标样式 */
+            font-size: 16px; /* 字体大小 */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 盒子阴影 */
+        }
+
+        .show-post-tweet-div:hover {
+            background-color: #1991db; /* 悬停时背景颜色 */
+        }
+
+        .tweet-post-close-btn {
+            float: right; /* 右上角 */
+            font-size: 20px; /* 字体大小 */
+            line-height: 20px; /* 行高 */
+            cursor: pointer; /* 鼠标样式 */
+            color: #aaa; /* 颜色 */
+        }
+
+        .tweet-post-close-btn:hover {
+            color: black; /* 悬停时颜色 */
+        }
+
+    </style>
+
 </head>
 <body>
 <div class="container">
@@ -192,30 +339,28 @@
         <img src="/assets/file/logo.png" style="width: 40px;height: 40px" alt="avatar">
 
         <ul class="menu-list-left-area">
-            <li onclick="menuOnClicked.call(this)" class="menu-item-left-area active" data-content="middle-div-home">
+            <li onclick="menuOnClicked.call(this,0)" class="menu-item-left-area active" data-content="middle-div-home">
                 主页
             </li>
-            <li onclick="menuOnClicked.call(this)" class="menu-item-left-area" data-content="middle-div-leaderboard">
+            <li onclick="menuOnClicked.call(this,1)" class="menu-item-left-area" data-content="middle-div-leaderboard">
                 排行榜
             </li>
-            <li onclick="menuOnClicked.call(this)" class="menu-item-left-area" data-content="middle-div-web3">Web3身份
+
+            <li onclick="menuOnClicked.call(this,2)" class="menu-item-left-area" data-content="middle-div-user-tweets">
+                我的推文
             </li>
-            <li onclick="menuOnClicked.call(this)" class="menu-item-left-area" data-content="middle-div-income">
+            <li onclick="menuOnClicked.call(this,3)" class="menu-item-left-area" data-content="middle-div-income">
                 我的收入
             </li>
-            <li onclick="menuOnClicked.call(this)" class="menu-item-left-area" data-content="middle-div-settings">设置
+            <li onclick="menuOnClicked.call(this,4)" class="menu-item-left-area" data-content="middle-div-settings">设置
             </li>
-            <li onclick="openKolKeyPage()" class="menu-item-left-area" data-content="middle-div-userKolKey">
+            <li onclick="menuOnClicked.call(this,5)" class="menu-item-left-area" data-content="middle-div-userKolKey">
                 我的Key
             </li>
         </ul>
-        <div class="left-top-tweet-post-area">
-            <label for="tweets">
-            <textarea class="tweets-content-txt-area" id="tweets-content-txt-area">
-            </textarea>
-            </label>
-            <button id="tweet-post-with-eth-btn" onclick="postTweet()">发布推文</button>
-        </div>
+
+        <button class="show-post-tweet-div" onclick="showPostTweetDiv()">发推</button>
+
     </div>
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
@@ -235,28 +380,105 @@
                     </div>
                     <div class="tweet-info">
                         <span class="vote-count">投票数: <span class="vote-number">0</span></span>
-                        Payment Status: <span class="tweetPaymentStatus"></span>
-                        <button class="tweetPaymentRetry" >继续支付</button>
                     </div>
                 </div>
             </div>
-            <div class="tweets-park"> </div>
+            <div class="tweets-park"></div>
         </div>
 
         <div id="middle-div-leaderboard" class="content-in-middle-area">排行榜内容</div>
         <div id="middle-div-web3" class="content-in-middle-area">Web3身份内容</div>
+        <div id="middle-div-user-tweets" class="content-in-middle-area">
+            <div class="user-tweet-top-button-area">
+                <button onclick="loadTweetsUserPosted()">我的推文</button>
+                <button onclick="loadTweetsUserVoted()">我的投票</button>
+            </div>
+
+            <div class="tweets-post-by-user">
+                <div id="tweetTemplateForUserSelf" class="tweet-card" style="display: none;">
+                    <div class="tweet-header">
+                        <img src="" alt="Avatar" class="twitterAvatar">
+                        <span class="name twitterName"></span>
+                        <span class="username twitterUserName"></span>
+                        <span class="time tweetCreateTime"></span>
+                    </div>
+                    <div onclick="showTweetDetails.call(this)" class="tweet-content tweet-content-collapsed"></div>
+                    <div class="tweet-footer">
+                        <div class="tweet-info">
+                            <span class="vote-count">投票数: <span class="vote-number">0</span></span>
+                        </div>
+                        <div class="tweet-action">
+                            支付状态: <span class="tweetPaymentStatus"></span>
+                            <button class="tweetPaymentRetry">继续支付</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tweets-voted-by-user">
+                <div id="tweetTemplateForVoted" class="tweet-card" style="display: none;">
+                    <div class="tweet-header">
+                        <img src="" alt="Avatar" class="twitterAvatar">
+                        <span class="name twitterName"></span>
+                        <span class="username twitterUserName"></span>
+                        <span class="time tweetCreateTime"></span>
+                    </div>
+                    <div onclick="showTweetDetails.call(this)" class="tweet-content tweet-content-collapsed"></div>
+                    <button class="show-more" onclick="showFullTweetContent.call(this)">更多</button>
+                    <div class="tweet-footer">
+                        <div class="tweet-info">
+                            <span class="vote-count">投票数: <span class="vote-number">0</span></span>
+                        </div>
+                        <div class="tweet-action">
+                            支付状态: <span class="tweetPaymentStatus"></span>
+                            <button class="tweetPaymentRetry">继续支付</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-tweet-top-button-area">
+                    <button onclick="loadTweetsUserPosted()">我的推文</button>
+                    <button onclick="loadTweetsUserVoted()">我的投票</button>
+                </div>
+            </div>
+
+        </div>
         <div id="middle-div-income" class="content-in-middle-area">我的收入内容</div>
         <div id="middle-div-settings" class="content-in-middle-area">设置内容</div>
         <div id="middle-div-userKolKey" class="content-in-middle-area">我的Key内容</div>
-    </div>
 
-{{/*    <div class="right-operation-area">*/}}
-{{/*        <div id="web3-environment-operate-area" class="web3-environment-operate-area"*/}}
-{{/*             style="display: block;background: #a7a7af">*/}}
-{{/*            <button id="bridge-to-twitter" style="display: block" onclick="bindingTwitter()">绑定twitter</button>*/}}
-{{/*            <button id="switch-to-arbitrum" style="display: block" onclick="switchToWorkChain()">切换到Arb网络</button>*/}}
-{{/*        </div>*/}}
-{{/*    </div>*/}}
+        <div id="tweet-detail" class="tweet-detail" style="display: none;">
+            <button id="back-button" class="back-button" onclick="backTowTweetPark()">返回</button>
+            <div class="tweet-author">
+                <img src="" alt="Avatar" class="author-avatar">
+                <div class="author-info">
+                    <span class="author-name"></span>
+                    <span class="author-username"></span>
+                    <div class="tweet-post-time"></div>
+                </div>
+            </div>
+
+            <div class="tweet-text"></div>
+
+            <div class="tweet-interaction">
+                <div class="tweet-action">
+                    <button class="tweet-action-vote">0.01 eth打赏</button>
+                </div>
+                <div class="tweet-info">
+                    <span class="vote-count">投票数: <span class="vote-number">0</span></span>
+                    Payment Status: <span class="tweetPaymentStatus"></span>
+                    <button class="tweetPaymentRetry">继续支付</button>
+                    <div class="tweet-prefixed-hash">
+                        <span class="vote-count">推文Hash:</span>
+                        <span id="tweet-prefixed-hash"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="right-operation-area">
+    </div>
 </div>
 
 <div class="hover-card" id="hover-card" onmouseleave="hideHoverCard(this)">
@@ -287,29 +509,38 @@
     </div>
 </div>
 
+<div class="modal-for-tweet-post">
+    <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
+    <label for="tweets">
+        <textarea class="tweets-content-txt-area" id="tweets-content-txt-area"></textarea>
+    </label>
+    <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()">发布推文</button>
+</div>
+
 <script>
     let ninjaUserObj = {{ .NinjaUsrInfoJson }};
+    let curScrollContentID = 0;
     document.addEventListener("DOMContentLoaded", initMainPage);
 
     async function initMainPage() {
-        checkTwitterID();
         await checkMetaMaskEnvironment();
-        loadLatestTweet(true);
+        await loadTweetsForHomePage();
     }
 
-    function menuOnClicked() {
+    function menuOnClicked(curMenuId) {
+        curScrollContentID = curMenuId;
         document.querySelectorAll('.menu-item-left-area').forEach(i => i.classList.remove('active'));
         this.classList.add('active');
 
         const contentId = this.getAttribute('data-content');
         document.querySelectorAll('.content-in-middle-area').forEach(c => c.classList.remove('active'));
-
         document.getElementById(contentId).classList.add('active');
+
+        if (contentId === "middle-div-user-tweets") {
+            loadTweetsUserPosted();
+        }
     }
 
-    function openKolKeyPage() {
-        window.location.href = "/kol_key";
-    }
 </script>
 </body>
 </html>

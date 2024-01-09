@@ -276,9 +276,10 @@ func (gs *GameService) gameTimeOn() (*big.Int, *time.Time, error) {
 	}
 
 	discoverTime := time.Unix(result.DiscoverTime.Int64(), 0)
+	bts, _ := json.Marshal(result)
 	util.LogInst().Debug().Str("current-round", roundNo.String()).
 		Str("discover-time", discoverTime.String()).
-		Msg("query game info success")
+		Msg(string(bts))
 	return roundNo, &discoverTime, nil
 }
 

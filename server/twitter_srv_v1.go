@@ -121,6 +121,7 @@ func postTweets(w http.ResponseWriter, r *http.Request, nu *database2.NinjaUsrIn
 	var ut, err = checkTwitterRights(nu.TwID, r)
 	if err != nil {
 		util.LogInst().Err(err).Msg("load access token failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	param := &SignDataByEth{}

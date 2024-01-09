@@ -1,68 +1,50 @@
-const cachedTweetsShowed = new MemCachedTweets();
+const cachedGlobalTweets = new MemCachedTweets();
 
 function bindingTwitter() {
     window.location.href = "/signUpByTwitter";
 }
 
-function checkTwitterID(){
-    if(ninjaUserObj.tw_id){
-        return;
-    }
-    showDialog("tips","bind twitter first",bindingTwitter);
-}
-
-function cachedToMem(tweetArray, refreshNewest) {
-    if (tweetArray.length === 0) {
-        if (!refreshNewest) {
-            cachedTweetsShowed.moreOldTweets = false;
-        }
-        return;
-    }
-
-
-    tweetArray.map(tweet => {
-        cachedTweetsShowed.TweetMaps.set(tweet.create_time, tweet);
-        if (tweet.create_time > cachedTweetsShowed.MaxID) {
-            cachedTweetsShowed.MaxID = tweet.create_time;
-        }
-
-        if (tweet.create_time < cachedTweetsShowed.MinID || cachedTweetsShowed.MinID === BigInt(0)) {
-            cachedTweetsShowed.MinID = tweet.create_time;
-        }
-    });
-}
-
-function loadLatestTweet(refreshNewest) {
-    let startID;
-    if (refreshNewest) {
-        startID = cachedTweetsShowed.MaxID;
-    } else {
-        startID = cachedTweetsShowed.MinID;
-    }
-
-    fetch("/globalLatestTweets?startID=" + startID + "&&isRefresh=" + refreshNewest)
-        .then(response => response.json())
-        .then(tweetArray => {
-            cachedToMem(tweetArray, refreshNewest);
-            refreshTweetPark();
-        })
-        .catch(err => {
-            showDialog("error", "api globalLatestTweets:" + err.toString());
-        });
-}
-
-async function loadTwitterInfoFromSrv(twitterID, needCache, forceSync) {
-    if (!forceSync) {
-        forceSync = false;
-    }
+async function __loadTweetsAtHomePage(newest) {
     try {
-        if (needCache) {
+        let startID;
+        if (newest) {
+            startID = cachedGlobalTweets.MaxID;
+        } else {
+            startID = cachedGlobalTweets.MinID;
+        }
+        const param = new TweetQueryParam(startID, newest, "", []);
+
+        const needUpdateUI = await TweetsQuery(param, cachedGlobalTweets);
+        if (needUpdateUI) {
+            fillTweetParkAtHomePage(newest);
+            cachedGlobalTweets.CachedItem = [];
+        }
+
+    } catch (err) {
+        showDialog("error", "load tweets failed" + err.toString())
+    }
+}
+
+async function loadTweetsForHomePage() {
+    await __loadTweetsAtHomePage(true);
+}
+
+async function loadOlderTweetsForHomePage() {
+    await __loadTweetsAtHomePage(false);
+}
+
+async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) {
+    try {
+        if (syncFromTwitter) {
+            useCache = false;
+        }
+        if (useCache) {
             let tw_data = TwitterBasicInfo.loadTwBasicInfo(twitterID)
             if (tw_data) {
                 return tw_data;
             }
         }
-        const response = await GetToSrvByJson("/queryTwBasicById?twitterID=" + twitterID + "&&forceSync=" + forceSync);
+        const response = await GetToSrvByJson("/queryTwBasicById?twitterID=" + twitterID + "&&forceSync=" + syncFromTwitter);
         if (!response.ok) {
             console.log("query twitter basic info failed")
             return null;
@@ -76,116 +58,134 @@ async function loadTwitterInfoFromSrv(twitterID, needCache, forceSync) {
     }
 }
 
-function refreshTweetPark(){
-    const sortedKeys = Array.from(cachedTweetsShowed.TweetMaps.keys()).sort((a, b) => b - a);
+function fillTweetParkAtHomePage(newest) {
     const tweetsPark = document.querySelector('.tweets-park');
-    tweetsPark.innerHTML = '';
-    for (const key of sortedKeys) {
-        const tweet = cachedTweetsShowed.TweetMaps.get(key);
-        if (!tweet){
-            console.log("no such obj:",key);
-            continue;
-        }
+
+    for (const tweet of cachedGlobalTweets.CachedItem) {
 
         const tweetCard = document.getElementById('tweetTemplate').cloneNode(true);
         tweetCard.style.display = '';
-        tweetCard.id = "tweet-card-info-" + key;
-        tweetCard.querySelector('.tweet-header').id = "tweet-header-" + tweet.create_time;
-        tweetCard.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
-        tweetCard.querySelector('.tweet-content').textContent = tweet.text;
 
-        const twitterObj = TwitterBasicInfo.loadTwBasicInfo(tweet.twitter_id);
-        if (!twitterObj){
-            loadTwitterInfoFromSrv().then(newObj=>{
-                tweetCard.querySelector('.twitterAvatar').src = newObj.profile_image_url;
-                tweetCard.querySelector('.twitterName').textContent = newObj.name;
-                tweetCard.querySelector('.twitterUserName').textContent = '@' + newObj.username;
-            });
-        }else{
-            tweetCard.querySelector('.twitterAvatar').src = twitterObj.profile_image_url;
-            tweetCard.querySelector('.twitterName').textContent = twitterObj.name;
-            tweetCard.querySelector('.twitterUserName').textContent = '@' + twitterObj.username;
-        }
+        tweetCard.querySelector('.tweet-header').id = "tweet-card-header-for-home-" + tweet.create_time;
+        tweetCard.id = "tweet-card-for-home-" + tweet.create_time;
+
+        setupCommonTweetHeader(tweetCard, tweet);
 
         const voteBtn = tweetCard.querySelector('.tweet-action-vote');
 
-        if (voteContractMeta){
+        if (voteContractMeta) {
             voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
             voteBtn.onclick = () => voteToThisTweet(tweet.create_time);
         }
+        tweetCard.querySelector('.vote-number').textContent = 0;//TODO:: refactor this logic.
 
-        const statusElem = tweetCard.querySelector('.tweetPaymentStatus');
-        statusElem.textContent = TXStatus.Str(tweet.payment_status);
-
-        const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
-        setupTweetPaymentStatus(tweet, retryButton, statusElem);
-        if (tweet.payment_status === TXStatus.NoPay && ninjaUserObj.eth_addr === tweet.web3_id){
-            retryButton.classList.add('show');
-            retryButton.onclick = () => payThisTweetAgain(tweet.create_time);
+        const showMoreBtn = tweetCard.querySelector('.show-more');
+        if (tweetCard.querySelector('.tweet-content').scrollHeight <= tweetCard.querySelector('.tweet-content').clientHeight) {
+            showMoreBtn.style.display = 'none';
+        } else {
+            showMoreBtn.style.display = 'block';
         }
 
-        tweetCard.querySelector('.vote-number').textContent = 0;
-        tweetsPark.appendChild(tweetCard);
+        if (newest) {
+            tweetsPark.insertBefore(tweetCard, tweetsPark.firstChild);
+        } else {
+            tweetsPark.appendChild(tweetCard);
+        }
     }
-    handleShowMoreButtons();
 }
 
-function handleShowMoreButtons() {
-    requestAnimationFrame(() => {
-        document.querySelectorAll('.tweet-card').forEach(tweetCard => {
-            const tweetContent = tweetCard.querySelector('.tweet-content');
-            const showMoreBtn = tweetCard.querySelector('.show-more');
-
-            if (tweetContent.scrollHeight <= tweetContent.clientHeight) {
-                showMoreBtn.style.display = 'none';
-            } else {
-                tweetCard.appendChild(showMoreBtn);
-            }
-        });
-    });
-}
-
-function getUserInput() {
+async function preparePostMsg() {
     const content = document.getElementById("tweets-content-txt-area").value.trim();
-    if (!content) showDialog("tips", "content can't be empty");
-
-    const twitterID = ninjaUserObj.tw_id;
-    if (!twitterID) showDialog("tips", "bind your twitter first");
-
-    const web3Id = ninjaUserObj.eth_addr;
-    const tweet = new TweetContentToPost(content, (new Date()).getTime(), web3Id, twitterID);
-    return {content, twitterID, web3Id, message: JSON.stringify(tweet)};
-}
-
-async function signMessage(message, web3Id) {
-    if (!metamaskObj) {
-        window.location.href = "/signIn";
+    if (!content) {
+        showDialog("tips", "content can't be empty")
         return null;
     }
-    return await metamaskObj.request({
-        method: 'personal_sign', params: [message, web3Id],
+
+    const tweet = new TweetContentToPost(content,
+        (new Date()).getTime(), ninjaUserObj.eth_addr, ninjaUserObj.tw_id);
+    const message = JSON.stringify(tweet);
+
+    const signature = await metamaskObj.request({
+        method: 'personal_sign', params: [message, ninjaUserObj.eth_addr],
     });
+    if (!signature) {
+        showDialog("tips", "empty signature")
+        return null;
+    }
+    return new SignDataForPost(message, signature);
 }
 
-async function postTweet() {
+function updatePaymentStatusToSrv(tweet) {
+    PostToSrvByJson("/updateTweetPaymentStatus", {
+        create_time: tweet.create_time,
+        status: tweet.payment_status,
+        hash: tweet.prefixed_hash
+    }).then(r => {
+        console.log(r);
+    })
+}
+
+async function postTweetWithPayment() {
     try {
-        const {content, twitterID, web3Id, message} = getUserInput();
-        if (!content || !twitterID || !web3Id) return;
-
-        const signature = await signMessage(message, web3Id);
-        if (!signature) return;
-
-        const tweetHash = ethers.utils.hashMessage(message);
-        // console.log("tweetHash=>", tweetHash, "sig=>", signature, "web3Id=>", web3Id, "message\n", message);
-
+        const tweetObj = await preparePostMsg();
         showWaiting("posting to twitter");
-        const resp = await PostToSrvByJson("/postTweet", new SignDataForPost(message, signature))
+        const resp = await PostToSrvByJson("/postTweet", tweetObj);
+        if (!resp) {
+            showDialog("error", "post tweet failed");
+            return;
+        }
         const basicTweet = JSON.parse(resp);
 
-        document.getElementById("tweets-content-txt-area").value = '';
+        await procPaymentForPostedTweet(basicTweet, updatePaymentStatusToSrv);
 
-        await processTweetPayment(basicTweet.create_time, basicTweet.prefixed_hash, basicTweet.signature);
+        __loadTweetsAtHomePage(true).then(r=>{
+        });
     } catch (err) {
         checkMetamaskErr(err);
+    } finally {
+        closePostTweetDiv();
+    }
+}
+
+async function showPostTweetDiv() {
+    if (!metamaskProvider) {
+        showDialog("tips", "please change metamask to arbitrum network")
+        return;
+    }
+
+    if (!ninjaUserObj.tw_id) {
+        showDialog("tips", "bind twitter first", bindingTwitter);
+        return;
+    }
+
+    const modal = document.querySelector('.modal-for-tweet-post');
+    modal.style.display = 'block';
+
+    const postBtn = document.getElementById("tweet-post-with-eth-btn");
+    postBtn.innerText = "发布推文(" + voteContractMeta.votePriceInEth + " eth)"
+}
+
+function closePostTweetDiv() {
+    const modal = document.querySelector('.modal-for-tweet-post');
+    modal.style.display = 'none';
+}
+
+function clearDraftTweetContent() {
+    document.getElementById("tweets-content-txt-area").value = '';
+}
+
+function showFullTweetContent() {
+    const tweetCard = this.closest('.tweet-card');
+    const tweetContent = tweetCard.querySelector('.tweet-content');
+    if (this.innerText === "Show more") {
+        tweetContent.style.display = 'block';
+        tweetContent.classList.remove('tweet-content-collapsed');
+        tweetCard.style.maxHeight = 'none';
+        this.innerText = "Show less";
+    } else {
+        tweetContent.style.display = '-webkit-box';
+        tweetContent.classList.add('tweet-content-collapsed');
+        tweetCard.style.maxHeight = '400px';
+        this.innerText = "Show more";
     }
 }

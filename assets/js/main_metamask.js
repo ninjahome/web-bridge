@@ -4,8 +4,7 @@ let tweetVoteContract;
 let lotteryGameContract;
 let voteContractMeta = TweetVoteContractSetting.load();
 let gameContractMeta;
-let curGameMeta;
-let userGameInfo;
+
 
 async function checkMetaMaskEnvironment() {
 
@@ -56,9 +55,11 @@ async function checkCurrentChainID(chainId) {
         await initBlockChainContract();
         return;
     }
-    showDialog("tips", "switch to arbitrum", switchToWorkChain);
-}
 
+    showDialog("tips", "switch to arbitrum", switchToWorkChain, function (){
+        metamaskProvider = null;
+    });
+}
 
 async function switchChain(chainId) {
     try {
@@ -107,32 +108,37 @@ function metamaskAccountChanged(accounts) {
     window.location.href = "/signOut";
 }
 
-async function processTweetPayment(create_time, prefixed_hash, signature) {
+async function procPaymentForPostedTweet(tweet,callback) {
     try {
         changeLoadingTips("paying for tweet post");
 
         const txResponse = await tweetVoteContract.publishTweet(
-            prefixed_hash,
-            signature,
+            tweet.prefixed_hash,
+            tweet.signature,
             {value: voteContractMeta.postPrice}
         );
-        // console.log("Transaction Response: ", txResponse);
+        console.log("Transaction Response: ", txResponse);
 
         changeLoadingTips("waiting for blockchain packaging:" + txResponse.hash);
-        // updateTweetPaymentStatus(create_time, TXStatus.Pending, txResponse.hash);
 
         const txReceipt = await txResponse.wait();
         console.log("Transaction Receipt: ", txReceipt);
 
         const txStatus = txReceipt.status ? TXStatus.Success : TXStatus.Failed;
-        // updateTweetPaymentStatus(create_time, txStatus, txResponse.hash);
 
         hideLoading();
+
         showDialog("transaction " + (txReceipt.status ? "confirmed" : "failed"));
+
+        tweet.payment_status = txStatus;
     } catch (err) {
         const newErr = checkMetamaskErr(err);
         if (newErr && newErr.includes("duplicate post")) {
-            // updateTweetPaymentStatus(create_time, TXStatus.Success, prefixed_hash);
+            tweet.payment_status =  TXStatus.Success;
+        }
+    }finally {
+        if (callback){
+            callback(tweet);
         }
     }
 }

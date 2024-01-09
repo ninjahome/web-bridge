@@ -29,7 +29,7 @@ var (
 		"/updateTweetVoteStatic":    {updateTweetVoteStatic, true},
 		"/tweetStatusRealTime":      {tweetStatusRealTime, true},
 		"/buyRights":                {mainPage, true},
-		"/globalLatestTweets":       {globalTweetQuery, true},
+		"/tweetQuery":               {globalTweetQuery, true},
 	}
 
 	cfgHtmlFileRouter = map[string]string{

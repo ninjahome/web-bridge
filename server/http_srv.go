@@ -36,6 +36,8 @@ func NewMainService() *MainService {
 	bh := &MainService{
 		router: r,
 	}
+
+	r.PathPrefix("/" + staticFileDir + "/").HandlerFunc(bh.assetsRouter)
 	r.PathPrefix("/" + staticFileDir + "/").Handler(http.StripPrefix("/"+staticFileDir+"/", http.FileServer(http.Dir(staticFileDir))))
 
 	for route, fileName := range cfgHtmlFileRouter {
@@ -43,7 +45,7 @@ func NewMainService() *MainService {
 			bh.assetsStaticFile(w, r, fileName)
 		})
 	}
-	r.HandleFunc("/twitter/{web3-id}", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/user_profile/{web3-id}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		web3ID := vars["web3-id"]
 		userProfile(w, r, web3ID)
@@ -91,17 +93,12 @@ func (bh *MainService) Start() {
 	}
 }
 
-func (bh *MainService) simpleRouter(fileName string) func(http.ResponseWriter, *http.Request) {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		bh.assetsStaticFile(writer, request, fileName)
-	}
-}
-
 func (bh *MainService) assetsRouter(writer http.ResponseWriter, request *http.Request) {
 	realUrlPath := request.URL.Path
 	if strings.HasSuffix(realUrlPath, ".map") {
 		realUrlPath = strings.TrimSuffix(realUrlPath, ".map")
 	}
+	realUrlPath = strings.TrimPrefix(realUrlPath, "/"+staticFileDir+"/")
 	bh.assetsStaticFile(writer, request, realUrlPath)
 }
 

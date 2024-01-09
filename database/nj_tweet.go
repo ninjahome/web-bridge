@@ -46,6 +46,40 @@ type NinjaTweet struct {
 	PrefixedHash  string   `json:"prefixed_hash" firestore:"prefixed_hash"`
 	PaymentStatus TxStatus `json:"payment_status" firestore:"payment_status"`
 }
+type TweetQueryParm struct {
+	StartID  int64   `json:"start_id"`
+	Web3ID   string  `json:"web3_id"`
+	Newest   bool    `json:"newest"`
+	VotedIDs []int64 `json:"voted_i_ds"`
+}
+
+func (p *TweetQueryParm) String() string {
+	bts, _ := json.Marshal(p)
+	return string(bts)
+}
+
+func (p *TweetQueryParm) createFilter(pageSize int, doc *firestore.CollectionRef, opCtx context.Context) *firestore.DocumentIterator {
+
+	if len(p.VotedIDs) > 0 {
+		return doc.Where("create_time", "in", p.VotedIDs).Documents(opCtx)
+	}
+
+	var query = doc.Limit(pageSize)
+
+	if len(p.Web3ID) == 0 {
+		query = doc.Where("payment_status", "==", TxStSuccess)
+	} else {
+		query = doc.Where("web3_id", "==", p.Web3ID)
+	}
+
+	if p.Newest {
+		query.Where("create_time", ">", p.StartID).OrderBy("create_time", firestore.Asc)
+	} else {
+		query.Where("create_time", "<", p.StartID).OrderBy("create_time", firestore.Desc)
+	}
+
+	return query.Documents(opCtx)
+}
 
 type NjTweetStatus struct {
 	CreateTime int64 `json:"create_time" firestore:"create_time"`
@@ -86,40 +120,37 @@ func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 	return err
 }
 
-func (dm *DbManager) QueryGlobalLatestTweets(pageSize int, id int64, readNewest bool, callback func(tweet *NinjaTweet)) error {
+func (dm *DbManager) QueryTweetsByFilter(pageSize int, param *TweetQueryParm) ([]*NinjaTweet, error) {
+
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
 
 	var doc = dm.fileCli.Collection(DBTableTweetsPosted)
+
 	var iter *firestore.DocumentIterator
-	if readNewest {
-		iter = doc.
-			Where("create_time", ">", id).
-			OrderBy("create_time", firestore.Asc).Limit(pageSize).Documents(opCtx)
-	} else {
-		iter = doc.
-			Where("create_time", "<", id).
-			OrderBy("create_time", firestore.Desc).Limit(pageSize).Documents(opCtx)
-	}
+	iter = param.createFilter(pageSize, doc, opCtx)
 
 	defer iter.Stop()
+
+	var tweets = make([]*NinjaTweet, 0)
+
 	for {
 		doc, err := iter.Next()
 		if errors.Is(err, iterator.Done) {
-			return nil
+			return tweets, nil
 		}
 		if err != nil {
 			util.LogInst().Err(err).Msgf("Failed to iterate: %v", err)
-			return err
+			return nil, err
 		}
 
 		var tweet NinjaTweet
 		err = doc.DataTo(&tweet)
 		if err != nil {
 			util.LogInst().Err(err).Msgf("Failed to convert document to NinjaUsrInfo: %v", err)
-			return err
+			return nil, err
 		}
-		callback(&tweet)
+		tweets = append(tweets, &tweet)
 	}
 }
 

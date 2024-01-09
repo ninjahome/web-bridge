@@ -60,7 +60,7 @@ function PostToSrvByJson(url, data) {
                 if (!response.ok) {
                     return response.text().then(text => {
                         console.log(text)
-                        throw new Error('Server responded with an error:' + response.statusText);
+                        throw new Error('\tserver responded with an error:' + response.status);
                     });
                 }
                 return response.text();
@@ -258,7 +258,7 @@ function createDialogElement() {
     return dialog;
 }
 
-function showDialog(title, msg, callback) {
+function showDialog(title, msg, confirmCB, cancelCB) {
     const dialog = createDialogElement();
     document.body.appendChild(dialog);
 
@@ -270,17 +270,19 @@ function showDialog(title, msg, callback) {
     dialogTitle.textContent = title;
     dialogMessage.textContent = msg;
 
-    // 关闭按钮的点击事件
+
     dialogCloseButton.addEventListener('click', function () {
         document.body.removeChild(dialog);
+        if (cancelCB){
+            cancelCB();
+        }
     });
 
-    // 确认按钮的点击事件
-    if (callback) {
+    if (confirmCB) {
         dialogConfirmButton.style.display = 'block';
         dialogConfirmButton.addEventListener('click', function () {
-            callback();
             document.body.removeChild(dialog);
+            confirmCB();
         });
     } else {
         dialogConfirmButton.style.display = 'none';
