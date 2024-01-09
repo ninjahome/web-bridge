@@ -55,6 +55,8 @@ let confirmCallback = null;
 function openVoteModal(callback) {
     const modal = document.getElementById("vote-no-chose-modal");
     modal.style.display = "block";
+    const voteCount = document.getElementById("voteCount");
+    voteCount.value = 1;
     confirmCallback = callback;
 }
 
@@ -97,13 +99,11 @@ function showHoverCard() {
     const tweetCount = '0'; // obj.tweet_no;
     const voteCount = '0'; // obj.vote_count;
 
-    // 设置悬浮卡片内容
     document.getElementById('hover-avatar').src = avatar;
     document.getElementById('hover-name').textContent = name;
     document.getElementById('hover-tweet-count').textContent = tweetCount;
     document.getElementById('hover-vote-count').textContent = voteCount;
 
-    // 设置悬浮卡片的位置
     hoverCard.style.display = 'block';
     hoverCard.style.left = `${rect.left}px`;
     hoverCard.style.top = `${rect.bottom + window.scrollY}px`;
@@ -115,7 +115,6 @@ function hideHoverCard(obj) {
         obj.style.display = 'none';
         return;
     }
-    // 检查鼠标是否在 hover-card 或 tweet-header 上
     const hoverCard = document.getElementById('hover-card');
     setTimeout(() => {
         if (!hoverCard.matches(':hover') && !this.matches(':hover')) {
@@ -224,12 +223,15 @@ async function showTweetDetail() {
         tweetCard.parentNode.style.display = 'block';
         detail.style.display = 'none';
     }
+    const voteCounter = detail.querySelector('.vote-number');
+    voteCounter.textContent = obj.vote_count;
 
     const voteBtn = detail.querySelector('.tweet-action-vote');
     voteBtn.textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
-    voteBtn.onclick = () => voteToThisTweet(obj);
+    voteBtn.onclick = () => voteToTheTweet(obj.create_time,function (newVote){
+        voteCounter.textContent = newVote.vote_count;
+    });
 
     const statusElem = detail.querySelector('.tweetPaymentStatus');
     statusElem.textContent = TXStatus.Str(obj.payment_status);
-    detail.querySelector('.vote-number').textContent = '0';
 }

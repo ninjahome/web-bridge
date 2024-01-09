@@ -26,8 +26,7 @@ var (
 		"/postTweet":                {postTweets, true},
 		"/updateTweetPaymentStatus": {updateTweetTxStatus, true},
 		"/reloadPaymentDetails":     {queryTweetDetails, false},
-		"/updateTweetVoteStatic":    {updateTweetVoteStatic, true},
-		"/tweetStatusRealTime":      {tweetStatusRealTime, true},
+		"/updateTweetVoteStatus":    {updateTweetVoteStatus, true},
 		"/buyRights":                {mainPage, true},
 		"/tweetQuery":               {globalTweetQuery, true},
 	}

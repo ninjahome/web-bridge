@@ -14,7 +14,7 @@ async function __loadTweetsAtHomePage(newest) {
         }
         const param = new TweetQueryParam(startID, newest, "", []);
 
-        const needUpdateUI = await TweetsQuery(param,newest, cachedGlobalTweets);
+        const needUpdateUI = await TweetsQuery(param, newest, cachedGlobalTweets);
         if (needUpdateUI) {
             await fillTweetParkAtHomePage(newest);
             cachedGlobalTweets.CachedItem = [];
@@ -74,13 +74,16 @@ async function fillTweetParkAtHomePage(newest) {
 
         await setupCommonTweetHeader(tweetCard, tweet);
 
+        const voteCounter = tweetCard.querySelector('.vote-number');
+        voteCounter.textContent = tweet.vote_count;
+
         const voteBtn = tweetCard.querySelector('.tweet-action-vote');
         if (voteContractMeta) {
             voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
-            voteBtn.onclick = () => voteToThisTweet(tweet.create_time);
+            voteBtn.onclick = () => voteToTheTweet(tweet.create_time,function (newVote){
+                voteCounter.textContent = newVote.vote_count;
+            });
         }
-
-        tweetCard.querySelector('.vote-number').textContent = 0;//TODO:: refactor this logic.
 
         const contentArea = tweetCard.querySelector('.tweet-content');
         contentArea.textContent = tweet.text;
@@ -191,7 +194,7 @@ function showFullTweetContent() {
     const tweetContent = tweetCard.querySelector('.tweet-content');
     const isMore = this.getAttribute('data-more') === 'true';
 
-    if (isMore)  {
+    if (isMore) {
         tweetContent.style.display = 'block';
         tweetContent.classList.remove('tweet-content-collapsed');
         tweetCard.style.maxHeight = 'none';
@@ -204,4 +207,36 @@ function showFullTweetContent() {
         this.setAttribute('data-more', 'true');
         this.innerText = "更多";
     }
+}
+
+
+async function voteToTheTweet(create_time, callback) {
+    const obj = cachedGlobalTweets.TweetMaps.get(create_time)
+    if (!obj) {
+        showDialog("tips", "no such tweet obj, please reload page")
+        return;
+    }
+
+    if (Number(obj.payment_status) !== TXStatus.Success) {
+        showDialog("tips", "can't vote to unpaid tweet")
+        return;
+    }
+
+    openVoteModal(function (voteCount) {
+        procTweetVotePayment(voteCount, obj, async function (create_time, vote_count) {
+            const updateResult = await updateVoteStatusToSrv(create_time, vote_count);
+            if (callback) {
+                callback(updateResult);
+            }
+        });
+    });
+}
+
+async function updateVoteStatusToSrv(create_time, vote_count) {
+    const resp = await PostToSrvByJson("/updateTweetVoteStatus", {
+        create_time: create_time,
+        vote_count: Number(vote_count),
+    });
+    console.log(resp);
+    return JSON.parse(resp);
 }

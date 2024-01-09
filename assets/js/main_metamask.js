@@ -109,6 +109,11 @@ function metamaskAccountChanged(accounts) {
 }
 
 async function procPaymentForPostedTweet(tweet, callback) {
+    if (!metamaskProvider) {
+        showDialog("tips", "please change metamask to arbitrum network")
+        return;
+    }
+
     try {
         changeLoadingTips("paying for tweet post");
 
@@ -162,4 +167,38 @@ function checkMetamaskErr(err) {
     }
     showDialog(code);
     return code;
+}
+
+
+async function procTweetVotePayment(voteCount, tweet, callback) {
+    if (!metamaskProvider) {
+        showDialog("tips", "please change metamask to arbitrum network")
+        return;
+    }
+
+    try {
+        showWaiting("prepare to pay");
+
+        const amount = voteContractMeta.postPrice.mul(voteCount);
+
+        const txResponse = await tweetVoteContract.voteToTweets(
+            tweet.prefixed_hash,
+            voteCount,
+            {value: amount}
+        );
+        console.log("Transaction Response: ", txResponse);
+        changeLoadingTips("waiting for blockchain packaging:" + txResponse.hash);
+
+        const txReceipt = await txResponse.wait();
+        console.log("Transaction Receipt: ", txReceipt);
+        showDialog("Transaction: " + txReceipt.status ? "success" : "failed");
+
+        hideLoading();
+
+        if(callback){
+            callback(tweet.create_time, voteCount);
+        }
+    } catch (err) {
+        checkMetamaskErr(err);
+    }
 }

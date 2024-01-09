@@ -97,7 +97,7 @@ type TweetVoteAction struct {
 	VoteCount  int   `json:"vote_count"`
 }
 
-func updateTweetVoteStatic(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 	vote := &TweetVoteAction{}
 	var err = util.ReadRequest(r, vote)
 	if err != nil {
@@ -110,6 +110,7 @@ func updateTweetVoteStatic(w http.ResponseWriter, r *http.Request, nu *database.
 		http.Error(w, "invalid tweet create time", http.StatusBadRequest)
 		return
 	}
+
 	newVal, err := database.DbInst().UpdateTweetVoteStatic(vote.CreateTime, vote.VoteCount)
 	if err != nil {
 		util.LogInst().Err(err).Int64("create_time", vote.CreateTime).
@@ -118,8 +119,6 @@ func updateTweetVoteStatic(w http.ResponseWriter, r *http.Request, nu *database.
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	//TODO:: record vote action of web3id
 
 	vote.VoteCount = newVal
 	w.Header().Set("Content-Type", "application/json")
@@ -130,34 +129,4 @@ func updateTweetVoteStatic(w http.ResponseWriter, r *http.Request, nu *database.
 	util.LogInst().Debug().Int64("create_time", vote.CreateTime).
 		Int("vote_count", vote.VoteCount).
 		Msg(" update vote count of tweet success")
-}
-
-type StatusQuery struct {
-	CreateTime []int64 `json:"create_time"`
-}
-
-func tweetStatusRealTime(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
-	query := &StatusQuery{}
-
-	var err = util.ReadRequest(r, query)
-	if err != nil {
-		util.LogInst().Err(err).Msg("parsing payment status param failed ")
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	res, err := database.DbInst().QueryTweetStatus(query.CreateTime)
-	if err != nil {
-		util.LogInst().Err(err).Msgf("query status failed %v", query.CreateTime)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	bts, _ := json.Marshal(res)
-	w.Write(bts)
-
-	util.LogInst().Debug().Int("create_time len", len(query.CreateTime)).
-		Msg(" query vote status success")
 }

@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"github.com/ninjahome/web-bridge/util"
 	"google.golang.org/api/iterator"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type TxStatus int8
@@ -45,6 +43,7 @@ type NinjaTweet struct {
 	Signature     string   `json:"signature,omitempty" firestore:"signature"`
 	PrefixedHash  string   `json:"prefixed_hash" firestore:"prefixed_hash"`
 	PaymentStatus TxStatus `json:"payment_status" firestore:"payment_status"`
+	VoteCount     int      `json:"vote_count" firestore:"vote_count"`
 }
 type TweetQueryParm struct {
 	StartID  int64   `json:"start_id"`
@@ -81,11 +80,6 @@ func (p *TweetQueryParm) createFilter(pageSize int, doc *firestore.CollectionRef
 	return query.Documents(opCtx)
 }
 
-type NjTweetStatus struct {
-	CreateTime int64 `json:"create_time" firestore:"create_time"`
-	VoteCount  int   `json:"vote_count" firestore:"vote_count"`
-}
-
 type TweetsOfUser struct {
 	Tweets map[string]struct{} `json:"tweets"  firestore:"tweets"`
 }
@@ -112,11 +106,6 @@ func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 		util.LogInst().Err(err).Msg("save ninja tweet failed:" + content.String())
 		return err
 	}
-
-	var ts = NjTweetStatus{content.CreateAt, 0}
-
-	statusDoc := dm.fileCli.Collection(DBTableTweetsStatus).Doc(createTime)
-	_, err = statusDoc.Set(opCtx, ts)
 	return err
 }
 
@@ -175,65 +164,40 @@ func (dm *DbManager) UpdateTweetPaymentStatus(createAt int64, s TxStatus) error 
 	})
 	return err
 }
+
 func (dm *DbManager) UpdateTweetVoteStatic(createAt int64, amount int) (int, error) {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
-	docRef := dm.fileCli.Collection(DBTableTweetsStatus).Doc(fmt.Sprintf("%d", createAt))
 
-	docSnapshot, err := docRef.Get(opCtx)
-	if err != nil {
-		if status.Code(err) != codes.NotFound {
-			util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to get tweet document to update vote")
-			return 0, err
-		}
+	var newFieldValue int
+	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
+		docRef := dm.fileCli.Collection(DBTableTweetsPosted).Doc(fmt.Sprintf("%d", createAt))
 
-		_, err := docRef.Set(opCtx, map[string]interface{}{
-			"vote_count":  amount,
-			"create_time": createAt,
-		})
+		docSnapshot, err := tx.Get(docRef)
 		if err != nil {
-			util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to create new document")
-			return 0, err
+			util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to get tweet document to update vote")
+			return err
 		}
-		return amount, nil
-	}
 
-	var existingData NjTweetStatus
-	err = docSnapshot.DataTo(&existingData)
+		var existingData NinjaTweet
+		err = docSnapshot.DataTo(&existingData)
+		if err != nil {
+			util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to decode document data")
+			return err
+		}
+
+		newFieldValue = existingData.VoteCount + amount
+		err = tx.Update(docRef, []firestore.Update{{Path: "vote_count", Value: newFieldValue}})
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
 	if err != nil {
-		util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to decode document data")
 		return 0, err
 	}
 
-	newFieldValue := existingData.VoteCount + amount
-	_, err = docRef.Update(opCtx, []firestore.Update{
-		{Path: "vote_count", Value: newFieldValue},
-	})
-
-	return newFieldValue, err
-}
-
-func (dm *DbManager) QueryTweetStatus(createTimes []int64) (map[int64]*NjTweetStatus, error) {
-	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
-	defer cancel()
-	iter := dm.fileCli.Collection(DBTableTweetsStatus).Where("create_time", "in", createTimes).Documents(opCtx)
-	result := make(map[int64]*NjTweetStatus)
-
-	for {
-		doc, err := iter.Next()
-		if errors.Is(err, iterator.Done) {
-			return result, nil
-		}
-		if err != nil {
-			util.LogInst().Err(err).Msg("failed to fetch tweet status data")
-			return nil, err
-		}
-		var ts NjTweetStatus
-		err = doc.DataTo(&ts)
-		if err != nil {
-			util.LogInst().Err(err).Msg("data to tweet status object failed")
-			return nil, err
-		}
-		result[ts.CreateTime] = &ts
-	}
+	return newFieldValue, nil
 }
