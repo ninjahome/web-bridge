@@ -23,7 +23,7 @@ async function __loadTweetAtUserPost(newest, web3ID) {
         param.start_id = cachedGlobalTweets.MinID;
     }
 
-    const needUpdateUI = await TweetsQuery(param, cachedUserTweets);
+    const needUpdateUI = await TweetsQuery(param, newest, cachedUserTweets);
     if (needUpdateUI) {
         fillUserPostedTweetsList(newest);
         cachedUserTweets.CachedItem = [];

@@ -82,7 +82,7 @@
             display: flex;
             align-items: center;
             margin-bottom: 10px;
-            cursor: pointer;
+            /*cursor: pointer;*/
         }
 
         .tweet-header img {
@@ -378,16 +378,24 @@
 
     </div>
     <div class="middle-content-area">
+
         <div id="middle-div-home" class="content-in-middle-area active">
+
             <div id="tweetTemplate" class="tweet-card" style="display: none;">
-                <div class="tweet-header" onmouseenter="showHoverCard.call(this)"
-                     onmouseleave="hideHoverCard.call(this)">
-                    <img src="" alt="Avatar" class="twitterAvatar">
-                    <span class="name twitterName"></span>
-                    <span class="username twitterUserName"></span>
-                    <span class="time tweetCreateTime"></span>
+
+                <div class="tweet-header">
+                    <div onmouseenter="showHoverCard.call(this)"
+                         onmouseleave="hideHoverCard.call(this)">
+                        <img src="" alt="Avatar" class="twitterAvatar">
+                        <span class="name twitterName"></span>
+                        <span class="username twitterUserName"></span>
+                        <span class="time tweetCreateTime"></span>
+                    </div>
                 </div>
-                <div onclick="showTweetDetails.call(this)" class="tweet-content tweet-content-collapsed"></div>
+
+                <div onclick="showTweetDetail.call(this)" class="tweet-content tweet-content-collapsed">
+
+                </div>
                 <button class="show-more" data-more="true" onclick="showFullTweetContent.call(this)">更多</button>
                 <div class="tweet-footer">
                     <div class="tweet-action">
@@ -417,7 +425,7 @@
                         <span class="username twitterUserName"></span>
                         <span class="time tweetCreateTime"></span>
                     </div>
-                    <div onclick="showTweetDetails.call(this)" class="tweet-content tweet-content-collapsed"></div>
+                    <div onclick="showTweetDetail.call(this)" class="tweet-content tweet-content-collapsed"></div>
                     <div class="tweet-footer">
                         <div class="tweet-info">
                             <span class="vote-count">投票数: <span class="vote-number">0</span></span>
@@ -457,14 +465,13 @@
         <div id="middle-div-userKolKey" class="content-in-middle-area">我的Key内容</div>
 
         <div id="tweet-detail" class="tweet-detail" style="display: none;">
-            <button id="back-button" class="back-button" onclick="backTowTweetPark()">返回</button>
-            <div class="tweet-author">
-                <img src="" alt="Avatar" class="author-avatar">
-                <div class="author-info">
-                    <span class="author-name"></span>
-                    <span class="author-username"></span>
-                    <div class="tweet-post-time"></div>
-                </div>
+            <button id="back-button" class="back-button">返回</button>
+
+            <div class="tweet-header">
+                <img src="" alt="Avatar" class="twitterAvatar">
+                <span class="name twitterName"></span>
+                <span class="username twitterUserName"></span>
+                <span class="time tweetCreateTime"></span>
             </div>
 
             <div class="tweet-text"></div>
@@ -544,9 +551,12 @@
         const contentId = this.getAttribute('data-content');
         document.querySelectorAll('.content-in-middle-area').forEach(c => c.classList.remove('active'));
         document.getElementById(contentId).classList.add('active');
+        document.getElementById("tweet-detail").style.display = 'none';
 
         if (contentId === "middle-div-user-tweets") {
             loadTweetsUserPosted();
+        }else if(contentId === "middle-div-home"){
+            loadTweetsForHomePage()
         }
     }
 

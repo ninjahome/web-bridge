@@ -131,19 +131,21 @@ function cachedToMem(tweetArray, cacheObj) {
         if (exist){
             return;
         }
+
         cacheObj.CachedItem.push(tweet);
 
         if (tweet.create_time > cacheObj.MaxID) {
             cacheObj.MaxID = tweet.create_time;
         }
 
-        if (tweet.create_time < cacheObj.MinID || cacheObj.MinID === BigInt(0)) {
+        if (tweet.create_time < cacheObj.MinID || cacheObj.MinID === 0) {
             cacheObj.MinID = tweet.create_time;
         }
     });
+    // console.log(cacheObj.MinID, cacheObj.MaxID);
 }
 
-async function TweetsQuery(param, cacheObj) {
+async function TweetsQuery(param, newest,cacheObj) {
     try {
         const resp = await PostToSrvByJson("/tweetQuery", param);
         if (!resp) {
@@ -151,6 +153,9 @@ async function TweetsQuery(param, cacheObj) {
         }
         const tweetArray = JSON.parse(resp);
         if (tweetArray.length === 0) {
+            if (!newest){
+                cacheObj.moreOldTweets = false;
+            }
             return false;
         }
 
@@ -162,7 +167,6 @@ async function TweetsQuery(param, cacheObj) {
 }
 
 function setupCommonTweetHeader(tweetCard, tweet){
-    tweetCard.querySelector('.tweet-header').id = "tweet-header-" + tweet.create_time;
     tweetCard.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
 
     const twitterObj = TwitterBasicInfo.loadTwBasicInfo(tweet.twitter_id);

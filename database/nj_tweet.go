@@ -67,15 +67,15 @@ func (p *TweetQueryParm) createFilter(pageSize int, doc *firestore.CollectionRef
 	var query = doc.Limit(pageSize)
 
 	if len(p.Web3ID) == 0 {
-		query = doc.Where("payment_status", "==", TxStSuccess)
+		query = query.Where("payment_status", "==", TxStSuccess)
 	} else {
-		query = doc.Where("web3_id", "==", p.Web3ID)
+		query = query.Where("web3_id", "==", p.Web3ID)
 	}
 
 	if p.Newest {
-		query.Where("create_time", ">", p.StartID).OrderBy("create_time", firestore.Asc)
+		query = query.Where("create_time", ">", p.StartID).OrderBy("create_time", firestore.Asc)
 	} else {
-		query.Where("create_time", "<", p.StartID).OrderBy("create_time", firestore.Desc)
+		query = query.Where("create_time", "<", p.StartID).OrderBy("create_time", firestore.Desc)
 	}
 
 	return query.Documents(opCtx)
@@ -127,13 +127,10 @@ func (dm *DbManager) QueryTweetsByFilter(pageSize int, param *TweetQueryParm) ([
 
 	var doc = dm.fileCli.Collection(DBTableTweetsPosted)
 
-	var iter *firestore.DocumentIterator
-	iter = param.createFilter(pageSize, doc, opCtx)
-
+	var iter = param.createFilter(pageSize, doc, opCtx)
 	defer iter.Stop()
 
 	var tweets = make([]*NinjaTweet, 0)
-
 	for {
 		doc, err := iter.Next()
 		if errors.Is(err, iterator.Done) {
