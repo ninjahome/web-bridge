@@ -25,7 +25,7 @@ async function __loadTweetAtUserPost(newest, web3ID) {
 
     const needUpdateUI = await TweetsQuery(param, newest, cachedUserTweets);
     if (needUpdateUI) {
-        fillUserPostedTweetsList(newest);
+        await fillUserPostedTweetsList(newest);
         cachedUserTweets.CachedItem = [];
     }
 }
@@ -45,7 +45,7 @@ function __checkPayment(tweet,retryButton,statusElem){
     });
 }
 
-function fillUserPostedTweetsList(newest) {
+async function fillUserPostedTweetsList(newest) {
     const tweetsDiv = document.getElementById('tweets-post-by-user');
 
     for (const tweet of cachedUserTweets.CachedItem) {
@@ -58,7 +58,7 @@ function fillUserPostedTweetsList(newest) {
 
         tweetCard.dataset.createTime = tweet.create_time;
 
-        setupCommonTweetHeader(tweetCard, tweet);
+        await setupCommonTweetHeader(tweetCard, tweet);
 
         const contentArea = tweetCard.querySelector('.tweet-content');
         contentArea.textContent = tweet.text;
@@ -69,7 +69,7 @@ function fillUserPostedTweetsList(newest) {
         statusElem.textContent = TXStatus.Str(tweet.payment_status);
 
         const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
-        __checkPayment(tweet,retryButton,statusElem);
+        __checkPayment(tweet, retryButton, statusElem);
 
         if (newest) {
             tweetsDiv.insertBefore(tweetCard, tweetsDiv.firstChild);

@@ -16,7 +16,7 @@ async function __loadTweetsAtHomePage(newest) {
 
         const needUpdateUI = await TweetsQuery(param,newest, cachedGlobalTweets);
         if (needUpdateUI) {
-            fillTweetParkAtHomePage(newest);
+            await fillTweetParkAtHomePage(newest);
             cachedGlobalTweets.CachedItem = [];
         }
     } catch (err) {
@@ -44,6 +44,7 @@ async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) 
                 return tw_data;
             }
         }
+
         const response = await GetToSrvByJson("/queryTwBasicById?twitterID=" + twitterID + "&&forceSync=" + syncFromTwitter);
         if (!response.ok) {
             console.log("query twitter basic info failed")
@@ -58,7 +59,7 @@ async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) 
     }
 }
 
-function fillTweetParkAtHomePage(newest) {
+async function fillTweetParkAtHomePage(newest) {
     const tweetsPark = document.getElementById('tweets-park');
 
     for (const tweet of cachedGlobalTweets.CachedItem) {
@@ -71,7 +72,7 @@ function fillTweetParkAtHomePage(newest) {
 
         tweetCard.dataset.createTime = tweet.create_time;
 
-        setupCommonTweetHeader(tweetCard, tweet);
+        await setupCommonTweetHeader(tweetCard, tweet);
 
         const voteBtn = tweetCard.querySelector('.tweet-action-vote');
         if (voteContractMeta) {
@@ -203,36 +204,4 @@ function showFullTweetContent() {
         this.setAttribute('data-more', 'true');
         this.innerText = "更多";
     }
-}
-
-function showTweetDetail() {
-    const detail = document.querySelector('#tweet-detail');
-    detail.style.display = 'block';
-
-    const tweetCard = this.closest('.tweet-card');
-    tweetCard.parentNode.style.display = 'none';
-
-    const create_time = Number(tweetCard.dataset.createTime);
-    // console.log(create_time);
-
-    const obj = cachedGlobalTweets.TweetMaps.get(create_time)
-    if (!obj){
-        showDialog("error","can't find tweet obj");
-        return;
-    }
-    setupCommonTweetHeader(detail,obj);
-    detail.querySelector('.tweet-text').textContent = obj.text;
-    detail.querySelector('#tweet-prefixed-hash').textContent = obj.prefixed_hash;
-    detail.querySelector('.back-button').onclick = ()=>{
-        tweetCard.parentNode.style.display = 'block';
-        detail.style.display = 'none';
-    }
-
-    const voteBtn = detail.querySelector('.tweet-action-vote');
-    voteBtn.textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
-    voteBtn.onclick = () => voteToThisTweet(obj);
-
-    const statusElem = detail.querySelector('.tweetPaymentStatus');
-    statusElem.textContent = TXStatus.Str(obj.payment_status);
-    detail.querySelector('.vote-number').textContent = '0';
 }

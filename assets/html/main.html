@@ -351,7 +351,7 @@
 <div class="container">
 
     <div class="left-menu-area">
-        <img src="/assets/file/logo.png" style="width: 40px;height: 40px" alt="avatar">
+        <img src="/assets/file/logo.png" id="dessage-log-to-nj-log" style="width: 40px;height: 40px" alt="avatar">
 
         <ul class="menu-list-left-area">
             <li onclick="menuOnClicked.call(this,0)" class="menu-item-left-area active" data-content="middle-div-home">
@@ -461,7 +461,18 @@
 
         </div>
         <div id="middle-div-income" class="content-in-middle-area">我的收入内容</div>
-        <div id="middle-div-settings" class="content-in-middle-area">设置内容</div>
+        <div id="middle-div-settings" class="content-in-middle-area">
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <div>
+                    <span>Web3 ID:<span id="basic-web3-id">0x123...</span></span>
+                    <span>积分:<span id="dessage-web3-token">200.00 dsg</span></span>
+                </div>
+
+                <button onclick="refreshTwitterInfo()">同步推特</button>
+                <button onclick="quitFromService()">退出</button>
+                <button onclick="clearCachedData()">清空缓存</button>
+            </div>
+        </div>
         <div id="middle-div-userKolKey" class="content-in-middle-area">我的Key内容</div>
 
         <div id="tweet-detail" class="tweet-detail" style="display: none;">
@@ -539,6 +550,7 @@
     document.addEventListener("DOMContentLoaded", initMainPage);
 
     async function initMainPage() {
+        document.getElementById("basic-web3-id").innerText = ninjaUserObj.eth_addr;
         await checkMetaMaskEnvironment();
         await loadTweetsForHomePage();
     }
@@ -556,7 +568,7 @@
 
         if (contentId === "middle-div-user-tweets") {
             loadTweetsUserPosted();
-        }else if(contentId === "middle-div-home"){
+        } else if (contentId === "middle-div-home") {
             loadTweetsForHomePage()
         }
     }

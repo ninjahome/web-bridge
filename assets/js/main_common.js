@@ -166,23 +166,70 @@ async function TweetsQuery(param, newest, cacheObj) {
     }
 }
 
-function setupCommonTweetHeader(tweetCard, tweet){
+async function setupCommonTweetHeader(tweetCard, tweet) {
     tweetCard.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
 
     const twitterObj = TwitterBasicInfo.loadTwBasicInfo(tweet.twitter_id);
     if (!twitterObj) {
-        loadTwitterUserInfoFromSrv(tweet.twitter_id, true).then(newObj => {
-            if (!newObj) {
-                console.log("failed load twitter user info");
-                return;
-            }
-            tweetCard.querySelector('.twitterAvatar').src = newObj.profile_image_url;
-            tweetCard.querySelector('.twitterName').textContent = newObj.name;
-            tweetCard.querySelector('.twitterUserName').textContent = '@' + newObj.username;
-        });
+        const newObj = await loadTwitterUserInfoFromSrv(tweet.twitter_id, true)
+        if (!newObj) {
+            console.log("failed load twitter user info");
+            return;
+        }
+        tweetCard.querySelector('.twitterAvatar').src = newObj.profile_image_url;
+        tweetCard.querySelector('.twitterName').textContent = newObj.name;
+        tweetCard.querySelector('.twitterUserName').textContent = '@' + newObj.username;
+
     } else {
         tweetCard.querySelector('.twitterAvatar').src = twitterObj.profile_image_url;
         tweetCard.querySelector('.twitterName').textContent = twitterObj.name;
         tweetCard.querySelector('.twitterUserName').textContent = '@' + twitterObj.username;
     }
+}
+
+function refreshTwitterInfo() {
+    loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true).then(twInfo => {
+        setupTwitterElem(twInfo);
+    })
+}
+
+function quitFromService() {
+    fetch("/signOut", {method: 'GET'}).then(r => {
+        window.location.href = "/signIn";
+    }).catch(err => {
+        console.log(err)
+        window.location.href = "/signIn";
+    })
+}
+
+async function showTweetDetail() {
+    const detail = document.querySelector('#tweet-detail');
+    detail.style.display = 'block';
+
+    const tweetCard = this.closest('.tweet-card');
+    tweetCard.parentNode.style.display = 'none';
+
+    const create_time = Number(tweetCard.dataset.createTime);
+    // console.log(create_time);
+
+    const obj = cachedGlobalTweets.TweetMaps.get(create_time)
+    if (!obj) {
+        showDialog("error", "can't find tweet obj");
+        return;
+    }
+    await setupCommonTweetHeader(detail, obj);
+    detail.querySelector('.tweet-text').textContent = obj.text;
+    detail.querySelector('#tweet-prefixed-hash').textContent = obj.prefixed_hash;
+    detail.querySelector('.back-button').onclick = () => {
+        tweetCard.parentNode.style.display = 'block';
+        detail.style.display = 'none';
+    }
+
+    const voteBtn = detail.querySelector('.tweet-action-vote');
+    voteBtn.textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
+    voteBtn.onclick = () => voteToThisTweet(obj);
+
+    const statusElem = detail.querySelector('.tweetPaymentStatus');
+    statusElem.textContent = TXStatus.Str(obj.payment_status);
+    detail.querySelector('.vote-number').textContent = '0';
 }
