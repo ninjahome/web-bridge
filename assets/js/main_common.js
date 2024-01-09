@@ -145,7 +145,7 @@ function cachedToMem(tweetArray, cacheObj) {
     // console.log(cacheObj.MinID, cacheObj.MaxID);
 }
 
-async function TweetsQuery(param, newest,cacheObj) {
+async function TweetsQuery(param, newest, cacheObj) {
     try {
         const resp = await PostToSrvByJson("/tweetQuery", param);
         if (!resp) {

@@ -18,9 +18,9 @@ async function olderPostedTweets() {
 async function __loadTweetAtUserPost(newest, web3ID) {
     const param = new TweetQueryParam("", newest, web3ID, []);
     if (newest) {
-        param.start_id = cachedGlobalTweets.MaxID;
+        param.start_id = cachedUserTweets.MaxID;
     } else {
-        param.start_id = cachedGlobalTweets.MinID;
+        param.start_id = cachedUserTweets.MinID;
     }
 
     const needUpdateUI = await TweetsQuery(param, newest, cachedUserTweets);
