@@ -165,7 +165,9 @@ func postTweets(w http.ResponseWriter, r *http.Request, nu *database2.NinjaUsrIn
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(njTweet)
-	util.LogInst().Debug().Msg("Tweet posted successfully")
+	util.LogInst().Debug().Str("tweet-id", njTweet.TweetId).
+		Int64("create_time", njTweet.CreateAt).
+		Msg("Tweet posted successfully")
 }
 
 func uploadMedia(token *oauth1.Token, img image.Image) (string, error) {

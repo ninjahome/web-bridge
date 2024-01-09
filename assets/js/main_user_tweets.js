@@ -30,6 +30,21 @@ async function __loadTweetAtUserPost(newest, web3ID) {
     }
 }
 
+function __checkPayment(tweet,retryButton,statusElem){
+    if (tweet.payment_status !== TXStatus.NoPay) {
+        return;
+    }
+    retryButton.classList.add('show');
+    retryButton.onclick = () => procPaymentForPostedTweet(tweet, function (newObj) {
+        updatePaymentStatusToSrv(newObj).then();
+        cachedUserTweets.TweetMaps.set(newObj.create_time, newObj);
+        if (newObj.payment_status !== TXStatus.NoPay) {
+            retryButton.classList.remove('show');
+            statusElem.textContent = TXStatus.Str(newObj.payment_status);
+        }
+    });
+}
+
 function fillUserPostedTweetsList(newest) {
     const tweetsDiv = document.getElementById('tweets-post-by-user');
 
@@ -50,10 +65,7 @@ function fillUserPostedTweetsList(newest) {
         statusElem.textContent = TXStatus.Str(tweet.payment_status);
 
         const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
-        if (tweet.payment_status === TXStatus.NoPay) {
-            retryButton.classList.add('show');
-            retryButton.onclick = () => payThisTweetAgain(tweet.create_time);
-        }
+        __checkPayment(tweet,retryButton,statusElem);
 
         if (newest) {
             tweetsDiv.insertBefore(tweetCard, tweetsDiv.firstChild);

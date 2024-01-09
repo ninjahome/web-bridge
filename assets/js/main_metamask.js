@@ -108,7 +108,7 @@ function metamaskAccountChanged(accounts) {
     window.location.href = "/signOut";
 }
 
-async function procPaymentForPostedTweet(tweet,callback) {
+async function procPaymentForPostedTweet(tweet, callback) {
     try {
         changeLoadingTips("paying for tweet post");
 
@@ -157,7 +157,9 @@ function checkMetamaskErr(err) {
     } else {
         code = "code:" + err.data.code + " " + err.data.message
     }
-
+    if (code.includes("duplicate post")){
+        return code;
+    }
     showDialog(code);
     return code;
 }

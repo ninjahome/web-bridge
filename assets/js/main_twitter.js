@@ -121,7 +121,7 @@ async function preparePostMsg() {
 }
 
 function updatePaymentStatusToSrv(tweet) {
-    PostToSrvByJson("/updateTweetPaymentStatus", {
+    return PostToSrvByJson("/updateTweetPaymentStatus", {
         create_time: tweet.create_time,
         status: tweet.payment_status,
         hash: tweet.prefixed_hash
@@ -141,7 +141,9 @@ async function postTweetWithPayment() {
         }
         const basicTweet = JSON.parse(resp);
 
-        await procPaymentForPostedTweet(basicTweet, updatePaymentStatusToSrv);
+        await procPaymentForPostedTweet(basicTweet);
+
+        await updatePaymentStatusToSrv(basicTweet)
 
         __loadTweetsAtHomePage(true).then(r => {
             clearDraftTweetContent();
