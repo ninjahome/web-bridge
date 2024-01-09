@@ -21,7 +21,8 @@ async function __loadTweetsAtHomePage(newest) {
         }
 
     } catch (err) {
-        showDialog("error", "load tweets failed" + err.toString())
+        console.log(err);
+        showDialog("error", err.toString());
     }
 }
 
@@ -59,7 +60,7 @@ async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) 
 }
 
 function fillTweetParkAtHomePage(newest) {
-    const tweetsPark = document.querySelector('.tweets-park');
+    const tweetsPark = document.getElementById('tweets-park');
 
     for (const tweet of cachedGlobalTweets.CachedItem) {
 
@@ -72,24 +73,27 @@ function fillTweetParkAtHomePage(newest) {
         setupCommonTweetHeader(tweetCard, tweet);
 
         const voteBtn = tweetCard.querySelector('.tweet-action-vote');
-
         if (voteContractMeta) {
             voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
             voteBtn.onclick = () => voteToThisTweet(tweet.create_time);
         }
+
         tweetCard.querySelector('.vote-number').textContent = 0;//TODO:: refactor this logic.
 
-        const showMoreBtn = tweetCard.querySelector('.show-more');
-        if (tweetCard.querySelector('.tweet-content').scrollHeight <= tweetCard.querySelector('.tweet-content').clientHeight) {
-            showMoreBtn.style.display = 'none';
-        } else {
-            showMoreBtn.style.display = 'block';
-        }
+        const contentArea = tweetCard.querySelector('.tweet-content');
+        contentArea.textContent = tweet.text;
 
         if (newest) {
             tweetsPark.insertBefore(tweetCard, tweetsPark.firstChild);
         } else {
             tweetsPark.appendChild(tweetCard);
+        }
+
+        const showMoreBtn = tweetCard.querySelector('.show-more');
+        if (contentArea.scrollHeight <= contentArea.clientHeight) {
+            showMoreBtn.style.display = 'none';
+        } else {
+            showMoreBtn.style.display = 'block';
         }
     }
 }
@@ -138,7 +142,8 @@ async function postTweetWithPayment() {
 
         await procPaymentForPostedTweet(basicTweet, updatePaymentStatusToSrv);
 
-        __loadTweetsAtHomePage(true).then(r=>{
+        __loadTweetsAtHomePage(true).then(r => {
+            clearDraftTweetContent();
         });
     } catch (err) {
         checkMetamaskErr(err);
@@ -160,6 +165,8 @@ async function showPostTweetDiv() {
 
     const modal = document.querySelector('.modal-for-tweet-post');
     modal.style.display = 'block';
+    document.getElementById('modal-overlay').style.display = 'block';
+
 
     const postBtn = document.getElementById("tweet-post-with-eth-btn");
     postBtn.innerText = "发布推文(" + voteContractMeta.votePriceInEth + " eth)"
@@ -168,6 +175,7 @@ async function showPostTweetDiv() {
 function closePostTweetDiv() {
     const modal = document.querySelector('.modal-for-tweet-post');
     modal.style.display = 'none';
+    document.getElementById('modal-overlay').style.display = 'none';
 }
 
 function clearDraftTweetContent() {
@@ -177,15 +185,19 @@ function clearDraftTweetContent() {
 function showFullTweetContent() {
     const tweetCard = this.closest('.tweet-card');
     const tweetContent = tweetCard.querySelector('.tweet-content');
-    if (this.innerText === "Show more") {
+    const isMore = this.getAttribute('data-more') === 'true';
+
+    if (isMore)  {
         tweetContent.style.display = 'block';
         tweetContent.classList.remove('tweet-content-collapsed');
         tweetCard.style.maxHeight = 'none';
-        this.innerText = "Show less";
+        this.innerText = "更少";
+        this.setAttribute('data-more', 'false');
     } else {
         tweetContent.style.display = '-webkit-box';
         tweetContent.classList.add('tweet-content-collapsed');
         tweetCard.style.maxHeight = '400px';
-        this.innerText = "Show more";
+        this.setAttribute('data-more', 'true');
+        this.innerText = "更多";
     }
 }

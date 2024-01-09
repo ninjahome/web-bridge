@@ -46,7 +46,7 @@ async function initBlockChainContract() {
 
     } catch (error) {
         console.error("Error getting system settings: ", error);
-        showDialog("error",error.toString());
+        checkMetamaskErr(error);
     }
 }
 
@@ -141,4 +141,23 @@ async function procPaymentForPostedTweet(tweet,callback) {
             callback(tweet);
         }
     }
+}
+
+function checkMetamaskErr(err) {
+    console.error("Transaction error: ", err);
+    hideLoading();
+
+    if (err.code === 4001) {
+        return null;
+    }
+
+    let code = err.code;
+    if (!err.data || !err.data.message) {
+        code = code + err.message;
+    } else {
+        code = "code:" + err.data.code + " " + err.data.message
+    }
+
+    showDialog(code);
+    return code;
 }

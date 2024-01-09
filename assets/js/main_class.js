@@ -11,8 +11,8 @@ class TweetContentToPost {
 
 class MemCachedTweets{
     constructor() {
-        this.MaxID = BigInt(0);
-        this.MinID = BigInt(0);
+        this.MaxID = 0;
+        this.MinID = 0;
         this.TweetMaps = new Map();
         this.moreOldTweets = true;
         this.isLoading = false;

@@ -90,9 +90,6 @@ function clearCachedData() {
 
 
 function showHoverCard() {
-    const tweetCard = this.closest('.tweet-card');
-    const obj = JSON.parse(tweetCard.dataset.rawObj);
-
     const hoverCard = document.getElementById('hover-card');
     const rect = this.getBoundingClientRect();
     const avatar = this.querySelector('img').src;
@@ -167,7 +164,6 @@ async function TweetsQuery(param, cacheObj) {
 function setupCommonTweetHeader(tweetCard, tweet){
     tweetCard.querySelector('.tweet-header').id = "tweet-header-" + tweet.create_time;
     tweetCard.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
-    tweetCard.querySelector('.tweet-content').textContent = tweet.text;
 
     const twitterObj = TwitterBasicInfo.loadTwBasicInfo(tweet.twitter_id);
     if (!twitterObj) {

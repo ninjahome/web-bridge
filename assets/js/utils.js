@@ -365,22 +365,3 @@ class BlockChainData {
         return new BlockChainData(storedData.account);
     }
 }
-
-function checkMetamaskErr(err) {
-    console.error("Transaction error: ", err);
-    hideLoading();
-
-    if (err.code === 4001) {
-        return null;
-    }
-
-    let code = err.code;
-    if (!err.data || !err.data.message) {
-        code = code + err.message;
-    } else {
-        code = "code:" + err.data.code + " " + err.data.message
-    }
-
-    showDialog(code);
-    return code;
-}

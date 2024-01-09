@@ -18,6 +18,9 @@
         .container {
             display: flex; /* 启用flex布局 */
             height: 100vh; /* 容器高度设置为视窗高度 */
+            width: 80%;
+            margin-left: auto; /* 左边距自动 */
+            margin-right: auto; /* 右边距自动 */
         }
 
         .left-menu-area {
@@ -125,7 +128,7 @@
             font-style: italic;
         }
 
-        .tweet-action button {
+        .tweet-action-vote {
             background-color: #4CAF50;
             color: white;
             padding: 6px 12px;
@@ -136,7 +139,7 @@
             transition: background-color 0.3s;
         }
 
-        .tweet-action button:hover {
+        .tweet-action-vote:hover {
             background-color: #45a049;
         }
 
@@ -262,15 +265,25 @@
 
     </style>
     <style about="tweet post div">
+        .modal-overlay {
+            display: none; /* 默认隐藏 */
+            position: fixed; /* 固定定位 */
+            top: 0; /* 顶部对齐 */
+            left: 0; /* 左侧对齐 */
+            width: 100%; /* 宽度为整个视窗 */
+            height: 100%; /* 高度为整个视窗 */
+            background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+            z-index: 1; /* 确保它位于内容和模态框之间 */
+        }
 
         .modal-for-tweet-post {
+            z-index: 2;
             padding: 20px; /* 增加内边距 */
             display: none; /* 默认隐藏 */
             position: fixed; /* 固定定位 */
             left: 50%; /* 水平居中 */
             top: 50%; /* 垂直居中 */
             transform: translate(-50%, -50%); /* 校正到完全居中 */
-            z-index: 2; /* 确保在页面内容上方 */
             background-color: #fff; /* 背景颜色 */
             border-radius: 10px; /* 边框圆角 */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 盒子阴影 */
@@ -279,12 +292,14 @@
         }
 
         .tweets-content-txt-area {
+            margin: 0 auto;
+            display: block; /* 确保元素为块级元素 */
+            box-sizing: border-box;
             width: 100%; /* 文本区域宽度 */
             height: 150px; /* 文本区域高度 */
             padding: 10px; /* 内边距 */
             border: 1px solid #ccc; /* 边框 */
             border-radius: 5px; /* 边框圆角 */
-            margin-bottom: 10px; /* 下边距 */
             resize: none; /* 禁止调整大小 */
         }
 
@@ -296,6 +311,7 @@
             border-radius: 5px; /* 边框圆角 */
             cursor: pointer; /* 鼠标样式 */
             width: 100%; /* 宽度 */
+            margin-top: 10px; /* 下边距 */
         }
 
         #tweet-post-with-eth-btn:hover {
@@ -328,7 +344,6 @@
         .tweet-post-close-btn:hover {
             color: black; /* 悬停时颜色 */
         }
-
     </style>
 
 </head>
@@ -373,7 +388,7 @@
                     <span class="time tweetCreateTime"></span>
                 </div>
                 <div onclick="showTweetDetails.call(this)" class="tweet-content tweet-content-collapsed"></div>
-                <button class="show-more" onclick="showFullTweetContent.call(this)">更多</button>
+                <button class="show-more" data-more="true" onclick="showFullTweetContent.call(this)">更多</button>
                 <div class="tweet-footer">
                     <div class="tweet-action">
                         <button class="tweet-action-vote">0.01 eth打赏</button>
@@ -383,7 +398,7 @@
                     </div>
                 </div>
             </div>
-            <div class="tweets-park"></div>
+            <div class="tweets-park" id="tweets-park"></div>
         </div>
 
         <div id="middle-div-leaderboard" class="content-in-middle-area">排行榜内容</div>
@@ -394,7 +409,7 @@
                 <button onclick="loadTweetsUserVoted()">我的投票</button>
             </div>
 
-            <div class="tweets-post-by-user">
+            <div id="tweets-post-by-user" class="tweets-park">
                 <div id="tweetTemplateForUserSelf" class="tweet-card" style="display: none;">
                     <div class="tweet-header">
                         <img src="" alt="Avatar" class="twitterAvatar">
@@ -415,7 +430,7 @@
                 </div>
             </div>
 
-            <div class="tweets-voted-by-user">
+            <div id="tweets-voted-by-user" class="tweets-park">
                 <div id="tweetTemplateForVoted" class="tweet-card" style="display: none;">
                     <div class="tweet-header">
                         <img src="" alt="Avatar" class="twitterAvatar">
@@ -430,15 +445,9 @@
                             <span class="vote-count">投票数: <span class="vote-number">0</span></span>
                         </div>
                         <div class="tweet-action">
-                            支付状态: <span class="tweetPaymentStatus"></span>
-                            <button class="tweetPaymentRetry">继续支付</button>
+                            <button class="tweet-action-vote">0.01 eth打赏</button>
                         </div>
                     </div>
-                </div>
-
-                <div class="user-tweet-top-button-area">
-                    <button onclick="loadTweetsUserPosted()">我的推文</button>
-                    <button onclick="loadTweetsUserVoted()">我的投票</button>
                 </div>
             </div>
 
@@ -509,11 +518,11 @@
     </div>
 </div>
 
+<div class="modal-overlay" id="modal-overlay"></div>
 <div class="modal-for-tweet-post">
     <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
-    <label for="tweets">
-        <textarea class="tweets-content-txt-area" id="tweets-content-txt-area"></textarea>
-    </label>
+    <textarea class="tweets-content-txt-area" id="tweets-content-txt-area">
+    </textarea>
     <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()">发布推文</button>
 </div>
 
