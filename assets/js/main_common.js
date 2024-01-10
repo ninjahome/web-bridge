@@ -125,25 +125,32 @@ function hideHoverCard(obj) {
     }, 300);
 }
 
+function __calculateCacheIdx(cacheObj,tweet){
+    const exist = cacheObj.TweetMaps.get(tweet.create_time);
+    if (exist) {
+        return;
+    }
+    cacheObj.TweetMaps.set(tweet.create_time, true);
+    cacheObj.CachedItem.push(tweet);
+
+    if (tweet.create_time > cacheObj.MaxID) {
+        cacheObj.MaxID = tweet.create_time;
+    }
+
+    if (tweet.create_time < cacheObj.MinID || cacheObj.MinID === 0) {
+        cacheObj.MinID = tweet.create_time;
+    }
+}
+
 function cachedToMem(tweetArray, cacheObj) {
     tweetArray.map(tweet => {
         __globalTweetMemCache.set(tweet.create_time, tweet);
-        const exist = cacheObj.TweetMaps.get(tweet.create_time);
-        if (exist) {
+
+        if (!cacheObj){
             return;
         }
-        cacheObj.TweetMaps.set(tweet.create_time, true);
-        cacheObj.CachedItem.push(tweet);
-
-        if (tweet.create_time > cacheObj.MaxID) {
-            cacheObj.MaxID = tweet.create_time;
-        }
-
-        if (tweet.create_time < cacheObj.MinID || cacheObj.MinID === 0) {
-            cacheObj.MinID = tweet.create_time;
-        }
+        __calculateCacheIdx(cacheObj, tweet);
     });
-    console.log(cacheObj.MinID, cacheObj.MaxID);
 }
 
 async function TweetsQuery(param, newest, cacheObj) {
@@ -154,7 +161,7 @@ async function TweetsQuery(param, newest, cacheObj) {
         }
         const tweetArray = JSON.parse(resp);
         if (tweetArray.length === 0) {
-            if (!newest) {
+            if (!newest&&cacheObj) {
                 cacheObj.moreOldTweets = false;
             }
             return false;

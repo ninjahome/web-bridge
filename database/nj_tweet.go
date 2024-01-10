@@ -80,9 +80,9 @@ func (p *TweetQueryParm) createFilter(pageSize int, doc *firestore.CollectionRef
 	}
 
 	if p.Newest {
-		query = query.Where("create_time", ">", p.StartID).OrderBy("create_time", firestore.Asc)
+		query = query.Where("create_time", ">", p.StartID).OrderBy("create_time", firestore.Desc)
 	} else {
-		query = query.Where("create_time", "<", p.StartID).OrderBy("create_time", firestore.Desc)
+		query = query.Where("create_time", "<", p.StartID).OrderBy("create_time", firestore.Asc)
 	}
 
 	return query.Documents(opCtx)
