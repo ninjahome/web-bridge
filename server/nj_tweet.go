@@ -92,13 +92,8 @@ func queryTweetDetails(w http.ResponseWriter, r *http.Request, _ *database.Ninja
 	util.LogInst().Debug().Int64("id", createTime).Msg("query tweet detail success")
 }
 
-type TweetVoteAction struct {
-	CreateTime int64 `json:"create_time"`
-	VoteCount  int   `json:"vote_count"`
-}
-
 func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
-	vote := &TweetVoteAction{}
+	vote := &database.TweetVoteAction{}
 	var err = util.ReadRequest(r, vote)
 	if err != nil {
 		util.LogInst().Err(err).Msg("parsing payment status param failed ")
@@ -111,7 +106,7 @@ func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.
 		return
 	}
 
-	newVal, err := database.DbInst().UpdateTweetVoteStatic(vote.CreateTime, vote.VoteCount, nu.EthAddr)
+	err = database.DbInst().UpdateTweetVoteStatic(vote, nu.EthAddr)
 	if err != nil {
 		util.LogInst().Err(err).Int64("create_time", vote.CreateTime).
 			Int("vote_count", vote.VoteCount).
@@ -120,7 +115,6 @@ func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.
 		return
 	}
 
-	vote.VoteCount = newVal
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	bts, _ := json.Marshal(vote)

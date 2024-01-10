@@ -26,6 +26,8 @@ async function __loadTweetsAtHomePage(newest) {
 }
 
 async function loadTweetsForHomePage() {
+    const tweetsDiv = document.getElementById('tweets-park');
+    tweetsDiv.style.display = 'block';
      __loadTweetsAtHomePage(true).then(r=>{
          console.log("load newest global tweets success");
      });
@@ -81,8 +83,8 @@ async function fillTweetParkAtHomePage(newest) {
         const contentArea = tweetCard.querySelector('.tweet-content');
         contentArea.textContent = tweet.text;
 
-        const voteCounter = tweetCard.querySelector('.vote-number');
-        __showVoteButton(tweetCard,tweet,voteCounter);
+        tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
+        __showVoteButton(tweetCard,tweet);
 
         if (newest) {
             tweetsPark.insertBefore(tweetCard, tweetsPark.firstChild);
@@ -96,7 +98,6 @@ async function fillTweetParkAtHomePage(newest) {
         } else {
             showMoreBtn.style.display = 'block';
         }
-
     }
 }
 
@@ -206,7 +207,7 @@ function showFullTweetContent() {
     }
 }
 
-async function voteToTheTweet(create_time, callback) {
+async function voteToTheTweet(create_time,callback) {
     const obj = __globalTweetMemCache.get(create_time)
     if (!obj) {
         showDialog("tips", "no such tweet obj, please reload page")
@@ -220,10 +221,11 @@ async function voteToTheTweet(create_time, callback) {
 
     openVoteModal(function (voteCount) {
         procTweetVotePayment(voteCount, obj, async function (create_time, vote_count) {
-            const newObj = await updateVoteStatusToSrv(create_time, vote_count);
-            obj.vote_count = newObj.vote_count;
-            if (callback) {
-                callback(newObj, voteCount);
+            const newVote = await updateVoteStatusToSrv(create_time, vote_count);
+            obj.vote_count = newVote.vote_count;
+            __updateVoteNumberAllElements(obj,newVote);
+            if(callback){
+                callback(newVote);
             }
         });
     });

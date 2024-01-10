@@ -227,36 +227,44 @@ async function showTweetDetail() {
         detail.style.display = 'none';
     }
 
-    const voteCounter = detail.querySelector('.vote-number');
-
-    __showVoteButton(detail,obj, voteCounter,function (newVote, voteCount){
-        const parentCounter = tweetCard.querySelector('.vote-number');
-        if(!parentCounter){
-            return;
-        }
-        parentCounter.textContent = newVote.vote_count;
+   const counter =   detail.querySelector('.vote-number');
+    counter.textContent = obj.vote_count;
+    __showVoteButton(detail,obj,function (newVote){
+        counter.textContent = newVote.vote_count;
     });
 
     const statusElem = detail.querySelector('.tweetPaymentStatus');
     statusElem.textContent = TXStatus.Str(obj.payment_status);
 }
 
-function __showVoteButton(tweetCard, tweet,voteCounter,callback) {
-
-    voteCounter.textContent = tweet.vote_count;
-
+function __showVoteButton(tweetCard, tweet,callback) {
     const voteBtn = tweetCard.querySelector('.tweet-action-vote');
     if (!voteContractMeta) {
         return;
     }
-
     voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
+    voteBtn.onclick = () => voteToTheTweet(tweet.create_time, callback);
+}
 
-    voteBtn.onclick = () => voteToTheTweet(tweet.create_time, function (newVote, voteCount) {
-        voteCounter.textContent = newVote.vote_count;
-        tweet.vote_count = newVote.vote_count;
-        if (callback) {
-            callback(newVote.vote_count, voteCount);
+function __updateVoteNumberAllElements(tweetObj,newVote){
+
+    let tweetCard = document.getElementById("tweet-card-for-vote-"+tweetObj.create_time)
+    if (tweetCard){
+        tweetCard.querySelector('.total-vote-number').textContent = tweetObj.vote_count;
+        if(newVote){
+            const userVoteCounter = tweetCard.querySelector('.user-vote-number');
+            userVoteCounter.textContent = newVote.user_vote_count;
+            cachedVoteStatusForUser.set(newVote.create_time, newVote.user_vote_count);
         }
-    });
+    }
+
+    tweetCard = document.getElementById("tweet-card-for-user-"+tweetObj.create_time)
+    if (tweetCard){
+        tweetCard.querySelector('.vote-number').textContent = tweetObj.vote_count;
+    }
+
+    tweetCard = document.getElementById("tweet-card-for-home-"+tweetObj.create_time)
+    if (tweetCard){
+        tweetCard.querySelector('.vote-number').textContent = tweetObj.vote_count;
+    }
 }

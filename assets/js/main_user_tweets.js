@@ -157,17 +157,12 @@ async function fillUserVotedTweetsList(newest) {
         const contentArea = tweetCard.querySelector('.tweet-content');
         contentArea.textContent = tweet.text;
 
-        const voteCounter = tweetCard.querySelector('.total-vote-number');
+        tweetCard.querySelector('.total-vote-number').textContent = tweet.vote_count;
         const userVoteCounter = tweetCard.querySelector('.user-vote-number');
 
         userVoteCounter.textContent = cachedVoteStatusForUser.get(tweet.create_time) ?? 0;
 
-        __showVoteButton(tweetCard, tweet, voteCounter, function (newVote, voteCount) {
-            let origVal = cachedVoteStatusForUser.get(tweet.create_time) ?? 0;
-            origVal += voteCount;
-            cachedVoteStatusForUser.set(tweet.create_time, origVal);
-            userVoteCounter.textContent = origVal;
-        });
+        __showVoteButton(tweetCard, tweet);
 
         if (newest) {
             tweetsDiv.insertBefore(tweetCard, tweetsDiv.firstChild);

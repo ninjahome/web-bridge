@@ -173,26 +173,31 @@ func (dm *DbManager) UpdateTweetPaymentStatus(createAt int64, s TxStatus) error 
 	return err
 }
 
-func (dm *DbManager) UpdateTweetVoteStatic(createAt int64, amount int, voter string) (int, error) {
+type TweetVoteAction struct {
+	CreateTime    int64 `json:"create_time"`
+	VoteCount     int   `json:"vote_count"`
+	UserVoteCount int   `json:"user_vote_count"`
+}
+
+func (dm *DbManager) UpdateTweetVoteStatic(vote *TweetVoteAction, voter string) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
 
-	var newFieldValue int
 	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
-		createTime := fmt.Sprintf("%d", createAt)
+		createTime := fmt.Sprintf("%d", vote.CreateTime)
 		tweetDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(createTime)
 		voteDoc := dm.fileCli.Collection(DBTableTweetsVoted).Doc(voter).Collection(DBTableTweetsSubStatus).Doc(createTime)
 
 		tweetSnapshot, err := tx.Get(tweetDoc)
 		if err != nil {
-			util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to get tweet document to update vote")
+			util.LogInst().Err(err).Int64("createAt", vote.CreateTime).Msg("Failed to get tweet document to update vote")
 			return err
 		}
 
 		var existingTweet NinjaTweet
 		err = tweetSnapshot.DataTo(&existingTweet)
 		if err != nil {
-			util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to decode tweet document data")
+			util.LogInst().Err(err).Int64("createAt", vote.CreateTime).Msg("Failed to decode tweet document data")
 			return err
 		}
 
@@ -200,39 +205,41 @@ func (dm *DbManager) UpdateTweetVoteStatic(createAt int64, amount int, voter str
 		var votedObj TweetVoted
 		if voteErr != nil {
 			if status.Code(voteErr) != codes.NotFound {
-				util.LogInst().Err(voteErr).Int64("create_time", createAt).Msg("Failed to get tweet vote document")
+				util.LogInst().Err(voteErr).Int64("create_time", vote.CreateTime).Msg("Failed to get tweet vote document")
 				return voteErr
 			}
 			votedObj = TweetVoted{
-				CreateTime: createAt,
-				VoteCount:  amount,
+				CreateTime: vote.CreateTime,
+				VoteCount:  vote.VoteCount,
 			}
 		} else {
 			err = voteSnapshot.DataTo(&votedObj)
 			if err != nil {
-				util.LogInst().Err(err).Int64("create_time", createAt).Msg("parse tweet vote obj failed")
+				util.LogInst().Err(err).Int64("create_time", vote.CreateTime).Msg("parse tweet vote obj failed")
 				return err
 			}
 
-			votedObj.VoteCount += amount
+			votedObj.VoteCount += vote.VoteCount
 		}
 
-		newFieldValue = existingTweet.VoteCount + amount
+		var newFieldValue = existingTweet.VoteCount + vote.VoteCount
 		err = tx.Update(tweetDoc, []firestore.Update{{Path: "vote_count", Value: newFieldValue}})
 		if err != nil {
 			util.LogInst().Err(err).Msg("update vote count on tweet failed")
 			return err
 		}
 
-		return tx.Set(voteDoc, votedObj)
+		err = tx.Set(voteDoc, votedObj)
+		if err != nil {
+			util.LogInst().Err(err).Msg("update vote status doc err")
+			return err
+		}
+		vote.VoteCount = newFieldValue
+		vote.UserVoteCount = votedObj.VoteCount
+		return nil
 	})
 
-	if err != nil {
-		util.LogInst().Err(err).Msg("update vote status transaction failed")
-		return 0, err
-	}
-
-	return newFieldValue, nil
+	return err
 }
 
 func (dm *DbManager) QueryVotedTweetID(pageSize int, startID int64, newest bool, voter string) ([]*TweetVoted, error) {
