@@ -223,7 +223,7 @@ async function voteToTheTweet(create_time,callback) {
         procTweetVotePayment(voteCount, obj, async function (create_time, vote_count) {
             const newVote = await updateVoteStatusToSrv(create_time, vote_count);
             obj.vote_count = newVote.vote_count;
-            __updateVoteNumberAllElements(obj,newVote);
+            __updateVoteNumberAllElements(obj, newVote).then(r =>{});
             if(callback){
                 callback(newVote);
             }

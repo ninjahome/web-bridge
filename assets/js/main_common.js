@@ -246,7 +246,7 @@ function __showVoteButton(tweetCard, tweet,callback) {
     voteBtn.onclick = () => voteToTheTweet(tweet.create_time, callback);
 }
 
-function __updateVoteNumberAllElements(tweetObj,newVote){
+async function __updateVoteNumberAllElements(tweetObj,newVote){
 
     let tweetCard = document.getElementById("tweet-card-for-vote-"+tweetObj.create_time)
     if (tweetCard){
