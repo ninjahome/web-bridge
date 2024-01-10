@@ -437,26 +437,26 @@
 
             <div id="tweets-post-by-user" class="tweets-park"> </div>
 
-            <div id="tweets-voted-by-user" class="tweets-park">
-                <div id="tweetTemplateForVoted" class="tweet-card" style="display: none;">
-                    <div class="tweet-header">
-                        <img src="" alt="Avatar" class="twitterAvatar">
-                        <span class="name twitterName"></span>
-                        <span class="username twitterUserName"></span>
-                        <span class="time tweetCreateTime"></span>
+            <div id="tweetTemplateForVoted" class="tweet-card" style="display: none;">
+                <div class="tweet-header">
+                    <img src="" alt="Avatar" class="twitterAvatar">
+                    <span class="name twitterName"></span>
+                    <span class="username twitterUserName"></span>
+                    <span class="time tweetCreateTime"></span>
+                </div>
+                <div onclick="showTweetDetail.call(this)" class="tweet-content tweet-content-collapsed"></div>
+                <div class="tweet-footer">
+                    <div class="tweet-info">
+                        <span class="vote-count">总票数: <span class="total-vote-number">0</span></span>
+                        <span class="vote-count">我的票数: <span class="user-vote-number">0</span></span>
                     </div>
-                    <div onclick="showTweetDetail.call(this)" class="tweet-content tweet-content-collapsed"></div>
-                    <div class="tweet-footer">
-                        <div class="tweet-info">
-                            <span class="vote-count">总票数: <span class="total-vote-number">0</span></span>
-                            <span class="vote-count">我的票数: <span class="user-vote-number">0</span></span>
-                        </div>
-                        <div class="tweet-action">
-                            <button class="tweet-action-vote">0.01 eth打赏</button>
-                        </div>
+                    <div class="tweet-action">
+                        <button class="tweet-action-vote">0.01 eth打赏</button>
                     </div>
                 </div>
             </div>
+
+            <div id="tweets-voted-by-user" class="tweets-park"> </div>
 
         </div>
         <div id="middle-div-income" class="content-in-middle-area">我的收入内容</div>

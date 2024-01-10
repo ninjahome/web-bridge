@@ -15,11 +15,11 @@ async function loadTweetsUserPosted() {
 }
 
 async function olderPostedTweets() {
-    if (cachedUserTweets.latestID === 0){
+    if (cachedUserTweets.latestID === 0) {
         console.log("no need to load older posted data");
-        return ;
+        return;
     }
-   return __loadTweetAtUserPost(false, ninjaUserObj.eth_addr);
+    return __loadTweetAtUserPost(false, ninjaUserObj.eth_addr);
 }
 
 async function __loadTweetAtUserPost(newest, web3ID) {
@@ -49,8 +49,8 @@ function __checkPayment(tweet, retryButton, statusElem) {
 
 async function fillUserPostedTweetsList(clear) {
     const tweetsDiv = document.getElementById('tweets-post-by-user');
-    if (clear){
-        tweetsDiv.innerHTML ='';
+    if (clear) {
+        tweetsDiv.innerHTML = '';
     }
     for (const tweet of cachedUserTweets.CachedItem) {
 
@@ -94,6 +94,11 @@ async function loadTweetsUserVoted() {
 
 async function olderVotedTweets() {
     console.log('lod old data trigger')
+    if (cachedUserVotedTweets.latestID === 0){
+        console.log("no need to load older data");
+        return;
+    }
+    return __loadTweetIDsUserVoted(false);
 }
 
 const cachedUserVotedTweets = new MemCachedTweets();
@@ -101,7 +106,7 @@ const cachedVoteStatusForUser = new Map()
 
 async function __loadTweetIDsUserVoted(newest) {
 
-    const param = new TweetQueryParam(0, newest, ninjaUserObj.eth_addr, []);
+    const param = new TweetQueryParam(0, ninjaUserObj.eth_addr, []);
     if (!newest) {
         param.start_id = cachedUserVotedTweets.latestID;
     }
@@ -113,6 +118,9 @@ async function __loadTweetIDsUserVoted(newest) {
     console.log(resp);
     let status = JSON.parse(resp);
     if (status.length === 0) {
+        if(!newest){
+            cachedUserVotedTweets.moreOldTweets = false;
+        }
         return;
     }
 
@@ -124,7 +132,7 @@ async function __loadTweetIDsUserVoted(newest) {
     );
     console.log(currentIds)
 
-    const paramForDetail = new TweetQueryParam(0, newest, "", currentIds);
+    const paramForDetail = new TweetQueryParam(0, "", currentIds);
     const needUpdateUI = await TweetsQuery(paramForDetail, newest, cachedUserVotedTweets);
     if (needUpdateUI) {
         await fillUserVotedTweetsList(newest);
@@ -132,9 +140,11 @@ async function __loadTweetIDsUserVoted(newest) {
     }
 }
 
-async function fillUserVotedTweetsList(newest) {
+async function fillUserVotedTweetsList(clear) {
     const tweetsDiv = document.getElementById('tweets-voted-by-user');
-
+    if (clear) {
+        tweetsDiv.innerHTML = '';
+    }
     for (const tweet of cachedUserVotedTweets.CachedItem) {
 
         const tweetCard = document.getElementById('tweetTemplateForVoted').cloneNode(true);
@@ -156,12 +166,7 @@ async function fillUserVotedTweetsList(newest) {
         userVoteCounter.textContent = cachedVoteStatusForUser.get(tweet.create_time) ?? 0;
 
         __showVoteButton(tweetCard, tweet);
-
-        if (newest) {
-            tweetsDiv.insertBefore(tweetCard, tweetsDiv.firstChild);
-        } else {
-            tweetsDiv.appendChild(tweetCard);
-        }
+        tweetsDiv.appendChild(tweetCard);
     }
 }
 
