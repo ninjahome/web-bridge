@@ -213,37 +213,3 @@ function showFullTweetContent() {
         this.innerText = "更多";
     }
 }
-
-async function voteToTheTweet(create_time, callback) {
-    const obj = __globalTweetMemCache.get(create_time)
-    if (!obj) {
-        showDialog("tips", "no such tweet obj, please reload page")
-        return;
-    }
-
-    if (Number(obj.payment_status) !== TXStatus.Success) {
-        showDialog("tips", "can't vote to unpaid tweet")
-        return;
-    }
-
-    openVoteModal(function (voteCount) {
-        procTweetVotePayment(voteCount, obj, async function (create_time, vote_count) {
-            const newVote = await updateVoteStatusToSrv(create_time, vote_count);
-            obj.vote_count = newVote.vote_count;
-            __updateVoteNumberAllElements(obj, newVote).then(r => {
-            });
-            if (callback) {
-                callback(newVote);
-            }
-        });
-    });
-}
-
-async function updateVoteStatusToSrv(create_time, vote_count) {
-    const resp = await PostToSrvByJson("/updateTweetVoteStatus", {
-        create_time: create_time,
-        vote_count: Number(vote_count),
-    });
-    console.log(resp);
-    return JSON.parse(resp);
-}

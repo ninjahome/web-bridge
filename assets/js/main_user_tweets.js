@@ -84,7 +84,6 @@ async function fillUserPostedTweetsList(newest) {
     }
 }
 
-
 async function loadTweetsUserVoted() {
 
     curScrollContentID = 22;
