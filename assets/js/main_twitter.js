@@ -28,13 +28,13 @@ async function __loadTweetsAtHomePage(newest) {
 async function loadTweetsForHomePage() {
     const tweetsDiv = document.getElementById('tweets-park');
     tweetsDiv.style.display = 'block';
-     __loadTweetsAtHomePage(true).then(r=>{
-         console.log("load newest global tweets success");
-     });
+    __loadTweetsAtHomePage(true).then(r => {
+        console.log("load newest global tweets success");
+    });
 }
 
 async function loadOlderTweetsForHomePage() {
-    __loadTweetsAtHomePage(false).then(r=>{
+    __loadTweetsAtHomePage(false).then(r => {
         console.log("load older global tweets success");
     });
 }
@@ -84,7 +84,7 @@ async function fillTweetParkAtHomePage(newest) {
         contentArea.textContent = tweet.text;
 
         tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
-        __showVoteButton(tweetCard,tweet);
+        __showVoteButton(tweetCard, tweet);
 
         if (newest) {
             tweetsPark.insertBefore(tweetCard, tweetsPark.firstChild);
@@ -147,9 +147,16 @@ async function postTweetWithPayment() {
 
         await updatePaymentStatusToSrv(basicTweet)
 
-        __loadTweetsAtHomePage(true).then(r => {
-            clearDraftTweetContent();
-        });
+        if (curScrollContentID === 0) {
+            __loadTweetsAtHomePage(true).then(r => {
+                clearDraftTweetContent();
+            });
+        } else if (curScrollContentID === 2) {
+            __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(r => {
+                clearDraftTweetContent();
+            });
+        }
+
     } catch (err) {
         checkMetamaskErr(err);
     } finally {
@@ -207,7 +214,7 @@ function showFullTweetContent() {
     }
 }
 
-async function voteToTheTweet(create_time,callback) {
+async function voteToTheTweet(create_time, callback) {
     const obj = __globalTweetMemCache.get(create_time)
     if (!obj) {
         showDialog("tips", "no such tweet obj, please reload page")
@@ -223,8 +230,9 @@ async function voteToTheTweet(create_time,callback) {
         procTweetVotePayment(voteCount, obj, async function (create_time, vote_count) {
             const newVote = await updateVoteStatusToSrv(create_time, vote_count);
             obj.vote_count = newVote.vote_count;
-            __updateVoteNumberAllElements(obj, newVote).then(r =>{});
-            if(callback){
+            __updateVoteNumberAllElements(obj, newVote).then(r => {
+            });
+            if (callback) {
                 callback(newVote);
             }
         });
