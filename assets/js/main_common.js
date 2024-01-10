@@ -1,7 +1,7 @@
 const __globalTweetMemCache = new Map()
 
 window.onscroll = function () {
-    throttle(contentScroll, 200);
+    throttle(contentScroll, 1000);
 }
 
 let throttleTimer;
@@ -47,7 +47,9 @@ function contentScroll() {
     }
 
     cacheObj.isLoading = true;
-    uiCallback().finally(r => {
+    uiCallback().then(r=>{
+        console.log("common load latest older data");
+    }).finally(r => {
         cacheObj.isLoading = false;
     });
 }
@@ -125,31 +127,15 @@ function hideHoverCard(obj) {
     }, 300);
 }
 
-function __calculateCacheIdx(cacheObj,tweet){
-    const exist = cacheObj.TweetMaps.get(tweet.create_time);
-    if (exist) {
-        return;
-    }
-    cacheObj.TweetMaps.set(tweet.create_time, true);
-    cacheObj.CachedItem.push(tweet);
-
-    if (tweet.create_time > cacheObj.MaxID) {
-        cacheObj.MaxID = tweet.create_time;
-    }
-
-    if (tweet.create_time < cacheObj.MinID || cacheObj.MinID === 0) {
-        cacheObj.MinID = tweet.create_time;
-    }
-}
-
 function cachedToMem(tweetArray, cacheObj) {
     tweetArray.map(tweet => {
         __globalTweetMemCache.set(tweet.create_time, tweet);
 
-        if (!cacheObj){
-            return;
+        if (tweet.create_time < cacheObj.latestID || cacheObj.latestID === 0) {
+            cacheObj.latestID = tweet.create_time;
         }
-        __calculateCacheIdx(cacheObj, tweet);
+
+        cacheObj.CachedItem.push(tweet);
     });
 }
 
@@ -161,7 +147,7 @@ async function TweetsQuery(param, newest, cacheObj) {
         }
         const tweetArray = JSON.parse(resp);
         if (tweetArray.length === 0) {
-            if (!newest&&cacheObj) {
+            if (!newest) {
                 cacheObj.moreOldTweets = false;
             }
             return false;

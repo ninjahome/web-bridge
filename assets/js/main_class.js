@@ -11,9 +11,7 @@ class TweetContentToPost {
 
 class MemCachedTweets{
     constructor() {
-        this.MaxID = 0;
-        this.MinID = 0;
-        this.TweetMaps = new Map();
+        this.latestID = 0;
         this.moreOldTweets = true;
         this.isLoading = false;
         this.CachedItem = [];
@@ -106,10 +104,9 @@ const TXStatus = Object.freeze({
 });
 
 class TweetQueryParam{
-    constructor(startID, needNewest,web3ID,voted) {
+    constructor(startID,web3ID,voted) {
         this.start_id = startID;
         this.web3_id = web3ID;
-        this.newest = needNewest;
         this.voted_ids = voted;
     }
 }

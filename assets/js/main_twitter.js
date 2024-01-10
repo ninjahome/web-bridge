@@ -6,17 +6,15 @@ function bindingTwitter() {
 
 async function __loadTweetsAtHomePage(newest) {
     try {
-        let startID;
-        if (newest) {
-            startID = cachedGlobalTweets.MaxID;
-        } else {
-            startID = cachedGlobalTweets.MinID;
+        let startID = 0;
+        if (!newest) {
+            startID = cachedGlobalTweets.latestID;
         }
-        const param = new TweetQueryParam(startID, newest, "", []);
+        const param = new TweetQueryParam(startID, "", []);
 
         const needUpdateUI = await TweetsQuery(param, newest, cachedGlobalTweets);
         if (needUpdateUI) {
-            await fillTweetParkAtHomePage(newest);
+            await fillTweetParkAtHomePage(startID === 0);
             cachedGlobalTweets.CachedItem = [];
         }
     } catch (err) {
@@ -28,15 +26,20 @@ async function __loadTweetsAtHomePage(newest) {
 async function loadTweetsForHomePage() {
     const tweetsDiv = document.getElementById('tweets-park');
     tweetsDiv.style.display = 'block';
+    showWaiting("loading.....");
     __loadTweetsAtHomePage(true).then(r => {
         console.log("load newest global tweets success");
+    }).finally(r=>{
+        hideLoading();
     });
 }
 
 async function loadOlderTweetsForHomePage() {
-    __loadTweetsAtHomePage(false).then(r => {
-        console.log("load older global tweets success");
-    });
+    if (cachedGlobalTweets.latestID === 0){
+        console.log("no need to load older data");
+        return;
+    }
+    return __loadTweetsAtHomePage(false)
 }
 
 async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) {
@@ -65,8 +68,11 @@ async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) 
     }
 }
 
-async function fillTweetParkAtHomePage(newest) {
+async function fillTweetParkAtHomePage(clear) {
     const tweetsPark = document.getElementById('tweets-park');
+    if (clear){
+        tweetsPark.innerHTML = '';
+    }
 
     for (const tweet of cachedGlobalTweets.CachedItem) {
 
@@ -86,11 +92,7 @@ async function fillTweetParkAtHomePage(newest) {
         tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
         __showVoteButton(tweetCard, tweet);
 
-        if (newest) {
-            tweetsPark.insertBefore(tweetCard, tweetsPark.firstChild);
-        } else {
-            tweetsPark.appendChild(tweetCard);
-        }
+        tweetsPark.appendChild(tweetCard);
 
         const showMoreBtn = tweetCard.querySelector('.show-more');
         if (contentArea.scrollHeight <= contentArea.clientHeight) {

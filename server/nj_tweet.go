@@ -136,7 +136,7 @@ func votedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 		return
 	}
 
-	ids, err := database.DbInst().QueryVotedTweetID(_globalCfg.TweetsPageSize, para.StartID, para.Newest, nu.EthAddr)
+	ids, err := database.DbInst().QueryVotedTweetID(_globalCfg.TweetsPageSize, para.StartID, nu.EthAddr)
 	if err != nil {
 		util.LogInst().Err(err).Str("user-web3-id", nu.EthAddr).
 			Msg("failed to query voted tweets ")

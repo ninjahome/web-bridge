@@ -51,7 +51,6 @@ type NinjaTweet struct {
 type TweetQueryParm struct {
 	StartID  int64   `json:"start_id"`
 	Web3ID   string  `json:"web3_id"`
-	Newest   bool    `json:"newest"`
 	VotedIDs []int64 `json:"voted_ids"`
 }
 
@@ -79,10 +78,10 @@ func (p *TweetQueryParm) createFilter(pageSize int, doc *firestore.CollectionRef
 		query = query.Where("web3_id", "==", p.Web3ID)
 	}
 
-	if p.Newest {
-		query = query.Where("create_time", ">", p.StartID).OrderBy("create_time", firestore.Desc)
+	if p.StartID == 0 {
+		query = query.OrderBy("create_time", firestore.Desc)
 	} else {
-		query = query.Where("create_time", "<", p.StartID).OrderBy("create_time", firestore.Asc)
+		query = query.Where("create_time", "<", p.StartID).OrderBy("create_time", firestore.Desc)
 	}
 
 	return query.Documents(opCtx)
@@ -242,15 +241,16 @@ func (dm *DbManager) UpdateTweetVoteStatic(vote *TweetVoteAction, voter string) 
 	return err
 }
 
-func (dm *DbManager) QueryVotedTweetID(pageSize int, startID int64, newest bool, voter string) ([]*TweetVoted, error) {
+func (dm *DbManager) QueryVotedTweetID(pageSize int, startID int64, voter string) ([]*TweetVoted, error) {
 
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
 
 	voteRef := dm.fileCli.Collection(DBTableTweetsVoted).Doc(voter).Collection(DBTableTweetsSubStatus)
 	var query = voteRef.Limit(pageSize)
-	if newest {
-		query = query.Where("create_time", ">", startID).OrderBy("create_time", firestore.Asc)
+
+	if startID == 0 {
+		query = query.OrderBy("create_time", firestore.Desc)
 	} else {
 		query = query.Where("create_time", "<", startID).OrderBy("create_time", firestore.Desc)
 	}
