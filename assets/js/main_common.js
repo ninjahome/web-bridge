@@ -30,9 +30,8 @@ function contentScroll(){
             uiCallback = olderPostedTweets;
             break;
         case 22:
-            cacheObj = cachedUserVotedTweets;
-            uiCallback = olderVotedTweets;
-            break;
+            olderVotedTweets().then(r => {});
+            return;
         default:
             return;
     }
@@ -233,6 +232,7 @@ async function showTweetDetail() {
     voteBtn.textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
     voteBtn.onclick = () => voteToTheTweet(obj.create_time,function (newVote){
         voteCounter.textContent = newVote.vote_count;
+        obj.textContent = newVote.vote_count;
         const parentCounter = tweetCard.querySelector('.vote-number');
         if(parentCounter){
             parentCounter.textContent = newVote.vote_count;

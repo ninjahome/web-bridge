@@ -48,15 +48,16 @@ type NinjaTweet struct {
 	VoteCount     int      `json:"vote_count" firestore:"vote_count"`
 }
 
-type TweetVoted struct {
-	VotedTweets map[string]int `json:"voted_tweets" firestore:"voted_tweets"`
-}
-
 type TweetQueryParm struct {
 	StartID  int64   `json:"start_id"`
 	Web3ID   string  `json:"web3_id"`
 	Newest   bool    `json:"newest"`
 	VotedIDs []int64 `json:"voted_i_ds"`
+}
+
+type TweetVoted struct {
+	CreateTime int64 `json:"create_time" firestore:"create_time"`
+	VoteCount  int   `json:"vote_count" firestore:"vote_count"`
 }
 
 func (p *TweetQueryParm) String() string {
@@ -180,7 +181,7 @@ func (dm *DbManager) UpdateTweetVoteStatic(createAt int64, amount int, voter str
 	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
 		createTime := fmt.Sprintf("%d", createAt)
 		tweetDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(createTime)
-		voteDoc := dm.fileCli.Collection(DBTableTweetsVoted).Doc(voter)
+		voteDoc := dm.fileCli.Collection(DBTableTweetsVoted).Doc(voter).Collection(DBTableTweetsSubStatus).Doc(createTime)
 
 		tweetSnapshot, err := tx.Get(tweetDoc)
 		if err != nil {
@@ -202,15 +203,18 @@ func (dm *DbManager) UpdateTweetVoteStatic(createAt int64, amount int, voter str
 				util.LogInst().Err(voteErr).Int64("create_time", createAt).Msg("Failed to get tweet vote document")
 				return voteErr
 			}
-			votedObj = TweetVoted{VotedTweets: make(map[string]int)}
-			votedObj.VotedTweets[createTime] = amount
+			votedObj = TweetVoted{
+				CreateTime: createAt,
+				VoteCount:  amount,
+			}
 		} else {
 			err = voteSnapshot.DataTo(&votedObj)
 			if err != nil {
 				util.LogInst().Err(err).Int64("create_time", createAt).Msg("parse tweet vote obj failed")
 				return err
 			}
-			votedObj.VotedTweets[createTime] += amount
+
+			votedObj.VoteCount += amount
 		}
 
 		newFieldValue = existingTweet.VoteCount + amount
@@ -231,28 +235,39 @@ func (dm *DbManager) UpdateTweetVoteStatic(createAt int64, amount int, voter str
 	return newFieldValue, nil
 }
 
-func (dm *DbManager) QueryVotedTweetID(voter string) (map[string]int, error) {
+func (dm *DbManager) QueryVotedTweetID(pageSize int, startID int64, newest bool, voter string) ([]*TweetVoted, error) {
 
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
 
-	voteDoc := dm.fileCli.Collection(DBTableTweetsVoted).Doc(voter)
-	var votedObj TweetVoted
+	voteRef := dm.fileCli.Collection(DBTableTweetsVoted).Doc(voter).Collection(DBTableTweetsSubStatus)
+	var query = voteRef.Limit(pageSize)
+	if newest {
+		query = query.Where("create_time", ">", startID).OrderBy("create_time", firestore.Asc)
+	} else {
+		query = query.Where("create_time", "<", startID).OrderBy("create_time", firestore.Desc)
+	}
 
-	voteSnapshot, voteErr := voteDoc.Get(opCtx)
-	if voteErr != nil {
-		if status.Code(voteErr) != codes.NotFound {
-			util.LogInst().Err(voteErr).Msg("query vote status ")
-			return nil, voteErr
+	iter := query.Documents(opCtx)
+	defer iter.Stop()
+	var result = make([]*TweetVoted, 0)
+	for {
+		doc, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			return result, nil
+
 		}
-		return make(map[string]int), nil
-	}
+		if err != nil {
+			util.LogInst().Err(err).Msg("query vote status failed")
+			return nil, err
+		}
 
-	voteErr = voteSnapshot.DataTo(&votedObj)
-	if voteErr != nil {
-		util.LogInst().Err(voteErr).Msg("DataTo vote status error")
-		return nil, voteErr
+		var voteStatus TweetVoted
+		err = doc.DataTo(&voteStatus)
+		if err != nil {
+			util.LogInst().Err(err).Msg("data to obj failed")
+			continue
+		}
+		result = append(result, &voteStatus)
 	}
-
-	return votedObj.VotedTweets, nil
 }

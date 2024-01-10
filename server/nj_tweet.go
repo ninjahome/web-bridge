@@ -132,7 +132,17 @@ func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.
 }
 
 func votedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
-	ids, err := database.DbInst().QueryVotedTweetID(nu.EthAddr)
+
+	var para database.TweetQueryParm
+	var err = util.ReadRequest(r, &para)
+	if err != nil {
+		util.LogInst().Err(err).Str("param", para.String()).
+			Msg("invalid query parameter")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ids, err := database.DbInst().QueryVotedTweetID(_globalCfg.TweetsPageSize, para.StartID, para.Newest, nu.EthAddr)
 	if err != nil {
 		util.LogInst().Err(err).Str("user-web3-id", nu.EthAddr).
 			Msg("failed to query voted tweets ")
@@ -144,6 +154,6 @@ func votedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 	bts, _ := json.Marshal(ids)
 	w.Write(bts)
 
-	util.LogInst().Debug().Int("id-len", len(ids)).Str("user-web3-id", nu.EthAddr).
+	util.LogInst().Debug().Int("id-len", len(ids)).Str("param", para.String()).
 		Msg(" query voted  tweet success")
 }

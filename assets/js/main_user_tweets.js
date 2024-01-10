@@ -8,13 +8,13 @@ async function loadTweetsUserPosted() {
     const votedDiv = document.getElementById('tweets-voted-by-user');
     votedDiv.style.display = 'none';
 
-    __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(r=>{
+    __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(r => {
         console.log("load newest tweets of user posted success");
     });
 }
 
 async function olderPostedTweets() {
-    __loadTweetAtUserPost(false, ninjaUserObj.eth_addr).then(r=>{
+    __loadTweetAtUserPost(false, ninjaUserObj.eth_addr).then(r => {
         console.log("load older tweets of user posted success");
     });
 }
@@ -34,7 +34,7 @@ async function __loadTweetAtUserPost(newest, web3ID) {
     }
 }
 
-function __checkPayment(tweet,retryButton,statusElem){
+function __checkPayment(tweet, retryButton, statusElem) {
     if (tweet.payment_status !== TXStatus.NoPay) {
         return;
     }
@@ -84,24 +84,42 @@ async function fillUserPostedTweetsList(newest) {
 }
 
 
-const cachedUserVotedTweets = new MemCachedTweets();
-
 async function loadTweetsUserVoted() {
     curScrollContentID = 22;
     const tweetsDiv = document.getElementById('tweets-post-by-user');
     tweetsDiv.style.display = 'none';
     const votedDiv = document.getElementById('tweets-voted-by-user');
     votedDiv.style.display = 'block';
-    await __loadTweetIDsUserVoted();
+    await __loadTweetIDsUserVoted(true);
 }
 
 async function olderVotedTweets() {
 }
 
-async function __loadTweetIDsUserVoted() {
-    const resp = await PostToSrvByJson("/votedTweetIds");
+const cachedUserVotedTweets = new MemCachedTweets();
+
+async function __loadTweetIDsUserVoted(newest) {
+
+    const param = new TweetQueryParam("", newest, ninjaUserObj.eth_addr, []);
+    if (newest) {
+        param.start_id = cachedUserVotedTweets.MaxID;
+    } else {
+        param.start_id = cachedUserVotedTweets.MinID;
+    }
+    const resp = await PostToSrvByJson("/votedTweetIds", param);
     if (!resp) {
         return false;
     }
-    console.log(resp)
+    console.log(resp);
+    let obj = JSON.parse(resp);
+    console.log(obj);
+
+    // const param = new TweetQueryParam("", newest, web3ID, []);
+    // await TweetsQuery(param, newest, cachedUserVotedTweets);
+    //
+    // if (newest) {
+    //     param.start_id = cachedUserVotedTweets.MaxID;
+    // } else {
+    //     param.start_id = cachedUserVotedTweets.MinID;
+    // }
 }

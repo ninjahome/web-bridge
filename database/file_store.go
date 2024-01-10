@@ -22,6 +22,7 @@ const (
 	DBTableWeb3Bindings       = "web3-bindings"
 	DBTableTweetsPosted       = "tweets-posted"
 	DBTableTweetsVoted        = "tweets-voted"
+	DBTableTweetsSubStatus    = "vote-status"
 )
 
 /*******************************************************************************************************

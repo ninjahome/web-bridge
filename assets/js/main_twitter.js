@@ -86,7 +86,7 @@ async function fillTweetParkAtHomePage(newest) {
             voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
             voteBtn.onclick = () => voteToTheTweet(tweet.create_time,function (newVote){
                 voteCounter.textContent = newVote.vote_count;
-                __globalTweetMemCache.set(tweet.create_time,newVote);
+                tweet.vote_count = newVote.vote_count;
             });
         }
 
