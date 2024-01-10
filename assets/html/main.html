@@ -416,26 +416,26 @@
                 <button onclick="loadTweetsUserVoted()">我的投票</button>
             </div>
 
-            <div id="tweets-post-by-user" class="tweets-park">
-                <div id="tweetTemplateForUserSelf" class="tweet-card" style="display: none;">
-                    <div class="tweet-header">
-                        <img src="" alt="Avatar" class="twitterAvatar">
-                        <span class="name twitterName"></span>
-                        <span class="username twitterUserName"></span>
-                        <span class="time tweetCreateTime"></span>
+            <div id="tweetTemplateForUserSelf" class="tweet-card" style="display: none;">
+                <div class="tweet-header">
+                    <img src="" alt="Avatar" class="twitterAvatar">
+                    <span class="name twitterName"></span>
+                    <span class="username twitterUserName"></span>
+                    <span class="time tweetCreateTime"></span>
+                </div>
+                <div onclick="showTweetDetail.call(this)" class="tweet-content tweet-content-collapsed"></div>
+                <div class="tweet-footer">
+                    <div class="tweet-info">
+                        <span class="vote-count">投票数: <span class="vote-number">0</span></span>
                     </div>
-                    <div onclick="showTweetDetail.call(this)" class="tweet-content tweet-content-collapsed"></div>
-                    <div class="tweet-footer">
-                        <div class="tweet-info">
-                            <span class="vote-count">投票数: <span class="vote-number">0</span></span>
-                        </div>
-                        <div class="tweet-action">
-                            支付状态: <span class="tweetPaymentStatus"></span>
-                            <button class="tweetPaymentRetry">继续支付</button>
-                        </div>
+                    <div class="tweet-action">
+                        支付状态: <span class="tweetPaymentStatus"></span>
+                        <button class="tweetPaymentRetry">继续支付</button>
                     </div>
                 </div>
             </div>
+
+            <div id="tweets-post-by-user" class="tweets-park"> </div>
 
             <div id="tweets-voted-by-user" class="tweets-park">
                 <div id="tweetTemplateForVoted" class="tweet-card" style="display: none;">

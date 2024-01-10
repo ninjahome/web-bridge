@@ -6,15 +6,10 @@ function bindingTwitter() {
 
 async function __loadTweetsAtHomePage(newest) {
     try {
-        let startID = 0;
-        if (!newest) {
-            startID = cachedGlobalTweets.latestID;
-        }
-        const param = new TweetQueryParam(startID, "", []);
-
+        const param = new TweetQueryParam(0, "", []);
         const needUpdateUI = await TweetsQuery(param, newest, cachedGlobalTweets);
         if (needUpdateUI) {
-            await fillTweetParkAtHomePage(startID === 0);
+            await fillTweetParkAtHomePage(newest);
             cachedGlobalTweets.CachedItem = [];
         }
     } catch (err) {

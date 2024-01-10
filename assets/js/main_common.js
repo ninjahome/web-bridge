@@ -1,7 +1,7 @@
 const __globalTweetMemCache = new Map()
 
 window.onscroll = function () {
-    throttle(contentScroll, 1000);
+    throttle(contentScroll, 200);
 }
 
 let throttleTimer;
@@ -47,7 +47,7 @@ function contentScroll() {
     }
 
     cacheObj.isLoading = true;
-    uiCallback().then(r=>{
+    uiCallback().then(r => {
         console.log("common load latest older data");
     }).finally(r => {
         cacheObj.isLoading = false;
@@ -141,19 +141,19 @@ function cachedToMem(tweetArray, cacheObj) {
 
 async function TweetsQuery(param, newest, cacheObj) {
     try {
+        param.start_id = newest? 0:cacheObj.latestID;
+        if(newest){
+            cacheObj.latestID = 0;
+        }
         const resp = await PostToSrvByJson("/tweetQuery", param);
         if (!resp) {
             return false;
         }
         const tweetArray = JSON.parse(resp);
-        if (tweetArray.length === 0) {
-            if (!newest) {
-                cacheObj.moreOldTweets = false;
-            }
-            return false;
-        }
 
+        cacheObj.moreOldTweets = tweetArray.length !== 0 || newest;
         cachedToMem(tweetArray, cacheObj);
+
         return cacheObj.CachedItem.length > 0;
     } catch (err) {
         throw new Error(err);

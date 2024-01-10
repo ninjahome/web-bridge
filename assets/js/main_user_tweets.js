@@ -15,22 +15,19 @@ async function loadTweetsUserPosted() {
 }
 
 async function olderPostedTweets() {
-    __loadTweetAtUserPost(false, ninjaUserObj.eth_addr).then(r => {
-        console.log("load older tweets of user posted success");
-    });
+    if (cachedUserTweets.latestID === 0){
+        console.log("no need to load older posted data");
+        return ;
+    }
+   return __loadTweetAtUserPost(false, ninjaUserObj.eth_addr);
 }
 
 async function __loadTweetAtUserPost(newest, web3ID) {
-    const param = new TweetQueryParam("", newest, web3ID, []);
-    if (newest) {
-        param.start_id = cachedUserTweets.MaxID;
-    } else {
-        param.start_id = cachedUserTweets.MinID;
-    }
+    const param = new TweetQueryParam(0, web3ID, []);
 
     const needUpdateUI = await TweetsQuery(param, newest, cachedUserTweets);
     if (needUpdateUI) {
-        await fillUserPostedTweetsList(newest);
+        await fillUserPostedTweetsList(param.start_id === 0);
         cachedUserTweets.CachedItem = [];
     }
 }
@@ -50,9 +47,11 @@ function __checkPayment(tweet, retryButton, statusElem) {
     });
 }
 
-async function fillUserPostedTweetsList(newest) {
+async function fillUserPostedTweetsList(clear) {
     const tweetsDiv = document.getElementById('tweets-post-by-user');
-
+    if (clear){
+        tweetsDiv.innerHTML ='';
+    }
     for (const tweet of cachedUserTweets.CachedItem) {
 
         const tweetCard = document.getElementById('tweetTemplateForUserSelf').cloneNode(true);
@@ -76,11 +75,7 @@ async function fillUserPostedTweetsList(newest) {
         const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
         __checkPayment(tweet, retryButton, statusElem);
 
-        if (newest) {
-            tweetsDiv.insertBefore(tweetCard, tweetsDiv.firstChild);
-        } else {
-            tweetsDiv.appendChild(tweetCard);
-        }
+        tweetsDiv.appendChild(tweetCard);
     }
 }
 
@@ -106,12 +101,11 @@ const cachedVoteStatusForUser = new Map()
 
 async function __loadTweetIDsUserVoted(newest) {
 
-    const param = new TweetQueryParam("", newest, ninjaUserObj.eth_addr, []);
-    if (newest) {
-        param.start_id = cachedUserVotedTweets.MaxID;
-    } else {
-        param.start_id = cachedUserVotedTweets.MinID;
+    const param = new TweetQueryParam(0, newest, ninjaUserObj.eth_addr, []);
+    if (!newest) {
+        param.start_id = cachedUserVotedTweets.latestID;
     }
+
     const resp = await PostToSrvByJson("/votedTweetIds", param);
     if (!resp) {
         return;
