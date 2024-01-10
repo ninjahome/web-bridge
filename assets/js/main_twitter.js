@@ -26,11 +26,15 @@ async function __loadTweetsAtHomePage(newest) {
 }
 
 async function loadTweetsForHomePage() {
-    await __loadTweetsAtHomePage(true);
+     __loadTweetsAtHomePage(true).then(r=>{
+         console.log("load newest global tweets success");
+     });
 }
 
 async function loadOlderTweetsForHomePage() {
-    await __loadTweetsAtHomePage(false);
+    __loadTweetsAtHomePage(false).then(r=>{
+        console.log("load older global tweets success");
+    });
 }
 
 async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) {
@@ -82,7 +86,7 @@ async function fillTweetParkAtHomePage(newest) {
             voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
             voteBtn.onclick = () => voteToTheTweet(tweet.create_time,function (newVote){
                 voteCounter.textContent = newVote.vote_count;
-                cachedGlobalTweets.TweetMaps.set(tweet.create_time,newVote);
+                __globalTweetMemCache.set(tweet.create_time,newVote);
             });
         }
 
@@ -211,7 +215,7 @@ function showFullTweetContent() {
 }
 
 async function voteToTheTweet(create_time, callback) {
-    const obj = cachedGlobalTweets.TweetMaps.get(create_time)
+    const obj = __globalTweetMemCache.get(create_time)
     if (!obj) {
         showDialog("tips", "no such tweet obj, please reload page")
         return;

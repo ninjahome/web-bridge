@@ -1,3 +1,5 @@
+const __globalTweetMemCache = new Map()
+
 window.onscroll = function () {
     throttle(contentScroll, 200);
 }
@@ -125,12 +127,12 @@ function hideHoverCard(obj) {
 
 function cachedToMem(tweetArray, cacheObj) {
     tweetArray.map(tweet => {
+        __globalTweetMemCache.set(tweet.create_time, tweet);
         const exist = cacheObj.TweetMaps.get(tweet.create_time);
-        cacheObj.TweetMaps.set(tweet.create_time, tweet);
         if (exist){
             return;
         }
-
+        cacheObj.TweetMaps.set(tweet.create_time, true);
         cacheObj.CachedItem.push(tweet);
 
         if (tweet.create_time > cacheObj.MaxID) {
@@ -141,7 +143,7 @@ function cachedToMem(tweetArray, cacheObj) {
             cacheObj.MinID = tweet.create_time;
         }
     });
-    // console.log(cacheObj.MinID, cacheObj.MaxID);
+    console.log(cacheObj.MinID, cacheObj.MaxID);
 }
 
 async function TweetsQuery(param, newest, cacheObj) {
@@ -211,7 +213,7 @@ async function showTweetDetail() {
     const create_time = Number(tweetCard.dataset.createTime);
     // console.log(create_time);
 
-    const obj = cachedGlobalTweets.TweetMaps.get(create_time)
+    const obj = __globalTweetMemCache.get(create_time)
     if (!obj) {
         showDialog("error", "can't find tweet obj");
         return;

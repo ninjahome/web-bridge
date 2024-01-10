@@ -29,6 +29,7 @@ var (
 		"/updateTweetVoteStatus":    {updateTweetVoteStatus, true},
 		"/buyRights":                {mainPage, true},
 		"/tweetQuery":               {globalTweetQuery, true},
+		"/votedTweetIds":            {votedTweetsQuery, true},
 	}
 
 	cfgHtmlFileRouter = map[string]string{

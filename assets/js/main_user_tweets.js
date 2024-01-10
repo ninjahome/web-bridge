@@ -8,11 +8,15 @@ async function loadTweetsUserPosted() {
     const votedDiv = document.getElementById('tweets-voted-by-user');
     votedDiv.style.display = 'none';
 
-    await __loadTweetAtUserPost(true, ninjaUserObj.eth_addr);
+    __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(r=>{
+        console.log("load newest tweets of user posted success");
+    });
 }
 
 async function olderPostedTweets() {
-    await __loadTweetAtUserPost(false, ninjaUserObj.eth_addr);
+    __loadTweetAtUserPost(false, ninjaUserObj.eth_addr).then(r=>{
+        console.log("load older tweets of user posted success");
+    });
 }
 
 async function __loadTweetAtUserPost(newest, web3ID) {
@@ -37,7 +41,7 @@ function __checkPayment(tweet,retryButton,statusElem){
     retryButton.classList.add('show');
     retryButton.onclick = () => procPaymentForPostedTweet(tweet, function (newObj) {
         updatePaymentStatusToSrv(newObj).then();
-        cachedUserTweets.TweetMaps.set(newObj.create_time, newObj);
+        __globalTweetMemCache.set(newObj.create_time, newObj);
         if (newObj.payment_status !== TXStatus.NoPay) {
             retryButton.classList.remove('show');
             statusElem.textContent = TXStatus.Str(newObj.payment_status);
@@ -88,7 +92,16 @@ async function loadTweetsUserVoted() {
     tweetsDiv.style.display = 'none';
     const votedDiv = document.getElementById('tweets-voted-by-user');
     votedDiv.style.display = 'block';
+    await __loadTweetIDsUserVoted();
 }
 
 async function olderVotedTweets() {
+}
+
+async function __loadTweetIDsUserVoted() {
+    const resp = await PostToSrvByJson("/votedTweetIds");
+    if (!resp) {
+        return false;
+    }
+    console.log(resp)
 }

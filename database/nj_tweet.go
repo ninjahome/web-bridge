@@ -230,3 +230,29 @@ func (dm *DbManager) UpdateTweetVoteStatic(createAt int64, amount int, voter str
 
 	return newFieldValue, nil
 }
+
+func (dm *DbManager) QueryVotedTweetID(voter string) (map[string]int, error) {
+
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+
+	voteDoc := dm.fileCli.Collection(DBTableTweetsVoted).Doc(voter)
+	var votedObj TweetVoted
+
+	voteSnapshot, voteErr := voteDoc.Get(opCtx)
+	if voteErr != nil {
+		if status.Code(voteErr) != codes.NotFound {
+			util.LogInst().Err(voteErr).Msg("query vote status ")
+			return nil, voteErr
+		}
+		return make(map[string]int), nil
+	}
+
+	voteErr = voteSnapshot.DataTo(&votedObj)
+	if voteErr != nil {
+		util.LogInst().Err(voteErr).Msg("DataTo vote status error")
+		return nil, voteErr
+	}
+
+	return votedObj.VotedTweets, nil
+}

@@ -130,3 +130,20 @@ func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.
 		Int("vote_count", vote.VoteCount).
 		Msg(" update vote count of tweet success")
 }
+
+func votedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	ids, err := database.DbInst().QueryVotedTweetID(nu.EthAddr)
+	if err != nil {
+		util.LogInst().Err(err).Str("user-web3-id", nu.EthAddr).
+			Msg("failed to query voted tweets ")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	bts, _ := json.Marshal(ids)
+	w.Write(bts)
+
+	util.LogInst().Debug().Int("id-len", len(ids)).Str("user-web3-id", nu.EthAddr).
+		Msg(" query voted  tweet success")
+}
