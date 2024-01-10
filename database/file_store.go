@@ -19,8 +19,9 @@ const (
 	DBTableTWUser             = "twitter-user"
 	DBTableTWUserAccToken     = "twitter-user-access-token"
 	DBTableTWUserAccTokenV2   = "twitter-user-access-token_v2"
-	DBTableWeb3Bindings       = "twitter-eth-binding"
+	DBTableWeb3Bindings       = "web3-bindings"
 	DBTableTweetsPosted       = "tweets-posted"
+	DBTableTweetsVoted        = "tweets-voted"
 )
 
 /*******************************************************************************************************

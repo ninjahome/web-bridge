@@ -111,7 +111,7 @@ func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.
 		return
 	}
 
-	newVal, err := database.DbInst().UpdateTweetVoteStatic(vote.CreateTime, vote.VoteCount)
+	newVal, err := database.DbInst().UpdateTweetVoteStatic(vote.CreateTime, vote.VoteCount, nu.EthAddr)
 	if err != nil {
 		util.LogInst().Err(err).Int64("create_time", vote.CreateTime).
 			Int("vote_count", vote.VoteCount).

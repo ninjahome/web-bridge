@@ -82,6 +82,7 @@ async function fillTweetParkAtHomePage(newest) {
             voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
             voteBtn.onclick = () => voteToTheTweet(tweet.create_time,function (newVote){
                 voteCounter.textContent = newVote.vote_count;
+                cachedGlobalTweets.TweetMaps.set(tweet.create_time,newVote);
             });
         }
 
@@ -209,7 +210,6 @@ function showFullTweetContent() {
     }
 }
 
-
 async function voteToTheTweet(create_time, callback) {
     const obj = cachedGlobalTweets.TweetMaps.get(create_time)
     if (!obj) {
@@ -224,9 +224,10 @@ async function voteToTheTweet(create_time, callback) {
 
     openVoteModal(function (voteCount) {
         procTweetVotePayment(voteCount, obj, async function (create_time, vote_count) {
-            const updateResult = await updateVoteStatusToSrv(create_time, vote_count);
+            const newObj = await updateVoteStatusToSrv(create_time, vote_count);
+            obj.vote_count = newObj.vote_count;
             if (callback) {
-                callback(updateResult);
+                callback(newObj);
             }
         });
     });

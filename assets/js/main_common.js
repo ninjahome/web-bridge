@@ -217,6 +217,7 @@ async function showTweetDetail() {
         return;
     }
     await setupCommonTweetHeader(detail, obj);
+
     detail.querySelector('.tweet-text').textContent = obj.text;
     detail.querySelector('#tweet-prefixed-hash').textContent = obj.prefixed_hash;
     detail.querySelector('.back-button').onclick = () => {
@@ -230,6 +231,10 @@ async function showTweetDetail() {
     voteBtn.textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
     voteBtn.onclick = () => voteToTheTweet(obj.create_time,function (newVote){
         voteCounter.textContent = newVote.vote_count;
+        const parentCounter = tweetCard.querySelector('.vote-number');
+        if(parentCounter){
+            parentCounter.textContent = newVote.vote_count;
+        }
     });
 
     const statusElem = detail.querySelector('.tweetPaymentStatus');

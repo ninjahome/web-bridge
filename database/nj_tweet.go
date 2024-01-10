@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"github.com/ninjahome/web-bridge/util"
 	"google.golang.org/api/iterator"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type TxStatus int8
@@ -45,6 +47,11 @@ type NinjaTweet struct {
 	PaymentStatus TxStatus `json:"payment_status" firestore:"payment_status"`
 	VoteCount     int      `json:"vote_count" firestore:"vote_count"`
 }
+
+type TweetVoted struct {
+	VotedTweets map[string]int `json:"voted_tweets" firestore:"voted_tweets"`
+}
+
 type TweetQueryParm struct {
 	StartID  int64   `json:"start_id"`
 	Web3ID   string  `json:"web3_id"`
@@ -165,37 +172,59 @@ func (dm *DbManager) UpdateTweetPaymentStatus(createAt int64, s TxStatus) error 
 	return err
 }
 
-func (dm *DbManager) UpdateTweetVoteStatic(createAt int64, amount int) (int, error) {
+func (dm *DbManager) UpdateTweetVoteStatic(createAt int64, amount int, voter string) (int, error) {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
 
 	var newFieldValue int
 	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
-		docRef := dm.fileCli.Collection(DBTableTweetsPosted).Doc(fmt.Sprintf("%d", createAt))
+		createTime := fmt.Sprintf("%d", createAt)
+		tweetDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(createTime)
+		voteDoc := dm.fileCli.Collection(DBTableTweetsVoted).Doc(voter)
 
-		docSnapshot, err := tx.Get(docRef)
+		tweetSnapshot, err := tx.Get(tweetDoc)
 		if err != nil {
 			util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to get tweet document to update vote")
 			return err
 		}
 
-		var existingData NinjaTweet
-		err = docSnapshot.DataTo(&existingData)
+		var existingTweet NinjaTweet
+		err = tweetSnapshot.DataTo(&existingTweet)
 		if err != nil {
-			util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to decode document data")
+			util.LogInst().Err(err).Int64("createAt", createAt).Msg("Failed to decode tweet document data")
 			return err
 		}
 
-		newFieldValue = existingData.VoteCount + amount
-		err = tx.Update(docRef, []firestore.Update{{Path: "vote_count", Value: newFieldValue}})
+		voteSnapshot, voteErr := tx.Get(voteDoc)
+		var votedObj TweetVoted
+		if voteErr != nil {
+			if status.Code(voteErr) != codes.NotFound {
+				util.LogInst().Err(voteErr).Int64("create_time", createAt).Msg("Failed to get tweet vote document")
+				return voteErr
+			}
+			votedObj = TweetVoted{VotedTweets: make(map[string]int)}
+			votedObj.VotedTweets[createTime] = amount
+		} else {
+			err = voteSnapshot.DataTo(&votedObj)
+			if err != nil {
+				util.LogInst().Err(err).Int64("create_time", createAt).Msg("parse tweet vote obj failed")
+				return err
+			}
+			votedObj.VotedTweets[createTime] += amount
+		}
+
+		newFieldValue = existingTweet.VoteCount + amount
+		err = tx.Update(tweetDoc, []firestore.Update{{Path: "vote_count", Value: newFieldValue}})
 		if err != nil {
+			util.LogInst().Err(err).Msg("update vote count on tweet failed")
 			return err
 		}
 
-		return nil
+		return tx.Set(voteDoc, votedObj)
 	})
 
 	if err != nil {
+		util.LogInst().Err(err).Msg("update vote status transaction failed")
 		return 0, err
 	}
 
