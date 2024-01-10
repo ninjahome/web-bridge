@@ -227,38 +227,36 @@ async function showTweetDetail() {
         detail.style.display = 'none';
     }
 
+    const voteCounter = detail.querySelector('.vote-number');
 
-    const parentCounter = tweetCard.querySelector('.vote-number');
+    __showVoteButton(detail,obj, voteCounter,function (newVote, voteCount){
+        const parentCounter = tweetCard.querySelector('.vote-number');
+        if(!parentCounter){
+            return;
+        }
+        parentCounter.textContent = newVote.vote_count;
+    });
 
-    // const voteCounter = detail.querySelector('.vote-number');
-    // voteCounter.textContent = obj.vote_count;
-    //
-    // const voteBtn = detail.querySelector('.tweet-action-vote');
-    // voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
-    // voteBtn.onclick = () => voteToTheTweet(obj.create_time, function (newVote) {
-    //     voteCounter.textContent = newVote.vote_count;
-    //     obj.textContent = newVote.vote_count;
-    //
-    // });
-    __showVoteButton(detail,obj, parentCounter);
     const statusElem = detail.querySelector('.tweetPaymentStatus');
     statusElem.textContent = TXStatus.Str(obj.payment_status);
 }
 
-function __showVoteButton(tweetCard, tweet,parentCounter) {
-    const voteCounter = tweetCard.querySelector('.vote-number');
+function __showVoteButton(tweetCard, tweet,voteCounter,callback) {
+
     voteCounter.textContent = tweet.vote_count;
 
     const voteBtn = tweetCard.querySelector('.tweet-action-vote');
     if (!voteContractMeta) {
         return;
     }
+
     voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
-    voteBtn.onclick = () => voteToTheTweet(tweet.create_time, function (newVote) {
+
+    voteBtn.onclick = () => voteToTheTweet(tweet.create_time, function (newVote, voteCount) {
         voteCounter.textContent = newVote.vote_count;
         tweet.vote_count = newVote.vote_count;
-        if (parentCounter) {
-            parentCounter.textContent = newVote.vote_count;
+        if (callback) {
+            callback(newVote.vote_count, voteCount);
         }
     });
 }

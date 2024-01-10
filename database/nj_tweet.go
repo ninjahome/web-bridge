@@ -52,7 +52,7 @@ type TweetQueryParm struct {
 	StartID  int64   `json:"start_id"`
 	Web3ID   string  `json:"web3_id"`
 	Newest   bool    `json:"newest"`
-	VotedIDs []int64 `json:"voted_i_ds"`
+	VotedIDs []int64 `json:"voted_ids"`
 }
 
 type TweetVoted struct {

@@ -81,7 +81,8 @@ async function fillTweetParkAtHomePage(newest) {
         const contentArea = tweetCard.querySelector('.tweet-content');
         contentArea.textContent = tweet.text;
 
-        __showVoteButton(tweetCard,tweet);
+        const voteCounter = tweetCard.querySelector('.vote-number');
+        __showVoteButton(tweetCard,tweet,voteCounter);
 
         if (newest) {
             tweetsPark.insertBefore(tweetCard, tweetsPark.firstChild);
@@ -95,6 +96,7 @@ async function fillTweetParkAtHomePage(newest) {
         } else {
             showMoreBtn.style.display = 'block';
         }
+
     }
 }
 
@@ -221,7 +223,7 @@ async function voteToTheTweet(create_time, callback) {
             const newObj = await updateVoteStatusToSrv(create_time, vote_count);
             obj.vote_count = newObj.vote_count;
             if (callback) {
-                callback(newObj);
+                callback(newObj, voteCount);
             }
         });
     });

@@ -104,6 +104,7 @@ async function olderVotedTweets() {
 
 const cachedUserVotedTweets = new MemCachedTweets();
 const cachedVoteStatusForUser = new Map()
+
 async function __loadTweetIDsUserVoted(newest) {
 
     const param = new TweetQueryParam("", newest, ninjaUserObj.eth_addr, []);
@@ -114,23 +115,23 @@ async function __loadTweetIDsUserVoted(newest) {
     }
     const resp = await PostToSrvByJson("/votedTweetIds", param);
     if (!resp) {
-        return ;
+        return;
     }
     console.log(resp);
     let status = JSON.parse(resp);
-    if (status.length === 0){
+    if (status.length === 0) {
         return;
     }
 
     const currentIds = [];
-    status.forEach(obj=>{
-            cachedVoteStatusForUser.set(obj.create_time,obj.vote_count);
+    status.forEach(obj => {
+            cachedVoteStatusForUser.set(obj.create_time, obj.vote_count);
             currentIds.push(obj.create_time);
-    }
+        }
     );
     console.log(currentIds)
 
-    const paramForDetail = new TweetQueryParam("", newest, "", currentIds);
+    const paramForDetail = new TweetQueryParam(0, newest, "", currentIds);
     const needUpdateUI = await TweetsQuery(paramForDetail, newest, cachedUserVotedTweets);
     if (needUpdateUI) {
         await fillUserVotedTweetsList(newest);
@@ -138,7 +139,7 @@ async function __loadTweetIDsUserVoted(newest) {
     }
 }
 
-async function fillUserVotedTweetsList(newest){
+async function fillUserVotedTweetsList(newest) {
     const tweetsDiv = document.getElementById('tweets-voted-by-user');
 
     for (const tweet of cachedUserVotedTweets.CachedItem) {
@@ -156,10 +157,17 @@ async function fillUserVotedTweetsList(newest){
         const contentArea = tweetCard.querySelector('.tweet-content');
         contentArea.textContent = tweet.text;
 
-        tweetCard.querySelector('.total-vote-number').textContent = tweet.vote_count;
-        tweetCard.querySelector('.user-vote-number').textContent = cachedVoteStatusForUser.get(tweet.create_time);
+        const voteCounter = tweetCard.querySelector('.total-vote-number');
+        const userVoteCounter = tweetCard.querySelector('.user-vote-number');
 
-        __showVoteButton(tweetCard,tweet);
+        userVoteCounter.textContent = cachedVoteStatusForUser.get(tweet.create_time) ?? 0;
+
+        __showVoteButton(tweetCard, tweet, voteCounter, function (newVote, voteCount) {
+            let origVal = cachedVoteStatusForUser.get(tweet.create_time) ?? 0;
+            origVal += voteCount;
+            cachedVoteStatusForUser.set(tweet.create_time, origVal);
+            userVoteCounter.textContent = origVal;
+        });
 
         if (newest) {
             tweetsDiv.insertBefore(tweetCard, tweetsDiv.firstChild);

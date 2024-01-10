@@ -110,6 +110,6 @@ class TweetQueryParam{
         this.start_id = startID;
         this.web3_id = web3ID;
         this.newest = needNewest;
-        this.voted = voted;
+        this.voted_ids = voted;
     }
 }
