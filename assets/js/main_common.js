@@ -16,7 +16,7 @@ function throttle(callback, time) {
     }, time);
 }
 
-function contentScroll(){
+function contentScroll() {
     let cacheObj;
     let uiCallback;
 
@@ -30,8 +30,9 @@ function contentScroll(){
             uiCallback = olderPostedTweets;
             break;
         case 22:
-            olderVotedTweets().then(r => {});
-            return;
+            cacheObj = cachedUserVotedTweets;
+            uiCallback = olderVotedTweets;
+            break;
         default:
             return;
     }
@@ -112,7 +113,7 @@ function showHoverCard() {
 
 function hideHoverCard(obj) {
     // console.log(obj);
-    if(obj){
+    if (obj) {
         obj.style.display = 'none';
         return;
     }
@@ -128,7 +129,7 @@ function cachedToMem(tweetArray, cacheObj) {
     tweetArray.map(tweet => {
         __globalTweetMemCache.set(tweet.create_time, tweet);
         const exist = cacheObj.TweetMaps.get(tweet.create_time);
-        if (exist){
+        if (exist) {
             return;
         }
         cacheObj.TweetMaps.set(tweet.create_time, true);
@@ -153,7 +154,7 @@ async function TweetsQuery(param, newest, cacheObj) {
         }
         const tweetArray = JSON.parse(resp);
         if (tweetArray.length === 0) {
-            if (!newest){
+            if (!newest) {
                 cacheObj.moreOldTweets = false;
             }
             return false;
@@ -225,20 +226,39 @@ async function showTweetDetail() {
         tweetCard.parentNode.style.display = 'block';
         detail.style.display = 'none';
     }
-    const voteCounter = detail.querySelector('.vote-number');
-    voteCounter.textContent = obj.vote_count;
 
-    const voteBtn = detail.querySelector('.tweet-action-vote');
-    voteBtn.textContent = `打赏(${voteContractMeta.votePriceInEth} eth)`;
-    voteBtn.onclick = () => voteToTheTweet(obj.create_time,function (newVote){
+
+    const parentCounter = tweetCard.querySelector('.vote-number');
+
+    // const voteCounter = detail.querySelector('.vote-number');
+    // voteCounter.textContent = obj.vote_count;
+    //
+    // const voteBtn = detail.querySelector('.tweet-action-vote');
+    // voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
+    // voteBtn.onclick = () => voteToTheTweet(obj.create_time, function (newVote) {
+    //     voteCounter.textContent = newVote.vote_count;
+    //     obj.textContent = newVote.vote_count;
+    //
+    // });
+    __showVoteButton(detail,obj, parentCounter);
+    const statusElem = detail.querySelector('.tweetPaymentStatus');
+    statusElem.textContent = TXStatus.Str(obj.payment_status);
+}
+
+function __showVoteButton(tweetCard, tweet,parentCounter) {
+    const voteCounter = tweetCard.querySelector('.vote-number');
+    voteCounter.textContent = tweet.vote_count;
+
+    const voteBtn = tweetCard.querySelector('.tweet-action-vote');
+    if (!voteContractMeta) {
+        return;
+    }
+    voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
+    voteBtn.onclick = () => voteToTheTweet(tweet.create_time, function (newVote) {
         voteCounter.textContent = newVote.vote_count;
-        obj.textContent = newVote.vote_count;
-        const parentCounter = tweetCard.querySelector('.vote-number');
-        if(parentCounter){
+        tweet.vote_count = newVote.vote_count;
+        if (parentCounter) {
             parentCounter.textContent = newVote.vote_count;
         }
     });
-
-    const statusElem = detail.querySelector('.tweetPaymentStatus');
-    statusElem.textContent = TXStatus.Str(obj.payment_status);
 }

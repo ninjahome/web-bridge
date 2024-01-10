@@ -78,20 +78,10 @@ async function fillTweetParkAtHomePage(newest) {
 
         await setupCommonTweetHeader(tweetCard, tweet);
 
-        const voteCounter = tweetCard.querySelector('.vote-number');
-        voteCounter.textContent = tweet.vote_count;
-
-        const voteBtn = tweetCard.querySelector('.tweet-action-vote');
-        if (voteContractMeta) {
-            voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
-            voteBtn.onclick = () => voteToTheTweet(tweet.create_time,function (newVote){
-                voteCounter.textContent = newVote.vote_count;
-                tweet.vote_count = newVote.vote_count;
-            });
-        }
-
         const contentArea = tweetCard.querySelector('.tweet-content');
         contentArea.textContent = tweet.text;
+
+        __showVoteButton(tweetCard,tweet);
 
         if (newest) {
             tweetsPark.insertBefore(tweetCard, tweetsPark.firstChild);

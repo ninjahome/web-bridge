@@ -7,7 +7,8 @@ async function loadTweetsUserPosted() {
     tweetsDiv.style.display = 'block';
     const votedDiv = document.getElementById('tweets-voted-by-user');
     votedDiv.style.display = 'none';
-
+    const detail = document.querySelector('#tweet-detail');
+    detail.style.display = 'none';
     __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(r => {
         console.log("load newest tweets of user posted success");
     });
@@ -67,7 +68,7 @@ async function fillUserPostedTweetsList(newest) {
         const contentArea = tweetCard.querySelector('.tweet-content');
         contentArea.textContent = tweet.text;
 
-        tweetCard.querySelector('.vote-number').textContent = 0;//TODO:: refactor this logic.
+        tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
 
         const statusElem = tweetCard.querySelector('.tweetPaymentStatus');
         statusElem.textContent = TXStatus.Str(tweet.payment_status);
@@ -85,19 +86,24 @@ async function fillUserPostedTweetsList(newest) {
 
 
 async function loadTweetsUserVoted() {
+
     curScrollContentID = 22;
     const tweetsDiv = document.getElementById('tweets-post-by-user');
     tweetsDiv.style.display = 'none';
     const votedDiv = document.getElementById('tweets-voted-by-user');
     votedDiv.style.display = 'block';
+    const detail = document.querySelector('#tweet-detail');
+    detail.style.display = 'none';
+
     await __loadTweetIDsUserVoted(true);
 }
 
 async function olderVotedTweets() {
+    console.log('lod old data trigger')
 }
 
 const cachedUserVotedTweets = new MemCachedTweets();
-
+const cachedVoteStatusForUser = new Map()
 async function __loadTweetIDsUserVoted(newest) {
 
     const param = new TweetQueryParam("", newest, ninjaUserObj.eth_addr, []);
@@ -108,18 +114,58 @@ async function __loadTweetIDsUserVoted(newest) {
     }
     const resp = await PostToSrvByJson("/votedTweetIds", param);
     if (!resp) {
-        return false;
+        return ;
     }
     console.log(resp);
-    let obj = JSON.parse(resp);
-    console.log(obj);
+    let status = JSON.parse(resp);
+    if (status.length === 0){
+        return;
+    }
 
-    // const param = new TweetQueryParam("", newest, web3ID, []);
-    // await TweetsQuery(param, newest, cachedUserVotedTweets);
-    //
-    // if (newest) {
-    //     param.start_id = cachedUserVotedTweets.MaxID;
-    // } else {
-    //     param.start_id = cachedUserVotedTweets.MinID;
-    // }
+    const currentIds = [];
+    status.forEach(obj=>{
+            cachedVoteStatusForUser.set(obj.create_time,obj.vote_count);
+            currentIds.push(obj.create_time);
+    }
+    );
+    console.log(currentIds)
+
+    const paramForDetail = new TweetQueryParam("", newest, "", currentIds);
+    const needUpdateUI = await TweetsQuery(paramForDetail, newest, cachedUserVotedTweets);
+    if (needUpdateUI) {
+        await fillUserVotedTweetsList(newest);
+        cachedUserVotedTweets.CachedItem = [];
+    }
 }
+
+async function fillUserVotedTweetsList(newest){
+    const tweetsDiv = document.getElementById('tweets-voted-by-user');
+
+    for (const tweet of cachedUserVotedTweets.CachedItem) {
+
+        const tweetCard = document.getElementById('tweetTemplateForVoted').cloneNode(true);
+        tweetCard.style.display = '';
+
+        tweetCard.querySelector('.tweet-header').id = "tweet-header-for-vote-" + tweet.create_time;
+        tweetCard.id = "tweet-card-for-vote-" + tweet.create_time;
+
+        tweetCard.dataset.createTime = tweet.create_time;
+
+        await setupCommonTweetHeader(tweetCard, tweet);
+
+        const contentArea = tweetCard.querySelector('.tweet-content');
+        contentArea.textContent = tweet.text;
+
+        tweetCard.querySelector('.total-vote-number').textContent = tweet.vote_count;
+        tweetCard.querySelector('.user-vote-number').textContent = cachedVoteStatusForUser.get(tweet.create_time);
+
+        __showVoteButton(tweetCard,tweet);
+
+        if (newest) {
+            tweetsDiv.insertBefore(tweetCard, tweetsDiv.firstChild);
+        } else {
+            tweetsDiv.appendChild(tweetCard);
+        }
+    }
+}
+
