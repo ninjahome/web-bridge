@@ -6,85 +6,108 @@
     <title>Binding Web3 Meta ID</title>
     <script src="/assets/js/utils.js"></script>
     <style>
+        body {
+            background-color: #f6f7f8;
+            margin: 0;
+        }
+
         .profile-container {
-            font-family: Arial, sans-serif;
+            font-family: Arial, sans-serif, Helvetica;
+            font-size: 14px;
+            background: #ffffff;
             max-width: 600px;
-            margin: 20px auto;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 56px auto;
+            padding: 32px;
         }
 
         .profile-header {
-            background-color: #f0f0f0;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            background-color: #F1F2F3;
+            padding: 8px;
+            border: 1px dashed #D3D5D6;
+            margin-bottom: 12px;
+        }
+
+        .profile-x {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
         }
 
         .profile-image {
-            width: 100px;
-            height: 100px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
             overflow: hidden;
-            margin-bottom: 10px;
+            margin-right: 6px;
         }
 
         .profile-image img {
             width: 100%;
         }
 
-        .profile-info {
-            margin-bottom: 10px;
+        .profile-info{
+            margin: 4px 0;
+        }
+
+        .profile-info p {
+            margin: 6px 0;
         }
 
         .profile-info strong {
-            color: #333;
+            color: #1B1B1D;
         }
 
         .profile-info span {
-            color: #555;
+            color: #7E7F82;
         }
 
         .profile-action {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
         }
 
         .profile-action button {
-            padding: 10px 20px;
+            width: 266px;
+            height: 46px;
             border: none;
-            border-radius: 5px;
-            background-color: #0084b4;
+            background-color: #4848D8;
             color: white;
             cursor: pointer;
+            margin-top: 24px;
         }
     </style>
 </head>
 <body>
 <div class="profile-container">
     <div class="profile-header">
-        <div class="profile-image" id="profile-image">
-            <img src="/assets/file/logo.png" alt="avatar">
-        </div>
-        <div class="profile-info" id="profile-name">
-           nanjie
-        </div>
-        <div class="profile-info" id="profile-user-name">
-            @nanjie
+        <div class="profile-x">
+            <div class="profile-image" id="profile-image">
+                <img src="/assets/file/logo.png" alt="avatar">
+            </div>
+            <div class="profile-username">
+                <div class="profile-info" id="profile-name" style="font-size: 20px; font-weight: bolder;color: #1B1B1D">
+                    nanjie
+                </div>
+                <div class="profile-info" id="profile-user-name" style="color: #536471">
+                    @nanjie
+                </div>
+            </div>
         </div>
         <div class="profile-info" id="profile-description">
-            Dessage-Web3-ID:0x87a43eeda49f2ec52c581573489743f86d8c8649
+            <strong style="display: inline-block; margin-bottom: 4px">Dessage-Web3-ID:</strong>0x87a43eeda49f2ec52c581573489743f86d8c8649
         </div>
+
     </div>
     <div class="profile-info" id="blockchain-info">
-        <h2>Web3元身份</h2>
-        <p><strong>Ethereum 地址:</strong> <span id="eth-address"></span></p>
-        <p><strong>绑定时间:</strong> <span id="signup-time"></span></p>
+        <h2 style="margin-top: 12px; margin-bottom: 0">Web3元身份</h2>
+        <p><strong>Ethereum 地址:</strong> <span id="eth-address">0x87a43eeda49f2ec52c581573489743f86d8c8649</span></p>
+        <p><strong>绑定时间:</strong> <span id="signup-time">2024-1-11</span></p>
     </div>
     <div class="profile-action">
         <button onclick="bindWeb3Id()">绑定web3身份</button>
-        <button onclick="backToHome()">暂时不绑定</button>
+        <button onclick="backToHome()" style="background-color: transparent; color: #7E7F82; margin-top: 0; height: 32px" >暂时不绑定</button>
     </div>
 </div>
 

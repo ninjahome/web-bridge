@@ -76,7 +76,6 @@
         color: transparent;
     }
 
-
     .route-list li.typing::after {
         content: '';
         display: inline-block;
@@ -124,6 +123,7 @@
     .logo {
         width: 52px;
         display: block;
+        border-radius: 50%;
         margin-bottom: 4px;
     }
 
@@ -368,6 +368,9 @@
     }
 
     function showSignBtn(web3ID) {
+        document.querySelectorAll(".logo-container").forEach(item=>{
+            item.classList.remove("active");
+        })
         const web3IdTips = document.getElementById("web3-id-tips");
         const signInDiv = document.getElementById("sign-in-div");
         const metamaskDiv = document.getElementById("metamask-div");
@@ -382,8 +385,6 @@
             metamaskDiv.style.display = 'block';
             web3Id.style.display = 'none';
             showError(null);
-            document.getElementById("logo-container-eth").classList.remove("active");
-            document.getElementById("logo-container-twitter").classList.remove("active");
             return;
         }
         web3IdTips.style.display = 'none';
@@ -401,7 +402,6 @@
         const savedUserInfo = JSON.parse(storeData);
         let tw_data = TwitterBasicInfo.loadTwBasicInfo(savedUserInfo.tw_id)
         if(!tw_data){
-            document.getElementById("logo-container-twitter").classList.remove("active")
             return;
         }
 
@@ -424,6 +424,7 @@
         }
         metamaskObj = window.ethereum;
         metamaskObj.on('accountsChanged', function (accounts) {
+            showError(null);
             if (accounts.length > 0) {
                 showSignBtn(accounts[0]);
                 return;
