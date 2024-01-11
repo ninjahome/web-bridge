@@ -34,14 +34,14 @@ async function initVoteContractMeta() {
 
 async function initGameContractMeta() {
 
-    const [currentRoundNo, totalBonus, ticketNo, _] = await lotteryGameContract.systemSettings();
+    const [currentRoundNo, totalBonus, ticketNo] = await lotteryGameContract.systemSettings();
     const gameInfo = await lotteryGameContract.gameInfoRecord(currentRoundNo);
 
     const curBonusInEth = ethers.utils.formatUnits(gameInfo.bonus, 'ether');
     const dTime = gameInfo.discoverTime.toNumber() * 1000;
     const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
 
-    const allTickets = await lotteryGameContract.ticketsOfBuyer(currentRoundNo, ninjaUserObj.eth_addr);
+    const [allTickets] = await lotteryGameContract.tickList(currentRoundNo, ninjaUserObj.eth_addr);
     gameContractMeta = new GameBasicInfo(currentRoundNo,
         totalBonusInEth, ticketNo,curBonusInEth,
         allTickets.length,dTime,gameInfo.randomHash);

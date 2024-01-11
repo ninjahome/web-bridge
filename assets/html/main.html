@@ -347,15 +347,19 @@
     </style>
 
     <style about="game-lottery">
+        /* lottery-game-info 样式 */
         .lottery-game-info {
             width: 80%;
             margin: auto;
-            background-color: #fff;
-            text-align: center; /* 文本居中 */
-            padding: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 盒子阴影，根据需要调整 */
-            position: relative; /* 为绝对定位的子元素设置参照 */
+            background-color: #f4f7fa; /* 浅蓝色背景 */
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            border: 1px solid #dbe2e8; /* 边框颜色 */
+            border-radius: 8px; /* 轻微圆角 */
         }
+
     </style>
 
 </head>
@@ -519,9 +523,14 @@
 
         <div class="lottery-game-info" id="lottery-game-info">
             <div class="lottery-round">第<span class="lottery-game-round-no">2</span>期</div>
-            <div class="lottery-amount-div"><span class="lottery-amount">1.260</span> <span
-                        class="eth-symbol">eth</span></div>
-            <div class="lottery-timer" id="lottery-timer">02:43:22</div>
+            <div class="lottery-amount-div">
+                <span class="lottery-amount">1.260</span>
+                <span class="eth-symbol">eth</span>
+                <span class="lottery-amount-tips">本期奖池</span>
+            </div>
+            <div class="lottery-timer">
+                开奖：<span  id="lottery-timer" >02:43:22</span>
+            </div>
 
             <div class="lottery-stats">
                 <div class="lottery-stats-label">
@@ -621,11 +630,11 @@
     }
 
     function openLotteryMainPage() {
-        window.href.location = "/lotteryGame";
+        window.location.href = "/lotteryGame";
     }
 
     function openKolKeyMainPage() {
-        window.href.location = "/kolKey";
+        window.location.href = "/kolKey";
     }
 </script>
 </body>
