@@ -136,13 +136,13 @@ abstract contract ServiceFeeForWithdraw is Owner {
     }
 
     function withdraw(uint256 amount, bool all) public noReentrant inRun {
-        uint256 b = balance[msg.sender];
+        uint256 _curBalance = balance[msg.sender];
         if (all) {
-            amount = b;
+            amount = _curBalance;
         }
         require(amount > __minValCheck, "too small amount");
-        require(b >= amount, "too much amount");
-        require(b <= address(this).balance, "insufficient founds");
+        require(_curBalance >= amount, "more than balance");
+        require(_curBalance <= address(this).balance, "insufficient founds");
 
         balance[msg.sender] -= amount;
 

@@ -151,6 +151,21 @@ func mainPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo)
 	}
 }
 
+func showLotteryMain(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+
+	data := struct {
+		NinjaUsrInfoJson template.JS
+	}{
+		NinjaUsrInfoJson: template.JS(nu.RawData()),
+	}
+	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "lottery_game.html", data)
+	if err != nil {
+		util.LogInst().Err(err).Msg("main html failed")
+		http.Redirect(w, r, "/signIn", http.StatusFound)
+		return
+	}
+}
+
 func signOut(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
 	_ = SMInst().Del(sesKeyForRightCheck, r, w)
 	http.Redirect(w, r, "/signIn", http.StatusFound)

@@ -31,7 +31,7 @@ function startCountdown(targetTime,callback) {
             countdownText += days + '天 ';
         }
         if (hours > 0) {
-            countdownText += hours + '小时 ';
+            countdownText += hours + '时 ';
         }
         if (minutes > 0) {
             countdownText += minutes + '分 ';
@@ -145,7 +145,7 @@ const DefaultAvatarSrc = "/assets/file/logo.png"
 const __globalContractConf = new Map([
     [toHex(421614), {
         tweetVote: "0xa3a39F3415d2024834Ef22258FC14e5cdcc3E857",
-        gameLottery: "0x6f8A1140abA568B2eA0985E136FbaB34eEd2e392",
+        gameLottery: "0x198B831D0ED0d447DC3218D6FeF324D4c6f0285b",
         kolKey: "",
         kolKeyAbi: "",
         postPrice: "0.005",
@@ -233,7 +233,6 @@ function hideLoading() {
     }
 }
 
-
 function createDialogElement() {
     const dialog = document.createElement('div');
     dialog.id = 'custom-dialog';
@@ -318,8 +317,6 @@ class NinjaUserBasicInfo {
             savedUserInfo.tw_id, savedUserInfo.create_at);
     }
 }
-
-
 
 function sesDbKeyForTwitterUserData(TwitterID) {
     return "__session_database_key_for_twitter_user_data__:" + TwitterID

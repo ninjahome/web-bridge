@@ -4,7 +4,7 @@ let tweetVoteContract;
 let lotteryGameContract;
 let voteContractMeta = TweetVoteContractSetting.load();
 let gameContractMeta;
-
+let userBasicGameInfo;
 
 async function checkMetaMaskEnvironment() {
 
@@ -21,6 +21,32 @@ async function checkMetaMaskEnvironment() {
     await checkCurrentChainID(chainID);
 }
 
+async function initVoteContractMeta() {
+    const [
+        postPrice, votePrice, maxVote, pluginAddr, pluginStop, kolRate, feeRate
+    ] = await tweetVoteContract.systemSettings();
+
+    const votePriceInEth = ethers.utils.formatUnits(votePrice, 'ether');
+    voteContractMeta = new TweetVoteContractSetting(postPrice, votePrice, votePriceInEth,
+        maxVote.toNumber(), pluginAddr, pluginStop, kolRate, feeRate);
+    TweetVoteContractSetting.sycToDb(voteContractMeta);
+}
+
+async function initGameContractMeta() {
+
+    const [currentRoundNo, totalBonus, ticketNo, _] = await lotteryGameContract.systemSettings();
+    const gameInfo = await lotteryGameContract.gameInfoRecord(currentRoundNo);
+
+    const curBonusInEth = ethers.utils.formatUnits(gameInfo.bonus, 'ether');
+    const dTime = gameInfo.discoverTime.toNumber() * 1000;
+    const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
+
+    const allTickets = await lotteryGameContract.ticketsOfBuyer(currentRoundNo, ninjaUserObj.eth_addr);
+    gameContractMeta = new GameBasicInfo(currentRoundNo,
+        totalBonusInEth, ticketNo,curBonusInEth,
+        allTickets.length,dTime,gameInfo.randomHash);
+}
+
 async function initBlockChainContract() {
     try {
         metamaskProvider = new ethers.providers.Web3Provider(metamaskObj);
@@ -30,19 +56,11 @@ async function initBlockChainContract() {
         tweetVoteContract = new ethers.Contract(conf.tweetVote, tweetVoteContractABI, signer);
         lotteryGameContract = new ethers.Contract(conf.gameLottery, gameContractABI, signer);
 
-        const [
-            postPrice, votePrice, maxVote, pluginAddr, pluginStop, kolRate, feeRate
-        ] = await tweetVoteContract.systemSettings();
+        initVoteContractMeta().then(r => { });
 
-        const votePriceInEth = ethers.utils.formatUnits(votePrice, 'ether');
-        voteContractMeta = new TweetVoteContractSetting(postPrice, votePrice, votePriceInEth,
-            maxVote.toNumber(), pluginAddr, pluginStop, kolRate, feeRate);
-        TweetVoteContractSetting.sycToDb(voteContractMeta);
-
-        const [currentRoundNo, totalBonus,ticketNo, ticketPriceForOuter] = await lotteryGameContract.systemSettings();
-        const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
-        const ticketPriceInEth = ethers.utils.formatUnits(totalBonus, 'ether');
-        gameContractMeta = new GameContractMeta(currentRoundNo, totalBonusInEth,ticketNo, ticketPriceForOuter, ticketPriceInEth);
+        initGameContractMeta().then(r => {
+            setupGameInfo();
+        });
 
     } catch (error) {
         console.error("Error getting system settings: ", error);
@@ -56,7 +74,7 @@ async function checkCurrentChainID(chainId) {
         return;
     }
 
-    showDialog("tips", "switch to arbitrum", switchToWorkChain, function (){
+    showDialog("tips", "switch to arbitrum", switchToWorkChain, function () {
         metamaskProvider = null;
     });
 }
@@ -139,10 +157,10 @@ async function procPaymentForPostedTweet(tweet, callback) {
     } catch (err) {
         const newErr = checkMetamaskErr(err);
         if (newErr && newErr.includes("duplicate post")) {
-            tweet.payment_status =  TXStatus.Success;
+            tweet.payment_status = TXStatus.Success;
         }
-    }finally {
-        if (callback){
+    } finally {
+        if (callback) {
             callback(tweet);
         }
     }
@@ -162,7 +180,7 @@ function checkMetamaskErr(err) {
     } else {
         code = "code:" + err.data.code + " " + err.data.message
     }
-    if (code.includes("duplicate post")){
+    if (code.includes("duplicate post")) {
         return code;
     }
     showDialog(code);
@@ -195,7 +213,7 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
 
         hideLoading();
 
-        if(callback){
+        if (callback) {
             callback(tweet.create_time, voteCount);
         }
     } catch (err) {

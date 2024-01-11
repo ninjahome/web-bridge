@@ -12,6 +12,7 @@
     <script src="/assets/js/main_metamask.js"></script>
     <script src="/assets/js/main_twitter.js"></script>
     <script src="/assets/js/main_user_tweets.js"></script>
+    <script src="/assets/js/main_operate_area.js"></script>
 
     <style about="frame div">
         .container {
@@ -345,13 +346,24 @@
         }
     </style>
 
+    <style about="game-lottery">
+        .lottery-game-info {
+            width: 80%;
+            margin: auto;
+            background-color: #fff;
+            text-align: center; /* 文本居中 */
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 盒子阴影，根据需要调整 */
+            position: relative; /* 为绝对定位的子元素设置参照 */
+        }
+    </style>
+
 </head>
 <body>
 <div class="container">
 
     <div class="left-menu-area">
         <img src="/assets/file/logo.png" id="dessage-log-to-nj-log" style="width: 40px;height: 40px" alt="avatar">
-
         <ul class="menu-list-left-area">
             <li onclick="menuOnClicked.call(this,0)" class="menu-item-left-area active" data-content="middle-div-home">
                 主页
@@ -435,7 +447,7 @@
                 </div>
             </div>
 
-            <div id="tweets-post-by-user" class="tweets-park"> </div>
+            <div id="tweets-post-by-user" class="tweets-park"></div>
 
             <div id="tweetTemplateForVoted" class="tweet-card" style="display: none;">
                 <div class="tweet-header">
@@ -456,7 +468,7 @@
                 </div>
             </div>
 
-            <div id="tweets-voted-by-user" class="tweets-park"> </div>
+            <div id="tweets-voted-by-user" class="tweets-park"></div>
 
         </div>
         <div id="middle-div-income" class="content-in-middle-area">我的收入内容</div>
@@ -504,6 +516,42 @@
 
     </div>
     <div class="right-operation-area">
+
+        <div class="lottery-game-info" id="lottery-game-info">
+            <div class="lottery-round">第<span class="lottery-game-round-no">2</span>期</div>
+            <div class="lottery-amount-div"><span class="lottery-amount">1.260</span> <span
+                        class="eth-symbol">eth</span></div>
+            <div class="lottery-timer" id="lottery-timer">02:43:22</div>
+
+            <div class="lottery-stats">
+                <div class="lottery-stats-label">
+                    累计奖金:
+                    <span class="lottery-stats-no" id="lottery-total-amount">120.001</span>
+                    <span class="lottery-stats-unit">eth</span>
+                </div>
+
+                <div class="lottery-stats-label">
+                    彩票数(我的):
+                    <span class="lottery-stats-no" id="lottery-user-ticket-amount">2</span>
+                    <span class="lottery-stats-unit">张</span>
+                </div>
+
+                <div class="lottery-stats-label">
+                    彩票数(总):
+                    <span class="lottery-stats-no" id="lottery-current-ticket-amount">200</span>
+                    <span class="lottery-stats-unit">张</span>
+                </div>
+
+                <div class="lottery-stats-label">
+                    开奖哈希:
+                    <span class="lottery-stats-no" id="lottery-current-game-hash">0x78ec5160965b5945688b58dc4843f78f38c212ec75efbb2c1b2842593b7e2c5b</span>
+                </div>
+
+            </div>
+
+            <button class="lottery-participate-btn" onclick="openLotteryMainPage()">我的彩票</button>
+        </div>
+
     </div>
 </div>
 
@@ -570,6 +618,14 @@
         } else if (contentId === "middle-div-home") {
             loadTweetsForHomePage()
         }
+    }
+
+    function openLotteryMainPage() {
+        window.href.location = "/lotteryGame";
+    }
+
+    function openKolKeyMainPage() {
+        window.href.location = "/kolKey";
     }
 </script>
 </body>
