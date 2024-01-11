@@ -176,7 +176,7 @@
             -webkit-box-orient: vertical;
         }
 
-        .tweetPaymentDelete{
+        .tweetPaymentDelete {
             display: none;
             background-color: #d51515; /* 例如，红色背景 */
             color: white;
@@ -382,7 +382,9 @@
 <div class="container">
 
     <div class="left-menu-area">
-        <img src="/assets/file/logo.png" id="dessage-log-to-nj-log" style="width: 40px;height: 40px" alt="avatar">
+        <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
+             onclick="menuOnClicked.call(document.getElementById('settings-menu-item'), 4)"
+             style="width: 40px;height: 40px;border-radius: 50%;cursor: pointer" alt="avatar">
         <ul class="menu-list-left-area">
             <li onclick="menuOnClicked.call(this,0)" class="menu-item-left-area active" data-content="middle-div-home">
                 主页
@@ -397,7 +399,8 @@
             <li onclick="menuOnClicked.call(this,3)" class="menu-item-left-area" data-content="middle-div-income">
                 收入
             </li>
-            <li onclick="menuOnClicked.call(this,4)" class="menu-item-left-area" data-content="middle-div-settings">设置
+            <li id="settings-menu-item" onclick="menuOnClicked.call(this,4)" class="menu-item-left-area"
+                data-content="middle-div-settings">设置
             </li>
             <li onclick="menuOnClicked.call(this,5)" class="menu-item-left-area" data-content="middle-div-userKolKey">
                 Keys
@@ -461,7 +464,7 @@
                     </div>
                     <div class="tweet-action">
                         支付状态: <span class="tweetPaymentStatus"></span>
-                        <button class="tweetPaymentRetry" >继续支付</button>
+                        <button class="tweetPaymentRetry">继续支付</button>
                         <button class="tweetPaymentDelete">删除</button>
                     </div>
                 </div>
@@ -546,7 +549,7 @@
                 <span class="lottery-amount-tips">本期奖池</span>
             </div>
             <div class="lottery-timer">
-                开奖：<span  id="lottery-timer" >02:43:22</span>
+                开奖：<span id="lottery-timer">02:43:22</span>
             </div>
 
             <div class="lottery-stats">
@@ -615,15 +618,26 @@
 <script>
 
     const ninjaUserObj = {{ .NinjaUsrInfoJson }};
-
     let curScrollContentID = 0;
+
     document.addEventListener("DOMContentLoaded", initMainPage);
 
-    async function initMainPage() {
-        if(ninjaUserObj){
-            localStorage.setItem(DbKeyForNjUserData(ninjaUserObj.eth_addr), JSON.stringify(ninjaUserObj));
+    function initNjBasic() {
+        if (!ninjaUserObj) {
+            window.location.href = "/signIn";
+            return;
         }
+
         document.getElementById("basic-web3-id").innerText = ninjaUserObj.eth_addr;
+        localStorage.setItem(DbKeyForNjUserData(ninjaUserObj.eth_addr), JSON.stringify(ninjaUserObj));
+        let tw_data = TwitterBasicInfo.loadTwBasicInfo(ninjaUserObj.tw_id)
+        if (tw_data) {
+            document.getElementById("dessage-log-to-nj-log").src = tw_data.profile_image_url;
+        }
+    }
+
+    async function initMainPage() {
+        initNjBasic();
         await checkMetaMaskEnvironment();
         await loadTweetsForHomePage();
     }
