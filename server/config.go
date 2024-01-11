@@ -31,6 +31,7 @@ var (
 		"/buyRights":                {mainPage, true},
 		"/tweetQuery":               {globalTweetQuery, true},
 		"/votedTweetIds":            {votedTweetsQuery, true},
+		"/removeUnpaidTweet":        {removeUnpaidTweet, true},
 	}
 
 	cfgHtmlFileRouter = map[string]string{

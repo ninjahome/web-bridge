@@ -135,11 +135,12 @@ async function postTweetWithPayment() {
         showWaiting("posting to twitter");
         const resp = await PostToSrvByJson("/postTweet", tweetObj);
         if (!resp) {
+            hideLoading();
             showDialog("error", "post tweet failed");
             return;
         }
         const basicTweet = JSON.parse(resp);
-
+        hideLoading();
         await procPaymentForPostedTweet(basicTweet);
 
         await updatePaymentStatusToSrv(basicTweet)

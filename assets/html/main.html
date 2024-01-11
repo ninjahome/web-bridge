@@ -176,9 +176,24 @@
             -webkit-box-orient: vertical;
         }
 
+        .tweetPaymentDelete{
+            display: none;
+            background-color: #d51515; /* 例如，红色背景 */
+            color: white;
+            padding: 6px 12px;
+            margin: 4px 2px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .tweetPaymentDelete.show {
+            display: inline-block;
+        }
+
         .tweetPaymentRetry {
             display: none;
-            background-color: #f44336; /* 例如，红色背景 */
+            background-color: #1DA1F2;
             color: white;
             padding: 6px 12px;
             margin: 4px 2px;
@@ -377,15 +392,15 @@
             </li>
 
             <li onclick="menuOnClicked.call(this,2)" class="menu-item-left-area" data-content="middle-div-user-tweets">
-                我的推文
+                推文
             </li>
             <li onclick="menuOnClicked.call(this,3)" class="menu-item-left-area" data-content="middle-div-income">
-                我的收入
+                收入
             </li>
             <li onclick="menuOnClicked.call(this,4)" class="menu-item-left-area" data-content="middle-div-settings">设置
             </li>
             <li onclick="menuOnClicked.call(this,5)" class="menu-item-left-area" data-content="middle-div-userKolKey">
-                我的Key
+                Keys
             </li>
         </ul>
 
@@ -446,7 +461,8 @@
                     </div>
                     <div class="tweet-action">
                         支付状态: <span class="tweetPaymentStatus"></span>
-                        <button class="tweetPaymentRetry">继续支付</button>
+                        <button class="tweetPaymentRetry" >继续支付</button>
+                        <button class="tweetPaymentDelete">删除</button>
                     </div>
                 </div>
             </div>
@@ -509,7 +525,8 @@
                 <div class="tweet-info">
                     <span class="vote-count">投票数: <span class="vote-number">0</span></span>
                     Payment Status: <span class="tweetPaymentStatus"></span>
-                    <button class="tweetPaymentRetry">继续支付</button>
+                    <button class="tweetPaymentRetry" id="tweetPaymentRetryInDetail">继续支付</button>
+                    <button class="tweetRemoveUnPaid" id="tweetRemoveUnPaidInDetail">删除</button>
                     <div class="tweet-prefixed-hash">
                         <span class="vote-count">推文Hash:</span>
                         <span id="tweet-prefixed-hash"></span>

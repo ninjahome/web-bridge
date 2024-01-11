@@ -172,6 +172,28 @@ func (dm *DbManager) UpdateTweetPaymentStatus(createAt int64, s TxStatus) error 
 	return err
 }
 
+func (dm *DbManager) DelUnpaidTweet(createTime int64, addr string) error {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+
+	query := dm.fileCli.Collection(DBTableTweetsPosted).
+		Where("payment_status", "==", TxStNotPay).
+		Where("create_time", "==", createTime).
+		Where("web3_id", "==", addr)
+
+	iter := query.Documents(opCtx)
+	defer iter.Stop()
+
+	doc, err := iter.Next()
+	if err != nil {
+		util.LogInst().Err(err).Msg("no such item to delete")
+		return err
+	}
+
+	_, err = doc.Ref.Delete(opCtx)
+	return err
+}
+
 type TweetVoteAction struct {
 	CreateTime    int64 `json:"create_time"`
 	VoteCount     int   `json:"vote_count"`

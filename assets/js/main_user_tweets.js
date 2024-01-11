@@ -32,11 +32,16 @@ async function __loadTweetAtUserPost(newest, web3ID) {
     }
 }
 
-function __checkPayment(tweet, retryButton, statusElem) {
+function __checkPayment(tweetCard, tweet) {
     if (tweet.payment_status !== TXStatus.NoPay) {
         return;
     }
+    const statusElem = tweetCard.querySelector('.tweetPaymentStatus');
+    statusElem.textContent = TXStatus.Str(tweet.payment_status);
+
+    const retryButton = tweetCard.querySelector('.tweetPaymentRetry');
     retryButton.classList.add('show');
+
     retryButton.onclick = () => procPaymentForPostedTweet(tweet, function (newObj) {
         updatePaymentStatusToSrv(newObj).then();
         __globalTweetMemCache.set(newObj.create_time, newObj);
@@ -45,6 +50,36 @@ function __checkPayment(tweet, retryButton, statusElem) {
             statusElem.textContent = TXStatus.Str(newObj.payment_status);
         }
     });
+
+    const deleteButton = tweetCard.querySelector('.tweetPaymentDelete');
+    deleteButton.classList.add('show');
+    deleteButton.onclick = () => removeUnPaidTweets(tweet.create_time).then(r => {
+        if (!r) {
+            return;
+        }
+        const id = "tweet-card-for-user-" + tweet.create_time;
+        const element = document.getElementById(id);
+        if (element) {
+            element.parentNode.removeChild(element);
+        }
+    });
+}
+
+async function removeUnPaidTweets(createTime) {
+    try {
+        const resp = await PostToSrvByJson("/removeUnpaidTweet",
+            {create_time: createTime, status: TXStatus.NoPay});
+        if (!resp) {
+            return false;
+        }
+
+        console.log(resp);
+        __globalTweetMemCache.delete(createTime);
+        return true;
+    } catch (e) {
+        showDialog("err", "remove unpaid tweet failed:" + e.toString());
+        return false;
+    }
 }
 
 async function fillUserPostedTweetsList(clear) {
@@ -69,11 +104,7 @@ async function fillUserPostedTweetsList(clear) {
 
         tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
 
-        const statusElem = tweetCard.querySelector('.tweetPaymentStatus');
-        statusElem.textContent = TXStatus.Str(tweet.payment_status);
-
-        const retryButton = tweetCard.querySelector('.tweetPaymentRetry')
-        __checkPayment(tweet, retryButton, statusElem);
+        __checkPayment(tweetCard, tweet);
 
         tweetsDiv.appendChild(tweetCard);
     }
@@ -94,7 +125,7 @@ async function loadTweetsUserVoted() {
 
 async function olderVotedTweets() {
     console.log('lod old data trigger')
-    if (cachedUserVotedTweets.latestID === 0){
+    if (cachedUserVotedTweets.latestID === 0) {
         console.log("no need to load older data");
         return;
     }
@@ -118,7 +149,7 @@ async function __loadTweetIDsUserVoted(newest) {
     console.log(resp);
     let status = JSON.parse(resp);
     if (status.length === 0) {
-        if(!newest){
+        if (!newest) {
             cachedUserVotedTweets.moreOldTweets = false;
         }
         return;

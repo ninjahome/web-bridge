@@ -4,7 +4,6 @@ let tweetVoteContract;
 let lotteryGameContract;
 let voteContractMeta = TweetVoteContractSetting.load();
 let gameContractMeta;
-let userBasicGameInfo;
 
 async function checkMetaMaskEnvironment() {
 
@@ -133,7 +132,7 @@ async function procPaymentForPostedTweet(tweet, callback) {
     }
 
     try {
-        changeLoadingTips("paying for tweet post");
+        showWaiting("paying for tweet post");
 
         const txResponse = await tweetVoteContract.publishTweet(
             tweet.prefixed_hash,

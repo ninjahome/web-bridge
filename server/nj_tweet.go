@@ -40,7 +40,7 @@ func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 
 type TweetPaymentStatus struct {
 	CreateTime int64             `json:"create_time"`
-	Status     database.TxStatus `json:"status"`
+	Status     database.TxStatus `json:"status,omitempty"`
 }
 
 func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
@@ -150,4 +150,31 @@ func votedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 
 	util.LogInst().Debug().Int("id-len", len(ids)).Str("param", para.String()).
 		Msg(" query voted  tweet success")
+}
+
+func removeUnpaidTweet(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+
+	var status TweetPaymentStatus
+	var err = util.ReadRequest(r, &status)
+
+	if err != nil {
+		util.LogInst().Err(err).Msg("parsing param failed when delete tweet")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = database.DbInst().DelUnpaidTweet(status.CreateTime, nu.EthAddr)
+	if err != nil {
+		util.LogInst().Err(err).Int64("create_time", status.CreateTime).
+			Str("web3-id", nu.EthAddr).Msg("failed to delete unpaid tweet")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("success"))
+
+	util.LogInst().Info().Int64("create_time", status.CreateTime).
+		Str("web3-id", nu.EthAddr).Msg(" delete unpaid tweet success")
+
 }
