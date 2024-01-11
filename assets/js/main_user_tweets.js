@@ -33,15 +33,15 @@ async function __loadTweetAtUserPost(newest, web3ID) {
 }
 
 function __checkPayment(tweetCard, tweet) {
-    if (tweet.payment_status !== TXStatus.NoPay) {
-        return;
-    }
     const statusElem = tweetCard.querySelector('.tweetPaymentStatus');
     statusElem.textContent = TXStatus.Str(tweet.payment_status);
 
+    if (tweet.payment_status !== TXStatus.NoPay) {
+        return;
+    }
+
     const retryButton = tweetCard.querySelector('.tweetPaymentRetry');
     retryButton.classList.add('show');
-
     retryButton.onclick = () => procPaymentForPostedTweet(tweet, function (newObj) {
         updatePaymentStatusToSrv(newObj).then();
         __globalTweetMemCache.set(newObj.create_time, newObj);
@@ -83,31 +83,14 @@ async function removeUnPaidTweets(createTime) {
 }
 
 async function fillUserPostedTweetsList(clear) {
-    const tweetsDiv = document.getElementById('tweets-post-by-user');
-    if (clear) {
-        tweetsDiv.innerHTML = '';
-    }
-    for (const tweet of cachedUserTweets.CachedItem) {
 
-        const tweetCard = document.getElementById('tweetTemplateForUserSelf').cloneNode(true);
-        tweetCard.style.display = '';
-
-        tweetCard.querySelector('.tweet-header').id = "tweet-header-for-user-" + tweet.create_time;
-        tweetCard.id = "tweet-card-for-user-" + tweet.create_time;
-
-        tweetCard.dataset.createTime = tweet.create_time;
-
-        await setupCommonTweetHeader(tweetCard, tweet);
-
-        const contentArea = tweetCard.querySelector('.tweet-content');
-        contentArea.textContent = tweet.text;
-
-        tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
-
-        __checkPayment(tweetCard, tweet);
-
-        tweetsDiv.appendChild(tweetCard);
-    }
+    return __fillNormalTweet(clear, 'tweets-post-by-user', cachedUserTweets,
+        'tweetTemplateForUserSelf', "tweet-card-for-user-", false,
+        function (tweetCard, tweetHeader, tweet) {
+            tweetCard.dataset.detailType = '2';
+            tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
+            __checkPayment(tweetCard, tweet);
+        });
 }
 
 async function loadTweetsUserVoted() {
@@ -172,32 +155,16 @@ async function __loadTweetIDsUserVoted(newest) {
 }
 
 async function fillUserVotedTweetsList(clear) {
-    const tweetsDiv = document.getElementById('tweets-voted-by-user');
-    if (clear) {
-        tweetsDiv.innerHTML = '';
-    }
-    for (const tweet of cachedUserVotedTweets.CachedItem) {
+    return __fillNormalTweet(clear, 'tweets-voted-by-user',
+        cachedUserVotedTweets,
+        'tweetTemplateForVoted', "tweet-card-for-vote-", true,
+        function (tweetCard, tweetHeader, tweet) {
+            tweetCard.querySelector('.total-vote-number').textContent = tweet.vote_count;
+            const userVoteCounter = tweetCard.querySelector('.user-vote-number');
 
-        const tweetCard = document.getElementById('tweetTemplateForVoted').cloneNode(true);
-        tweetCard.style.display = '';
-
-        tweetCard.querySelector('.tweet-header').id = "tweet-header-for-vote-" + tweet.create_time;
-        tweetCard.id = "tweet-card-for-vote-" + tweet.create_time;
-
-        tweetCard.dataset.createTime = tweet.create_time;
-
-        await setupCommonTweetHeader(tweetCard, tweet);
-
-        const contentArea = tweetCard.querySelector('.tweet-content');
-        contentArea.textContent = tweet.text;
-
-        tweetCard.querySelector('.total-vote-number').textContent = tweet.vote_count;
-        const userVoteCounter = tweetCard.querySelector('.user-vote-number');
-
-        userVoteCounter.textContent = cachedVoteStatusForUser.get(tweet.create_time) ?? 0;
-
-        __showVoteButton(tweetCard, tweet);
-        tweetsDiv.appendChild(tweetCard);
-    }
+            userVoteCounter.textContent = cachedVoteStatusForUser.get(tweet.create_time) ?? 0;
+            tweetCard.dataset.detailType = '3';
+            __showVoteButton(tweetCard, tweet);
+        });
 }
 

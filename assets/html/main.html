@@ -79,10 +79,9 @@
         }
 
         .tweet-header {
-            display: flex;
+            display: inline-block;
             align-items: center;
             margin-bottom: 10px;
-            /*cursor: pointer;*/
         }
 
         .tweet-header img {
@@ -406,28 +405,25 @@
                 Keys
             </li>
         </ul>
-
         <button class="show-post-tweet-div" onclick="showPostTweetDiv()">发推</button>
-
     </div>
+
+    <div id="tweet-header-template" style="display: none">
+        <div class="tweet-header">
+            <img src="" alt="Avatar" class="twitterAvatar">
+            <span class="name twitterName"></span>
+            <span class="username twitterUserName"></span>
+            <span class="time tweetCreateTime"></span>
+        </div>
+        <div onclick="showTweetDetail.call(this)" class="tweet-content tweet-content-collapsed">
+        </div>
+        <button class="show-more" data-more="true" onclick="showFullTweetContent.call(this)">更多</button>
+    </div>
+
     <div class="middle-content-area">
 
         <div id="middle-div-home" class="content-in-middle-area active">
             <div id="tweetTemplate" class="tweet-card" style="display: none;">
-                <div class="tweet-header">
-                    <div onmouseenter="showHoverCard.call(this)"
-                         onmouseleave="hideHoverCard.call(this)">
-                        <img src="" alt="Avatar" class="twitterAvatar">
-                        <span class="name twitterName"></span>
-                        <span class="username twitterUserName"></span>
-                        <span class="time tweetCreateTime"></span>
-                    </div>
-                </div>
-
-                <div onclick="showTweetDetail.call(this)" class="tweet-content tweet-content-collapsed">
-
-                </div>
-                <button class="show-more" data-more="true" onclick="showFullTweetContent.call(this)">更多</button>
                 <div class="tweet-footer">
                     <div class="tweet-action">
                         <button class="tweet-action-vote">0.01 eth投票</button>
@@ -437,23 +433,12 @@
                     </div>
                 </div>
             </div>
-
             <div class="tweets-park" id="tweets-park"></div>
         </div>
+
         <div id="middle-div-leaderboard" class="content-in-middle-area">
 
             <div id="tweetTemplateForTop" class="tweet-card" style="display: none;">
-                <div class="tweet-header">
-                    <div onmouseenter="showHoverCard.call(this)"
-                         onmouseleave="hideHoverCard.call(this)">
-                        <img src="" alt="Avatar" class="twitterAvatar">
-                        <span class="name twitterName"></span>
-                        <span class="username twitterUserName"></span>
-                        <span class="time tweetCreateTime"></span>
-                    </div>
-                </div>
-                <div onclick="showTweetDetail.call(this)" class="tweet-content tweet-content-collapsed"> </div>
-                <button class="show-more" data-more="true" onclick="showFullTweetContent.call(this)">更多</button>
                 <div class="tweet-footer">
                     <div class="tweet-action">
                         <button class="tweet-action-vote">0.01 eth投票</button>
@@ -463,7 +448,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="tweets-park" id="top-hot-tweet-team"></div>
         </div>
 
@@ -474,13 +458,6 @@
             </div>
 
             <div id="tweetTemplateForUserSelf" class="tweet-card" style="display: none;">
-                <div class="tweet-header">
-                    <img src="" alt="Avatar" class="twitterAvatar">
-                    <span class="name twitterName"></span>
-                    <span class="username twitterUserName"></span>
-                    <span class="time tweetCreateTime"></span>
-                </div>
-                <div onclick="showTweetDetail.call(this)" class="tweet-content tweet-content-collapsed"></div>
                 <div class="tweet-footer">
                     <div class="tweet-info">
                         <span class="vote-count">投票数: <span class="vote-number">0</span></span>
@@ -496,13 +473,6 @@
             <div id="tweets-post-by-user" class="tweets-park"></div>
 
             <div id="tweetTemplateForVoted" class="tweet-card" style="display: none;">
-                <div class="tweet-header">
-                    <img src="" alt="Avatar" class="twitterAvatar">
-                    <span class="name twitterName"></span>
-                    <span class="username twitterUserName"></span>
-                    <span class="time tweetCreateTime"></span>
-                </div>
-                <div onclick="showTweetDetail.call(this)" class="tweet-content tweet-content-collapsed"></div>
                 <div class="tweet-footer">
                     <div class="tweet-info">
                         <span class="vote-count">总票数: <span class="total-vote-number">0</span></span>

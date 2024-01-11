@@ -115,14 +115,10 @@ function showHoverCard() {
 }
 
 function hideHoverCard(obj) {
-    // console.log(obj);
-    if (obj) {
-        obj.style.display = 'none';
-        return;
-    }
+
     const hoverCard = document.getElementById('hover-card');
     setTimeout(() => {
-        if (!hoverCard.matches(':hover') && !this.matches(':hover')) {
+        if (!hoverCard.matches(':hover') && !obj.matches(':hover')) {
             hoverCard.style.display = 'none';
         }
     }, 300);
@@ -142,8 +138,8 @@ function cachedToMem(tweetArray, cacheObj) {
 
 async function TweetsQuery(param, newest, cacheObj) {
     try {
-        param.start_id = newest? 0:cacheObj.latestID;
-        if(newest){
+        param.start_id = newest ? 0 : cacheObj.latestID;
+        if (newest) {
             cacheObj.latestID = 0;
         }
         const resp = await PostToSrvByJson("/tweetQuery", param);
@@ -161,9 +157,8 @@ async function TweetsQuery(param, newest, cacheObj) {
     }
 }
 
-async function setupCommonTweetHeader(tweetCard, tweet) {
-    tweetCard.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
-
+async function __setOnlyHeader(tweetHeader, tweet) {
+    tweetHeader.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
     const twitterObj = TwitterBasicInfo.loadTwBasicInfo(tweet.twitter_id);
     if (!twitterObj) {
         const newObj = await loadTwitterUserInfoFromSrv(tweet.twitter_id, true)
@@ -171,15 +166,30 @@ async function setupCommonTweetHeader(tweetCard, tweet) {
             console.log("failed load twitter user info");
             return;
         }
-        tweetCard.querySelector('.twitterAvatar').src = newObj.profile_image_url;
-        tweetCard.querySelector('.twitterName').textContent = newObj.name;
-        tweetCard.querySelector('.twitterUserName').textContent = '@' + newObj.username;
+        tweetHeader.querySelector('.twitterAvatar').src = newObj.profile_image_url;
+        tweetHeader.querySelector('.twitterName').textContent = newObj.name;
+        tweetHeader.querySelector('.twitterUserName').textContent = '@' + newObj.username;
 
     } else {
-        tweetCard.querySelector('.twitterAvatar').src = twitterObj.profile_image_url;
-        tweetCard.querySelector('.twitterName').textContent = twitterObj.name;
-        tweetCard.querySelector('.twitterUserName').textContent = '@' + twitterObj.username;
+        tweetHeader.querySelector('.twitterAvatar').src = twitterObj.profile_image_url;
+        tweetHeader.querySelector('.twitterName').textContent = twitterObj.name;
+        tweetHeader.querySelector('.twitterUserName').textContent = '@' + twitterObj.username;
     }
+}
+
+async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
+
+    await __setOnlyHeader(tweetHeader, tweet);
+
+    const contentArea = tweetHeader.querySelector('.tweet-content');
+    contentArea.textContent = tweet.text;
+    const wrappedHeader = tweetHeader.querySelector('.tweet-header');
+    if (overlap) {
+        wrappedHeader.addEventListener('mouseenter', showHoverCard);
+        wrappedHeader.addEventListener('mouseleave', (event) => hideHoverCard(wrappedHeader));
+    }
+
+    return contentArea;
 }
 
 function refreshTwitterInfo() {
@@ -205,14 +215,15 @@ async function showTweetDetail() {
     tweetCard.parentNode.style.display = 'none';
 
     const create_time = Number(tweetCard.dataset.createTime);
-    // console.log(create_time);
+    const detailType = Number(tweetCard.dataset.detailType);
 
     const obj = __globalTweetMemCache.get(create_time)
     if (!obj) {
         showDialog("error", "can't find tweet obj");
         return;
     }
-    await setupCommonTweetHeader(detail, obj);
+
+    await __setOnlyHeader(detail, obj);
 
     detail.querySelector('.tweet-text').textContent = obj.text;
     detail.querySelector('#tweet-prefixed-hash').textContent = obj.prefixed_hash;
@@ -229,6 +240,9 @@ async function showTweetDetail() {
 
     const statusElem = detail.querySelector('.tweetPaymentStatus');
     statusElem.textContent = TXStatus.Str(obj.payment_status);
+    if (detailType !== 3 && obj.payment_status !== TXStatus.NoPay) {
+        detail.querySelector('.tweetRemoveUnPaid').style.display = 'none';
+    }
 }
 
 function __showVoteButton(tweetCard, tweet, callback) {
@@ -276,14 +290,15 @@ async function voteToTheTweet(create_time, callback) {
         return;
     }
 
-    openVoteModal(function (voteCount,shareToTweet) {
+    openVoteModal(function (voteCount, shareToTweet) {
         procTweetVotePayment(voteCount, obj, async function (create_time, vote_count) {
             const newVote = await updateVoteStatusToSrv(create_time, vote_count);
             obj.vote_count = newVote.vote_count;
             __updateVoteNumberAllElements(obj, newVote).then(r => {
             });
-            if (shareToTweet){
-                __shareVoteToTweet(create_time, vote_count).then(r=>{});
+            if (shareToTweet) {
+                __shareVoteToTweet(create_time, vote_count).then(r => {
+                });
             }
             if (callback) {
                 callback(newVote);
@@ -293,7 +308,7 @@ async function voteToTheTweet(create_time, callback) {
     });
 }
 
-async function __shareVoteToTweet(create_time,vote_count){
+async function __shareVoteToTweet(create_time, vote_count) {
     const resp = await PostToSrvByJson("/shareVoteAction", {
         create_time: create_time,
         vote_count: Number(vote_count),

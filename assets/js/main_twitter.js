@@ -24,13 +24,13 @@ async function loadTweetsForHomePage() {
     showWaiting("loading.....");
     __loadTweetsAtHomePage(true).then(r => {
         console.log("load newest global tweets success");
-    }).finally(r=>{
+    }).finally(r => {
         hideLoading();
     });
 }
 
 async function loadOlderTweetsForHomePage() {
-    if (cachedGlobalTweets.latestID === 0){
+    if (cachedGlobalTweets.latestID === 0) {
         console.log("no need to load older data");
         return;
     }
@@ -63,29 +63,28 @@ async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) 
     }
 }
 
-async function fillTweetParkAtHomePage(clear) {
-    const tweetsPark = document.getElementById('tweets-park');
-    if (clear){
+async function __fillNormalTweet(clear, parkID, cached, templateId, cardID, overlap, callback) {
+    const tweetsPark = document.getElementById(parkID);
+    if (clear) {
         tweetsPark.innerHTML = '';
     }
 
-    for (const tweet of cachedGlobalTweets.CachedItem) {
+    for (const tweet of cached.CachedItem) {
 
-        const tweetCard = document.getElementById('tweetTemplate').cloneNode(true);
+        const tweetCard = document.getElementById(templateId).cloneNode(true);
         tweetCard.style.display = '';
-
-        tweetCard.querySelector('.tweet-header').id = "tweet-card-header-for-home-" + tweet.create_time;
-        tweetCard.id = "tweet-card-for-home-" + tweet.create_time;
-
+        tweetCard.id = cardID + tweet.create_time;
         tweetCard.dataset.createTime = tweet.create_time;
+        const tweetHeader = document.getElementById('tweet-header-template').cloneNode(true);
+        tweetHeader.style.display = '';
 
-        await setupCommonTweetHeader(tweetCard, tweet);
+        const sibling = tweetCard.querySelector('.tweet-footer')
+        const contentArea = await setupCommonTweetHeader(tweetHeader, tweet, overlap);
+        tweetCard.insertBefore(tweetHeader, sibling);
 
-        const contentArea = tweetCard.querySelector('.tweet-content');
-        contentArea.textContent = tweet.text;
-
-        tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
-        __showVoteButton(tweetCard, tweet);
+        if (callback) {
+            callback(tweetCard, tweetHeader, tweet)
+        }
 
         tweetsPark.appendChild(tweetCard);
 
@@ -96,6 +95,17 @@ async function fillTweetParkAtHomePage(clear) {
             showMoreBtn.style.display = 'block';
         }
     }
+}
+
+async function fillTweetParkAtHomePage(clear) {
+
+    return __fillNormalTweet(clear, 'tweets-park',
+        cachedGlobalTweets, 'tweetTemplate',
+        "tweet-card-for-home-", true, function (tweetCard, tweetHeader, tweet) {
+            tweetCard.dataset.detailType = '1';
+            tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
+            __showVoteButton(tweetCard, tweet);
+        });
 }
 
 async function preparePostMsg() {
