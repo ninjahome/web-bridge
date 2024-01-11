@@ -7,9 +7,15 @@ async function setupGameInfo() {
     document.getElementById('lottery-total-amount').textContent = gameContractMeta.totalBonus;
     document.getElementById('lottery-user-ticket-amount').textContent = gameContractMeta.userTickNo;
     document.getElementById('lottery-current-ticket-amount').textContent = gameContractMeta.ticketNo;
-    document.getElementById('lottery-current-game-hash').textContent = gameContractMeta.dHash;
 
-    startCountdown(gameContractMeta.dTime, function (txt) {
-        document.getElementById("lottery-timer").innerText = txt;
+    startCountdown(gameContractMeta.dTime, function (txt,finished) {
+        if (!finished){
+            document.getElementById("lottery-timer").innerText = txt;
+            return;
+        }
+
+        initGameContractMeta().then(r=>{
+            setupGameInfo();
+        });
     });
 }

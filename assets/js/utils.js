@@ -17,7 +17,7 @@ function startCountdown(targetTime,callback) {
 
         if (timeLeft <= 0) {
             clearInterval(countdownInterval);
-            callback('正在开奖中');
+            callback('开奖中',true);
             return;
         }
 
@@ -38,7 +38,7 @@ function startCountdown(targetTime,callback) {
         }
         countdownText += seconds + '秒';
 
-        callback(countdownText);
+        callback(countdownText,false);
     }, 1000);
 }
 

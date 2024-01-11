@@ -67,7 +67,7 @@ func (p *TweetQueryParm) String() string {
 func (p *TweetQueryParm) createFilter(pageSize int, doc *firestore.CollectionRef, opCtx context.Context) *firestore.DocumentIterator {
 
 	if len(p.VotedIDs) > 0 {
-		return doc.Where("create_time", "in", p.VotedIDs).Documents(opCtx)
+		return doc.Where("create_time", "in", p.VotedIDs).OrderBy("create_time", firestore.Desc).Documents(opCtx)
 	}
 
 	var query = doc.Limit(pageSize)
