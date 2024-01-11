@@ -15,8 +15,7 @@ type NinjaUsrInfo struct {
 	CreateAt   int64  `json:"create_at" firestore:"create_at"`
 	TwID       string `json:"tw_id" firestore:"tw_id"`
 	UpdateAt   int64  `json:"update_at"`
-	VoteCount  int    `json:"vote_count" firestore:"vote_count"`
-	TweetCount int    `json:"tweet_count" firestore:"vote_count"`
+	TweetCount int    `json:"tweet_count" firestore:"tweet_count"`
 }
 
 func (nu *NinjaUsrInfo) String() string {

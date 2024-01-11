@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"github.com/ninjahome/web-bridge/util"
 	"google.golang.org/api/iterator"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type TxStatus int8
@@ -52,11 +50,6 @@ type TweetQueryParm struct {
 	StartID  int64   `json:"start_id"`
 	Web3ID   string  `json:"web3_id"`
 	VotedIDs []int64 `json:"voted_ids"`
-}
-
-type TweetVoted struct {
-	CreateTime int64 `json:"create_time" firestore:"create_time"`
-	VoteCount  int   `json:"vote_count" firestore:"vote_count"`
 }
 
 func (p *TweetQueryParm) String() string {
@@ -192,111 +185,4 @@ func (dm *DbManager) DelUnpaidTweet(createTime int64, addr string) error {
 
 	_, err = doc.Ref.Delete(opCtx)
 	return err
-}
-
-type TweetVoteAction struct {
-	CreateTime    int64 `json:"create_time"`
-	VoteCount     int   `json:"vote_count"`
-	UserVoteCount int   `json:"user_vote_count"`
-}
-
-func (dm *DbManager) UpdateTweetVoteStatic(vote *TweetVoteAction, voter string) error {
-	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
-	defer cancel()
-
-	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
-		createTime := fmt.Sprintf("%d", vote.CreateTime)
-		tweetDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(createTime)
-		voteDoc := dm.fileCli.Collection(DBTableTweetsVoted).Doc(voter).Collection(DBTableTweetsSubStatus).Doc(createTime)
-
-		tweetSnapshot, err := tx.Get(tweetDoc)
-		if err != nil {
-			util.LogInst().Err(err).Int64("createAt", vote.CreateTime).Msg("Failed to get tweet document to update vote")
-			return err
-		}
-
-		var existingTweet NinjaTweet
-		err = tweetSnapshot.DataTo(&existingTweet)
-		if err != nil {
-			util.LogInst().Err(err).Int64("createAt", vote.CreateTime).Msg("Failed to decode tweet document data")
-			return err
-		}
-
-		voteSnapshot, voteErr := tx.Get(voteDoc)
-		var votedObj TweetVoted
-		if voteErr != nil {
-			if status.Code(voteErr) != codes.NotFound {
-				util.LogInst().Err(voteErr).Int64("create_time", vote.CreateTime).Msg("Failed to get tweet vote document")
-				return voteErr
-			}
-			votedObj = TweetVoted{
-				CreateTime: vote.CreateTime,
-				VoteCount:  vote.VoteCount,
-			}
-		} else {
-			err = voteSnapshot.DataTo(&votedObj)
-			if err != nil {
-				util.LogInst().Err(err).Int64("create_time", vote.CreateTime).Msg("parse tweet vote obj failed")
-				return err
-			}
-
-			votedObj.VoteCount += vote.VoteCount
-		}
-
-		var newFieldValue = existingTweet.VoteCount + vote.VoteCount
-		err = tx.Update(tweetDoc, []firestore.Update{{Path: "vote_count", Value: newFieldValue}})
-		if err != nil {
-			util.LogInst().Err(err).Msg("update vote count on tweet failed")
-			return err
-		}
-
-		err = tx.Set(voteDoc, votedObj)
-		if err != nil {
-			util.LogInst().Err(err).Msg("update vote status doc err")
-			return err
-		}
-		vote.VoteCount = newFieldValue
-		vote.UserVoteCount = votedObj.VoteCount
-		return nil
-	})
-
-	return err
-}
-
-func (dm *DbManager) QueryVotedTweetID(pageSize int, startID int64, voter string) ([]*TweetVoted, error) {
-
-	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
-	defer cancel()
-
-	voteRef := dm.fileCli.Collection(DBTableTweetsVoted).Doc(voter).Collection(DBTableTweetsSubStatus)
-	var query = voteRef.Limit(pageSize)
-
-	if startID == 0 {
-		query = query.OrderBy("create_time", firestore.Desc)
-	} else {
-		query = query.Where("create_time", "<", startID).OrderBy("create_time", firestore.Desc)
-	}
-
-	iter := query.Documents(opCtx)
-	defer iter.Stop()
-	var result = make([]*TweetVoted, 0)
-	for {
-		doc, err := iter.Next()
-		if errors.Is(err, iterator.Done) {
-			return result, nil
-
-		}
-		if err != nil {
-			util.LogInst().Err(err).Msg("query vote status failed")
-			return nil, err
-		}
-
-		var voteStatus TweetVoted
-		err = doc.DataTo(&voteStatus)
-		if err != nil {
-			util.LogInst().Err(err).Msg("data to obj failed")
-			continue
-		}
-		result = append(result, &voteStatus)
-	}
 }

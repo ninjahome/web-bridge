@@ -413,7 +413,6 @@
     <div class="middle-content-area">
 
         <div id="middle-div-home" class="content-in-middle-area active">
-
             <div id="tweetTemplate" class="tweet-card" style="display: none;">
                 <div class="tweet-header">
                     <div onmouseenter="showHoverCard.call(this)"
@@ -431,7 +430,7 @@
                 <button class="show-more" data-more="true" onclick="showFullTweetContent.call(this)">更多</button>
                 <div class="tweet-footer">
                     <div class="tweet-action">
-                        <button class="tweet-action-vote">0.01 eth打赏</button>
+                        <button class="tweet-action-vote">0.01 eth投票</button>
                     </div>
                     <div class="tweet-info">
                         <span class="vote-count">投票数: <span class="vote-number">0</span></span>
@@ -441,9 +440,35 @@
 
             <div class="tweets-park" id="tweets-park"></div>
         </div>
+        <div id="middle-div-leaderboard" class="content-in-middle-area">
 
-        <div id="middle-div-leaderboard" class="content-in-middle-area">排行榜内容</div>
-        <div id="middle-div-web3" class="content-in-middle-area">Web3身份内容</div>
+
+
+            <div id="tweetTemplateForTop" class="tweet-card" style="display: none;">
+                <div class="tweet-header">
+                    <div onmouseenter="showHoverCard.call(this)"
+                         onmouseleave="hideHoverCard.call(this)">
+                        <img src="" alt="Avatar" class="twitterAvatar">
+                        <span class="name twitterName"></span>
+                        <span class="username twitterUserName"></span>
+                        <span class="time tweetCreateTime"></span>
+                    </div>
+                </div>
+                <div onclick="showTweetDetail.call(this)" class="tweet-content tweet-content-collapsed"> </div>
+                <button class="show-more" data-more="true" onclick="showFullTweetContent.call(this)">更多</button>
+                <div class="tweet-footer">
+                    <div class="tweet-action">
+                        <button class="tweet-action-vote">0.01 eth投票</button>
+                    </div>
+                    <div class="tweet-info">
+                        <span class="vote-count">投票数: <span class="vote-number">0</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tweets-park" id="top-hot-tweet-team"></div>
+        </div>
+
         <div id="middle-div-user-tweets" class="content-in-middle-area">
             <div class="user-tweet-top-button-area">
                 <button onclick="loadTweetsUserPosted()">我的推文</button>
@@ -486,7 +511,7 @@
                         <span class="vote-count">我的票数: <span class="user-vote-number">0</span></span>
                     </div>
                     <div class="tweet-action">
-                        <button class="tweet-action-vote">0.01 eth打赏</button>
+                        <button class="tweet-action-vote">0.01 eth投票</button>
                     </div>
                 </div>
             </div>
@@ -508,7 +533,6 @@
             </div>
         </div>
         <div id="middle-div-userKolKey" class="content-in-middle-area">我的Key内容</div>
-
         <div id="tweet-detail" class="tweet-detail" style="display: none;">
             <button id="back-button" class="back-button">返回</button>
 
@@ -523,7 +547,7 @@
 
             <div class="tweet-interaction">
                 <div class="tweet-action">
-                    <button class="tweet-action-vote">0.01 eth打赏</button>
+                    <button class="tweet-action-vote">0.01 eth投票</button>
                 </div>
                 <div class="tweet-info">
                     <span class="vote-count">投票数: <span class="vote-number">0</span></span>
