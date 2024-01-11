@@ -67,7 +67,8 @@ function openVoteModal(callback) {
 function confirmVoteModal() {
     if (confirmCallback) {
         const voteCount = document.getElementById("voteCount").value;
-        confirmCallback(voteCount);
+        const shareOnTwitter = document.getElementById("shareOnTwitter").checked;
+        confirmCallback(voteCount, shareOnTwitter);
     }
     closeVoteModal();
 }
@@ -275,17 +276,29 @@ async function voteToTheTweet(create_time, callback) {
         return;
     }
 
-    openVoteModal(function (voteCount) {
+    openVoteModal(function (voteCount,shareToTweet) {
         procTweetVotePayment(voteCount, obj, async function (create_time, vote_count) {
             const newVote = await updateVoteStatusToSrv(create_time, vote_count);
             obj.vote_count = newVote.vote_count;
             __updateVoteNumberAllElements(obj, newVote).then(r => {
             });
+            if (shareToTweet){
+                __shareVoteToTweet(create_time, vote_count).then(r=>{});
+            }
             if (callback) {
                 callback(newVote);
             }
+
         });
     });
+}
+
+async function __shareVoteToTweet(create_time,vote_count){
+    const resp = await PostToSrvByJson("/shareVoteAction", {
+        create_time: create_time,
+        vote_count: Number(vote_count),
+    });
+    console.log(resp);
 }
 
 async function updateVoteStatusToSrv(create_time, vote_count) {

@@ -100,11 +100,6 @@ func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if vote.CreateTime == 0 {
-		util.LogInst().Warn().Int64("create_time", vote.CreateTime).Msg("invalid tweet create time")
-		http.Error(w, "invalid tweet create time", http.StatusBadRequest)
-		return
-	}
 
 	err = database.DbInst().UpdateTweetVoteStatic(vote, nu.EthAddr)
 	if err != nil {

@@ -442,8 +442,6 @@
         </div>
         <div id="middle-div-leaderboard" class="content-in-middle-area">
 
-
-
             <div id="tweetTemplateForTop" class="tweet-card" style="display: none;">
                 <div class="tweet-header">
                     <div onmouseenter="showHoverCard.call(this)"
@@ -623,6 +621,10 @@
             <p>票数：<input type="number" id="voteCount" value="1" min="1"></p>
             <button id="decreaseVote" onclick="decreaseVote()">-</button>
             <button id="increaseVote" onclick="increaseVote()">+</button>
+            <label>
+                <input type="checkbox" id="shareOnTwitter" checked>
+                转发到推特
+            </label>
         </div>
         <div class="vote-no-modal-footer">
             <button id="cancelButton" onclick="closeVoteModal()">取消</button>

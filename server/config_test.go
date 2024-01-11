@@ -11,9 +11,11 @@ import (
 
 func TestCreateDefaultConfigFile(t *testing.T) {
 	cfg := &SysConf{
-		LogLevel: "debug",
-		HttpPort: "8880",
-		UrlHome:  "https://bridge.simplenets.org",
+		LogLevel:   "debug",
+		HttpPort:   "8880",
+		Slogan:     "Buy my tweet right on",
+		VoteSlogan: "I pay this tweet ",
+		UrlHome:    "https://bridge.simplenets.org",
 		HttpConf: &HttpConf{
 			RefreshContent: true,
 			UseHttps:       false,

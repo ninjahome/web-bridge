@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
-	database2 "github.com/ninjahome/web-bridge/database"
+	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
 	"html/template"
@@ -28,7 +28,9 @@ var (
 		"/updateTweetPaymentStatus": {updateTweetTxStatus, true},
 		"/reloadPaymentDetails":     {queryTweetDetails, false},
 		"/updateTweetVoteStatus":    {updateTweetVoteStatus, true},
+		"/shareVoteAction":          {shareVoteAction, true},
 		"/buyRights":                {mainPage, true},
+		"/buyFromShare":             {mainPage, true},
 		"/tweetQuery":               {globalTweetQuery, true},
 		"/votedTweetIds":            {votedTweetsQuery, true},
 		"/removeUnpaidTweet":        {removeUnpaidTweet, true},
@@ -43,7 +45,7 @@ var (
 )
 
 type LogicAction struct {
-	Action    func(w http.ResponseWriter, r *http.Request, token *database2.NinjaUsrInfo)
+	Action    func(w http.ResponseWriter, r *http.Request, token *database.NinjaUsrInfo)
 	NeedToken bool
 }
 
@@ -112,10 +114,14 @@ func (c *BlockChainConf) String() string {
 type SysConf struct {
 	LogLevel string `json:"log_level"`
 	UrlHome  string `json:"url_home"`
+
+	Slogan     string `json:"slogan"`
+	VoteSlogan string `json:"vote_slogan"`
+
 	HttpPort string `json:"http_port"`
 	*HttpConf
 	*TwitterConf
-	*database2.FileStoreConf
+	*database.FileStoreConf
 	twOauthCfg *oauth2.Config
 	*BlockChainConf
 }
@@ -146,7 +152,7 @@ func InitConf(c *SysConf) {
 	fmt.Println(c.String())
 
 	_globalCfg = c
-	database2.InitConf(c.FileStoreConf)
+	database.InitConf(c.FileStoreConf)
 
 	twitterSignUpCallbackURL = _globalCfg.UrlHome + "/tw_callback"
 	conf := _globalCfg.TwitterConf
@@ -177,5 +183,9 @@ func InitConf(c *SysConf) {
 }
 
 func (c *SysConf) GetNjProtocolAd(NjTwID int64) string {
-	return fmt.Sprintf("\nBuy Rights:%s/buyRights?id=%d", c.UrlHome, NjTwID)
+	return fmt.Sprintf("\n%s:%s/buyRights?id=%d", c.Slogan, c.UrlHome, NjTwID)
+}
+
+func (c *SysConf) GetNjVoteAd(NjTwID int64, voteCount int, web3Id string) string {
+	return fmt.Sprintf("\n%s [%d] bets:%s/buyFromShare?sharedID=%d&&shareUsr=%s", c.VoteSlogan, voteCount, c.UrlHome, NjTwID, web3Id)
 }
