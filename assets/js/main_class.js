@@ -22,33 +22,7 @@ class MemCachedTweets{
     }
 }
 
-class TwitterBasicInfo {
-    constructor(id, name, username, avatarUrl, bio) {
-        this.id = id;
-        this.name = name;
-        this.username = username;
-        this.profile_image_url = avatarUrl;
-        this.description = bio;
-    }
 
-    static loadTwBasicInfo(TwitterID) {
-        const storedData = getDataFromSessionDB(sesDbKeyForTwitterUserData(TwitterID))
-        if (!storedData) {
-            return null
-        }
-        return new TwitterBasicInfo(storedData.id, storedData.name, storedData.username,
-            storedData.profile_image_url, storedData.description);
-    }
-
-    static cacheTwBasicInfo(objStr) {
-        const obj = JSON.parse(objStr)
-        if (!obj.id) {
-            throw new Error("invalid twitter basic info")
-        }
-        sessionStorage.setItem(sesDbKeyForTwitterUserData(obj.id), objStr);
-        return obj;
-    }
-}
 const dbKeyCachedVoteContractMeta = "__db_key_cached_vote_contract_meta__"
 class TweetVoteContractSetting {
     constructor(postPrice, votePrice, votePriceInEth, maxVote, pluginAddr, pluginStop, kolRate, feeRate) {

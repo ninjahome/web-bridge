@@ -25,7 +25,7 @@
         box-sizing: border-box;
     }
 
-    @media (max-width: 1000px) {
+    @media (max-width: 800px) {
         .left-container {
             display: none; /* 当屏幕宽度小于1000px时隐藏左侧容器 */
         }
@@ -36,10 +36,12 @@
     }
 
     .left-container {
-        flex: 3;
+        flex: 4;
         background-color: #f0f0f0;
         align-items: center;
         justify-content: center;
+        background-image: url('/assets/file/border-image.png'); /* 背景图片路径 */
+        padding: 48px 120px;
     }
 
     .left-container img {
@@ -48,9 +50,59 @@
         display: block;
     }
 
+    .route-list li .sequence-number {
+        font-size: 12px; /* 单独设置序列号的字体大小 */
+    }
+
+
+    .route-list li {
+        font-family: 'Courier New', monospace; /* 打字机字体样式 */
+        font-size: 42px;
+        font-weight: bold;
+        -webkit-text-stroke: 1px #4848D8; /* 文字边框颜色和宽度 */
+        color: transparent; /* 将文字颜色设置为透明 */
+        overflow: hidden; /* 超出部分隐藏 */
+        line-height: 1.2;
+        margin: 4px 0;
+    }
+
+    .route-list li.completed {
+        color: #4848D8; /* 实心字体样式 */
+        -webkit-text-stroke: 0 #4848D8; /* 文字边框颜色和宽度 */
+    }
+
+    .route-list li.uncompleted {
+        -webkit-text-stroke: 1px #4848D8; /* 空心字体样式 */
+        color: transparent;
+    }
+
+
+    .route-list li.typing::after {
+        content: '';
+        display: inline-block;
+        vertical-align: middle;
+        width: 8px; /* 调整光标宽度 */
+        height: 0.8em; /* 光标高度与文本高度相同 */
+        background-color: #4848D8; /* 设置光标颜色 */
+        opacity: 1;
+        animation: blink 1s step-end infinite;
+    }
+
+    @keyframes blink {
+        from, to { opacity: 1; }
+        50% { opacity: 0; }
+    }
+
+    .route-list li.completed::after {
+        content: '\2713'; /* 使用Unicode字符作为图标 */
+        color: #4848D8; /* 设置图标颜色 */
+        margin-left: 5px; /* 在文本和图标之间添加一些间隔 */
+        font-weight: bold; /* 可选：使图标更加醒目 */
+    }
+
     /* 右侧的样式 */
     .right-container {
-        flex: 7;
+        flex: 6;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -61,8 +113,12 @@
     .container {
         margin: 48px;
     }
+
     .info-section {
-        margin-bottom: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 136px;
     }
 
     .logo {
@@ -104,23 +160,113 @@
         margin-bottom: 16px;
     }
 
+    .title-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 12px 0;
+    }
+
+    .dashed-line {
+        border-top: 1px dashed #E3E3E3;
+        width: 166px;
+        height: 0;
+        margin: 0 5px;
+    }
+
+    .binding-section p {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        font-size: 14px;
+        color: #7E7F82;
+    }
+
+    .services {
+        display: flex;
+        align-items: center; /* 垂直居中对齐 */
+        justify-content: space-around;
+    }
+
+    .service {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 14px;
+        color: #1B1B1D;
+    }
+
+    .service img {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 6px;
+    }
+
+    .services .service span {
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .logo-container.active{
+        display: flex;
+    }
+
+    .logo-container {
+        display: none;
+        position: relative;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .logo-container img {
+        border: 2px solid #4848D8; /* 边框样式 */
+        border-radius: 50%;
+    }
+
+    .connected-icon {
+        position: absolute;
+        bottom: -1px; /* 根据需要调整位置 */
+        left: 12px; /* 根据需要调整位置 */
+        width: 16px; /* 小图标大小 */
+        height: 16px; /* 小图标大小 */
+        background-color: #4848D8; /* 小图标颜色，这里是绿色 */
+        border-radius: 50%; /* 圆形图标 */
+        background-image: url('/assets/file/connected.png'); /* 背景图片路径 */
+    }
+
 </style>
 <body>
 <div class="left-container">
-    <!-- 背景图 -->
-    <img src="/assets/file/left-image.jpg" alt="">
+    <!-- 信息展示部分 -->
+    <div class="info-section">
+        <img id="cached-twitter-logo" src="/assets/file/logo.png" alt="Dessage Logo" class="logo">
+        <div class="cached-twitter-name" id="cached-twitter-name">Dessage</div>
+        <div class="product-description">A dapp powered by Ninja Protocol and Blockchain.</div>
+    </div>
+    <div class="route">
+        <div style="background-color: #4848D8; font-size: 14px; color: white; padding: 4px 12px; width: 112px; margin-bottom: 14px">
+            研发规划路线
+        </div>
+        <ul class="route-list">
+            <li><span class="sequence-number">1.</span>客户端桥接Web2.0</li>
+            <li><span class="sequence-number">2.</span>Ninja身份跨Web2.0 Web3.0 区块链</li>
+            <li><span class="sequence-number">3.</span>接入层协议</li>
+            <li><span class="sequence-number">4.</span>路由层协议</li>
+            <li><span class="sequence-number">5.</span>启动无需信任的分布式路由网络</li>
+            <li><span class="sequence-number">6.</span>兼容Web2.0客户端和服务器的工具集合</li>
+        </ul>
+    </div>
 </div>
 <div class="right-container">
     <div class="container">
-        <!-- 信息展示部分 -->
-        <div class="info-section">
-            <img id="cached-twitter-logo" src="/assets/file/logo.png" alt="Dessage Logo" class="logo">
-            <div class="cached-twitter-name" id="cached-twitter-name">Dessage</div>
-            <div class="product-description">A dapp powered by Ninja Protocol and Blockchain.</div>
-        </div>
         <!-- 登录部分 -->
         <div class="login-section">
-            <div class="web3-id-label" id="web3-id-label"><strong style="margin-left: 8px; margin-bottom: 4px; display: inline-block; font-size: 14px">Web3 ID:</strong> <span id="web3-id" style="margin: 0 8px">Your Blockchain Address</span></div>
+            <div class="web3-id-label" id="web3-id-label">
+                <strong style="margin-left: 8px; margin-bottom: 4px; display: inline-block; font-size: 14px">Web3 ID:</strong>
+                <span id="web3-id" style="margin: 0 8px"></span>
+                <span id="web3-id-tips" style="margin: 0 8px">链接MetaMask以获取Web3 ID</span>
+            </div>
             <div id="metamask-div">
                 <button class="metamask-button" id="metamask-button" onclick="connectToMetamask()">Connect with Metamask
                 </button>
@@ -131,12 +277,75 @@
                 </button>
             </div>
         </div>
-</div>
-    <div id="error-div" style="display: none"><span id="error-txt"></span></div>
+        <div id="error-div" style="display: none"><span id="error-txt"></span></div>
+    </div>
+    <div class="binding-section">
+        <p style="color: #1B1B1D">社交元身份桥接表</p>
+        <!-- Web2 绑定 -->
+        <div class="web2-binding">
+            <div class="title-container">
+                <span class="dashed-line"></span>
+                <p>Web2</p>
+                <span class="dashed-line"></span>
+            </div>
+            <div class="services">
+                <div class="service">
+                    <img src="/assets/file/GitHub-logo.png" alt="Web2 Logo 1">
+                    <div class="logo-container" id="logo-container-github"><span class="connected-icon"></span> </div>
+                    <span> github</span>
+                </div>
+                <div class="service">
+                    <img src="/assets/file/Twitter-logo.png" alt="twitter">
+                    <div class="logo-container" id="logo-container-twitter"><span class="connected-icon"></span> </div>
+                    <span> twitter</span>
+                </div>
+                <div class="service">
+                    <img src="/assets/file/Tele-logo.png" alt="Web2 Logo 3">
+                    <div class="logo-container" id="logo-container-telegram"><span class="connected-icon"></span> </div>
+                    <span> telegram</span>
+                </div>
+
+            </div>
+        </div>
+        <!-- Web3 绑定 -->
+        <div class="web3-binding">
+            <div class="title-container">
+                <span class="dashed-line"></span>
+                <p>Web3</p>
+                <span class="dashed-line"></span>
+            </div>
+            <div class="services">
+                <div class="service" style="font-size: 18px; font-weight: bold">
+                    <img src="/assets/file/nostr.png" alt="Web2 Logo 3">
+                    <div class="logo-container" id="logo-container-nostr"><span class="connected-icon"></span> </div>
+                    <span> nostr</span>
+                </div>
+            </div>
+        </div>
+        <!-- 区块链绑定 -->
+        <div class="blockchain-binding">
+            <div class="title-container">
+                <span class="dashed-line"></span>
+                <p>区块链</p>
+                <span class="dashed-line"></span>
+            </div>
+            <div class="services">
+                <div class="service">
+                    <img src="/assets/file/Bitcoin-logo.png" alt="Blockchain Logo 1">
+                    <div class="logo-container" id="logo-container-btc"><span class="connected-icon"></span> </div>
+                    <span> BTC</span>
+                </div>
+                <div class="service">
+                    <img src="/assets/file/Ethereum-logo.png" alt="Blockchain Logo 2">
+                    <div class="logo-container" id="logo-container-eth"><span class="connected-icon"></span> </div>
+                    <span> ETH</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-
     class SignInData {
         constructor(ethAddr, signTim) {
             this.eth_addr = ethAddr;
@@ -159,33 +368,44 @@
     }
 
     function showSignBtn(web3ID) {
-        const web3IdLabel = document.getElementById("web3-id-label");
+        const web3IdTips = document.getElementById("web3-id-tips");
         const signInDiv = document.getElementById("sign-in-div");
         const metamaskDiv = document.getElementById("metamask-div");
         const web3Id = document.getElementById("web3-id");
-        const twitterAvatar = document.getElementById("cached-twitter-logo" );
+         const twitterAvatar = document.getElementById("cached-twitter-logo" );
         const twitterName = document.getElementById("cached-twitter-name" );
         twitterAvatar.src = "/assets/file/logo.png";
         twitterName.innerHTML = "Dessage";
         if (!web3ID) {
-            web3IdLabel.style.display = 'none';
+            web3IdTips.style.display = 'block';
             signInDiv.style.display = 'none';
             metamaskDiv.style.display = 'block';
+            web3Id.style.display = 'none';
+            showError(null);
+            document.getElementById("logo-container-eth").classList.remove("active");
+            document.getElementById("logo-container-twitter").classList.remove("active");
             return;
         }
-        web3IdLabel.style.display = 'block';
+        web3IdTips.style.display = 'none';
         signInDiv.style.display = 'block';
         metamaskDiv.style.display = 'none';
+        web3Id.style.display = 'block';
         web3Id.textContent = web3ID;
+        document.getElementById("logo-container-eth").classList.add("active")
 
-        const savedUserInfo = getDataFromSessionDB(sesDbKeyForNjUserData(web3ID))
-        if (!savedUserInfo){
+        const storeData = localStorage.getItem(DbKeyForNjUserData(web3ID))
+        if (!storeData){
             return;
         }
+
+        const savedUserInfo = JSON.parse(storeData);
         let tw_data = TwitterBasicInfo.loadTwBasicInfo(savedUserInfo.tw_id)
         if(!tw_data){
+            document.getElementById("logo-container-twitter").classList.remove("active")
             return;
         }
+
+        document.getElementById("logo-container-twitter").classList.add("active")
         if (tw_data.profile_image_url) {
             twitterAvatar.src = tw_data.profile_image_url
         }
@@ -273,6 +493,44 @@
             hideLoading();
         }
     }
+
+    //打字效果
+    document.addEventListener('DOMContentLoaded', function() {
+        const listItems = document.querySelectorAll('.route-list li');
+        let currentItem = 0;
+
+        function typeWriterEffect(element, text, i = 0) {
+            if (i === 0) {
+                element.innerHTML = '';
+                element.classList.add('typing');
+            }
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                setTimeout(() => typeWriterEffect(element, text, i + 1), 100);
+            } else {
+                element.classList.remove('typing');
+                if (currentItem === 0) {
+                    element.classList.add('completed'); // 第一项标记为已完成
+                } else {
+                    element.classList.add('uncompleted'); // 其余标记为未完成
+                    element.style.opacity = 1 - 0.1 * currentItem; // 降低未完成项的透明度
+                }
+                currentItem++;
+                if (currentItem < listItems.length) {
+                    typeWriterEffect(listItems[currentItem], listItems[currentItem].getAttribute('data-text'));
+                }
+            }
+        }
+
+        if (listItems.length > 0) {
+            listItems.forEach((item) => {
+                item.setAttribute('data-text', item.textContent);
+                item.textContent = '';
+            });
+            typeWriterEffect(listItems[0], listItems[0].getAttribute('data-text'));
+        }
+    });
+
 </script>
 </body>
 </html>

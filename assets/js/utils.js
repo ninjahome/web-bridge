@@ -288,55 +288,12 @@ function showDialog(title, msg, confirmCB, cancelCB) {
     }
 }
 
-
-class NinjaUserBasicInfo {
-    constructor(addr, ethAddr, twId, createAt) {
-        this.address = addr;
-        this.eth_addr = ethAddr;
-        this.tw_id = twId;
-        this.create_at = createAt;
-    }
-
-    static syncToSessionDbForApiResponse(response) {
-        const ninjaObj = JSON.parse(response)
-        if (!ninjaObj.eth_addr) {
-            throw new Error("invalid ninja user info")
-        }
-        setDataToSessionDB(sesDbKeyForCurrentUserEthAddr(), ninjaObj.eth_addr);
-        sessionStorage.setItem(sesDbKeyForNjUserData(ninjaObj.eth_addr), response);
-        return ninjaObj;
-    }
-
-    static loadCurrentNJUserObj() {
-        const curUsrEthAddr = getDataFromSessionDB(sesDbKeyForCurrentUserEthAddr())
-        const savedUserInfo = getDataFromSessionDB(sesDbKeyForNjUserData(curUsrEthAddr))
-        if (!savedUserInfo) {
-            return null;
-        }
-        return new NinjaUserBasicInfo(savedUserInfo.address, savedUserInfo.eth_addr,
-            savedUserInfo.tw_id, savedUserInfo.create_at);
-    }
+function lclDbKeyForTwitterUserData(TwitterID) {
+    return "__database_key_for_twitter_user_data__:" + TwitterID
 }
 
-function sesDbKeyForTwitterUserData(TwitterID) {
-    return "__session_database_key_for_twitter_user_data__:" + TwitterID
-}
-
-function sesDbKeyForNjUserData(ethAddr) {
-    return "__session_database_key_for_ninja_user_data__:" + ethAddr
-}
-
-function sesDbKeyForCurrentUserEthAddr() {
-    return "__session_database_key_for_ninja_user_current_address__"
-}
-
-function setDataToSessionDB(key, sign_data) {
-    sessionStorage.setItem(key, JSON.stringify(sign_data));
-}
-
-function getDataFromSessionDB(key) {
-    const storedValue = sessionStorage.getItem(key);
-    return storedValue ? JSON.parse(storedValue) : null;
+function DbKeyForNjUserData(ethAddr) {
+    return "__database_key_for_ninja_user_data__:" + ethAddr
 }
 
 function clearSessionStorage() {
@@ -347,18 +304,31 @@ function lclDbKeyForBlockChainData(account) {
     return "__local_database_key_for_block_chain_data__:" + account
 }
 
-class BlockChainData {
-    constructor(account) {
-        this.account = account;
+class TwitterBasicInfo {
+    constructor(id, name, username, avatarUrl, bio) {
+        this.id = id;
+        this.name = name;
+        this.username = username;
+        this.profile_image_url = avatarUrl;
+        this.description = bio;
     }
 
-    static load(account) {
-        const storedData = localStorage.getItem(lclDbKeyForBlockChainData(account))
-        const obj = storedData ? JSON.parse(storedData) : null;
-        if (!obj) {
+    static loadTwBasicInfo(TwitterID) {
+        const storedData = localStorage.getItem(lclDbKeyForTwitterUserData(TwitterID))
+        if (!storedData) {
             return null
         }
+        const twObj = JSON.parse(storedData);
+        return new TwitterBasicInfo(twObj.id, twObj.name, twObj.username,
+            twObj.profile_image_url, twObj.description);
+    }
 
-        return new BlockChainData(storedData.account);
+    static cacheTwBasicInfo(objStr) {
+        const obj = JSON.parse(objStr)
+        if (!obj.id) {
+            throw new Error("invalid twitter basic info")
+        }
+        localStorage.setItem(lclDbKeyForTwitterUserData(obj.id), objStr);
+        return obj;
     }
 }

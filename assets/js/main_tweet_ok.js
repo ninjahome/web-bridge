@@ -124,8 +124,8 @@ function parseNjTweetsFromSrv(tweetArray, refreshNewest) {
     const newIDs = [];
     const localTweets = tweetArray.map(tweet => {
         const tw_data = TwitterBasicInfo.loadTwBasicInfo(tweet.twitter_id)
-        const blockchain = BlockChainData.load(tweet.web3_id);
-        const obj = new TweetToShowOnWeb(tweet, tw_data, blockchain);
+        // const blockchain = BlockChainData.load(tweet.web3_id);
+        const obj = new TweetToShowOnWeb(tweet, tw_data, null);
         TweetToShowOnWeb.syncToDb(obj);
         newIDs.push(obj.create_time);
         return obj;

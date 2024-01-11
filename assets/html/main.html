@@ -613,11 +613,16 @@
 </div>
 
 <script>
-    let ninjaUserObj = {{ .NinjaUsrInfoJson }};
+
+    const ninjaUserObj = {{ .NinjaUsrInfoJson }};
+
     let curScrollContentID = 0;
     document.addEventListener("DOMContentLoaded", initMainPage);
 
     async function initMainPage() {
+        if(ninjaUserObj){
+            localStorage.setItem(DbKeyForNjUserData(ninjaUserObj.eth_addr), JSON.stringify(ninjaUserObj));
+        }
         document.getElementById("basic-web3-id").innerText = ninjaUserObj.eth_addr;
         await checkMetaMaskEnvironment();
         await loadTweetsForHomePage();
