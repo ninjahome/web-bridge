@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
-	"github.com/ninjahome/web-bridge/server/database"
+	database2 "github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
 	"html/template"
@@ -22,13 +22,16 @@ var (
 		"/queryTwBasicById":         {queryTwBasicById, true},
 		"/signOut":                  {signOut, false},
 		"/main":                     {mainPage, true},
+		"/lotteryGame":              {showLotteryMain, true},
+		"/kolKey":                   {showKolKeyPage, true},
 		"/postTweet":                {postTweets, true},
 		"/updateTweetPaymentStatus": {updateTweetTxStatus, true},
 		"/reloadPaymentDetails":     {queryTweetDetails, false},
-		"/updateTweetVoteStatic":    {updateTweetVoteStatic, true},
-		"/tweetStatusRealTime":      {tweetStatusRealTime, true},
+		"/updateTweetVoteStatus":    {updateTweetVoteStatus, true},
 		"/buyRights":                {mainPage, true},
-		"/globalLatestTweets":       {globalTweetQuery, true},
+		"/tweetQuery":               {globalTweetQuery, true},
+		"/votedTweetIds":            {votedTweetsQuery, true},
+		"/removeUnpaidTweet":        {removeUnpaidTweet, true},
 	}
 
 	cfgHtmlFileRouter = map[string]string{
@@ -40,7 +43,7 @@ var (
 )
 
 type LogicAction struct {
-	Action    func(w http.ResponseWriter, r *http.Request, token *database.NinjaUsrInfo)
+	Action    func(w http.ResponseWriter, r *http.Request, token *database2.NinjaUsrInfo)
 	NeedToken bool
 }
 
@@ -112,7 +115,7 @@ type SysConf struct {
 	HttpPort string `json:"http_port"`
 	*HttpConf
 	*TwitterConf
-	*database.FileStoreConf
+	*database2.FileStoreConf
 	twOauthCfg *oauth2.Config
 	*BlockChainConf
 }
@@ -143,7 +146,7 @@ func InitConf(c *SysConf) {
 	fmt.Println(c.String())
 
 	_globalCfg = c
-	database.InitConf(c.FileStoreConf)
+	database2.InitConf(c.FileStoreConf)
 
 	twitterSignUpCallbackURL = _globalCfg.UrlHome + "/tw_callback"
 	conf := _globalCfg.TwitterConf

@@ -42,7 +42,7 @@ pbs:
 	cd pbs/ && $(MAKE)
 
 sol:
-	cd blockchain/sol/ && $(MAKE)
+	cd blockchain/ && $(MAKE)
 
 target:=mac
 

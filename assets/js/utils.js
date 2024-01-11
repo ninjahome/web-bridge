@@ -17,7 +17,7 @@ function startCountdown(targetTime,callback) {
 
         if (timeLeft <= 0) {
             clearInterval(countdownInterval);
-            callback('正在开奖中');
+            callback('开奖中',true);
             return;
         }
 
@@ -31,14 +31,14 @@ function startCountdown(targetTime,callback) {
             countdownText += days + '天 ';
         }
         if (hours > 0) {
-            countdownText += hours + '小时 ';
+            countdownText += hours + '时 ';
         }
         if (minutes > 0) {
             countdownText += minutes + '分 ';
         }
         countdownText += seconds + '秒';
 
-        callback(countdownText);
+        callback(countdownText,false);
     }, 1000);
 }
 
@@ -60,7 +60,7 @@ function PostToSrvByJson(url, data) {
                 if (!response.ok) {
                     return response.text().then(text => {
                         console.log(text)
-                        throw new Error('Server responded with an error:' + response.statusText);
+                        throw new Error('\tserver responded with an error:' + response.status);
                     });
                 }
                 return response.text();
@@ -145,7 +145,7 @@ const DefaultAvatarSrc = "/assets/file/logo.png"
 const __globalContractConf = new Map([
     [toHex(421614), {
         tweetVote: "0xa3a39F3415d2024834Ef22258FC14e5cdcc3E857",
-        gameLottery: "0x6f8A1140abA568B2eA0985E136FbaB34eEd2e392",
+        gameLottery: "0x198B831D0ED0d447DC3218D6FeF324D4c6f0285b",
         kolKey: "",
         kolKeyAbi: "",
         postPrice: "0.005",
@@ -233,7 +233,6 @@ function hideLoading() {
     }
 }
 
-
 function createDialogElement() {
     const dialog = document.createElement('div');
     dialog.id = 'custom-dialog';
@@ -258,7 +257,7 @@ function createDialogElement() {
     return dialog;
 }
 
-function showDialog(title, msg, callback) {
+function showDialog(title, msg, confirmCB, cancelCB) {
     const dialog = createDialogElement();
     document.body.appendChild(dialog);
 
@@ -270,17 +269,19 @@ function showDialog(title, msg, callback) {
     dialogTitle.textContent = title;
     dialogMessage.textContent = msg;
 
-    // 关闭按钮的点击事件
+
     dialogCloseButton.addEventListener('click', function () {
         document.body.removeChild(dialog);
+        if (cancelCB){
+            cancelCB();
+        }
     });
 
-    // 确认按钮的点击事件
-    if (callback) {
+    if (confirmCB) {
         dialogConfirmButton.style.display = 'block';
         dialogConfirmButton.addEventListener('click', function () {
-            callback();
             document.body.removeChild(dialog);
+            confirmCB();
         });
     } else {
         dialogConfirmButton.style.display = 'none';
@@ -314,34 +315,6 @@ class NinjaUserBasicInfo {
         }
         return new NinjaUserBasicInfo(savedUserInfo.address, savedUserInfo.eth_addr,
             savedUserInfo.tw_id, savedUserInfo.create_at);
-    }
-}
-
-class TwitterBasicInfo {
-    constructor(id, name, username, avatarUrl, bio) {
-        this.id = id;
-        this.name = name;
-        this.username = username;
-        this.profile_image_url = avatarUrl;
-        this.description = bio;
-    }
-
-    static loadTwBasicInfo(TwitterID) {
-        const storedData = getDataFromSessionDB(sesDbKeyForTwitterUserData(TwitterID))
-        if (!storedData) {
-            return null
-        }
-        return new TwitterBasicInfo(storedData.id, storedData.name, storedData.username,
-            storedData.profile_image_url, storedData.description);
-    }
-
-    static cacheTwBasicInfo(objStr) {
-        const obj = JSON.parse(objStr)
-        if (!obj.id) {
-            throw new Error("invalid twitter basic info")
-        }
-        sessionStorage.setItem(sesDbKeyForTwitterUserData(obj.id), objStr);
-        return obj;
     }
 }
 
@@ -388,24 +361,4 @@ class BlockChainData {
 
         return new BlockChainData(storedData.account);
     }
-}
-
-function checkMetamaskErr(err) {
-    console.error("Transaction error: ", err);
-    hideLoading();
-
-    if (err.code === 4001) {
-        return null;
-    }
-
-    let code = err.code;
-    if (!err.data || !err.data.message) {
-        code = code + err.message;
-    } else {
-        code = "code:" + err.data.code + " " + err.data.message
-    }
-
-
-    showDialog(code);
-    return code;
 }

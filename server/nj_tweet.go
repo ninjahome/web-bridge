@@ -2,32 +2,28 @@ package server
 
 import (
 	"encoding/json"
-	"github.com/ninjahome/web-bridge/server/database"
+	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"net/http"
 	"strconv"
 )
 
 func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
-	var startIDStr = r.URL.Query().Get("startID")
-	var newestStr = r.URL.Query().Get("isRefresh")
-	startID, err1 := strconv.ParseInt(startIDStr, 10, 64)
 
-	newest, err2 := strconv.ParseBool(newestStr)
-	if err1 != nil || err2 != nil {
-		util.LogInst().Err(err1).Err(err2).Str("latest-id", startIDStr).
-			Str("eth-addr", nu.EthAddr).Str("newest", newestStr).
+	var para database.TweetQueryParm
+	var err = util.ReadRequest(r, &para)
+	if err != nil {
+		util.LogInst().Err(err).Str("param", para.String()).
 			Msg("invalid query parameter")
-		http.Error(w, err1.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	var tweets = make([]*database.NinjaTweet, 0)
-	var err = database.DbInst().QueryGlobalLatestTweets(_globalCfg.TweetsPageSize, startID, newest, func(tweet *database.NinjaTweet) {
-		tweets = append(tweets, tweet)
-	})
+
+	tweets, err := database.DbInst().QueryTweetsByFilter(_globalCfg.TweetsPageSize, &para)
 	if err != nil {
-		util.LogInst().Err(err).Str("latest-id", startIDStr).
-			Str("eth-addr", nu.EthAddr).Msg("query global tweets failed")
+		util.LogInst().Err(err).Str("param", para.String()).
+			Str("eth-addr", nu.EthAddr).
+			Msg("query global tweets failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -37,15 +33,14 @@ func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 	bts, _ := json.Marshal(tweets)
 	w.Write(bts)
 
-	util.LogInst().Debug().Str("latest-id", startIDStr).
-		Str("newest", newestStr).
+	util.LogInst().Debug().Str("param", para.String()).
 		Str("eth-addr", nu.EthAddr).
 		Int("size", len(tweets)).Msg("global tweets query success")
 }
 
 type TweetPaymentStatus struct {
 	CreateTime int64             `json:"create_time"`
-	Status     database.TxStatus `json:"status"`
+	Status     database.TxStatus `json:"status,omitempty"`
 }
 
 func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
@@ -97,13 +92,8 @@ func queryTweetDetails(w http.ResponseWriter, r *http.Request, _ *database.Ninja
 	util.LogInst().Debug().Int64("id", createTime).Msg("query tweet detail success")
 }
 
-type TweetVoteAction struct {
-	CreateTime int64 `json:"create_time"`
-	VoteCount  int   `json:"vote_count"`
-}
-
-func updateTweetVoteStatic(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
-	vote := &TweetVoteAction{}
+func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	vote := &database.TweetVoteAction{}
 	var err = util.ReadRequest(r, vote)
 	if err != nil {
 		util.LogInst().Err(err).Msg("parsing payment status param failed ")
@@ -115,7 +105,8 @@ func updateTweetVoteStatic(w http.ResponseWriter, r *http.Request, _ *database.N
 		http.Error(w, "invalid tweet create time", http.StatusBadRequest)
 		return
 	}
-	newVal, err := database.DbInst().UpdateTweetVoteStatic(vote.CreateTime, vote.VoteCount)
+
+	err = database.DbInst().UpdateTweetVoteStatic(vote, nu.EthAddr)
 	if err != nil {
 		util.LogInst().Err(err).Int64("create_time", vote.CreateTime).
 			Int("vote_count", vote.VoteCount).
@@ -124,7 +115,6 @@ func updateTweetVoteStatic(w http.ResponseWriter, r *http.Request, _ *database.N
 		return
 	}
 
-	vote.VoteCount = newVal
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	bts, _ := json.Marshal(vote)
@@ -135,32 +125,56 @@ func updateTweetVoteStatic(w http.ResponseWriter, r *http.Request, _ *database.N
 		Msg(" update vote count of tweet success")
 }
 
-type StatusQuery struct {
-	CreateTime []int64 `json:"create_time"`
-}
+func votedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 
-func tweetStatusRealTime(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
-	query := &StatusQuery{}
-
-	var err = util.ReadRequest(r, query)
+	var para database.TweetQueryParm
+	var err = util.ReadRequest(r, &para)
 	if err != nil {
-		util.LogInst().Err(err).Msg("parsing payment status param failed ")
+		util.LogInst().Err(err).Str("param", para.String()).
+			Msg("invalid query parameter")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	res, err := database.DbInst().QueryTweetStatus(query.CreateTime)
+	ids, err := database.DbInst().QueryVotedTweetID(_globalCfg.TweetsPageSize, para.StartID, nu.EthAddr)
 	if err != nil {
-		util.LogInst().Err(err).Msgf("query status failed %v", query.CreateTime)
+		util.LogInst().Err(err).Str("user-web3-id", nu.EthAddr).
+			Msg("failed to query voted tweets ")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	bts, _ := json.Marshal(res)
+	bts, _ := json.Marshal(ids)
 	w.Write(bts)
 
-	util.LogInst().Debug().Int("create_time len", len(query.CreateTime)).
-		Msg(" query vote status success")
+	util.LogInst().Debug().Int("id-len", len(ids)).Str("param", para.String()).
+		Msg(" query voted  tweet success")
+}
+
+func removeUnpaidTweet(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+
+	var status TweetPaymentStatus
+	var err = util.ReadRequest(r, &status)
+
+	if err != nil {
+		util.LogInst().Err(err).Msg("parsing param failed when delete tweet")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = database.DbInst().DelUnpaidTweet(status.CreateTime, nu.EthAddr)
+	if err != nil {
+		util.LogInst().Err(err).Int64("create_time", status.CreateTime).
+			Str("web3-id", nu.EthAddr).Msg("failed to delete unpaid tweet")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("success"))
+
+	util.LogInst().Info().Int64("create_time", status.CreateTime).
+		Str("web3-id", nu.EthAddr).Msg(" delete unpaid tweet success")
+
 }

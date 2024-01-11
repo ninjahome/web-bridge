@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dghubble/oauth1"
-	"github.com/ninjahome/web-bridge/server/database"
+	database2 "github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"image"
 	"image/jpeg"
@@ -20,7 +20,7 @@ const (
 	accessPointMedia = "https://upload.twitter.com/1.1/media/upload.json"
 )
 
-func checkTwitterRights(twitterUid string, r *http.Request) (*database.TwUserAccessToken, error) {
+func checkTwitterRights(twitterUid string, r *http.Request) (*database2.TwUserAccessToken, error) {
 	if len(twitterUid) == 0 {
 		util.LogInst().Warn().Msg("no twitter id for ninja user:" + twitterUid)
 		return nil, fmt.Errorf("bind twitter first")
@@ -29,7 +29,7 @@ func checkTwitterRights(twitterUid string, r *http.Request) (*database.TwUserAcc
 	if err == nil {
 		return ut, nil
 	}
-	ut, err = database.DbInst().GetTwAccessToken(twitterUid)
+	ut, err = database2.DbInst().GetTwAccessToken(twitterUid)
 	if err != nil {
 		util.LogInst().Err(err).Str("twitter-id", twitterUid).Msg("access token not in db")
 		return nil, err
@@ -72,7 +72,7 @@ func twitterApiPost(url string, token *oauth1.Token,
 	return nil
 }
 
-func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) (*TweetRequest, error) {
+func prepareTweet(njTweet *database2.NinjaTweet, ut *database2.TwUserAccessToken) (*TweetRequest, error) {
 
 	var appendStr = _globalCfg.GetNjProtocolAd(njTweet.CreateAt)
 	var combinedTxt = njTweet.Txt + appendStr
@@ -117,10 +117,11 @@ func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) 
 	return req, nil
 }
 
-func postTweets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+func postTweets(w http.ResponseWriter, r *http.Request, nu *database2.NinjaUsrInfo) {
 	var ut, err = checkTwitterRights(nu.TwID, r)
 	if err != nil {
 		util.LogInst().Err(err).Msg("load access token failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	param := &SignDataByEth{}
@@ -154,7 +155,7 @@ func postTweets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInf
 	}
 
 	njTweet.TweetId = tweetResponse.Data.ID
-	err = database.DbInst().SaveTweet(njTweet)
+	err = database2.DbInst().SaveTweet(njTweet)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save posted tweet failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -164,7 +165,9 @@ func postTweets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInf
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(njTweet)
-	util.LogInst().Debug().Msg("Tweet posted successfully")
+	util.LogInst().Debug().Str("tweet-id", njTweet.TweetId).
+		Int64("create_time", njTweet.CreateAt).
+		Msg("Tweet posted successfully")
 }
 
 func uploadMedia(token *oauth1.Token, img image.Image) (string, error) {

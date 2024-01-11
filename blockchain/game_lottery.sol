@@ -44,7 +44,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     mapping(uint256 => uint256[]) public ticketsRecords;
 
     mapping(uint256 => mapping(bytes32 => TweetTeam)) private tweetTeamMap;
-    mapping(uint256 => mapping(address => uint256[])) ticketsOfBuyer;
+    mapping(uint256 => mapping(address => uint256[])) public ticketsOfBuyer;
 
     event TweetBought(
         bytes32 thash,
@@ -54,7 +54,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         uint256 no
     );
 
-    event AdminOperated(uint256 newTimeInHours, string opName);
+    event AdminOperated(uint256 newTimeInMinutes, string opName);
     event SkipToNewRound(bytes32 hash, uint256 round);
     event WinnerWithdrawBonus(address winner, uint256 bonus);
     event TicketSold(address buyer, uint256 no, uint256 serviceFee);
@@ -69,7 +69,8 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     );
     event KolIpRightBout(address kolAddr, address buyer, uint256 keyNo);
 
-    constructor(bytes32 hash) payable {
+    constructor(address[] memory admins, bytes32 hash) payable {
+        require(hash != bytes32(0), "invalid random hash");
         GameInfoOneRound memory newRoundInfo = GameInfoOneRound({
             randomHash: hash,
             discoverTime: block.timestamp + __lotteryGameRoundTime,
@@ -79,7 +80,12 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             bonus: msg.value,
             randomVal: 0
         });
+
         gameInfoRecord[currentRoundNo] = newRoundInfo;
+        for (uint256 idx; idx < admins.length; idx++) {
+            __admins[admins[idx]] = true;
+        }
+        __admins[msg.sender] = true;
     }
 
     receive() external payable {
@@ -523,14 +529,16 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         uint256,
         uint256,
         uint256,
-        uint256
+        uint256,
+        bool
     )
     {
         return (
             currentRoundNo,
             totalBonus,
             ticketsRecords[currentRoundNo].length,
-            __ticketPriceForOuter
+            __ticketPriceForOuter,
+            __openToOuterPlayer
         );
     }
 }

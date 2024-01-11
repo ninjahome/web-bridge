@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	"github.com/ninjahome/web-bridge/server/database"
+	database2 "github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"net/http"
 )
@@ -23,7 +23,7 @@ func MustSignInData(str string) *SignInObj {
 	return so
 }
 
-func signInByEth(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
+func signInByEth(w http.ResponseWriter, r *http.Request, _ *database2.NinjaUsrInfo) {
 	param := &SignDataByEth{}
 	err := util.ReadRequest(r, param)
 	if err != nil {
@@ -46,7 +46,7 @@ func signInByEth(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInf
 		return
 	}
 	util.LogInst().Info().Str("eth-addr", obj.EthAddr).Int64("sign-time", obj.SignTim).Msg("sign in success")
-	nu := database.DbInst().NjUserSignIn(obj.EthAddr)
+	nu := database2.DbInst().NjUserSignIn(obj.EthAddr)
 	if nu == nil {
 		util.LogInst().Warn().Str("eth-addr", obj.EthAddr).Msgf("no user found")
 		http.Error(w, "database error", http.StatusNotFound)

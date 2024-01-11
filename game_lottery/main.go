@@ -13,8 +13,8 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ninjahome/web-bridge/blockchain/ethapi"
+	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/server"
-	"github.com/ninjahome/web-bridge/server/database"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/crypto/ssh/terminal"
 	"google.golang.org/api/option"
@@ -276,9 +276,10 @@ func (gs *GameService) gameTimeOn() (*big.Int, *time.Time, error) {
 	}
 
 	discoverTime := time.Unix(result.DiscoverTime.Int64(), 0)
+	bts, _ := json.Marshal(result)
 	util.LogInst().Debug().Str("current-round", roundNo.String()).
 		Str("discover-time", discoverTime.String()).
-		Msg("query game info success")
+		Msg(string(bts))
 	return roundNo, &discoverTime, nil
 }
 

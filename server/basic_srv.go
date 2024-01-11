@@ -3,7 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ninjahome/web-bridge/server/database"
+	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"html/template"
 	"net/http"
@@ -126,6 +126,16 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 		Str("eth-addr", nu.EthAddr).Msg("query twitter basic info success")
 }
 
+func showKolKeyPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	var kolBasicInfo any = nil
+	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "kol_key.html", kolBasicInfo)
+	if err != nil {
+		util.LogInst().Err(err).Msg("main html failed")
+		http.Redirect(w, r, "/signIn", http.StatusFound)
+		return
+	}
+}
+
 func mainPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 
 	data := struct {
@@ -134,6 +144,21 @@ func mainPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo)
 		NinjaUsrInfoJson: template.JS(nu.RawData()),
 	}
 	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "main.html", data)
+	if err != nil {
+		util.LogInst().Err(err).Msg("main html failed")
+		http.Redirect(w, r, "/signIn", http.StatusFound)
+		return
+	}
+}
+
+func showLotteryMain(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+
+	data := struct {
+		NinjaUsrInfoJson template.JS
+	}{
+		NinjaUsrInfoJson: template.JS(nu.RawData()),
+	}
+	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "lottery_game.html", data)
 	if err != nil {
 		util.LogInst().Err(err).Msg("main html failed")
 		http.Redirect(w, r, "/signIn", http.StatusFound)

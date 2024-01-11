@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dghubble/oauth1"
-	"github.com/ninjahome/web-bridge/server/database"
+	database2 "github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"io"
 	"net/http"
@@ -25,12 +25,12 @@ const (
 	verifyCredentialsURL   = "https://api.twitter.com/1.1/account/verify_credentials.json?skip_status=true"
 )
 
-func parseUserToken(values url.Values) *database.TwUserAccessToken {
+func parseUserToken(values url.Values) *database2.TwUserAccessToken {
 	accessToken := values.Get("oauth_token")
 	accessSecret := values.Get("oauth_token_secret")
 	userID := values.Get("user_id")
 	screenName := values.Get("screen_name")
-	return &database.TwUserAccessToken{
+	return &database2.TwUserAccessToken{
 		OauthToken:       accessToken,
 		OauthTokenSecret: accessSecret,
 		UserId:           userID,
@@ -38,12 +38,12 @@ func parseUserToken(values url.Values) *database.TwUserAccessToken {
 	}
 }
 
-func getAccessTokenFromSession(r *http.Request) (*database.TwUserAccessToken, error) {
+func getAccessTokenFromSession(r *http.Request) (*database2.TwUserAccessToken, error) {
 	bts, err := SMInst().Get(sesKeyForAccessTokenV1, r)
 	if err != nil {
 		return nil, err
 	}
-	var token database.TwUserAccessToken
+	var token database2.TwUserAccessToken
 	err = json.Unmarshal([]byte(bts.(string)), &token)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func getAccessTokenFromSession(r *http.Request) (*database.TwUserAccessToken, er
 	return &token, nil
 }
 
-func signUpByTwitterV1(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+func signUpByTwitterV1(w http.ResponseWriter, r *http.Request, nu *database2.NinjaUsrInfo) {
 
 	oauth1Config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	oauth1Token := oauth1.NewToken("", "")
@@ -99,7 +99,7 @@ func signUpByTwitterV1(w http.ResponseWriter, r *http.Request, nu *database.Ninj
 	http.Redirect(w, r, authorizeURL, http.StatusTemporaryRedirect)
 }
 
-func twitterSignCallBackV1(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
+func twitterSignCallBackV1(w http.ResponseWriter, r *http.Request, _ *database2.NinjaUsrInfo) {
 	oauth1Config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	requestSecret, err := SMInst().Get(sesKeyForRequestSecret, r)
 	if err != nil {
@@ -146,7 +146,7 @@ func twitterSignCallBackV1(w http.ResponseWriter, r *http.Request, _ *database.N
 
 	token := parseUserToken(values)
 	_ = SMInst().Set(r, w, sesKeyForAccessTokenV1, token.String())
-	err = database.DbInst().SaveTwAccessToken(token)
+	err = database2.DbInst().SaveTwAccessToken(token)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save twitter user access token failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -156,7 +156,7 @@ func twitterSignCallBackV1(w http.ResponseWriter, r *http.Request, _ *database.N
 	http.Redirect(w, r, "/signUpSuccessByTw", http.StatusFound)
 }
 
-func signUpSuccessByTw(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
+func signUpSuccessByTw(w http.ResponseWriter, r *http.Request, _ *database2.NinjaUsrInfo) {
 	ethAddr, err := SMInst().Get(sesKeyForNjUserId, r)
 	if err != nil {
 		util.LogInst().Err(err).Msg("no valid ninja id found")
@@ -178,10 +178,10 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request, _ *database.Ninja
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	result := &database.TwAPIResponse{
+	result := &TwAPIResponse{
 		EthAddr:  ethAddr.(string),
 		SignUpAt: time.Now().UnixMilli(),
-		TwitterData: &database.TWUserInfo{
+		TwitterData: &database2.TWUserInfo{
 			ID:                   userData.IDStr,
 			Name:                 userData.Name,
 			ScreenName:           userData.ScreenName,
@@ -223,7 +223,7 @@ func updateTwitterBio(r *http.Request, origDes, web3ID string) error {
 		"application/x-www-form-urlencoded", nil)
 }
 
-func verifyTwitterCredentials(ut *database.TwUserAccessToken) (*VerifiedTwitterUser, error) {
+func verifyTwitterCredentials(ut *database2.TwUserAccessToken) (*VerifiedTwitterUser, error) {
 	config := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret)
 	httpClient := config.Client(oauth1.NoContext, ut.GetToken())
 

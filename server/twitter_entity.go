@@ -1,5 +1,15 @@
 package server
 
+import (
+	"github.com/ninjahome/web-bridge/database"
+)
+
+type TwAPIResponse struct {
+	TwitterData *database.TWUserInfo `json:"data"`
+	EthAddr     string               `json:"eth_addr"`
+	SignUpAt    int64                `json:"sign_up_at"`
+}
+
 type TweetResponse struct {
 	Data TweetPostResult `json:"data"`
 }
