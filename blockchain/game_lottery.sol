@@ -45,6 +45,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
 
     mapping(uint256 => mapping(bytes32 => TweetTeam)) private tweetTeamMap;
     mapping(uint256 => mapping(address => uint256[])) public ticketsOfBuyer;
+    mapping(uint256 => bytes32[]) public teamList;
 
     event TweetBought(
         bytes32 thash,
@@ -56,7 +57,6 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
 
     event AdminOperated(uint256 newTimeInMinutes, string opName);
     event SkipToNewRound(bytes32 hash, uint256 round);
-    event WinnerWithdrawBonus(address winner, uint256 bonus);
     event TicketSold(address buyer, uint256 no, uint256 serviceFee);
     event DiscoverWinner(
         address winner,
@@ -67,7 +67,6 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         uint256 random,
         bytes32 nextRandomHash
     );
-    event KolIpRightBout(address kolAddr, address buyer, uint256 keyNo);
 
     constructor(address[] memory admins, bytes32 hash) payable {
         require(hash != bytes32(0), "invalid random hash");
@@ -396,20 +395,23 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         require(tweetHash != bytes32(0));
 
         gameInfoRecord[currentRoundNo].bonus += val;
+
         generateTicket(voteNo, buyer, tweetHash);
 
-        updateTweetTeam(currentRoundNo, tweetHash, buyer, voteNo);
+        updateTweetTeam(tweetHash, buyer, voteNo);
 
         emit TweetBought(tweetHash, tweetOwner, buyer, val, voteNo);
     }
 
     function updateTweetTeam(
-        uint256 roundNo,
         bytes32 tweetHash,
         address buyer,
         uint256 voteNo
     ) internal {
-        TweetTeam storage team = tweetTeamMap[roundNo][tweetHash];
+        TweetTeam storage team = tweetTeamMap[currentRoundNo][tweetHash];
+        if (team.memCount == 0) {
+            teamList[currentRoundNo].push(tweetHash);
+        }
         if (team.memVotes[buyer] == 0) {
             team.memIndex[team.memCount] = buyer;
             team.memCount += 1;
@@ -504,6 +506,14 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             infos[i] = gameInfoRecord[i];
         }
         return infos;
+    }
+
+    function teamListOfRound(uint256 round)
+    public
+    view
+    returns (bytes32[] memory teams)
+    {
+        return teamList[round];
     }
 
     function tickList(uint256 round, address owner)

@@ -12,6 +12,7 @@
     <script src="/assets/js/main_metamask.js"></script>
     <script src="/assets/js/main_twitter.js"></script>
     <script src="/assets/js/main_user_tweets.js"></script>
+    <script src="/assets/js/main_top.js"></script>
     <script src="/assets/js/main_operate_area.js"></script>
 
     <style about="frame div">
@@ -391,7 +392,6 @@
             color: black; /* 悬停时颜色 */
         }
     </style>
-
     <style about="game-lottery">
         /* lottery-game-info 样式 */
         .lottery-game-info {
@@ -407,7 +407,9 @@
         }
 
     </style>
+    <style about="team-card-in-top">
 
+    </style>
 </head>
 <body>
 <div class="container">
@@ -447,7 +449,7 @@
             <span class="username twitterUserName"></span>
             <span class="time tweetCreateTime"></span>
         </div>
-        <div onclick="showTweetDetail.call(this)" class="tweet-content tweet-content-collapsed">
+        <div onclick="showTweetDetail.call(this,'.tweet-card')" class="tweet-content tweet-content-collapsed">
         </div>
         <button class="show-more" data-more="true" onclick="showFullTweetContent.call(this)">更多</button>
     </div>
@@ -469,7 +471,12 @@
         </div>
 
         <div id="middle-div-leaderboard" class="content-in-middle-area">
-
+            <div class="topic-switch">
+                <button onclick="initTopPage()">推文排行榜</button>
+                <button onclick="switchToTopTeam(true)">彩票团队排行榜</button>
+                <button onclick="switchToTopKol()">KOL人气排行榜</button>
+                <button onclick="switchToTopVoter()">投票人排行榜</button>
+            </div>
             <div id="tweetTemplateForTop" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
                     <div class="tweet-action">
@@ -480,7 +487,39 @@
                     </div>
                 </div>
             </div>
+
+            <div class="tweets-park" id="top-hot-lottery-team">
+                <div class="team-card" id="team-card-in-top" style="display: none">
+                    <div class="team-id" onclick="showTweetDetail(this, 'team-card')" style="cursor: pointer">
+                        团队ID:<span>0xd57a74ac6f606422ffaa1612fb3ad766569b4d4172a78c3989383592689cbfbb</span>
+                    </div>
+                    <div class="team-leader">
+                        队长：
+                        <img src="" alt="Avatar" class="twitterAvatar">
+                        <span class="name twitterName"></span>
+                        <span class="username twitterUserName"></span>
+                    </div>
+                    <div class="team-info">
+                        票数：<span class="team-voted-count"></span>
+                        人数：<span class="team-members-count"></span>
+                    </div>
+                    <div class="team-action">
+                        <button>加入</button>
+                        <button>队伍信息</button>
+                    </div>
+                    <div class="team-member-park"></div>
+                    <div class="team-members" id="team-members-template" style="display: none">
+                        <img src="" alt="Avatar" class="twitterAvatar">
+                        <span class="name twitterName"></span>
+                        <span class="username twitterUserName"></span>
+                        <span class="user-voted-count">0</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="tweets-park" id="top-hot-tweet-team"></div>
+            <div class="tweets-park" id="top-hot-Kol"></div>
+            <div class="tweets-park" id="top-hot-voter"></div>
         </div>
 
         <div id="middle-div-user-tweets" class="content-in-middle-area">
@@ -561,7 +600,7 @@
                 </div>
             </div>
         </div>
-
+        <div id="user-profile"></div>
     </div>
     <div class="right-operation-area">
 
@@ -687,6 +726,8 @@
             loadTweetsUserPosted();
         } else if (contentId === "middle-div-home") {
             loadTweetsForHomePage()
+        } else if (contentId === "middle-div-leaderboard") {
+            initTopPage(true);
         }
     }
 

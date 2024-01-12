@@ -108,31 +108,6 @@ const gameContractABI =`
         "anonymous": false,
         "inputs": [
             {
-                "indexed": false,
-                "internalType": "address",
-                "name": "kolAddr",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "address",
-                "name": "buyer",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "keyNo",
-                "type": "uint256"
-            }
-        ],
-        "name": "KolIpRightBout",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
                 "indexed": true,
                 "internalType": "address",
                 "name": "oldOwner",
@@ -259,25 +234,6 @@ const gameContractABI =`
             }
         ],
         "name": "UpgradeToNewRule",
-        "type": "event"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "internalType": "address",
-                "name": "winner",
-                "type": "address"
-            },
-            {
-                "indexed": false,
-                "internalType": "uint256",
-                "name": "bonus",
-                "type": "uint256"
-            }
-        ],
-        "name": "WinnerWithdrawBonus",
         "type": "event"
     },
     {
@@ -847,6 +803,49 @@ const gameContractABI =`
                 "internalType": "bool",
                 "name": "",
                 "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "teamList",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "round",
+                "type": "uint256"
+            }
+        ],
+        "name": "teamListOfRound",
+        "outputs": [
+            {
+                "internalType": "bytes32[]",
+                "name": "teams",
+                "type": "bytes32[]"
             }
         ],
         "stateMutability": "view",

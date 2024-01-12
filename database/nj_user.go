@@ -10,12 +10,14 @@ import (
 )
 
 type NinjaUsrInfo struct {
-	Address    string `json:"address" firestore:"address"`
-	EthAddr    string `json:"eth_addr" firestore:"eth_addr"`
-	CreateAt   int64  `json:"create_at" firestore:"create_at"`
-	TwID       string `json:"tw_id" firestore:"tw_id"`
-	UpdateAt   int64  `json:"update_at"`
-	TweetCount int    `json:"tweet_count" firestore:"tweet_count"`
+	Address      string `json:"address" firestore:"address"`
+	EthAddr      string `json:"eth_addr" firestore:"eth_addr"`
+	CreateAt     int64  `json:"create_at" firestore:"create_at"`
+	TwID         string `json:"tw_id" firestore:"tw_id"`
+	UpdateAt     int64  `json:"update_at"`
+	TweetCount   int    `json:"tweet_count" firestore:"tweet_count"`
+	VoteCount    int    `json:"vote_count" firestore:"vote_count"`
+	BeVotedCount int    `json:"be_voted_count" firestore:"be_voted_count"`
 }
 
 func (nu *NinjaUsrInfo) String() string {
@@ -76,4 +78,24 @@ func (dm *DbManager) NjUserSignIn(ethAddr string) *NinjaUsrInfo {
 
 	util.LogInst().Debug().Str("eth-addr", ethAddr).Msg("firestore create ninja user success")
 	return nu
+}
+
+func (dm *DbManager) QueryNjUsrById(web3ID string) (*NinjaUsrInfo, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+
+	docRef := dm.fileCli.Collection(DBTableNJUser).Doc(web3ID)
+	doc, err := docRef.Get(opCtx)
+	if err != nil {
+		util.LogInst().Err(err).Str("web3-id", web3ID).Msg("query nj user data err")
+		return nil, err
+	}
+	var nu NinjaUsrInfo
+	err = doc.DataTo(&nu)
+	if err != nil {
+		util.LogInst().Err(err).Str("web3-id", web3ID).Msg("data to nj user err")
+		return nil, err
+	}
+	return &nu, nil
+
 }

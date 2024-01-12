@@ -157,11 +157,10 @@ async function TweetsQuery(param, newest, cacheObj) {
     }
 }
 
-async function __setOnlyHeader(tweetHeader, tweet) {
-    tweetHeader.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
-    const twitterObj = TwitterBasicInfo.loadTwBasicInfo(tweet.twitter_id);
+async function __setOnlyHeader(tweetHeader, twitter_id) {
+    const twitterObj = TwitterBasicInfo.loadTwBasicInfo(twitter_id);
     if (!twitterObj) {
-        const newObj = await loadTwitterUserInfoFromSrv(tweet.twitter_id, true)
+        const newObj = await loadTwitterUserInfoFromSrv(twitter_id, true)
         if (!newObj) {
             console.log("failed load twitter user info");
             return;
@@ -178,8 +177,8 @@ async function __setOnlyHeader(tweetHeader, tweet) {
 }
 
 async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
-
-    await __setOnlyHeader(tweetHeader, tweet);
+    tweetHeader.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
+    await __setOnlyHeader(tweetHeader, tweet.twitter_id);
 
     const contentArea = tweetHeader.querySelector('.tweet-content');
     contentArea.textContent = tweet.text;
@@ -207,11 +206,11 @@ function quitFromService() {
     })
 }
 
-async function showTweetDetail() {
+async function showTweetDetail(parentName) {
     const detail = document.querySelector('#tweet-detail');
     detail.style.display = 'block';
 
-    const tweetCard = this.closest('.tweet-card');
+    const tweetCard = this.closest(parentName);
     tweetCard.parentNode.style.display = 'none';
 
     const create_time = Number(tweetCard.dataset.createTime);
@@ -223,7 +222,8 @@ async function showTweetDetail() {
         return;
     }
 
-    await __setOnlyHeader(detail, obj);
+    detail.querySelector('.tweetCreateTime').textContent = formatTime(obj.create_time);
+    await __setOnlyHeader(detail, obj.twitter_id);
 
     detail.querySelector('.tweet-text').textContent = obj.text;
     detail.querySelector('#tweet-prefixed-hash').textContent = obj.prefixed_hash;

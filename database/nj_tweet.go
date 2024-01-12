@@ -47,9 +47,10 @@ type NinjaTweet struct {
 }
 
 type TweetQueryParm struct {
-	StartID  int64   `json:"start_id"`
-	Web3ID   string  `json:"web3_id"`
-	VotedIDs []int64 `json:"voted_ids"`
+	StartID  int64    `json:"start_id"`
+	Web3ID   string   `json:"web3_id"`
+	VotedIDs []int64  `json:"voted_ids"`
+	HashArr  []string `json:"hash_arr"`
 }
 
 func (p *TweetQueryParm) String() string {
@@ -61,6 +62,10 @@ func (p *TweetQueryParm) createFilter(pageSize int, doc *firestore.CollectionRef
 
 	if len(p.VotedIDs) > 0 {
 		return doc.Where("create_time", "in", p.VotedIDs).OrderBy("create_time", firestore.Desc).Documents(opCtx)
+	}
+
+	if len(p.HashArr) > 0 {
+		return doc.Where("prefixed_hash", "in", p.HashArr).Documents(opCtx)
 	}
 
 	var query = doc.Limit(pageSize)

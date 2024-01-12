@@ -1,9 +1,9 @@
 let metamaskObj = null;
 let metamaskProvider;
 let tweetVoteContract;
-let lotteryGameContract;
+let lotteryGameContract = null;
 let voteContractMeta = TweetVoteContractSetting.load();
-let gameContractMeta;
+let gameContractMeta =  null;
 
 async function checkMetaMaskEnvironment() {
 
@@ -62,7 +62,7 @@ async function initBlockChainContract() {
         });
 
     } catch (error) {
-        console.error("Error getting system settings: ", error);
+        console.error("block chain err: ", error);
         checkMetamaskErr(error);
     }
 }

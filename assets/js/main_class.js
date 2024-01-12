@@ -80,9 +80,15 @@ const TXStatus = Object.freeze({
 });
 
 class TweetQueryParam{
-    constructor(startID,web3ID,voted) {
+    constructor(startID,web3ID,voted,hashList) {
         this.start_id = startID;
         this.web3_id = web3ID;
         this.voted_ids = voted;
+        this.hash_arr = hashList;
+    }
+}
+
+class TeamDetailOnBlockChain{
+    constructor(hash, voter) {
     }
 }
