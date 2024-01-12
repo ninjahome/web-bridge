@@ -394,12 +394,10 @@
         web3Id.textContent = web3ID;
         document.getElementById("logo-container-eth").classList.add("active")
 
-        const storeData = localStorage.getItem(DbKeyForNjUserData(web3ID))
-        if (!storeData){
+        const savedUserInfo = NJUserBasicInfo.loadNjBasic(web3ID);
+        if (!savedUserInfo){
             return;
         }
-
-        const savedUserInfo = JSON.parse(storeData);
         let tw_data = TwitterBasicInfo.loadTwBasicInfo(savedUserInfo.tw_id)
         if(!tw_data){
             return;

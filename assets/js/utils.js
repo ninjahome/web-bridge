@@ -360,3 +360,37 @@ class TwitterBasicInfo {
         return obj;
     }
 }
+
+class NJUserBasicInfo{
+
+    constructor(address, eth_addr,create_at,tw_id,update_at,
+                tweet_count,vote_count,be_voted_count) {
+        this.address = address;
+        this.eth_addr = eth_addr;
+        this.create_at = create_at;
+        this.tw_id = tw_id;
+        this.update_at = update_at;
+        this.tweet_count = tweet_count;
+        this.vote_count = vote_count;
+        this.be_voted_count = be_voted_count;
+    }
+
+
+    static loadNjBasic(ethAddr) {
+        const storedData = localStorage.getItem(DbKeyForNjUserData(ethAddr))
+        if (!storedData) {
+            return null
+        }
+        const nuObj = JSON.parse(storedData);
+        return new NJUserBasicInfo(nuObj.address,nuObj.eth_addr,nuObj.create_at,nuObj.tw_id,
+            nuObj.update_at,nuObj.tweet_count,nuObj.vote_count,nuObj.be_voted_count);
+    }
+
+    static cacheNJUsrObj(obj) {
+        if (!obj.eth_addr) {
+            throw new Error("invalid twitter basic info")
+        }
+        localStorage.setItem(DbKeyForNjUserData(obj.eth_addr), JSON.stringify(obj));
+    }
+}
+

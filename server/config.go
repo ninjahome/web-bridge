@@ -20,6 +20,7 @@ var (
 		"/signInByEth":              {signInByEth, false},
 		"/bindWeb3ID":               {bindingWeb3ID, true},
 		"/queryTwBasicById":         {queryTwBasicById, true},
+		"/queryTwBasicByTweetHash":  {queryTwBasicByTweetHash, true},
 		"/queryNjBasicByID":         {queryNjBasicByID, true},
 		"/signOut":                  {signOut, false},
 		"/main":                     {mainPage, true},

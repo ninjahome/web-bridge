@@ -254,3 +254,23 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request, origNu *database.Ninj
 	w.WriteHeader(http.StatusOK)
 	w.Write(newNu.RawData())
 }
+
+func queryTwBasicByTweetHash(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
+	var tweetHash = r.URL.Query().Get("tweet_hash")
+	if len(tweetHash) == 0 {
+		util.LogInst().Warn().Msg("invalid tweet hash")
+		http.Error(w, "invalid tweet hash", http.StatusBadRequest)
+		return
+	}
+
+	var twObj, err = database.DbInst().QueryTwUserByTweetHash(tweetHash)
+	if err != nil {
+		util.LogInst().Err(err).Str("tweet-hash", tweetHash).
+			Msg("failed to query twitter info by hash")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(twObj.RawData())
+}

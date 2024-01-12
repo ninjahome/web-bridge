@@ -22,7 +22,6 @@ class MemCachedTweets{
     }
 }
 
-
 const dbKeyCachedVoteContractMeta = "__db_key_cached_vote_contract_meta__"
 class TweetVoteContractSetting {
     constructor(postPrice, votePrice, votePriceInEth, maxVote, pluginAddr, pluginStop, kolRate, feeRate) {

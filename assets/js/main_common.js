@@ -1,4 +1,5 @@
 const __globalTweetMemCache = new Map()
+const __globalTweetMemCacheByHash = new Map()
 
 window.onscroll = function () {
     throttle(contentScroll, 200);
@@ -127,7 +128,7 @@ function hideHoverCard(obj) {
 function cachedToMem(tweetArray, cacheObj) {
     tweetArray.map(tweet => {
         __globalTweetMemCache.set(tweet.create_time, tweet);
-
+        __globalTweetMemCacheByHash.set(tweet.prefixed_hash,tweet);
         if (tweet.create_time < cacheObj.latestID || cacheObj.latestID === 0) {
             cacheObj.latestID = tweet.create_time;
         }
@@ -251,10 +252,10 @@ function __showVoteButton(tweetCard, tweet, callback) {
         return;
     }
     voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
-    voteBtn.onclick = () => voteToTheTweet(tweet.create_time, callback);
+    voteBtn.onclick = () => voteToTheTweet(tweet, callback);
 }
 
-async function __updateVoteNumberAllElements(tweetObj, newVote) {
+async function __updateVoteNumberForTweet(tweetObj, newVote) {
 
     let tweetCard = document.getElementById("tweet-card-for-vote-" + tweetObj.create_time)
     if (tweetCard) {
@@ -277,13 +278,7 @@ async function __updateVoteNumberAllElements(tweetObj, newVote) {
     }
 }
 
-
-async function voteToTheTweet(create_time, callback) {
-    const obj = __globalTweetMemCache.get(create_time)
-    if (!obj) {
-        showDialog("tips", "no such tweet obj, please reload page")
-        return;
-    }
+async function voteToTheTweet(obj, callback) {
 
     if (Number(obj.payment_status) !== TXStatus.Success) {
         showDialog("tips", "can't vote to unpaid tweet")
@@ -294,7 +289,7 @@ async function voteToTheTweet(create_time, callback) {
         procTweetVotePayment(voteCount, obj, async function (create_time, vote_count) {
             const newVote = await updateVoteStatusToSrv(create_time, vote_count);
             obj.vote_count = newVote.vote_count;
-            __updateVoteNumberAllElements(obj, newVote).then(r => {
+            __updateVoteNumberForTweet(obj, newVote).then(r => {
             });
             if (shareToTweet) {
                 __shareVoteToTweet(create_time, vote_count).then(r => {
@@ -303,7 +298,6 @@ async function voteToTheTweet(create_time, callback) {
             if (callback) {
                 callback(newVote);
             }
-
         });
     });
 }
@@ -323,4 +317,30 @@ async function updateVoteStatusToSrv(create_time, vote_count) {
     });
     console.log(resp);
     return JSON.parse(resp);
+}
+
+async function loadNJUserInfoFromSrv(ethAddr, useCache) {
+    try {
+
+        if (useCache) {
+            let nj_data = NJUserBasicInfo.loadNjBasic(ethAddr);
+            if (nj_data) {
+                return nj_data;
+            }
+        }
+
+        const response = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr);
+        if (!response.ok) {
+            console.log("query twitter basic info failed")
+            return null;
+        }
+
+        const obj = await response.json();
+        NJUserBasicInfo.cacheNJUsrObj(obj)
+
+        return obj;
+    } catch (err) {
+        console.log("queryTwBasicById err:", err)
+        return null;
+    }
 }

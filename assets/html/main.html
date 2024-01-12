@@ -492,32 +492,32 @@
                 </div>
             </div>
             <div class="team-card" id="team-card-in-top-template" style="display: none">
-                    <div class="team-id" onclick="showTweetDetail(this, 'team-card')" style="cursor: pointer">
-                        团队ID:<span>0xd57a74ac6f606422ffaa1612fb3ad766569b4d4172a78c3989383592689cbfbb</span>
-                    </div>
-                    <div class="team-leader">
-                        队长：
-                        <img src="" alt="Avatar" class="twitterAvatar">
-                        <span class="name twitterName"></span>
-                        <span class="username twitterUserName"></span>
-                    </div>
-                    <div class="team-info">
-                        票数：<span class="team-voted-count"></span>
-                        人数：<span class="team-members-count"></span>
-                    </div>
-                    <div class="team-action">
-                        <button>加入</button>
-                        <button>队伍信息</button>
-                    </div>
-                    <div class="team-member-park"></div>
-                    <div class="team-members" id="team-members-template" style="display: none">
-                        <img src="" alt="Avatar" class="twitterAvatar">
-                        <span class="name twitterName"></span>
-                        <span class="username twitterUserName"></span>
-                        <span class="user-voted-count">0</span>
-                    </div>
+                <div class="team-id" onclick="showTweetDetail(this, '.team-card')" style="cursor: pointer">
+                    团队ID:<span
+                            class="team-id-txt">0xd57a74ac6f606422ffaa1612fb3ad766569b4d4172a78c3989383592689cbfbb</span>
                 </div>
-
+                <div class="team-leader">
+                    队长：
+                    <img src="" alt="Avatar" class="twitterAvatar">
+                    <span class="name twitterName"></span>
+                    <span class="username twitterUserName"></span>
+                </div>
+                <div class="team-info">
+                    票数：<span class="team-voted-count"></span>
+                    人数：<span class="team-members-count"></span>
+                </div>
+                <div class="team-action">
+                    <button class="join-team">加入</button>
+                    <button class="show-team-mates">队伍信息</button>
+                </div>
+                <div class="team-member-park"></div>
+                <div class="team-members" id="team-members-template" style="display: none">
+                    <img src="" alt="Avatar" class="twitterAvatar">
+                    <span class="name twitterName"></span>
+                    <span class="username twitterUserName"></span>
+                    <span class="user-voted-count">0</span>
+                </div>
+            </div>
             <div class="tweets-park" id="top-most-voted-tweet"></div>
             <div class="tweets-park" id="top-hot-tweet-team"></div>
             <div class="tweets-park" id="top-hot-Kol"></div>
@@ -704,7 +704,8 @@
         }
 
         document.getElementById("basic-web3-id").innerText = ninjaUserObj.eth_addr;
-        localStorage.setItem(DbKeyForNjUserData(ninjaUserObj.eth_addr), JSON.stringify(ninjaUserObj));
+        NJUserBasicInfo.cacheNJUsrObj(ninjaUserObj);
+        // localStorage.setItem(DbKeyForNjUserData(ninjaUserObj.eth_addr), JSON.stringify(ninjaUserObj));
         let tw_data = TwitterBasicInfo.loadTwBasicInfo(ninjaUserObj.tw_id)
         if (tw_data) {
             document.getElementById("dessage-log-to-nj-log").src = tw_data.profile_image_url;
@@ -758,7 +759,6 @@
             this.textContent = '';
         }
     }, false);
-
 
 </script>
 </body>

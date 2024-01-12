@@ -191,3 +191,38 @@ func (dm *DbManager) DelUnpaidTweet(createTime int64, addr string) error {
 	_, err = doc.Ref.Delete(opCtx)
 	return err
 }
+
+func (dm *DbManager) QueryTwUserByTweetHash(tHash string) (*TWUserInfo, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	query := dm.fileCli.Collection(DBTableTweetsPosted).
+		Where("prefixed_hash", "==", tHash)
+	iter := query.Documents(opCtx)
+	defer iter.Stop()
+	doc, err := iter.Next()
+	if err != nil {
+		util.LogInst().Err(err).Msg("no such item to delete")
+		return nil, err
+	}
+
+	var obj NinjaTweet
+	err = doc.DataTo(&obj)
+	if err != nil {
+		util.LogInst().Err(err).Msg("parse nj tweet failed")
+		return nil, err
+	}
+
+	twitterDoc := dm.fileCli.Collection(DBTableTWUser).Doc(obj.TweetUsrId)
+	doc, err = twitterDoc.Get(opCtx)
+	if err != nil {
+		util.LogInst().Err(err).Str("twitter-id", obj.TweetUsrId).Msg("twitterDoc get failed")
+		return nil, err
+	}
+	tu := &TWUserInfo{}
+	err = doc.DataTo(tu)
+	if err != nil {
+		util.LogInst().Err(err).Str("twitter-id", obj.TweetUsrId).Msg("twitter Doc to TWUserInfo failed")
+		return nil, err
+	}
+	return tu, nil
+}

@@ -203,6 +203,7 @@ function clearDraftTweetContent() {
 }
 
 function showFullTweetContent() {
+
     const tweetCard = this.closest('.tweet-card');
     const tweetContent = tweetCard.querySelector('.tweet-content');
     const isMore = this.getAttribute('data-more') === 'true';
