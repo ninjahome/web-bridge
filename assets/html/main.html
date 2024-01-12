@@ -292,14 +292,13 @@
 
         .modal-for-tweet-post {
             z-index: 2;
-            padding: 20px; /* 增加内边距 */
-            display: none; /* 默认隐藏 */
+            padding: 16px 32px; /* 增加内边距 */
+            /*display: none; !* 默认隐藏 *!*/
             position: fixed; /* 固定定位 */
             left: 50%; /* 水平居中 */
             top: 50%; /* 垂直居中 */
             transform: translate(-50%, -50%); /* 校正到完全居中 */
             background-color: #fff; /* 背景颜色 */
-            border-radius: 10px; /* 边框圆角 */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 盒子阴影 */
             width: 80%; /* 宽度，可根据需要调整 */
             max-width: 500px; /* 最大宽度 */
@@ -310,49 +309,82 @@
             display: block; /* 确保元素为块级元素 */
             box-sizing: border-box;
             width: 100%; /* 文本区域宽度 */
-            height: 150px; /* 文本区域高度 */
-            padding: 10px; /* 内边距 */
-            border: 1px solid #ccc; /* 边框 */
-            border-radius: 5px; /* 边框圆角 */
+            min-height: 4em; /* 至少容纳3行文字的高度 */
+            max-height: 26em; /* 最大高度，约等于10行文字 */
+            overflow-y: auto; /* 内容超出最大高度时显示垂直滚动条 */
+            padding: 4px; /* 内边距 */
+            border: 1px solid #D3D5D6; /* 边框 */
             resize: none; /* 禁止调整大小 */
+            position: relative;
+        }
+
+        /* 设置所有输入框和可编辑内容的光标颜色 */
+        input, textarea, [contenteditable] {
+            caret-color: #4848D8;
+        }
+
+        .tweets-content-txt-area:focus {
+            border-color: rgba(72, 72, 216, 0.45); /* 选中时的边框颜色 */
+            outline: none;
+        }
+
+        .tweets-content-txt-area p {
+            margin: 4px 4px;
+
+        }
+        .tweets-content-txt-area span {
+            font-size: 14px; /* 文字大小，可以根据需要调整 */
+            line-height: 20px; /* 行高，一般与字体大小相同 */
+
+        }
+
+        .tweets-content-txt-area:empty:before {
+            content: attr(data-placeholder);
+            color: grey;
+            pointer-events: none;
+            display: block; /* 显示为块级元素 */
+        }
+        /* 确保即使 div 有空白也显示占位符 */
+        .tweets-content-txt-area:empty:focus:before {
+            content: attr(data-placeholder);
         }
 
         #tweet-post-with-eth-btn {
-            background-color: #1DA1F2; /* 推特蓝色 */
+            display: flex;
+            align-items: center;
+            float: right;
+            background-color: #4848D8;
             color: white; /* 字体颜色 */
             border: none; /* 无边框 */
-            padding: 10px 20px; /* 内边距 */
-            border-radius: 5px; /* 边框圆角 */
+            padding: 8px 16px; /* 内边距 */
             cursor: pointer; /* 鼠标样式 */
-            width: 100%; /* 宽度 */
-            margin-top: 10px; /* 下边距 */
+            margin: 16px 0; /* 下边距 */
         }
 
         #tweet-post-with-eth-btn:hover {
-            background-color: #1991db; /* 悬停时背景颜色 */
+            background-color: #3333BE; /* 悬停时背景颜色 */
         }
 
         .show-post-tweet-div {
-            background-color: #1DA1F2; /* 推特蓝色 */
+            background-color: #4848D8;
             color: white; /* 字体颜色 */
             border: none; /* 无边框 */
-            padding: 10px 20px; /* 内边距 */
-            border-radius: 10%; /* 圆形按钮 */
+            padding: 8px 32px; /* 内边距 */
             cursor: pointer; /* 鼠标样式 */
             font-size: 16px; /* 字体大小 */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* 盒子阴影 */
         }
 
         .show-post-tweet-div:hover {
-            background-color: #1991db; /* 悬停时背景颜色 */
+            background-color: #3333BE; /* 悬停时背景颜色 */
         }
 
         .tweet-post-close-btn {
             float: right; /* 右上角 */
-            font-size: 20px; /* 字体大小 */
-            line-height: 20px; /* 行高 */
+            font-size: 24px; /* 字体大小 */
+            line-height: 24px; /* 行高 */
             cursor: pointer; /* 鼠标样式 */
-            color: #aaa; /* 颜色 */
+            color: #a7aaac; /* 颜色 */
+            margin-bottom: 16px;
         }
 
         .tweet-post-close-btn:hover {
@@ -606,9 +638,11 @@
 <div class="modal-overlay" id="modal-overlay"></div>
 <div class="modal-for-tweet-post">
     <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
-    <textarea class="tweets-content-txt-area" id="tweets-content-txt-area">
-    </textarea>
-    <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()">发布推文</button>
+    <div class="tweets-content-txt-area" id="tweets-content-txt-area" contenteditable="true" data-placeholder="What's happening!?"></div>
+    <div style="display: flex; justify-content: space-between; align-items: center">
+        <img src="/assets/file/image-icon.png" alt="photo" style="width: 20px; margin-right: 6px; display: inline-block">
+        <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()"><img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">发布推文</button>
+    </div>
 </div>
 
 <script>
@@ -663,6 +697,22 @@
     function openKolKeyMainPage() {
         window.location.href = "/kolKey";
     }
+
+    var tweetsContentArea = document.getElementById('tweets-content-txt-area');
+
+    tweetsContentArea.addEventListener('focus', function() {
+        if (this.textContent === "What's happening!?") {
+            this.textContent = '';
+        }
+    }, false);
+
+    tweetsContentArea.addEventListener('blur', function() {
+        if (this.textContent.trim() === '') {
+            this.textContent = '';
+        }
+    }, false);
+
+
 </script>
 </body>
 </html>
