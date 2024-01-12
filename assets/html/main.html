@@ -292,6 +292,7 @@
         }
 
         .modal-for-tweet-post {
+            display: none;
             z-index: 2;
             padding: 16px 32px; /* 增加内边距 */
             /*display: none; !* 默认隐藏 *!*/
@@ -680,7 +681,9 @@
     <div class="tweets-content-txt-area" id="tweets-content-txt-area" contenteditable="true" data-placeholder="What's happening!?"></div>
     <div style="display: flex; justify-content: space-between; align-items: center">
         <img src="/assets/file/image-icon.png" alt="photo" style="width: 20px; margin-right: 6px; display: inline-block">
-        <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()"><img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">发布推文</button>
+        <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()">
+            <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">
+            <span id="tweet-post-with-eth-btn-txt">发布推文</span></button>
     </div>
 </div>
 

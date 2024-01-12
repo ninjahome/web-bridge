@@ -188,7 +188,7 @@ async function showPostTweetDiv() {
     document.getElementById('modal-overlay').style.display = 'block';
 
 
-    const postBtn = document.getElementById("tweet-post-with-eth-btn");
+    const postBtn = document.getElementById("tweet-post-with-eth-btn-txt");
     postBtn.innerText = "发布推文(" + voteContractMeta.votePriceInEth + " eth)"
 }
 
