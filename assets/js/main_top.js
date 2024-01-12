@@ -15,20 +15,14 @@ async function switchToTopTeam() {
     }
 
     try {
-        const allTeams = await lotteryGameContract.teamListOfRound(gameContractMeta.curRound);
-        if (allTeams.length === 0) {
-            console.log("no data right now");
-            hideLoading();
-            return;
-        }
+
         changeLoadingTips("querying team detail from block chain");
-        console.log(allTeams);
-        const obj = await lotteryGameContract.allTeamInfo(gameContractMeta.curRound, allTeams);
+        const obj = await lotteryGameContract.allTeamInfo(gameContractMeta.curRound);
         console.log(obj);
         const cachedTopTeam = [];
 
-        for (let i = 0; i < allTeams.length; i++) {
-            const teamObj = new TeamDetailOnBlockChain(allTeams[i], obj.memCounts[i], obj.voteCounts[i]);
+        for (let i = 0; i < obj.tweets.length; i++) {
+            const teamObj = new TeamDetailOnBlockChain(obj.tweets[i], obj.memCounts[i], obj.voteCounts[i]);
             cachedTopTeam.push(teamObj);
         }
 
@@ -68,6 +62,7 @@ async function fulfillTopTeam(cachedTopTeam) {
         } else {
             await __setOnlyHeader(tweetHeader, tweet.twitter_id);
         }
+
         team_card.querySelector('.team-voted-count').innerText = teamDetails.voteCount;
         team_card.querySelector('.team-members-count').innerText = teamDetails.memCount;
 
@@ -101,7 +96,6 @@ function showTeammates(tweetHash,team_card) {
         for (const ethAddr of allMates) {
 
         }
-
         hideLoading();
     } catch (err) {
         hideLoading();

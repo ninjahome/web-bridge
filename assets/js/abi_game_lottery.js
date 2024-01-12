@@ -492,6 +492,11 @@ const gameContractABI =`
         "name": "allTeamInfo",
         "outputs": [
             {
+                "internalType": "bytes32[]",
+                "name": "tweets",
+                "type": "bytes32[]"
+            },
+            {
                 "internalType": "uint256[]",
                 "name": "memCounts",
                 "type": "uint256[]"
@@ -851,25 +856,6 @@ const gameContractABI =`
                 "internalType": "bytes32",
                 "name": "",
                 "type": "bytes32"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "round",
-                "type": "uint256"
-            }
-        ],
-        "name": "teamListOfRound",
-        "outputs": [
-            {
-                "internalType": "bytes32[]",
-                "name": "teams",
-                "type": "bytes32[]"
             }
         ],
         "stateMutability": "view",

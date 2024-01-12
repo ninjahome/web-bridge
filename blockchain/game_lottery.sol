@@ -466,9 +466,13 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     function allTeamInfo(uint256 roundNo)
     public
     view
-    returns (uint256[] memory memCounts, uint256[] memory voteCounts)
+    returns (
+        bytes32[] memory tweets,
+        uint256[] memory memCounts,
+        uint256[] memory voteCounts
+    )
     {
-        bytes32[] memory tweets = teamList[roundNo];
+        tweets = teamList[roundNo];
         memCounts = new uint256[](tweets.length);
         voteCounts = new uint256[](tweets.length);
         for (uint256 idx; idx < tweets.length; idx++) {
@@ -476,7 +480,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             memCounts[idx] = team.memCount;
             voteCounts[idx] = team.voteNo;
         }
-        return (memCounts, voteCounts);
+        return (tweets, memCounts, voteCounts);
     }
 
     function teamMembers(uint256 roundNo, bytes32 tweet)
@@ -529,14 +533,6 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             infos[i] = gameInfoRecord[i];
         }
         return infos;
-    }
-
-    function teamListOfRound(uint256 round)
-    public
-    view
-    returns (bytes32[] memory teams)
-    {
-        return teamList[round];
     }
 
     function tickList(uint256 round, address owner)
