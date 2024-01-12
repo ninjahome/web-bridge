@@ -201,7 +201,7 @@ func (dm *DbManager) QueryTwUserByTweetHash(tHash string) (*TWUserInfo, error) {
 	defer iter.Stop()
 	doc, err := iter.Next()
 	if err != nil {
-		util.LogInst().Err(err).Msg("no such item to delete")
+		util.LogInst().Err(err).Str("tweet-hash", tHash).Msg("no such tweet")
 		return nil, err
 	}
 
