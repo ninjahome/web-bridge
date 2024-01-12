@@ -334,6 +334,7 @@
             margin: 4px 4px;
 
         }
+
         .tweets-content-txt-area span {
             font-size: 14px; /* 文字大小，可以根据需要调整 */
             line-height: 20px; /* 行高，一般与字体大小相同 */
@@ -346,6 +347,7 @@
             pointer-events: none;
             display: block; /* 显示为块级元素 */
         }
+
         /* 确保即使 div 有空白也显示占位符 */
         .tweets-content-txt-area:empty:focus:before {
             content: attr(data-placeholder);
@@ -678,9 +680,11 @@
 <div class="modal-overlay" id="modal-overlay"></div>
 <div class="modal-for-tweet-post">
     <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
-    <div class="tweets-content-txt-area" id="tweets-content-txt-area" contenteditable="true" data-placeholder="What's happening!?"></div>
+    <div class="tweets-content-txt-area" id="tweets-content-txt-area" contenteditable="true"
+         data-placeholder="What's happening!?"></div>
     <div style="display: flex; justify-content: space-between; align-items: center">
-        <img src="/assets/file/image-icon.png" alt="photo" style="width: 20px; margin-right: 6px; display: inline-block">
+        <img src="/assets/file/image-icon.png" alt="photo"
+             style="width: 20px; margin-right: 6px; display: inline-block">
         <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()">
             <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">
             <span id="tweet-post-with-eth-btn-txt">发布推文</span></button>
@@ -742,15 +746,15 @@
         window.location.href = "/kolKey";
     }
 
-    var tweetsContentArea = document.getElementById('tweets-content-txt-area');
+    const tweetsContentArea = document.getElementById('tweets-content-txt-area');
 
-    tweetsContentArea.addEventListener('focus', function() {
+    tweetsContentArea.addEventListener('focus', function () {
         if (this.textContent === "What's happening!?") {
             this.textContent = '';
         }
     }, false);
 
-    tweetsContentArea.addEventListener('blur', function() {
+    tweetsContentArea.addEventListener('blur', function () {
         if (this.textContent.trim() === '') {
             this.textContent = '';
         }

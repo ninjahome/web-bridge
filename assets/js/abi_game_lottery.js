@@ -484,6 +484,35 @@ const gameContractABI =`
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "roundNo",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes32[]",
+                "name": "tweets",
+                "type": "bytes32[]"
+            }
+        ],
+        "name": "allTeamInfo",
+        "outputs": [
+            {
+                "internalType": "uint256[]",
+                "name": "memCounts",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "voteCounts",
+                "type": "uint256[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
                 "name": "",
                 "type": "address"
@@ -803,6 +832,35 @@ const gameContractABI =`
                 "internalType": "bool",
                 "name": "",
                 "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "roundNo",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "tweet",
+                "type": "bytes32"
+            }
+        ],
+        "name": "teamInfo",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",

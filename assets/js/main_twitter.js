@@ -109,7 +109,7 @@ async function fillTweetParkAtHomePage(clear) {
 }
 
 async function preparePostMsg() {
-    const content = document.getElementById("tweets-content-txt-area").value.trim();
+    const content = document.getElementById("tweets-content-txt-area").textContent.trim();
     if (!content) {
         showDialog("tips", "content can't be empty")
         return null;

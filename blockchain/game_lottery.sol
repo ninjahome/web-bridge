@@ -480,6 +480,28 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         return (team.memCount, team.voteNo, team.memVotes[memAddr]);
     }
 
+    function teamInfo(uint256 roundNo, bytes32 tweet)
+    public
+    view
+    returns (uint256, uint256)
+    {
+        TweetTeam storage team = tweetTeamMap[roundNo][tweet];
+        return (team.memCount, team.voteNo);
+    }
+
+    function allTeamInfo(uint256 roundNo, bytes32[] memory tweets)
+    public
+    view
+    returns (uint256[] memory memCounts, uint256[] memory voteCounts)
+    {
+        for (uint256 idx; idx < tweets.length; idx++) {
+            TweetTeam storage team = tweetTeamMap[roundNo][tweets[idx]];
+            memCounts[idx] = team.memCount;
+            voteCounts[idx] = team.voteNo;
+        }
+        return (memCounts, voteCounts);
+    }
+
     function teamMembers(uint256 roundNo, bytes32 tweet)
     public
     view

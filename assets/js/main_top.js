@@ -22,14 +22,13 @@ async function switchToTopTeam() {
         }
         changeLoadingTips("querying team detail from block chain")
         console.log(allTeams);
-        for (const teamHash of allTeams) {
-            // queryNjBasicByID
-            const obj = lotteryGameContract.tweetTeamMap(gameContractMeta.curRound, teamHash)
-        }
+        const obj = await lotteryGameContract.allTeamInfo(gameContractMeta.curRound, allTeams);
+        console.log(obj);
 
-
+        hideLoading();
     } catch (err) {
         console.log(err);
+        hideLoading();
         showDialog("error", err.toString());
     }
 }
