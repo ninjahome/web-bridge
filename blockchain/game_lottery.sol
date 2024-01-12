@@ -463,7 +463,46 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
      *                       basic query
      *********************************************************************************/
 
-    function teamMembersCountForGame(
+    function allTeamInfo(uint256 roundNo)
+    public
+    view
+    returns (uint256[] memory memCounts, uint256[] memory voteCounts)
+    {
+        bytes32[] memory tweets = teamList[roundNo];
+        memCounts = new uint256[](tweets.length);
+        voteCounts = new uint256[](tweets.length);
+        for (uint256 idx; idx < tweets.length; idx++) {
+            TweetTeam storage team = tweetTeamMap[roundNo][tweets[idx]];
+            memCounts[idx] = team.memCount;
+            voteCounts[idx] = team.voteNo;
+        }
+        return (memCounts, voteCounts);
+    }
+
+    function teamMembers(uint256 roundNo, bytes32 tweet)
+    public
+    view
+    returns (
+        uint256 voteNo,
+        uint256 memNo,
+        uint256[] memory voteNos,
+        address[] memory members
+    )
+    {
+        TweetTeam storage team = tweetTeamMap[roundNo][tweet];
+
+        members = new address[](team.memCount);
+        voteNos = new uint256[](team.memCount);
+
+        for (uint256 idx = 0; idx < team.memCount; idx++) {
+            address voter = team.memIndex[idx];
+            members[idx] = voter;
+            voteNos[idx] = team.memVotes[voter];
+        }
+        return (team.memCount, team.voteNo, voteNos, members);
+    }
+
+    function voteNoOfTeamate(
         uint256 roundNo,
         bytes32 tweet,
         address memAddr
@@ -478,46 +517,6 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     {
         TweetTeam storage team = tweetTeamMap[roundNo][tweet];
         return (team.memCount, team.voteNo, team.memVotes[memAddr]);
-    }
-
-    function teamInfo(uint256 roundNo, bytes32 tweet)
-    public
-    view
-    returns (uint256, uint256)
-    {
-        TweetTeam storage team = tweetTeamMap[roundNo][tweet];
-        return (team.memCount, team.voteNo);
-    }
-
-    function allTeamInfo(uint256 roundNo, bytes32[] memory tweets)
-    public
-    view
-    returns (uint256[] memory memCounts, uint256[] memory voteCounts)
-    {
-        memCounts = new uint256[](tweets.length);
-        voteCounts = new uint256[](tweets.length);
-        for (uint256 idx; idx < tweets.length; idx++) {
-            TweetTeam storage team = tweetTeamMap[roundNo][tweets[idx]];
-            memCounts[idx] = team.memCount;
-            voteCounts[idx] = team.voteNo;
-        }
-        return (memCounts, voteCounts);
-    }
-
-    function teamMembers(uint256 roundNo, bytes32 tweet)
-    public
-    view
-    returns (address[] memory members)
-    {
-        TweetTeam storage team = tweetTeamMap[roundNo][tweet];
-        if (team.memCount == 0) {
-            return new address[](0);
-        }
-        members = new address[](team.memCount);
-        for (uint256 idx = 0; idx < team.memCount; idx++) {
-            members[idx] = team.memIndex[idx];
-        }
-        return members;
     }
 
     function historyRoundInfo(uint256 from, uint256 to)

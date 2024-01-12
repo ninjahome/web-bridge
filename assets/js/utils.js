@@ -145,7 +145,7 @@ const DefaultAvatarSrc = "/assets/file/logo.png"
 const __globalContractConf = new Map([
     [toHex(421614), {
         tweetVote: "0xa3a39F3415d2024834Ef22258FC14e5cdcc3E857",
-        gameLottery: "0x3Ecc518B37085603863eba427a7397Ad72615222",
+        gameLottery: "0x819E93240968Cb4321eBff7BEfbfbb866d18524B",
         kolKey: "",
         kolKeyAbi: "",
         postPrice: "0.005",

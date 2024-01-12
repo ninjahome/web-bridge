@@ -139,7 +139,7 @@ type GameRandomMeta struct {
 	EncryptedRandom string `json:"encrypted_random"  firestore:"encrypted_random"`
 	RandomHash      string `json:"random_hash"  firestore:"random_hash"`
 	RandomLastRound string `json:"random_last_round"  firestore:"random_last_round"`
-	DiscoverTxHash  string `json:"discover_hash"  firestore:"discover_hash"`
+	DiscoverTxHash  string `json:"discover_tx_hash"  firestore:"discover_tx_hash"`
 	LastRoundStatus int8   `json:"last_round_status"  firestore:"last_round_status"`
 }
 
@@ -276,10 +276,13 @@ func (gs *GameService) gameTimeOn() (*big.Int, *time.Time, error) {
 	}
 
 	discoverTime := time.Unix(result.DiscoverTime.Int64(), 0)
-	bts, _ := json.Marshal(result)
-	util.LogInst().Debug().Str("current-round", roundNo.String()).
-		Str("discover-time", discoverTime.String()).
-		Msg(string(bts))
+	ether := new(big.Float).SetInt(result.Bonus)
+	ether = ether.Quo(ether, big.NewFloat(1e18))
+
+	str := fmt.Sprintf("randmon hash:0x%x discover time:%s bonuse:%.3f eth",
+		result.RandomHash, discoverTime.String(), ether)
+
+	util.LogInst().Debug().Str("current-round", roundNo.String()).Msg(str)
 	return roundNo, &discoverTime, nil
 }
 

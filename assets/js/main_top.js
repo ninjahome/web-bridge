@@ -59,7 +59,7 @@ async function fulfillTopTeam(cachedTopTeam) {
         const tweetHeader = team_card.querySelector(".team-leader");
 
         team_card.id = "team-header=" + teamDetails.tweetHash;
-        team_card.dataset.tweetHash = teamDetails.tweetHash;
+        // team_card.dataset.tweetHash = teamDetails.tweetHash;
 
         team_card.querySelector('.team-id-txt').innerText = teamDetails.tweetHash;
         const tweet = __globalTweetMemCacheByHash.get(teamDetails.tweetHash);
@@ -72,22 +72,41 @@ async function fulfillTopTeam(cachedTopTeam) {
         team_card.querySelector('.team-members-count').innerText = teamDetails.memCount;
 
         team_card.querySelector('.join-team').onclick = () => joinTeam(tweet, teamDetails.tweetHash, team_card);
-        team_card.querySelector('.show-team-mates').onclick = () => showTeammates(teamDetails.tweetHash);
+        team_card.querySelector('.show-team-mates').onclick = () => showTeammates(teamDetails.tweetHash,team_card);
         parent_node.appendChild(team_card);
     }
 }
 
 async function joinTeam(obj, hash, team_card) {
     try {
-        await voteToTheTweet(obj,async function (newVote) {
-            switchToTopTeam().then(r=>{});
+        await voteToTheTweet(obj, async function (newVote) {
+            switchToTopTeam().then(r => {
+            });
         });
     } catch (err) {
         console.log(err);
     }
 }
 
-function showTeammates(hash) {
+function showTeammates(tweetHash,team_card) {
+    try {
+        showWaiting("syncing members from block chain");
+        const allMates = lotteryGameContract.teamMembers(gameContractMeta.curRound, tweetHash);
+        if (allMates.length === 0) {
+            hideLoading();
+            showDialog("tips", "empty members")
+            return;
+        }
+
+        for (const ethAddr of allMates) {
+
+        }
+
+        hideLoading();
+    } catch (err) {
+        hideLoading();
+        checkMetamaskErr(err);
+    }
 }
 
 function __queryAndFillTeamHeader(tweetHeader, tweetHash) {

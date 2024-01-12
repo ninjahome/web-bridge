@@ -487,11 +487,6 @@ const gameContractABI =`
                 "internalType": "uint256",
                 "name": "roundNo",
                 "type": "uint256"
-            },
-            {
-                "internalType": "bytes32[]",
-                "name": "tweets",
-                "type": "bytes32[]"
             }
         ],
         "name": "allTeamInfo",
@@ -841,35 +836,6 @@ const gameContractABI =`
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "roundNo",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bytes32",
-                "name": "tweet",
-                "type": "bytes32"
-            }
-        ],
-        "name": "teamInfo",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
             },
@@ -925,48 +891,24 @@ const gameContractABI =`
         "name": "teamMembers",
         "outputs": [
             {
+                "internalType": "uint256",
+                "name": "voteNo",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "memNo",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "voteNos",
+                "type": "uint256[]"
+            },
+            {
                 "internalType": "address[]",
                 "name": "members",
                 "type": "address[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "roundNo",
-                "type": "uint256"
-            },
-            {
-                "internalType": "bytes32",
-                "name": "tweet",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "address",
-                "name": "memAddr",
-                "type": "address"
-            }
-        ],
-        "name": "teamMembersCountForGame",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -1093,6 +1035,45 @@ const gameContractABI =`
         "name": "tweetBought",
         "outputs": [],
         "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "roundNo",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "tweet",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "address",
+                "name": "memAddr",
+                "type": "address"
+            }
+        ],
+        "name": "voteNoOfTeamate",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
