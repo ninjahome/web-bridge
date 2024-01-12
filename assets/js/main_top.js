@@ -20,11 +20,19 @@ async function switchToTopTeam() {
             hideLoading();
             return;
         }
-        changeLoadingTips("querying team detail from block chain")
+        changeLoadingTips("querying team detail from block chain");
         console.log(allTeams);
         const obj = await lotteryGameContract.allTeamInfo(gameContractMeta.curRound, allTeams);
         console.log(obj);
+        const cachedTopTeam = [];
 
+        for (let i = 0; i < allTeams.length; i++) {
+            const teamObj = new TeamDetailOnBlockChain(allTeams[i],obj.memCounts[i],obj.voteCounts[i]);
+            cachedTopTeam.push(teamObj);
+        }
+        changeLoadingTips("sorting result");
+        cachedTopTeam.sort((a, b) => b.voteCount - a.voteCount);
+        fulfillTopTeam(cachedTopTeam);
         hideLoading();
     } catch (err) {
         console.log(err);
@@ -33,8 +41,11 @@ async function switchToTopTeam() {
     }
 }
 
-function fulfillTopTeam(){
+function fulfillTopTeam(cachedTopTeam){
+    const  team_card = document.getElementById("team-card-in-top-template").cloneNode(true);
+    team_card.display = '';
 
+    const parent_node = document.getElementById("top-hot-tweet-team");
 }
 
 

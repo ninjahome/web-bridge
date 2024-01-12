@@ -89,6 +89,9 @@ class TweetQueryParam{
 }
 
 class TeamDetailOnBlockChain{
-    constructor(hash, voter) {
+    constructor(tweetHash, memCount,voteCount) {
+        this.tweetHash=tweetHash;
+        this.memCount=memCount;
+        this.voteCount=voteCount;
     }
 }
