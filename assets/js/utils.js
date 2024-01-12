@@ -172,24 +172,52 @@ function createModalElement() {
     modal.style.display = 'flex';
     modal.style.justifyContent = 'center';
     modal.style.alignItems = 'center';
-    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.3)';
     modal.style.zIndex = '10000';
 
+    // Create a container for the spinner and text
+    const container = document.createElement('div');
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center'; // Align items vertically
+    container.style.background = 'rgb(255,255,255,0.7)';
+    container.style.padding = '20px';
+    container.style.borderRadius = '5px';
 
-    modal.innerHTML = '<div id="loading-message" style="background: white; padding: 20px; border-radius: 5px;">Loading...</div>';
-
-    // 添加加载动画
+    // Create the spinner
     const spinner = document.createElement('div');
     spinner.id = 'loading-spinner';
-    spinner.style.border = '4px solid #f3f3f3';
-    spinner.style.borderTop = '4px solid #3498db';
+    spinner.style.border = '6px solid #DDDDDE';
+    spinner.style.borderTop = '6px solid #4848D8';
     spinner.style.borderRadius = '50%';
     spinner.style.width = '40px';
     spinner.style.height = '40px';
-    spinner.style.animation = 'spin 2s linear infinite';
-    modal.appendChild(spinner);
+    spinner.style.animation = 'spin 2s ease-in-out infinite';
 
-    modal.innerHTML += '<div id="loading-message" style="margin-top: 10px;">Loading...</div>';
+    // Create the loading message
+    const message = document.createElement('div');
+    message.id = 'loading-message';
+    message.style.marginTop = '10px';
+    message.textContent = 'Loading...';
+
+    // Add text in the center of the container
+    const loadingText = document.createElement('div');
+    loadingText.textContent = 'Loading';
+    loadingText.style.position = 'absolute';
+    loadingText.style.top = '48.5%';
+    loadingText.style.left = '50%';
+    loadingText.style.transform = 'translate(-50%, -50%)';
+    loadingText.style.fontSize = '10px'; // Adjust font size as needed
+    loadingText.style.color = '#4848D8'; // Ensure text color is visible
+
+    container.appendChild(loadingText);
+
+    // Append spinner and message to the container
+    container.appendChild(spinner);
+    container.appendChild(message);
+
+    // Append the container to the modal
+    modal.appendChild(container);
 
     return modal;
 }
