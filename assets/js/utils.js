@@ -180,7 +180,7 @@ function createModalElement() {
     container.style.display = 'flex';
     container.style.flexDirection = 'column';
     container.style.alignItems = 'center'; // Align items vertically
-    container.style.background = 'rgb(255,255,255,0.7)';
+    container.style.background = 'rgb(255,255,255,1)';
     container.style.padding = '20px';
     container.style.borderRadius = '5px';
 
@@ -204,7 +204,7 @@ function createModalElement() {
     const loadingText = document.createElement('div');
     loadingText.textContent = 'Loading';
     loadingText.style.position = 'absolute';
-    loadingText.style.top = '48.5%';
+    loadingText.style.top = '48.75%';
     loadingText.style.left = '50%';
     loadingText.style.transform = 'translate(-50%, -50%)';
     loadingText.style.fontSize = '10px'; // Adjust font size as needed
