@@ -8,10 +8,10 @@ async function switchToTopTeam() {
     curScrollContentID = 12;
     initTopDivStatus("top-hot-tweet-team");
 
+    showWaiting("syncing from block chain");
+
     if (!gameContractMeta) {
-        showWaiting("syncing from block chain", 3);
-    } else {
-        showWaiting("syncing from block chain");
+       await initGameContractMeta();
     }
 
     try {
@@ -67,7 +67,7 @@ async function fulfillTopTeam(cachedTopTeam) {
         team_card.querySelector('.team-members-count').innerText = teamDetails.memCount;
 
         team_card.querySelector('.join-team').onclick = () => joinTeam(tweet, teamDetails.tweetHash, team_card);
-        team_card.querySelector('.show-team-mates').onclick = () => showTeammates(teamDetails.tweetHash,team_card);
+        team_card.querySelector('.show-team-mates').onclick = () => showTeammates(teamDetails.tweetHash, team_card);
         parent_node.appendChild(team_card);
     }
 }
@@ -83,19 +83,35 @@ async function joinTeam(obj, hash, team_card) {
     }
 }
 
-function showTeammates(tweetHash,team_card) {
+async function showTeammates(tweetHash, team_card) {
     try {
         showWaiting("syncing members from block chain");
-        const allMates = lotteryGameContract.teamMembers(gameContractMeta.curRound, tweetHash);
-        if (allMates.length === 0) {
+        const allMates = await lotteryGameContract.teamMembers(gameContractMeta.curRound, tweetHash);
+        console.log(allMates);
+        if (allMates.memNo === 0) {
             hideLoading();
             showDialog("tips", "empty members")
             return;
         }
+       const memberPark = team_card.querySelector('.team-member-park');
+        memberPark.innerHTML='';
+        for (let i = 0; i < allMates.members.length; i++) {
+            const memberCard = document.getElementById('team-members-template').cloneNode(true);
+            memberCard.style.display='';
 
-        for (const ethAddr of allMates) {
+            const ethAddr = allMates.members[i];
+            loadNJUserInfoFromSrv(ethAddr, true).then(njUsr => {
+                if (!njUsr) {
+                    console.log("query nj user failed:", ethAddr);
+                    return;
+                }
+                __setOnlyHeader(memberCard, njUsr.tw_id);
+            });
 
+            memberCard.querySelector('.user-voted-count').innerText = allMates.voteNos[i];
+            memberPark.appendChild(memberCard);
         }
+
         hideLoading();
     } catch (err) {
         hideLoading();

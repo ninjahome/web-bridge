@@ -329,7 +329,7 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
             }
         }
 
-        const response = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr);
+        const response = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
         if (!response.ok) {
             console.log("query twitter basic info failed")
             return null;

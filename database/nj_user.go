@@ -6,6 +6,7 @@ import (
 	"github.com/ninjahome/web-bridge/util"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"strings"
 	"time"
 )
 
@@ -45,7 +46,7 @@ func NJUsrInfoMust(data []byte) (*NinjaUsrInfo, error) {
 
 func (dm *DbManager) NjUserSignIn(ethAddr string) *NinjaUsrInfo {
 	nu := &NinjaUsrInfo{
-		EthAddr: ethAddr,
+		EthAddr: strings.ToLower(ethAddr),
 	}
 	docRef := dm.fileCli.Collection(DBTableNJUser).Doc(ethAddr)
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
@@ -83,8 +84,7 @@ func (dm *DbManager) NjUserSignIn(ethAddr string) *NinjaUsrInfo {
 func (dm *DbManager) QueryNjUsrById(web3ID string) (*NinjaUsrInfo, error) {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
-
-	docRef := dm.fileCli.Collection(DBTableNJUser).Doc(web3ID)
+	docRef := dm.fileCli.Collection(DBTableNJUser).Doc(strings.ToLower(web3ID))
 	doc, err := docRef.Get(opCtx)
 	if err != nil {
 		util.LogInst().Err(err).Str("web3-id", web3ID).Msg("query nj user data err")

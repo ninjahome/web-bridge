@@ -483,6 +483,14 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         return (tweets, memCounts, voteCounts);
     }
 
+    function tweetList(uint256 roundNo)
+    public
+    view
+    returns (bytes32[] memory tweets)
+    {
+        return teamList[roundNo];
+    }
+
     function teamMembers(uint256 roundNo, bytes32 tweet)
     public
     view
@@ -503,7 +511,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             members[idx] = voter;
             voteNos[idx] = team.memVotes[voter];
         }
-        return (team.memCount, team.voteNo, voteNos, members);
+        return (team.voteNo, team.memCount, voteNos, members);
     }
 
     function voteNoOfTeamate(

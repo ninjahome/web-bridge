@@ -1,4 +1,3 @@
-
 const gameContractABI =`
 [
     {
@@ -1021,6 +1020,25 @@ const gameContractABI =`
         "name": "tweetBought",
         "outputs": [],
         "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "roundNo",
+                "type": "uint256"
+            }
+        ],
+        "name": "tweetList",
+        "outputs": [
+            {
+                "internalType": "bytes32[]",
+                "name": "tweets",
+                "type": "bytes32[]"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {

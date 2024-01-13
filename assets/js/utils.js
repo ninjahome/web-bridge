@@ -145,7 +145,7 @@ const DefaultAvatarSrc = "/assets/file/logo.png"
 const __globalContractConf = new Map([
     [toHex(421614), {
         tweetVote: "0xa3a39F3415d2024834Ef22258FC14e5cdcc3E857",
-        gameLottery: "0x375055f3cF904a1329958F3c4801653b27C7e145",
+        gameLottery: "0x9077B82966B428F2A0B4fC088BE59fDE7FDEcb46",
         kolKey: "",
         kolKeyAbi: "",
         postPrice: "0.005",
@@ -377,7 +377,7 @@ class NJUserBasicInfo{
 
 
     static loadNjBasic(ethAddr) {
-        const storedData = localStorage.getItem(DbKeyForNjUserData(ethAddr))
+        const storedData = localStorage.getItem(DbKeyForNjUserData(ethAddr.toLowerCase()))
         if (!storedData) {
             return null
         }
@@ -390,7 +390,8 @@ class NJUserBasicInfo{
         if (!obj.eth_addr) {
             throw new Error("invalid twitter basic info")
         }
-        localStorage.setItem(DbKeyForNjUserData(obj.eth_addr), JSON.stringify(obj));
+
+        localStorage.setItem(DbKeyForNjUserData(obj.eth_addr.toLowerCase()), JSON.stringify(obj));
     }
 }
 
