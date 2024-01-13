@@ -1,3 +1,5 @@
+const __defaultLogo = '/assets/file/logo';
+
 function formatTime(createTime) {
     const date = new Date(createTime);
 

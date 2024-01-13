@@ -243,7 +243,12 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
         const njUsrCard = document.getElementById("ninjaUserCardTemplate").cloneNode(true);
         njUsrCard.style.display = '';
 
-        await __setOnlyHeader(njUsrCard, usr.tw_id);
+        if(!usr.tw_id){
+            njUsrCard.querySelector(".twitterAvatar").src = __defaultLogo;
+            njUsrCard.querySelector(".twitterName").innerText = usr.eth_addr;
+        }else{
+            await __setOnlyHeader(njUsrCard, usr.tw_id);
+        }
 
         njUsrCard.querySelector(".voteOrVotedRangeNo").innerText = userRankStartNo;
         if(voter){
