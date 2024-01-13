@@ -148,4 +148,6 @@ const cachedTopVotedTweets = new MemCachedTweets();
 function initTopPage() {
     curScrollContentID = 1;
     initTopDivStatus("top-most-voted-tweet");
+
+
 }

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/ninjahome/web-bridge/util"
 	"google.golang.org/api/iterator"
+	"strings"
 )
 
 type TxStatus int8
@@ -111,6 +112,24 @@ func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 		util.LogInst().Err(err).Msg("save ninja tweet failed:" + content.String())
 		return err
 	}
+
+	docRef := dm.fileCli.Collection(DBTableNJUser).Doc(strings.ToLower(content.Web3ID))
+	var nu NinjaUsrInfo
+	doc, err := docRef.Get(opCtx)
+	if err != nil {
+		util.LogInst().Err(err).Str("web3-id", content.Web3ID).Msg("query nj user failed")
+		return err
+	}
+	err = doc.DataTo(&nu)
+	if err != nil {
+		util.LogInst().Err(err).Str("web3-id", content.Web3ID).Msg("parse nj user failed")
+		return err
+	}
+	nu.TweetCount += 1
+	_, err = docRef.Update(opCtx, []firestore.Update{
+		{Path: "tweet_count", Value: nu.TweetCount},
+	})
+
 	return err
 }
 
