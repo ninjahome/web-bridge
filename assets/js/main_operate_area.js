@@ -1,4 +1,4 @@
-async function setupGameInfo() {
+async function setupGameInfo(startCounter) {
 
     const gameArea = document.getElementById("lottery-game-info");
 
@@ -8,14 +8,27 @@ async function setupGameInfo() {
     document.getElementById('lottery-user-ticket-amount').textContent = gameContractMeta.userTickNo;
     document.getElementById('lottery-current-ticket-amount').textContent = gameContractMeta.ticketNo;
 
-    startCountdown(gameContractMeta.dTime, function (txt,finished) {
-        if (!finished){
-            document.getElementById("lottery-timer").innerText = txt;
+    if (!startCounter) {
+        return;
+    }
+
+    let apiCounter = 0;
+    startCountdown(gameContractMeta.dTime, function (txt, finished) {
+        if (finished) {
+            initGameContractMeta().then(r => {
+                setupGameInfo(true);
+            });
             return;
         }
 
-        initGameContractMeta().then(r=>{
-            setupGameInfo();
-        });
+        apiCounter += 1;
+        document.getElementById("lottery-timer").innerText = txt;
+
+        if (apiCounter >= 20) {
+            apiCounter = 0;
+            initGameContractMeta().then(r => {
+                setupGameInfo(false);
+            });
+        }
     });
 }

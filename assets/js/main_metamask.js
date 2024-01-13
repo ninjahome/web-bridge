@@ -58,7 +58,7 @@ async function initBlockChainContract() {
         initVoteContractMeta().then(r => { });
 
         initGameContractMeta().then(r => {
-            setupGameInfo();
+            setupGameInfo(true);
         });
 
     } catch (error) {
