@@ -249,7 +249,7 @@ func (dm *DbManager) QueryMostVotedTweets(pageSize int, startID int64) ([]*Ninja
 		var tweet NinjaTweet
 		err = doc.DataTo(&tweet)
 		if err != nil {
-			util.LogInst().Err(err).Msgf("Failed to convert document to NinjaUsrInfo: %v", err)
+			util.LogInst().Err(err).Msgf("Failed to convert document to nj tweet: %v", err)
 			return nil, err
 		}
 		tweets = append(tweets, &tweet)

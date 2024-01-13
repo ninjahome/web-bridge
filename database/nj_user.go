@@ -1,9 +1,12 @@
 package database
 
 import (
+	"cloud.google.com/go/firestore"
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/ninjahome/web-bridge/util"
+	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"strings"
@@ -98,4 +101,45 @@ func (dm *DbManager) QueryNjUsrById(web3ID string) (*NinjaUsrInfo, error) {
 	}
 	return &nu, nil
 
+}
+
+func (dm *DbManager) MostVotedKol(pageSize int, startID int64, vote bool) ([]*NinjaUsrInfo, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+
+	voteRef := dm.fileCli.Collection(DBTableNJUser)
+	var query = voteRef.Limit(pageSize)
+	var key = "be_voted_count"
+	if vote {
+		key = "vote_count"
+	}
+	if startID == 0 {
+		query = query.OrderBy(key, firestore.Desc)
+	} else {
+		query = query.Where(key, "<", startID).OrderBy(key, firestore.Desc)
+	}
+	query = query.Where(key, ">", 0)
+	var iter = query.Documents(opCtx)
+	defer iter.Stop()
+
+	var users = make([]*NinjaUsrInfo, 0)
+
+	for {
+		doc, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			return users, nil
+		}
+		if err != nil {
+			util.LogInst().Err(err).Msgf("Failed to iterate: %v", err)
+			return nil, err
+		}
+
+		var usr NinjaUsrInfo
+		err = doc.DataTo(&usr)
+		if err != nil {
+			util.LogInst().Err(err).Msgf("Failed to convert document to NinjaUsrInfo: %v", err)
+			return nil, err
+		}
+		users = append(users, &usr)
+	}
 }

@@ -386,7 +386,7 @@ class NJUserBasicInfo{
             nuObj.update_at,nuObj.tweet_count,nuObj.vote_count,nuObj.be_voted_count);
     }
 
-    static cacheNJUsrObj(obj) {
+    static async cacheNJUsrObj(obj) {
         if (!obj.eth_addr) {
             throw new Error("invalid twitter basic info")
         }

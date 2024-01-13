@@ -491,6 +491,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="team-card" id="team-card-in-top-template" style="display: none">
                 <div class="team-id" onclick="showTweetDetail(this, '.team-card')" style="cursor: pointer">
                     团队ID:<span
@@ -520,8 +521,18 @@
             </div>
             <div class="tweets-park" id="top-most-voted-tweet"></div>
             <div class="tweets-park" id="top-hot-tweet-team"></div>
+
+            <div id="ninjaUserCardTemplate" class="ninja-user-card" style="display: none">
+                <span class="voteOrVotedRangeNo"></span>
+                <img src="" alt="Avatar" class="twitterAvatar">
+                <span class="name twitterName"></span>
+                <span class="username twitterUserName"></span>
+                <span class="voteOrVotedNos"></span>
+            </div>
+
             <div class="tweets-park" id="top-hot-Kol"></div>
             <div class="tweets-park" id="top-hot-voter"></div>
+
         </div>
 
         <div id="middle-div-user-tweets" class="content-in-middle-area">
@@ -637,7 +648,6 @@
                 </div>
 
             </div>
-
             <button class="lottery-participate-btn" onclick="openLotteryMainPage()">我的彩票</button>
         </div>
 
@@ -711,7 +721,6 @@
             document.getElementById("dessage-log-to-nj-log").src = tw_data.profile_image_url;
         }
     }
-
 
 
     async function initMainPage() {

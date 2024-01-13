@@ -200,5 +200,5 @@ func mostVotedTweet(w http.ResponseWriter, r *http.Request, nu *database.NinjaUs
 
 	util.LogInst().Debug().Str("param", para.String()).
 		Str("eth-addr", nu.EthAddr).
-		Int("size", len(tweets)).Msg("global tweets query success")
+		Int("size", len(tweets)).Msg("most voted tweets query success")
 }

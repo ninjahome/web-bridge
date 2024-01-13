@@ -30,6 +30,14 @@ function contentScroll() {
             cacheObj = cachedUserTweets;
             uiCallback = loadOlderMostVotedTweet;
             break;
+        case 13:
+            cacheObj = cachedTopVotedKolUser;
+            uiCallback = loadOlderMostVotedKol;
+            break;
+        case 14:
+            cacheObj = cachedTopVoterUser;
+            uiCallback = loadOlderMostVoter;
+            break;
         case 2:
             cacheObj = cachedUserTweets;
             uiCallback = olderPostedTweets;
@@ -340,7 +348,7 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
         }
 
         const obj = await response.json();
-        NJUserBasicInfo.cacheNJUsrObj(obj)
+        NJUserBasicInfo.cacheNJUsrObj(obj).then(r=>{})
 
         return obj;
     } catch (err) {
