@@ -50,6 +50,9 @@ async function fulfillTopTeam(cachedTopTeam) {
         const team_card = document.getElementById("team-card-in-top-template").cloneNode(true);
         team_card.style.display = '';
 
+        team_card.dataset.tweetHash = teamDetails.tweetHash;
+        team_card.dataset.detailType = '5';
+
         const tweetHeader = team_card.querySelector(".team-leader");
 
         team_card.id = "team-header=" + teamDetails.tweetHash;
