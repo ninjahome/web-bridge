@@ -63,13 +63,13 @@ async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) 
     }
 }
 
-async function __fillNormalTweet(clear, parkID, cached, templateId, cardID, overlap, callback) {
+async function __fillNormalTweet(clear, parkID, data, templateId, cardID, overlap, callback) {
     const tweetsPark = document.getElementById(parkID);
     if (clear) {
         tweetsPark.innerHTML = '';
     }
 
-    for (const tweet of cached.CachedItem) {
+    for (const tweet of data) {
 
         const tweetCard = document.getElementById(templateId).cloneNode(true);
         tweetCard.style.display = '';
@@ -100,7 +100,7 @@ async function __fillNormalTweet(clear, parkID, cached, templateId, cardID, over
 async function fillTweetParkAtHomePage(clear) {
 
     return __fillNormalTweet(clear, 'tweets-park',
-        cachedGlobalTweets, 'tweetTemplate',
+        cachedGlobalTweets.CachedItem, 'tweetTemplateForHomePage',
         "tweet-card-for-home-", true, function (tweetCard, tweetHeader, tweet) {
             tweetCard.dataset.detailType = '1';
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;

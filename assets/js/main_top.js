@@ -53,7 +53,6 @@ async function fulfillTopTeam(cachedTopTeam) {
         const tweetHeader = team_card.querySelector(".team-leader");
 
         team_card.id = "team-header=" + teamDetails.tweetHash;
-        // team_card.dataset.tweetHash = teamDetails.tweetHash;
 
         team_card.querySelector('.team-id-txt').innerText = teamDetails.tweetHash;
         const tweet = __globalTweetMemCacheByHash.get(teamDetails.tweetHash);
@@ -145,9 +144,49 @@ function switchToTopVoter() {
 
 const cachedTopVotedTweets = new MemCachedTweets();
 
-function initTopPage() {
+async function initTopPage() {
     curScrollContentID = 1;
     initTopDivStatus("top-most-voted-tweet");
+    await __loadMostVotedTweets(true);
+}
 
+async function fillMostVotedTweet(clear, tweetArray){
+    return __fillNormalTweet(clear,"top-most-voted-tweet",tweetArray,
+        "tweetTemplateForTop","tweet-card-for-most-voted-",
+        true,function (tweetCard, tweetHeader, tweet){
+            tweetCard.dataset.detailType = '4';
+            tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
+            __showVoteButton(tweetCard, tweet);
+        });
+}
 
+async function loadOlderMostVotedTweet(){
+    if (cachedTopVotedTweets.latestID === 0) {
+        console.log("no need to load older data");
+        return;
+    }
+    return __loadMostVotedTweets(false);
+}
+
+async function __loadMostVotedTweets(newest) {
+    if (newest){
+        cachedTopVotedTweets.latestID = 0;
+    }
+
+    const param = new TweetQueryParam(cachedTopVotedTweets.latestID, "", []);
+    const resp = await PostToSrvByJson("/mostVotedTweet", param);
+    if (!resp) {
+        if (!newest){
+            cachedTopVotedTweets.moreOldTweets = false;
+        }
+        return;
+    }
+    const tweetArray = JSON.parse(resp);
+    if (tweetArray.length === 0) {
+        cachedTopVotedTweets.moreOldTweets = false;
+        return;
+    }
+
+    cachedTopVotedTweets.latestID = tweetArray[tweetArray.length - 1].vote_count;
+    await fillMostVotedTweet(newest, tweetArray);
 }

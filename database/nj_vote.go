@@ -182,7 +182,7 @@ func (dm *DbManager) UpdateTweetVoteStatic(vote *TweetVoteAction, voter string) 
 	return err
 }
 
-func (dm *DbManager) QueryVotedTweetID(pageSize int, startID int64, voter string) ([]*TweetVotePersonalRecord, error) {
+func (dm *DbManager) QueryVotedTweetIDByMe(pageSize int, startID int64, voter string) ([]*TweetVotePersonalRecord, error) {
 
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
@@ -217,5 +217,41 @@ func (dm *DbManager) QueryVotedTweetID(pageSize int, startID int64, voter string
 			continue
 		}
 		result = append(result, &voteStatus)
+	}
+}
+
+func (dm *DbManager) QueryMostVotedTweets(pageSize int, startID int64) ([]*NinjaTweet, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+
+	voteRef := dm.fileCli.Collection(DBTableTweetsPosted)
+	var query = voteRef.Limit(pageSize)
+	if startID == 0 {
+		query = query.OrderBy("vote_count", firestore.Desc)
+	} else {
+		query = query.Where("vote_count", "<", startID).OrderBy("vote_count", firestore.Desc)
+	}
+
+	var iter = query.Documents(opCtx)
+	defer iter.Stop()
+
+	var tweets = make([]*NinjaTweet, 0)
+	for {
+		doc, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			return tweets, nil
+		}
+		if err != nil {
+			util.LogInst().Err(err).Msgf("Failed to iterate: %v", err)
+			return nil, err
+		}
+
+		var tweet NinjaTweet
+		err = doc.DataTo(&tweet)
+		if err != nil {
+			util.LogInst().Err(err).Msgf("Failed to convert document to NinjaUsrInfo: %v", err)
+			return nil, err
+		}
+		tweets = append(tweets, &tweet)
 	}
 }

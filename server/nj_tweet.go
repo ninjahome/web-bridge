@@ -131,7 +131,7 @@ func votedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 		return
 	}
 
-	ids, err := database.DbInst().QueryVotedTweetID(_globalCfg.TweetsPageSize, para.StartID, nu.EthAddr)
+	ids, err := database.DbInst().QueryVotedTweetIDByMe(_globalCfg.TweetsPageSize, para.StartID, nu.EthAddr)
 	if err != nil {
 		util.LogInst().Err(err).Str("user-web3-id", nu.EthAddr).
 			Msg("failed to query voted tweets ")
@@ -172,4 +172,33 @@ func removeUnpaidTweet(w http.ResponseWriter, r *http.Request, nu *database.Ninj
 	util.LogInst().Info().Int64("create_time", status.CreateTime).
 		Str("web3-id", nu.EthAddr).Msg(" delete unpaid tweet success")
 
+}
+
+func mostVotedTweet(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	var para database.TweetQueryParm
+	var err = util.ReadRequest(r, &para)
+	if err != nil {
+		util.LogInst().Err(err).Str("param", para.String()).
+			Msg("invalid query parameter")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	tweets, err := database.DbInst().QueryMostVotedTweets(_globalCfg.TweetsPageSize, para.StartID)
+	if err != nil {
+		util.LogInst().Err(err).Str("param", para.String()).
+			Str("eth-addr", nu.EthAddr).
+			Msg("query most voted tweets failed")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	bts, _ := json.Marshal(tweets)
+	w.Write(bts)
+
+	util.LogInst().Debug().Str("param", para.String()).
+		Str("eth-addr", nu.EthAddr).
+		Int("size", len(tweets)).Msg("global tweets query success")
 }

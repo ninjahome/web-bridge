@@ -26,6 +26,10 @@ function contentScroll() {
             cacheObj = cachedGlobalTweets;
             uiCallback = loadOlderTweetsForHomePage;
             break;
+        case 1:
+            cacheObj = cachedUserTweets;
+            uiCallback = loadOlderMostVotedTweet;
+            break;
         case 2:
             cacheObj = cachedUserTweets;
             uiCallback = olderPostedTweets;

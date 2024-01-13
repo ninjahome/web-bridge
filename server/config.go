@@ -36,6 +36,7 @@ var (
 		"/tweetQuery":               {globalTweetQuery, true},
 		"/votedTweetIds":            {votedTweetsQuery, true},
 		"/removeUnpaidTweet":        {removeUnpaidTweet, true},
+		"/mostVotedTweet":           {mostVotedTweet, true},
 	}
 
 	cfgHtmlFileRouter = map[string]string{

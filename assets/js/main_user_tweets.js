@@ -84,7 +84,7 @@ async function removeUnPaidTweets(createTime) {
 
 async function fillUserPostedTweetsList(clear) {
 
-    return __fillNormalTweet(clear, 'tweets-post-by-user', cachedUserTweets,
+    return __fillNormalTweet(clear, 'tweets-post-by-user', cachedUserTweets.CachedItem,
         'tweetTemplateForUserSelf', "tweet-card-for-user-", false,
         function (tweetCard, tweetHeader, tweet) {
             tweetCard.dataset.detailType = '2';
@@ -156,7 +156,7 @@ async function __loadTweetIDsUserVoted(newest) {
 
 async function fillUserVotedTweetsList(clear) {
     return __fillNormalTweet(clear, 'tweets-voted-by-user',
-        cachedUserVotedTweets,
+        cachedUserVotedTweets.CachedItem,
         'tweetTemplateForVoted', "tweet-card-for-vote-", true,
         function (tweetCard, tweetHeader, tweet) {
             tweetCard.querySelector('.total-vote-number').textContent = tweet.vote_count;
