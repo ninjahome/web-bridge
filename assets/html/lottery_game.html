@@ -11,77 +11,140 @@
     <script src="/assets/js/main_class.js"></script>
     <script src="/assets/js/main_metamask.js"></script>
     <script src="/assets/js/game.js"></script>
+    <style about="basic">
+        .back-to-main-btn {
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 10px;
+        }
 
-    <style about="main frame">
+        .main-container {
+            display: flex;
+            justify-content: space-between;
+            height: 100vh; /* 让 main-container 占据整个视口高度 */
+            align-items: center; /* 垂直居中对齐 */
+        }
+
+        .user-section {
+            flex: 1;
+            margin: 10px;
+        }
+
+        .game-section {
+            flex: 2; /* 设置为2，占据两倍的弹性空间 */
+            margin: 10px;
+        }
+
+        .history-section {
+            flex: 1;
+            margin: 10px;
+        }
+
+</style>
+    <style about="user-balance">
+        /* 当内容过长时，取消 text-overflow 和显示所有文本 */
+        .tickets-detail:hover .team-id-txt,
+        .team-detail:hover .team-id-txt {
+            white-space: normal; /* 允许文字换行 */
+            text-overflow: clip; /* 取消省略号 */
+            overflow: visible; /* 显示所有文本 */
+        }
+
+        .tickets-detail,
+        .team-detail {
+            max-width: 100%; /* 设置最大宽度为父容器宽度 */
+            overflow-x: auto; /* 启用横向滚动 */
+            word-wrap: break-word; /* 允许单词内换行 */
+        }
+
+        .team-id-txt {
+            white-space: normal; /* 允许文字换行 */
+            word-break: break-all; /* 允许单词内换行 */
+        }
+
+        /* 使用 Flexbox 排列元素在同一行 */
+        .ticket-action {
+            display: flex; /* 使用 Flexbox 布局 */
+            align-items: center; /* 垂直居中对齐按钮和文本 */
+        }
+
+        .ticket-action p,
+        .ticket-action button {
+            margin-right: 10px; /* 添加一些右侧间距，以分隔文本和按钮 */
+        }
+
+
+        /* 使用 Flexbox 排列元素在同一行 */
+        .user-balance {
+            display: flex; /* 使用 Flexbox 布局 */
+            align-items: center; /* 垂直居中对齐按钮和文本 */
+        }
+
+        .balance-value {
+            margin-right: 10px; /* 添加一些右侧间距，以分隔数值和按钮 */
+        }
 
     </style>
 </head>
+
 <body>
 <div class="back-to-main-btn">
     <button onclick="window.location.href='/main'" class="return-main-btn">返回首页</button>
 </div>
 <div class="main-container">
-    <!-- 用户信息区域 -->
     <div class="user-section">
         <h3 class="user-title">我的彩票</h3>
         <div class="user-balance">
             <p>奖金: <span class="balance-value">0.02</span> ETH</p>
             <button class="withdraw-btn">提现</button>
         </div>
+        <div class="ticket-action">
+            <p>彩票数: <span class="ticket-count">0</span></p>
+            <button class="ticket-details-btn">刷新</button>
+            <p>团队数: <span class="team-count">0</span></p>
+            <button class="team-details-btn">刷新</button>
+        </div>
         <div class="user-tickets">
-            <div class="ticket-info">
-                <p>彩票数: <span class="ticket-count">0</span></p>
-                <button class="ticket-details-btn">详情</button>
-            </div>
-            <div class="user-teams">
-                <p>团队数: <span class="team-count">0</span></p>
-                <button class="team-details-btn">详情</button>
-            </div>
-            <!-- 彩票详细信息表格 -->
-            <div class="ticket-details">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>彩票ID</th>
-                        <th>团队 ID</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>10002</td>
-                        <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
-                    </tr>
-                    <tr>
-                        <td>10003</td>
-                        <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <!-- 团队详细信息表格 -->
-            <div class="team-details">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>团队 ID</th>
-                        <th>团队人数</th>
-                        <th>团队票数</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
-                        <td>2</td>
-                        <td>4</td>
-                    </tr>
-                    <tr>
-                        <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
-                        <td>3</td>
-                        <td>7</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+            <table class="tickets-detail">
+                <thead>
+                <tr>
+                    <th>彩票ID</th>
+                    <th>团队 ID</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>10002</td>
+                    <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                </tr>
+                <tr>
+                    <td>10003</td>
+                    <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="team-detail">
+                <thead>
+                <tr>
+                    <th>团队ID</th>
+                    <th>团队人数</th>
+                    <th>团队票数</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                    <td>2</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                    <td>3</td>
+                    <td>7</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -90,7 +153,8 @@
         <h3 class="round-title">当前彩票信息</h3>
         <div class="round-summary">
             <p>第: <span class="round-number">12</span>期</p>
-            <p>开奖hash: <span class="round-discover-hash-val">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46 </span>ETH
+            <p>开奖hash:
+                <span class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46 </span>
             </p>
 
             <div>
@@ -143,12 +207,12 @@
             <div class="round-history" id="history-data-one-round-template">
                 <p>奖金: <span class="one-round-bonus-val">0.02 ETH</span></p>
                 <p>开奖时间: <span class="one-round-discover-val">2024-01-15 23:35:44</span></p>
-                <p>随机数: <span class="one-round-random-val">37482194388201444118418062240926890660227596936268075126588913967857445000838</span>
+                <p>随机数: <span class="team-id-txt">37482194388201444118418062240926890660227596936268075126588913967857445000838</span>
                 </p>
-                <p>随机数 Hash: <span class="one-round-random-hash-val">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
+                <p>随机数 Hash: <span class="team-id-txt">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
                 </p>
                 <p>获奖者: <span class="one-round-winner-val">0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB</span></p>
-                <p>获奖团队: <span class="one-round-win-team-val">0x182bd38d6f81c8d77e4cc49dab221109e03fdea8978cab7e04f928435368562a</span>
+                <p>获奖团队: <span class="team-id-txt">0x182bd38d6f81c8d77e4cc49dab221109e03fdea8978cab7e04f928435368562a</span>
                 </p>
                 <p>获奖彩票ID: <span class="one-round-win-ticket-val">100023</span></p>
             </div>
@@ -159,7 +223,6 @@
         </div>
     </div>
 </div>
-
 </body>
 </html>
 
