@@ -134,33 +134,17 @@ abstract contract ServiceFeeForWithdraw is Owner {
 
         emit AdminOperation(admin, isDelete);
     }
-
-    function withdraw(uint256 amount, bool all) public noReentrant inRun {
-        uint256 _curBalance = balance[msg.sender];
-        if (all) {
-            amount = _curBalance;
-        }
-        require(amount > __minValCheck, "too small amount");
-        require(_curBalance >= amount, "more than balance");
-        require(_curBalance <= address(this).balance, "insufficient founds");
-
-        balance[msg.sender] -= amount;
-
-        uint256 reminders = minusWithdrawFee(amount);
-
-        payable(msg.sender).transfer(reminders);
-
-        emit WithdrawService(msg.sender, reminders);
-    }
 }
 
-interface TweetVotePlugInI {
+interface IsValidNjContract {
+    function checkPluginInterface() external pure returns (bool);
+}
+
+interface TweetVotePlugInI is IsValidNjContract{
     function tweetBought(
         bytes32 tweetHash,
         address owner,
         address buyer,
         uint256 voteNo
     ) external payable;
-
-    function checkPluginInterface() external pure returns (bool);
 }

@@ -420,6 +420,24 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         team.voteNo += voteNo;
     }
 
+    function withdraw(uint256 amount, bool all) public noReentrant inRun {
+        uint256 _curBalance = balance[msg.sender];
+        if (all) {
+            amount = _curBalance;
+        }
+        require(amount > __minValCheck, "too small amount");
+        require(_curBalance >= amount, "more than balance");
+        require(_curBalance <= address(this).balance, "insufficient founds");
+
+        balance[msg.sender] -= amount;
+
+        uint256 reminders = minusWithdrawFee(amount);
+
+        payable(msg.sender).transfer(reminders);
+
+        emit WithdrawService(msg.sender, reminders);
+    }
+
     /**
      * @dev Allows external users to buy lottery tickets when the game is open to the public.
      * @param ticketNo The number of tickets the external user wants to purchase.

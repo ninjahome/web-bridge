@@ -19,9 +19,12 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
 
     address public pluginAddress;
     bool public pluginStop = true;
+    address public kolKeyAddress;
+    bool public kolKeyStop = true;
+    uint256 public kolKeyIncomeRate = 5;
 
     event Received(address indexed sender, uint256 amount);
-    event PluginChanged(address pAddr, bool stop);
+    event PluginChanged(address pAddr, bool stop, string typ);
     event SystemRateChanged(uint256 pricePost, string rateName);
 
     constructor() payable {}
@@ -92,13 +95,40 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
         require(pluginAddress != addr, "no need change");
         pluginAddress = addr;
         pluginStop = false;
-        emit PluginChanged(pluginAddress, pluginStop);
+        emit PluginChanged(pluginAddress, pluginStop, "plugin address changed");
     }
 
     function adminStopPlugin(bool stop) public isOwner {
         require(pluginStop != stop, "no need change");
         pluginStop = stop;
-        emit PluginChanged(pluginAddress, pluginStop);
+        emit PluginChanged(pluginAddress, pluginStop, "plugin status changed");
+    }
+
+    function adminSetKolKeyAddr(address addr) public isOwner {
+        require(
+            IsValidNjContract(addr).checkPluginInterface(),
+            "invalid kol key address"
+        );
+        require(kolKeyAddress != addr, "no need change");
+        kolKeyAddress = addr;
+        kolKeyStop = false;
+        emit PluginChanged(
+            kolKeyAddress,
+            kolKeyStop,
+            "kol key address changed"
+        );
+    }
+
+    function adminStopKolKey(bool stop) public isOwner {
+        require(kolKeyStop != stop, "no need change");
+        kolKeyStop = stop;
+        emit PluginChanged(kolKeyAddress, kolKeyStop, "kol key status changed");
+    }
+
+    function adminChangeKolKeyRate(uint8 newRate) public isOwner {
+        require(newRate <= 100, "invalid kol key rate");
+        kolIncomePerTweetVoteRate = newRate;
+        emit SystemRateChanged(newRate, "kol_key_income_rate");
     }
 }
 
@@ -206,6 +236,30 @@ contract TweetVote is TweetVoteAmin {
         }
 
         emit TweetVoted(tweetHash, msg.sender, tweetVotePrice, voteNo);
+    }
+
+    function withdraw(uint256 amount, bool all) public noReentrant inRun {
+        uint256 _curBalance = balance[msg.sender];
+        if (all) {
+            amount = _curBalance;
+        }
+        require(amount > __minValCheck, "too small amount");
+        require(_curBalance >= amount, "more than balance");
+        require(_curBalance <= address(this).balance, "insufficient founds");
+
+        balance[msg.sender] -= amount;
+
+        uint256 reminders = minusWithdrawFee(amount);
+
+        if (kolKeyAddress != address(0) && kolKeyStop == false) {
+            uint256 kolKeyPool = reminders * kolKeyIncomeRate;
+            reminders -= kolKeyPool;
+            payable(kolKeyAddress).transfer(kolKeyPool);
+        }
+
+        payable(msg.sender).transfer(reminders);
+
+        emit WithdrawService(msg.sender, reminders);
     }
 
     function recoverSigner(bytes32 prefixedHash, bytes memory signature)

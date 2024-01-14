@@ -4,10 +4,189 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lottery Game</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    <script src="/assets/js/abi_tweet_vote.js"></script>
+    <script src="/assets/js/abi_game_lottery.js"></script>
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/main_metamask.js"></script>
+    <script src="/assets/js/game.js"></script>
 </head>
 <body>
-Lottery Game
 <button onclick="window.location.href='/main'">返回</button>
+
+<div class="container">
+    <div class="user-data-container">
+        <div class="tittle">我的彩票</div>
+        <div class="balance">
+            <div>
+                余额: <span class="balance-val">0.02</span> eth
+            </div>
+            <div>
+                <button class="balance-withdraw-btn">提现</button>
+            </div>
+        </div>
+        <div class="ticket">
+            <div>
+                彩票：<span class="ticket-no">0</span> 张
+                <button class="ticket-detail-btn">详情</button>
+            </div>
+            <div>
+                团队： <span class="team-no">0</span> 个
+                <button class="team-detail-btn">详情</button>
+            </div>
+            <div class="ticket-detail">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>彩票ID</th>
+                        <th>团队ID</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>10002</td>
+                        <td>0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                    </tr>
+                    <tr>
+                        <td>10003</td>
+                        <td>0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="team-detail">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>团队ID</th>
+                        <th>团队人数</th>
+                        <th>团队票数</th>
+                    </tr>
+
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                        <td>2</td>
+                        <td>4</td>
+                    </tr>
+                    <tr>
+                        <td>0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                        <td>3</td>
+                        <td>7</td>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="public-data-container">
+        <div class="current-round-info">
+            <div class="round-tittle">第<span class="round-no">0</span>期</div>
+
+            <div class="round-data">
+                <div class="round-bonus">
+                    奖池:<span class="round-bonus-val">0.000</span> eth
+                </div>
+
+                <div class="round-discover-time">
+                    开奖时间:<span class="round-discover-time-val">1 天 02:54:55</span>
+                </div>
+
+                <div class="round-team-info">
+                    团队数:<span class="round-team-info-val">2</span>
+                </div>
+                <div class="round-ticket-info">
+                    彩票数:<span class="round-ticket-info-val">4</span>
+                </div>
+                <div class="round-discover-hash">
+                    开奖hash:<span class="round-discover-hash-val">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="history-data-container">
+        <div class="game-info">
+            <div class="game-logic">
+                1, 通过为KOL打赏获得彩票
+                2, KOL打赏的60%金额进入奖池。
+                3, 每2天开一次奖。
+                4，中奖奖金一半归中奖人，一半归中奖团队。
+            </div>
+            <div class="game-algorithm">
+                <div class="title">开奖算法</div>
+                <div class="description">
+                    1，随机数链下生成，
+                    2，每期开奖结束后，将下期开奖随机数的hash值写入区块链
+                    3，开奖日期截止是，智能合约接受随机数，
+                    4,智能合约计算随机数hash值与区块链随机数hash比对。
+                    5，比对成功后随机选择中奖者web3ID：
+                </div>
+                <div>
+                     <span class="description-head">
+                         算法：
+                     </span>
+                    <span class="description-detail">
+                         购买地址列表[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数]。
+                     </span>
+                </div>
+            </div>
+            <div class="contract-info">
+                <div class="contract-address">
+                    <span>合约地址</span>
+                    <span>0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</span>
+                </div>
+                <div class="contract-code">
+                    <button><img src="/assets/file/GitHub-logo.png" alt="github">gitbub</button>
+                </div>
+            </div>
+        </div>
+        <div class="game-history-data">
+            <div class="query-data">
+                <span class="round-no-query">轮次： <input value="1"></span>
+                <button class="query-data-btn">查询</button>
+            </div>
+            <div class="data-in-one-round">
+                <div class="history-data-one-round" id="history-data-one-round-template">
+                    <div class="one-round-bonus">奖金：<span class="one-round-bonus-val"> 0.02</span> eth</div>
+                    <div class="one-round-discover">开奖：<span
+                                class="one-round-discover-val"> 2024-01-15 23:35:44</span></div>
+                    <div class="one-round-random">随机数：
+                        <span class="one-round-random-val">
+                            37482194388201444118418062240926890660227596936268075126588913967857445000838>
+                        </span>
+                    </div>
+                    <div class="one-round-random-hash">随机数hash：
+                        <span class="one-round-random-hash-val">
+                            0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b
+                        </span>
+                    </div>
+                    <div class="one-round-winner">中奖者：
+                        <span class="one-round-winner-val">
+                            0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB
+                        </span>
+                    </div>
+                    <div class="one-round-win-team">中奖团队：
+                        <span class="one-round-win-team-val">
+                            0x182bd38d6f81c8d77e4cc49dab221109e03fdea8978cab7e04f928435368562a
+                        </span>
+                    </div>
+                    <div class="one-round-win-ticket">中奖彩票：
+                        <span class="one-round-win-ticket-val">
+                            100023
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="all-history-data">
+                <button class="query-data-btn">加载历史数据</button>
+                <div class="history-data-list"></div>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
 

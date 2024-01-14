@@ -101,6 +101,12 @@ const tweetVoteContractABI =`
                 "internalType": "bool",
                 "name": "stop",
                 "type": "bool"
+            },
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "typ",
+                "type": "string"
             }
         ],
         "name": "PluginChanged",
@@ -280,6 +286,19 @@ const tweetVoteContractABI =`
     {
         "inputs": [
             {
+                "internalType": "uint8",
+                "name": "newRate",
+                "type": "uint8"
+            }
+        ],
+        "name": "adminChangeKolKeyRate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
                 "name": "admin",
                 "type": "address"
@@ -311,6 +330,19 @@ const tweetVoteContractABI =`
             }
         ],
         "name": "adminSetKolIncomePerTweetRate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "addr",
+                "type": "address"
+            }
+        ],
+        "name": "adminSetKolKeyAddr",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -389,6 +421,19 @@ const tweetVoteContractABI =`
             }
         ],
         "name": "adminSetWithdrawFeeRate",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bool",
+                "name": "stop",
+                "type": "bool"
+            }
+        ],
+        "name": "adminStopKolKey",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -498,6 +543,45 @@ const tweetVoteContractABI =`
                 "internalType": "uint8",
                 "name": "",
                 "type": "uint8"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "kolKeyAddress",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "kolKeyIncomeRate",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "kolKeyStop",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
             }
         ],
         "stateMutability": "view",
