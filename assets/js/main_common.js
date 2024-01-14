@@ -109,22 +109,31 @@ function clearCachedData() {
 }
 
 
-function showHoverCard() {
+async function showHoverCard(event, web3ID) {
     const hoverCard = document.getElementById('hover-card');
-    const rect = this.getBoundingClientRect();
-    const avatar = this.querySelector('img').src;
-    const name = this.querySelector('.name').textContent;
-    const tweetCount = '0'; // obj.tweet_no;
-    const voteCount = '0'; // obj.vote_count;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const avatar = event.currentTarget.querySelector('img').src;
+    const name = event.currentTarget.querySelector('.name').textContent;
+
+    const njUsrInfo = await loadNJUserInfoFromSrv(web3ID, true);
+
+
 
     document.getElementById('hover-avatar').src = avatar;
     document.getElementById('hover-name').textContent = name;
-    document.getElementById('hover-tweet-count').textContent = tweetCount;
-    document.getElementById('hover-vote-count').textContent = voteCount;
+
 
     hoverCard.style.display = 'block';
     hoverCard.style.left = `${rect.left}px`;
     hoverCard.style.top = `${rect.bottom + window.scrollY}px`;
+
+    if (!njUsrInfo){
+        console.log("failed to load web3 user:",web3ID);
+        return;
+    }
+    document.getElementById('hover-tweet-count').textContent = njUsrInfo.tweet_count;
+    document.getElementById('hover-vote-count').textContent = njUsrInfo.vote_count;
+    document.getElementById('hover-voted-count').textContent = njUsrInfo.be_voted_count;
 }
 
 function hideHoverCard(obj) {
@@ -196,8 +205,9 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     const contentArea = tweetHeader.querySelector('.tweet-content');
     contentArea.textContent = tweet.text;
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
+
     if (overlap) {
-        wrappedHeader.addEventListener('mouseenter', showHoverCard);
+        wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event, tweet.web3_id));
         wrappedHeader.addEventListener('mouseleave', (event) => hideHoverCard(wrappedHeader));
     }
 

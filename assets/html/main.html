@@ -607,29 +607,6 @@
             <div id="tweets-voted-by-user" class="tweets-park"></div>
         </div>
         <div id="middle-div-about-user" class="content-in-middle-area">
-
-            <div class="user-settings-tittle">设置</div>
-
-            <div class="user-settings">
-
-                <div class="user-setting-about-twitter">
-                    <div>
-                        <span>Web3 ID:<span id="basic-web3-id" class="user-web3-id">0x123...</span></span>
-                        <span>积分:<span id="dessage-web3-token" class="user-ninja-noun">0.00 </span>dsg</span>
-                        <span class="user-twitter-avatar"><img id="user-twitter-avatar" src="/assets/file/logo.png"
-                                                               alt="twitter-avatar"></span>
-                        <span class="user-twitter-name"><span id="user-setting-name">未绑定</span></span>
-                        <span class="user-twitter-username"><span id="user-setting-user-name">未绑定</span></span>
-                        <button onclick="refreshTwitterInfo()">同步推特</button>
-                    </div>
-                </div>
-
-                <div class="user-setting-action">
-                    <button onclick="quitFromService()">退出</button>
-                    <button onclick="clearCachedData()">清空缓存</button>
-                </div>
-            </div>
-
             <div class="middle-div-income-inner">
                 <div class="income-area-tittle">收入</div>
                 <div class="income-tweet-area">
@@ -702,9 +679,27 @@
                     </div>
                 </div>
             </div>
+            <div class="user-settings">
+                <div class="user-settings-tittle">设置</div>
 
+                <div class="user-setting-about-twitter">
+                    <div>
+                        <span>Web3 ID:<span id="basic-web3-id" class="user-web3-id">0x123...</span></span>
+                        <span>积分:<span id="dessage-web3-token" class="user-ninja-noun">0.00 </span>dsg</span>
+                        <span class="user-twitter-avatar"><img id="user-twitter-avatar" src="/assets/file/logo.png"
+                                                               alt="twitter-avatar"></span>
+                        <span class="user-twitter-name"><span id="user-setting-name">未绑定</span></span>
+                        <span class="user-twitter-username"><span id="user-setting-user-name">未绑定</span></span>
+                        <button onclick="refreshTwitterInfo()">同步推特</button>
+                    </div>
+                </div>
+
+                <div class="user-setting-action">
+                    <button onclick="quitFromService()">退出</button>
+                    <button onclick="clearCachedData()">清空缓存</button>
+                </div>
+            </div>
         </div>
-        <div id="middle-div-userKolKey" class="content-in-middle-area">我的Key内容</div>
         <div id="tweet-detail" class="tweet-detail" style="display: none;">
             <button id="back-button" class="back-button">返回</button>
 
@@ -733,8 +728,8 @@
                 </div>
             </div>
         </div>
-        <div id="user-profile"></div>
     </div>
+
     <div class="right-operation-area">
 
         <div class="lottery-game-info" id="lottery-game-info">
@@ -779,7 +774,8 @@
     <div class="hover-card-content">
         <div id="hover-name"></div>
         <div>推文总数: <span id="hover-tweet-count"></span></div>
-        <div>投票数: <span id="hover-vote-count"></span></div>
+        <div>被打赏数: <span id="hover-vote-count"></span></div>
+        <div>打赏数: <span id="hover-voted-count"></span></div>
     </div>
     <button class="buy-key-button">购买Key</button>
 </div>
