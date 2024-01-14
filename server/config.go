@@ -38,6 +38,7 @@ var (
 		"/removeUnpaidTweet":        {removeUnpaidTweet, true},
 		"/mostVotedTweet":           {mostVotedTweet, true},
 		"/mostVotedKol":             {mostVotedKol, true},
+		"/queryTweetByHash":         {queryTweetByHash, true},
 	}
 
 	cfgHtmlFileRouter = map[string]string{

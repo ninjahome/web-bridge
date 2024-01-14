@@ -202,3 +202,20 @@ func mostVotedTweet(w http.ResponseWriter, r *http.Request, nu *database.NinjaUs
 		Str("eth-addr", nu.EthAddr).
 		Int("size", len(tweets)).Msg("most voted tweets query success")
 }
+
+func queryTweetByHash(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
+	var tweetHash = r.URL.Query().Get("tweet_hash")
+
+	obj, err := database.DbInst().NjTweetDetailsByHash(tweetHash)
+	if err != nil {
+		util.LogInst().Err(err).Str("tweet-hash", tweetHash).Msg("query tweet detail failed")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	bts, _ := json.Marshal(obj)
+	w.Write(bts)
+	util.LogInst().Debug().Str("tweet-hash", tweetHash).Msg("query tweet by hash success")
+}

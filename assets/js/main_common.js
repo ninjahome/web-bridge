@@ -220,17 +220,6 @@ function quitFromService() {
 }
 
 
-function showTweetDetailByHash(parentName){
-    const detail = document.querySelector('#tweet-detail');
-    detail.style.display = 'block';
-
-    const tweetCard = this.closest(parentName);
-    tweetCard.parentNode.style.display = 'none';
-
-    const create_time = Number(tweetCard.dataset.tweetHash);
-    const detailType = Number(tweetCard.dataset.detailType);
-}
-
 async function showTweetDetail(parentName) {
     const detail = document.querySelector('#tweet-detail');
     detail.style.display = 'block';

@@ -51,19 +51,27 @@ async function fulfillTopTeam(cachedTopTeam) {
         team_card.style.display = '';
 
         team_card.dataset.tweetHash = teamDetails.tweetHash;
-        team_card.dataset.detailType = '5';
 
         const tweetHeader = team_card.querySelector(".team-leader");
-
         team_card.id = "team-header=" + teamDetails.tweetHash;
 
         team_card.querySelector('.team-id-txt').innerText = teamDetails.tweetHash;
+
         const tweet = __globalTweetMemCacheByHash.get(teamDetails.tweetHash);
         if (!tweet) {
-            __queryAndFillTeamHeader(tweetHeader, teamDetails.tweetHash);
+            const newTweet = await __queryTweetFoTeam(tweetHeader, teamDetails.tweetHash);
+            if (!newTweet) {
+                return;
+            }
+            await __setOnlyHeader(tweetHeader, newTweet.twitter_id);
+            team_card.dataset.createTime = newTweet.create_time;
+
         } else {
             await __setOnlyHeader(tweetHeader, tweet.twitter_id);
+            team_card.dataset.createTime = tweet.create_time;
+
         }
+        team_card.dataset.detailType = '5';
 
         team_card.querySelector('.team-voted-count').innerText = teamDetails.voteCount;
         team_card.querySelector('.team-members-count').innerText = teamDetails.memCount;
@@ -134,6 +142,20 @@ function __queryAndFillTeamHeader(tweetHeader, tweetHash) {
         });
     });
 }
+
+async function __queryTweetFoTeam(tweetHeader, tweetHash) {
+    try {
+        const response = await GetToSrvByJson("/queryTweetByHash?tweet_hash=" + tweetHash);
+        const obj = TwitterBasicInfo.cacheTwBasicInfo(response);
+        __globalTweetMemCacheByHash.set(tweetHash, obj);
+        __globalTweetMemCache.set(obj.create_time, obj);
+        return obj;
+    } catch (err) {
+        showDialog("error", "query tweet failed:" + err.toString());
+        return null;
+    }
+}
+
 
 const cachedTopVotedTweets = new MemCachedTweets();
 
@@ -246,17 +268,17 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
         const njUsrCard = document.getElementById("ninjaUserCardTemplate").cloneNode(true);
         njUsrCard.style.display = '';
 
-        if(!usr.tw_id){
+        if (!usr.tw_id) {
             njUsrCard.querySelector(".twitterAvatar").src = __defaultLogo;
             njUsrCard.querySelector(".twitterName").innerText = usr.eth_addr;
-        }else{
+        } else {
             await __setOnlyHeader(njUsrCard, usr.tw_id);
         }
 
         njUsrCard.querySelector(".voteOrVotedRangeNo").innerText = userRankStartNo;
-        if(voter){
+        if (voter) {
             njUsrCard.querySelector(".voteOrVotedNos").innerText = usr.vote_count;
-        }else {
+        } else {
             njUsrCard.querySelector(".voteOrVotedNos").innerText = usr.be_voted_count;
         }
         ninjaUserPark.appendChild(njUsrCard);
@@ -266,6 +288,7 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
 }
 
 const cachedTopVoterUser = new MemCachedTweets();
+
 async function switchToTopVoter() {
     curScrollContentID = 14;
     initTopDivStatus("top-hot-voter");

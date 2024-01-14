@@ -245,3 +245,26 @@ func (dm *DbManager) QueryTwUserByTweetHash(tHash string) (*TWUserInfo, error) {
 	}
 	return tu, nil
 }
+
+func (dm *DbManager) NjTweetDetailsByHash(tHash string) (*NinjaTweet, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	query := dm.fileCli.Collection(DBTableTweetsPosted).
+		Where("prefixed_hash", "==", tHash)
+	iter := query.Documents(opCtx)
+	defer iter.Stop()
+	doc, err := iter.Next()
+	if err != nil {
+		util.LogInst().Err(err).Str("tweet-hash", tHash).Msg("no such tweet")
+		return nil, err
+	}
+
+	var obj NinjaTweet
+	err = doc.DataTo(&obj)
+	if err != nil {
+		util.LogInst().Err(err).Msg("parse nj tweet failed")
+		return nil, err
+	}
+
+	return &obj, nil
+}
