@@ -3,7 +3,7 @@ let metamaskProvider;
 let tweetVoteContract;
 let lotteryGameContract = null;
 let voteContractMeta = TweetVoteContractSetting.load();
-let gameContractMeta =  null;
+let gameContractMeta = null;
 
 async function checkMetaMaskEnvironment() {
 
@@ -42,8 +42,8 @@ async function initGameContractMeta() {
 
     const [allTickets] = await lotteryGameContract.tickList(currentRoundNo, ninjaUserObj.eth_addr);
     gameContractMeta = new GameBasicInfo(currentRoundNo,
-        totalBonusInEth, ticketNo,curBonusInEth,
-        allTickets.length,dTime,gameInfo.randomHash);
+        totalBonusInEth, ticketNo, curBonusInEth,
+        allTickets.length, dTime, gameInfo.randomHash);
 }
 
 async function initBlockChainContract() {
@@ -55,7 +55,8 @@ async function initBlockChainContract() {
         tweetVoteContract = new ethers.Contract(conf.tweetVote, tweetVoteContractABI, signer);
         lotteryGameContract = new ethers.Contract(conf.gameLottery, gameContractABI, signer);
 
-        initVoteContractMeta().then(r => { });
+        initVoteContractMeta().then(r => {
+        });
 
         initGameContractMeta().then(r => {
             setupGameInfo(true);
@@ -219,3 +220,46 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
         checkMetamaskErr(err);
     }
 }
+
+async function reloadGameBalance() {
+    const b = await lotteryGameContract.balance(ninjaUserObj.eth_addr)
+    document.getElementById('lottery-game-income').innerText = ethers.utils.formatUnits(b, 'ether');
+}
+
+async function reloadTweetBalance() {
+    const b = await tweetVoteContract.balance(ninjaUserObj.eth_addr);
+    document.getElementById("tweet-income-amount").innerText = ethers.utils.formatUnits(b, 'ether');
+}
+
+
+async function withdrawLotteryGameIncome() {
+    showWaiting("prepare withdraw transaction");
+    const valStr = document.getElementById('lottery-game-income').innerText;
+    const balance = Number(valStr);
+
+    if (!balance || balance <= 0) {
+        showDialog("tips", "balance invalid");
+        hideLoading();
+        return;
+    }
+
+    await withdrawAction(lotteryGameContract);
+    await reloadGameBalance();
+    hideLoading();
+}
+
+async function withdrawFromUserTweetIncome() {
+    showWaiting("prepare withdraw transaction");
+    const valStr = document.getElementById('lottery-game-income').innerText;
+    const balance = Number(valStr);
+    if (balance <= 0) {
+        showDialog("tips", "balance too low");
+        hideLoading();
+        return;
+    }
+
+    await withdrawAction(tweetVoteContract);
+    await reloadTweetBalance();
+    hideLoading();
+}
+

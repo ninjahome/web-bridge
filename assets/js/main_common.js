@@ -205,7 +205,9 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
 }
 
 function refreshTwitterInfo() {
+    showWaiting("tips","loading from twitter server");
     loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true).then(twInfo => {
+        hideLoading();
         setupTwitterElem(twInfo);
     })
 }
@@ -355,5 +357,22 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
     } catch (err) {
         console.log("queryTwBasicById err:", err)
         return null;
+    }
+}
+
+
+async function withdrawAction(contract) {
+    try {
+        const txResponse = await contract.withdraw("0x00", true);
+        console.log("Transaction Response: ", txResponse);
+        showWaiting("prepare to withdraw:" + txResponse.hash);
+
+        const txReceipt = await txResponse.wait();
+        console.log("Transaction Receipt: ", txReceipt);
+
+        showDialog("Transaction: " + txReceipt.status ? "success" : "failed");
+        hideLoading();
+    } catch (err) {
+        checkMetamaskErr(err);
     }
 }

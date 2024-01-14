@@ -413,10 +413,60 @@
     <style about="team-card-in-top">
 
     </style>
+    <style about="about-user-div">
+
+        .middle-div-income-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .middle-div-income-inner > div:nth-child(odd) {
+            background-color: #f2f2f2; /* 浅灰色 */
+        }
+
+        .middle-div-income-inner > div:nth-child(even) {
+            background-color: #e6e6e6; /* 深灰色 */
+        }
+
+        .income-header {
+            background-color: #d9d9d9; /* 灰色 */
+            color: #333; /* 深色文本 */
+            padding: 10px;
+            font-weight: bold;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
+        .income-body {
+            padding: 10px;
+            color: #666; /* 中度深色文本 */
+        }
+
+        .income-val {
+            color: #ff4500; /* 鲜艳的橙色 */
+            font-weight: bold;
+        }
+
+        .middle-div-income-inner button {
+            background-color: #1DA1F2; /* 推特蓝 */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .middle-div-income-inner button:hover {
+            background-color: #0d8ed2; /* 深一点的推特蓝 */
+        }
+
+    </style>
+
 </head>
 <body>
 <div class="container">
-
     <div class="left-menu-area">
         <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
              onclick="menuOnClicked.call(document.getElementById('settings-menu-item'), 4)"
@@ -432,19 +482,15 @@
             <li onclick="menuOnClicked.call(this,2)" class="menu-item-left-area" data-content="middle-div-user-tweets">
                 推文
             </li>
-            <li onclick="menuOnClicked.call(this,3)" class="menu-item-left-area" data-content="middle-div-income">
-                收入
+            <li onclick="menuOnClicked.call(this,3)" class="menu-item-left-area" data-content="middle-div-about-user">
+                我的
             </li>
-            <li id="settings-menu-item" onclick="menuOnClicked.call(this,4)" class="menu-item-left-area"
-                data-content="middle-div-settings">设置
-            </li>
-            <li onclick="menuOnClicked.call(this,5)" class="menu-item-left-area" data-content="middle-div-userKolKey">
+            <li onclick="openKolKeyMainPage()" class="menu-item-left-area" data-content="middle-div-userKolKey">
                 Keys
             </li>
         </ul>
         <button class="show-post-tweet-div" onclick="showPostTweetDiv()">发推</button>
     </div>
-
     <div id="tweet-header-template" style="display: none">
         <div class="tweet-header">
             <img src="" alt="Avatar" class="twitterAvatar">
@@ -456,9 +502,7 @@
         </div>
         <button class="show-more" data-more="true" onclick="showFullTweetContent.call(this)">更多</button>
     </div>
-
     <div class="middle-content-area">
-
         <div id="middle-div-home" class="content-in-middle-area active">
             <div id="tweetTemplateForHomePage" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
@@ -472,7 +516,6 @@
             </div>
             <div class="tweets-park" id="tweets-park"></div>
         </div>
-
         <div id="middle-div-leaderboard" class="content-in-middle-area">
             <div class="topic-switch">
                 <button onclick="initTopPage()">推文排行榜</button>
@@ -480,7 +523,6 @@
                 <button onclick="switchToTopKol()">KOL人气排行榜</button>
                 <button onclick="switchToTopVoter()">投票人排行榜</button>
             </div>
-
             <div id="tweetTemplateForTop" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
                     <div class="tweet-action">
@@ -491,7 +533,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="team-card" id="team-card-in-top-template" style="display: none">
                 <div class="team-id" onclick="showTweetDetail.call(this, '.team-card')" style="cursor: pointer">
                     团队ID:<span
@@ -521,7 +562,6 @@
             </div>
             <div class="tweets-park" id="top-most-voted-tweet"></div>
             <div class="tweets-park" id="top-hot-tweet-team"></div>
-
             <div id="ninjaUserCardTemplate" class="ninja-user-card" style="display: none">
                 <span class="voteOrVotedRangeNo"></span>
                 <img src="" alt="Avatar" class="twitterAvatar">
@@ -529,12 +569,9 @@
                 <span class="username twitterUserName"></span>
                 <span class="voteOrVotedNos"></span>
             </div>
-
             <div class="tweets-park" id="top-hot-Kol"></div>
             <div class="tweets-park" id="top-hot-voter"></div>
-
         </div>
-
         <div id="middle-div-user-tweets" class="content-in-middle-area">
             <div class="user-tweet-top-button-area">
                 <button onclick="loadTweetsUserPosted()">我的推文</button>
@@ -567,22 +604,105 @@
                     </div>
                 </div>
             </div>
-
             <div id="tweets-voted-by-user" class="tweets-park"></div>
-
         </div>
-        <div id="middle-div-income" class="content-in-middle-area">我的收入内容</div>
-        <div id="middle-div-settings" class="content-in-middle-area">
-            <div style="display: flex; flex-direction: column; align-items: center;">
-                <div>
-                    <span>Web3 ID:<span id="basic-web3-id">0x123...</span></span>
-                    <span>积分:<span id="dessage-web3-token">200.00 dsg</span></span>
+        <div id="middle-div-about-user" class="content-in-middle-area">
+
+            <div class="user-settings-tittle">设置</div>
+
+            <div class="user-settings">
+
+                <div class="user-setting-about-twitter">
+                    <div>
+                        <span>Web3 ID:<span id="basic-web3-id" class="user-web3-id">0x123...</span></span>
+                        <span>积分:<span id="dessage-web3-token" class="user-ninja-noun">0.00 </span>dsg</span>
+                        <span class="user-twitter-avatar"><img id="user-twitter-avatar" src="/assets/file/logo.png"
+                                                               alt="twitter-avatar"></span>
+                        <span class="user-twitter-name"><span id="user-setting-name">未绑定</span></span>
+                        <span class="user-twitter-username"><span id="user-setting-user-name">未绑定</span></span>
+                        <button onclick="refreshTwitterInfo()">同步推特</button>
+                    </div>
                 </div>
 
-                <button onclick="refreshTwitterInfo()">同步推特</button>
-                <button onclick="quitFromService()">退出</button>
-                <button onclick="clearCachedData()">清空缓存</button>
+                <div class="user-setting-action">
+                    <button onclick="quitFromService()">退出</button>
+                    <button onclick="clearCachedData()">清空缓存</button>
+                </div>
             </div>
+
+            <div class="middle-div-income-inner">
+                <div class="income-area-tittle">收入</div>
+                <div class="income-tweet-area">
+                    <div class="income-header">推文收入</div>
+                    <div class="income-body">
+                        <span>推文总数: <span class="tweet-no-has-income" id="tweet-no-has-income">0</span> 篇</span>
+                        <div><span>推文收入: <span class="income-val" id="tweet-income-amount">0.000</span> eth</span>
+                            <button onclick="withdrawFromUserTweetIncome()">提现</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="income-game-area">
+                    <div class="income-header">游戏收入</div>
+                    <div class="income-body">
+                        <div><span>彩票收入: <span class="income-val" id="lottery-game-income">0.000</span> eth</span>
+                            <button onclick="withdrawLotteryGameIncome()">提现</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="income-kol-area">
+                    <div class="income-header">Kol Key</div>
+                    <div class="income-body">
+                        <div><span>价值池: <span class="income-val">0.000</span> eth</span></div>
+                        <div><span>Key收入: <span class="income-val">0.000</span> eth</span>
+                            <button>提现</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="income-key-interest-area">
+                    <div class="income-header">Kol Key 分红</div>
+                    <div class="income-body">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>key 期数</th>
+                                <th>key 数量</th>
+                                <th>key 期价格</th>
+                                <th>key 收益</th>
+                                <th>提现</th>
+                            </tr>
+                            </thead>
+
+                            <tbody id="kol-key-body">
+                            <tr id="kol-key-row">
+                                <td class="kol-key-id">1</td>
+                                <td class="kol-key-no">10</td>
+                                <td class="kol-key-price">0.002 eth</td>
+                                <td class="income-val">0.02 eth</td>
+                                <td class="kol-key-withdraw">
+                                    <button class="kol-key-withdraw-btn">提现</button>
+                                </td>
+                            </tr>
+                            <tr id="kol-key-row">
+                                <td class="kol-key-id">4</td>
+                                <td class="kol-key-no">30</td>
+                                <td class="kol-key-price">0.015 eth</td>
+                                <td class="income-val">0.45 eth</td>
+                                <td class="kol-key-withdraw">
+                                    <button class="kol-key-withdraw-btn">提现</button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <span>Key总收入: <span class="income-val">0.47</span> eth</span>
+                        <button>全部提现</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
         <div id="middle-div-userKolKey" class="content-in-middle-area">我的Key内容</div>
         <div id="tweet-detail" class="tweet-detail" style="display: none;">
@@ -663,7 +783,6 @@
     </div>
     <button class="buy-key-button">购买Key</button>
 </div>
-
 <div id="vote-no-chose-modal" class="vote-chose-modal-class">
     <div class="vote-no-modal-content">
         <div class="vote-no-modal-header">
@@ -685,7 +804,6 @@
         </div>
     </div>
 </div>
-
 <div class="modal-overlay" id="modal-overlay"></div>
 <div class="modal-for-tweet-post">
     <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
@@ -713,15 +831,12 @@
             return;
         }
 
-        document.getElementById("basic-web3-id").innerText = ninjaUserObj.eth_addr;
         NJUserBasicInfo.cacheNJUsrObj(ninjaUserObj);
-        // localStorage.setItem(DbKeyForNjUserData(ninjaUserObj.eth_addr), JSON.stringify(ninjaUserObj));
         let tw_data = TwitterBasicInfo.loadTwBasicInfo(ninjaUserObj.tw_id)
         if (tw_data) {
             document.getElementById("dessage-log-to-nj-log").src = tw_data.profile_image_url;
         }
     }
-
 
     async function initMainPage() {
         initNjBasic();
@@ -737,7 +852,6 @@
         const contentId = this.getAttribute('data-content');
         document.querySelectorAll('.content-in-middle-area').forEach(c => c.classList.remove('active'));
         document.getElementById(contentId).classList.add('active');
-
         document.getElementById("tweet-detail").style.display = 'none';
 
         if (contentId === "middle-div-user-tweets") {
@@ -746,6 +860,8 @@
             loadTweetsForHomePage()
         } else if (contentId === "middle-div-leaderboard") {
             initTopPage(true);
+        } else if (contentId === "middle-div-about-user") {
+            initAboutUserPage();
         }
     }
 
@@ -770,6 +886,40 @@
             this.textContent = '';
         }
     }, false);
+
+
+    async function setupUserBasicInfoInSetting() {
+        document.getElementById("basic-web3-id").innerText = ninjaUserObj.eth_addr;
+        const twitterInfo = await loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, true, false);
+        if (!twitterInfo){
+            console.log("no such twitter user");
+            return;
+        }
+        document.getElementById("user-twitter-avatar").src = twitterInfo.profile_image_url;
+        document.getElementById("user-setting-name").innerText = twitterInfo.name;
+        document.getElementById("user-setting-user-name").innerText = twitterInfo.username;
+    }
+
+    async function initAboutUserPage() {
+
+        await setupUserBasicInfoInSetting();
+
+        showWaiting("syncing from block chain");
+
+        await reloadGameBalance();
+
+        const obj = await loadNJUserInfoFromSrv(ninjaUserObj.eth_addr, true);
+        if (!obj) {
+            hideLoading();
+            console.log("can't be empty")
+            return;
+        }
+        document.getElementById('tweet-no-has-income').innerText = obj.tweet_count;
+
+        await reloadTweetBalance();
+
+        hideLoading();
+    }
 
 </script>
 </body>
