@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-size: 14px;
+        font-family: "Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .lottery-round-info,
+    .lottery-timer{
+        width: 348px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .lottery-round-info {
+        height: 120px;
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        background-color: #DD2111;
+        color: white;
+        padding: 12px 0;
+    }
+
+    .lottery-round {
+        border: 1px solid rgba(255,255,255,0.5);
+        padding: 2px 32px;
+        font-size: 12px;
+        margin-top: 12px;
+    }
+
+    .lottery-amount {
+        font-family: DINCond-Black,"Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 56px;
+        padding: 0;
+    }
+
+    .lottery-amount-div {
+        line-height: 1;
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: baseline;
+        margin: 4px 0;
+    }
+
+    .lottery-timer {
+        height: 104px;
+        background-color: #F7F8F9;
+        border-bottom: 1px dashed #E4E4DF;
+    }
+
+    .lottery-participate-btn {
+        border: none;
+        background-color: #1B1B1D;
+        color: white;
+        padding: 8px 42px;
+        border-top-right-radius: 9999px;
+        border-top-left-radius: 9999px;
+        border-bottom-left-radius: 9999px;
+        border-bottom-right-radius: 9999px;
+        margin-top: 6px;
+    }
+
+    .lottery-stats-label {
+        margin: 2px 0;
+    }
+
+    .lottery-stats {
+        width: 332px;
+        background-color: #F7F8F9;
+        border-bottom-left-radius: 16px;
+        border-bottom-right-radius: 16px;
+        padding: 8px;
+    }
+
+    .countdown {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .number {
+        font-family: DINCond-Black,"Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 36px;
+        padding: 4px 12px;
+        margin-left: 12px;
+        margin-right: 12px;
+        margin-top: 24px;
+        margin-bottom: 6px;
+        border-radius: 10px;
+        color: #302F2F;
+    }
+    .hours,
+    .minutes,
+    .seconds{
+        background-color: #ECEDEF; /* red */
+        border: 1px solid #DD5232 ;
+    }
+
+
+</style>
+<body>
+<div class="right-operation-area">
+    <div class="lottery-game-info" id="lottery-game-info">
+        <div class="lottery-round-info">
+            <div class="lottery-round">第<span class="lottery-game-round-no">2</span>期</div>
+            <div class="lottery-amount-div">
+                <span class="lottery-amount">1.260</span>
+                <span class="eth-symbol">eth</span>
+            </div>
+            <div class="lottery-amount-tips" style="color: rgba(255,255,255,0.5)">本期奖池</div>
+        </div>
+        <div class="lottery-timer">
+            <div class="countdown">
+                <div class="number hours">00</div>:
+                <div class="number minutes">00</div>:
+                <div class="number seconds">00</div>
+            </div>
+            <span style="color: #A0A0A5; font-size: 12px">开奖时间</span>
+        </div>
+
+        <div class="lottery-stats">
+            <div class="lottery-stats-label">
+                累计奖金:
+                <span class="lottery-stats-no" id="lottery-total-amount" style="font-weight: bold">120.001</span>
+                <span class="lottery-stats-unit">eth</span>
+            </div>
+
+            <div class="lottery-stats-label">
+                彩票数(我的):
+                <span class="lottery-stats-no" id="lottery-user-ticket-amount" style="font-weight: bold">2</span>
+                <span class="lottery-stats-unit">张</span>
+            </div>
+
+            <div class="lottery-stats-label">
+                彩票数(总):
+                <span class="lottery-stats-no" id="lottery-current-ticket-amount" style="font-weight: bold">200</span>
+                <span class="lottery-stats-unit">张</span>
+            </div>
+            <button class="lottery-participate-btn" onclick="openLotteryMainPage()">我的彩票</button>
+        </div>
+
+    </div>
+</div>
+<script>
+    // JavaScript for countdown logic
+    function startCountdown(duration, displayHours, displayMinutes, displaySeconds) {
+        let timer = duration, hours, minutes, seconds;
+        setInterval(function () {
+            hours = parseInt(timer / 3600, 10);
+            minutes = parseInt((timer % 3600) / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            hours = hours < 10 ? "0" + hours : hours;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            displayHours.textContent = hours;
+            displayMinutes.textContent = minutes;
+            displaySeconds.textContent = seconds;
+
+            if (--timer < 0) {
+                timer = duration;
+            }
+        }, 1000);
+    }
+
+    window.onload = function () {
+        let countdownDuration = 60 * 60; // 1 hour in seconds
+        let displayHours = document.querySelector('.hours');
+        let displayMinutes = document.querySelector('.minutes');
+        let displaySeconds = document.querySelector('.seconds');
+        startCountdown(countdownDuration, displayHours, displayMinutes, displaySeconds);
+    };
+</script>
+</body>
+</html>
