@@ -1044,62 +1044,6 @@ const gameContractABI =`
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "winner",
-                "type": "address"
-            }
-        ],
-        "name": "userWinnerData",
-        "outputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "randomHash",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "discoverTime",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "address",
-                        "name": "winner",
-                        "type": "address"
-                    },
-                    {
-                        "internalType": "bytes32",
-                        "name": "winTeam",
-                        "type": "bytes32"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "winTicketID",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "bonus",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "randomVal",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct TweetLotteryGame.GameInfoOneRound[]",
-                "name": "winInfos",
-                "type": "tuple[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "uint256",
                 "name": "roundNo",
                 "type": "uint256"
@@ -1130,60 +1074,6 @@ const gameContractABI =`
             {
                 "internalType": "uint256",
                 "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            },
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "name": "winnerGameInfo",
-        "outputs": [
-            {
-                "internalType": "bytes32",
-                "name": "randomHash",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "uint256",
-                "name": "discoverTime",
-                "type": "uint256"
-            },
-            {
-                "internalType": "address",
-                "name": "winner",
-                "type": "address"
-            },
-            {
-                "internalType": "bytes32",
-                "name": "winTeam",
-                "type": "bytes32"
-            },
-            {
-                "internalType": "uint256",
-                "name": "winTicketID",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "bonus",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "randomVal",
                 "type": "uint256"
             }
         ],
