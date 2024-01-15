@@ -10,7 +10,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     uint8 public __bonusRateToWinner = 50;
     bool public __openToOuterPlayer = true;
 
-    uint256 public __ticketPriceForOuter = 1e6 gwei;
+    uint256 public __ticketPriceForOuter = 5 * 1e6 gwei;
     uint8 public __serviceFeeRateForTicketBuy = 10;
 
     uint256 public totalBonus = 0 gwei;
