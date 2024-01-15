@@ -576,6 +576,19 @@ const tweetVoteContractABI =`
     },
     {
         "inputs": [],
+        "name": "kolKeyIncomeSourceID",
+        "outputs": [
+            {
+                "internalType": "int8",
+                "name": "",
+                "type": "int8"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "kolKeyStop",
         "outputs": [
             {

@@ -8,6 +8,7 @@ import "./common.sol";
  *                       admin logic
  *********************************************************************************/
 contract TweetVoteAmin is ServiceFeeForWithdraw {
+    int8 public constant kolKeyIncomeSourceID = 1;
     uint256 public constant oneFinney = 1e6 gwei;
     uint256 public tweetPostPrice = 0.005 ether;
     uint256 public tweetVotePrice = 0.005 ether;
@@ -252,9 +253,13 @@ contract TweetVote is TweetVoteAmin {
         uint256 reminders = minusWithdrawFee(amount);
 
         if (kolKeyAddress != address(0) && kolKeyStop == false) {
-            uint256 kolKeyPool = reminders * kolKeyIncomeRate;
-            reminders -= kolKeyPool;
-            payable(kolKeyAddress).transfer(kolKeyPool);
+            if (KolIncomeToPool(kolKeyAddress).kolOpenKeyPool(msg.sender)) {
+                uint256 kolKeyPool = reminders * kolKeyIncomeRate;
+                reminders -= kolKeyPool;
+                KolIncomeToPool(kolKeyAddress).kolGotIncome{value: kolKeyPool}(
+                    kolKeyIncomeSourceID
+                );
+            }
         }
 
         payable(msg.sender).transfer(reminders);

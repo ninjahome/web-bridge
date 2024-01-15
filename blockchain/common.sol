@@ -140,11 +140,17 @@ interface IsValidNjContract {
     function checkPluginInterface() external pure returns (bool);
 }
 
-interface TweetVotePlugInI is IsValidNjContract{
+interface TweetVotePlugInI is IsValidNjContract {
     function tweetBought(
         bytes32 tweetHash,
         address owner,
         address buyer,
         uint256 voteNo
     ) external payable;
+}
+
+interface KolIncomeToPool is IsValidNjContract {
+    function kolGotIncome(int8 sourceID) external payable;
+
+    function kolOpenKeyPool(address sourceAddr) external returns (bool);
 }
