@@ -8,6 +8,7 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPool {
     struct KeySettings {
         uint256 price;
         uint256 nonce;
+        uint256 totalVal;
         uint256 totalNo;
     }
 
@@ -30,6 +31,7 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPool {
 
     mapping(address => MapArray) private keyHoldersOfKol;
     mapping(address => MapArray) private kolsOfKeyHolder;
+    address[] public allKolInSystem;
 
     event InvestorWithdrawByOneNonce(
         address investor,
@@ -70,26 +72,6 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPool {
 
     receive() external payable {}
 
-    function removeFromArray(uint256 indexPlusOne, uint256[] storage array)
-    internal
-    {
-        if (array.length == 0) {
-            return;
-        }
-        if (array.length == 1) {
-            array.pop();
-            return;
-        }
-
-        require(
-            indexPlusOne >= 1 && indexPlusOne <= array.length,
-            "Index out of bounds"
-        );
-
-        array[indexPlusOne - 1] = array[array.length - 1];
-        array.pop();
-    }
-
     /********************************************************************************
      *                       admin operation
      *********************************************************************************/
@@ -109,16 +91,19 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPool {
     /********************************************************************************
      *                       kol operation
      *********************************************************************************/
-    function kolOpenKeySale(uint256 pricePerKey) public inRun {
-        require(pricePerKey >= __minValCheck, "too low price");
+    function kolOpenKeySale(uint256 priceInFin) public inRun {
+        require(priceInFin * 1e6 gwei >= __minValCheck, "too low price");
 
         KeySettings storage ks = KeySettingsRecord[msg.sender];
-        require(ks.totalNo == 0, "duplicate operation");
+        require(ks.nonce == 0, "duplicate operation");
 
-        ks.price = pricePerKey;
-        ks.totalNo = 1;
+        ks.price = priceInFin * 1e6 gwei;
+        ks.totalNo = 0;
+        ks.nonce = 1;
 
-        emit KolKeyOpened(msg.sender, pricePerKey);
+        allKolInSystem.push(msg.sender);
+
+        emit KolKeyOpened(msg.sender, ks.price);
     }
 
     /********************************************************************************
@@ -126,32 +111,34 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPool {
      *********************************************************************************/
 
     function kolOpenKeyPool(address sourceAddr) external view returns (bool) {
-        return KeySettingsRecord[sourceAddr].totalNo > 0;
+        return KeySettingsRecord[sourceAddr].nonce > 0;
     }
 
     function kolGotIncome(int8 sourceID, address kolAddr)
     public
     payable
     noReentrant
+    isValidAddress(kolAddr)
     inRun
     {
         uint256 val = msg.value;
         require(val > __minValCheck, "invalid msg value");
 
-        KeySettings storage ks = KeySettingsRecord[msg.sender];
+        KeySettings storage ks = KeySettingsRecord[kolAddr];
+        ks.totalVal += val;
 
-        if (ks.totalNo <= 1) {
+        if (ks.totalNo == 0) {
             balance[kolAddr] += val;
             return;
         }
 
         uint256 valPerKey = val / ks.totalNo;
-        incomePerNoncePerKey[kolAddr][ks.nonce] += valPerKey;
+        incomePerNoncePerKey[kolAddr][ks.nonce] = valPerKey;
         ks.nonce += 1;
 
         emit KolIncomeToPoolAction(
             sourceID,
-            msg.sender,
+            kolAddr,
             kolAddr,
             ks.totalNo,
             ks.nonce,
@@ -174,7 +161,7 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPool {
         require(keyNo >= 1, "invalid key count");
 
         KeySettings storage ks = KeySettingsRecord[kolAddr];
-        require(ks.totalNo >= 1, "key not open");
+        require(ks.nonce >= 1 && ks.price > __minValCheck, "key not open");
         uint256 amount = ks.price * keyNo;
         require(msg.value == amount, "price of kol's key has changed");
 
@@ -274,6 +261,7 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPool {
     {
         KeySettings storage ks = KeySettingsRecord[kol];
         KolKey storage key = keyBalance[msg.sender][kol];
+
         require(ks.nonce >= 1, "no income for kol");
         require(key.amount[nonce] > 0, "no key in this nonce");
 
@@ -288,12 +276,12 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPool {
         require(val <= address(this).balance, "insufficient funds");
         require(val > __minValCheck, "too small funds");
 
-        delete key.amount[nonce];
         if (key.amount[ks.nonce] == 0) {
             key.nonce.push(ks.nonce);
         }
         key.amount[ks.nonce] += key.amount[nonce];
 
+        delete key.amount[nonce];
         uint256 reminders = minusWithdrawFee(val);
 
         payable(msg.sender).transfer(reminders);
@@ -314,9 +302,9 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPool {
         address kol,
         address investor,
         bool once
-    ) internal isValidAddress(investor) returns (uint256) {
+    ) internal returns (uint256) {
         KeySettings storage ks = KeySettingsRecord[kol];
-        KolKey storage key = keyBalance[msg.sender][kol];
+        KolKey storage key = keyBalance[investor][kol];
 
         uint256 val = 0;
         uint256 totalKeyNo = 0;
@@ -498,11 +486,7 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPool {
         return kol.list;
     }
 
-    function KeyStatusOfKol(address kol)
-    public
-    view
-    returns (KeySettings memory)
-    {
-        return KeySettingsRecord[kol];
+    function AllKolAddr() public view returns (address[] memory) {
+        return allKolInSystem;
     }
 }

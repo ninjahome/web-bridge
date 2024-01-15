@@ -24,7 +24,7 @@ abstract contract Owner {
         owner = newOwner;
     }
 
-    function changeOwner(bool stop) public isOwner {
+    function changeStatus(bool stop) public isOwner {
         paused = stop;
     }
 
