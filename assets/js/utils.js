@@ -261,61 +261,6 @@ function hideLoading() {
     }
 }
 
-function createDialogElement() {
-    const dialog = document.createElement('div');
-    dialog.id = 'custom-dialog';
-    dialog.style.position = 'fixed';
-    dialog.style.top = '0';
-    dialog.style.left = '0';
-    dialog.style.width = '100%';
-    dialog.style.height = '100%';
-    dialog.style.display = 'flex';
-    dialog.style.justifyContent = 'center';
-    dialog.style.alignItems = 'center';
-    dialog.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-    dialog.style.zIndex = '10000';
-    dialog.innerHTML = `
-        <div style="background: white; padding: 20px; border-radius: 5px; max-width: 500px; width: 100%;">
-            <h2 id="dialog-title" style="margin-top: 0;">Title</h2>
-            <p id="dialog-message">Message</p>
-            <button id="dialog-close" style="margin-right: 10px;">Close</button>
-            <button id="dialog-confirm">Confirm</button>
-        </div>
-    `;
-    return dialog;
-}
-
-function showDialog(title, msg, confirmCB, cancelCB) {
-    const dialog = createDialogElement();
-    document.body.appendChild(dialog);
-
-    const dialogTitle = document.getElementById('dialog-title');
-    const dialogMessage = document.getElementById('dialog-message');
-    const dialogCloseButton = document.getElementById('dialog-close');
-    const dialogConfirmButton = document.getElementById('dialog-confirm');
-
-    dialogTitle.textContent = title;
-    dialogMessage.textContent = msg;
-
-
-    dialogCloseButton.addEventListener('click', function () {
-        document.body.removeChild(dialog);
-        if (cancelCB){
-            cancelCB();
-        }
-    });
-
-    if (confirmCB) {
-        dialogConfirmButton.style.display = 'block';
-        dialogConfirmButton.addEventListener('click', function () {
-            document.body.removeChild(dialog);
-            confirmCB();
-        });
-    } else {
-        dialogConfirmButton.style.display = 'none';
-    }
-}
-
 function lclDbKeyForTwitterUserData(TwitterID) {
     return "__database_key_for_twitter_user_data__:" + TwitterID
 }

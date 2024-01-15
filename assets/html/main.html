@@ -16,6 +16,12 @@
     <script src="/assets/js/main_operate_area.js"></script>
 
     <style about="frame div">
+        .d-radius {
+            border-top-right-radius: 9999px;
+            border-top-left-radius: 9999px;
+            border-bottom-left-radius: 9999px;
+            border-bottom-right-radius: 9999px;
+        }
         .container {
             display: flex; /* 启用flex布局 */
             height: 100vh; /* 容器高度设置为视窗高度 */
@@ -280,6 +286,17 @@
 
     </style>
     <style about="tweet post div">
+        .d-radius {
+            border-top-right-radius: 9999px;
+            border-top-left-radius: 9999px;
+            border-bottom-left-radius: 9999px;
+            border-bottom-right-radius: 9999px;
+        }
+
+        .d-radius2 {
+            border-radius: 16px;
+        }
+
         .modal-overlay {
             display: none; /* 默认隐藏 */
             position: fixed; /* 固定定位 */
@@ -376,6 +393,7 @@
             padding: 8px 32px; /* 内边距 */
             cursor: pointer; /* 鼠标样式 */
             font-size: 16px; /* 字体大小 */
+            box-shadow: rgba(0, 0, 0, 0.08) 0 8px 28px;
         }
 
         .show-post-tweet-div:hover {
@@ -442,7 +460,7 @@
                 Keys
             </li>
         </ul>
-        <button class="show-post-tweet-div" onclick="showPostTweetDiv()">发推</button>
+        <button class="show-post-tweet-div d-radius" onclick="showPostTweetDiv()">发推</button>
     </div>
 
     <div id="tweet-header-template" style="display: none">
@@ -679,12 +697,12 @@
 <div class="modal-overlay" id="modal-overlay"></div>
 <div class="modal-for-tweet-post">
     <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
-    <div class="tweets-content-txt-area" id="tweets-content-txt-area" contenteditable="true"
+    <div class="tweets-content-txt-area .d-radius" id="tweets-content-txt-area" contenteditable="true"
          data-placeholder="What's happening!?"></div>
     <div style="display: flex; justify-content: space-between; align-items: center">
         <img src="/assets/file/image-icon.png" alt="photo"
              style="width: 20px; margin-right: 6px; display: inline-block">
-        <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()">
+        <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()" class="d-radius">
             <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">
             <span id="tweet-post-with-eth-btn-txt">发布推文</span></button>
     </div>
