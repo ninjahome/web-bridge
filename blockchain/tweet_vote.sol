@@ -257,7 +257,8 @@ contract TweetVote is TweetVoteAmin {
                 uint256 kolKeyPool = reminders * kolKeyIncomeRate;
                 reminders -= kolKeyPool;
                 KolIncomeToPool(kolKeyAddress).kolGotIncome{value: kolKeyPool}(
-                    kolKeyIncomeSourceID
+                    kolKeyIncomeSourceID,
+                    msg.sender
                 );
             }
         }
