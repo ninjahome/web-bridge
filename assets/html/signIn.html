@@ -20,6 +20,17 @@
         height: 100vh;
     }
 
+    .d-radius {
+        border-top-right-radius: 9999px;
+        border-top-left-radius: 9999px;
+        border-bottom-left-radius: 9999px;
+        border-bottom-right-radius: 9999px;
+    }
+
+    .d-radius2 {
+        border-radius: 16px;
+    }
+
     .left-container, .right-container {
         /* 使用 box-sizing: border-box; 可以让 padding 和 border 包含在宽度内 */
         box-sizing: border-box;
@@ -262,7 +273,7 @@
     <div class="container">
         <!-- 登录部分 -->
         <div class="login-section">
-            <div class="web3-id-label" id="web3-id-label">
+            <div class="web3-id-label d-radius2" id="web3-id-label">
                 <strong style="margin-left: 8px; margin-bottom: 4px; display: inline-block; font-size: 14px">Web3 ID:</strong>
                 <span id="web3-id" style="margin: 0 8px"></span>
                 <span id="web3-id-tips" style="margin: 0 8px">链接MetaMask以获取Web3 ID</span>
@@ -272,12 +283,12 @@
                 </button>
             </div>
             <div id="sign-in-div">
-                <button class="sign-in-button" id="sign-in-button"
+                <button class="sign-in-button d-radius" id="sign-in-button"
                         onclick="signInByEth()">Sign In
                 </button>
             </div>
         </div>
-        <div id="error-div" style="display: none"><span id="error-txt"></span></div>
+        <div id="error-div" style="display: flex; flex-direction: column; align-items: center;"><span id="error-txt" style="color: #DD324A"></span></div>
     </div>
     <div class="binding-section">
         <p style="color: #1B1B1D">社交元身份桥接表</p>

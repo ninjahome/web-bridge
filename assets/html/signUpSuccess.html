@@ -11,6 +11,22 @@
             margin: 0;
         }
 
+        .d-radius {
+            border-top-right-radius: 9999px;
+            border-top-left-radius: 9999px;
+            border-bottom-left-radius: 9999px;
+            border-bottom-right-radius: 9999px;
+        }
+
+        .d-radius2 {
+            border-radius: 16px;
+        }
+
+        .d-bgradius {
+            border-radius: 24px;
+        }
+
+
         .profile-container {
             font-family: Arial, sans-serif, Helvetica;
             font-size: 14px;
@@ -23,7 +39,6 @@
         .profile-header {
             background-color: #F1F2F3;
             padding: 8px;
-            border: 1px dashed #D3D5D6;
             margin-bottom: 12px;
         }
 
@@ -80,8 +95,8 @@
     </style>
 </head>
 <body>
-<div class="profile-container">
-    <div class="profile-header">
+<div class="profile-container d-bgradius">
+    <div class="profile-header d-radius2">
         <div class="profile-x">
             <div class="profile-image" id="profile-image">
                 <img src="/assets/file/logo.png" alt="avatar">
@@ -106,7 +121,7 @@
         <p><strong>绑定时间:</strong> <span id="signup-time">2024-1-11</span></p>
     </div>
     <div class="profile-action">
-        <button onclick="bindWeb3Id()">绑定web3身份</button>
+        <button class="d-radius" onclick="bindWeb3Id()">绑定web3身份</button>
         <button onclick="backToHome()" style="background-color: transparent; color: #7E7F82; margin-top: 0; height: 32px" >暂时不绑定</button>
     </div>
 </div>
