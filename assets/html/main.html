@@ -404,10 +404,92 @@
         }
     </style>
     <style about="game-lottery">
+        .lottery-round-info,
+        .lottery-timer{
+            width: 348px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
+        .lottery-round-info {
+            height: 120px;
+            border-top-left-radius: 16px;
+            border-top-right-radius: 16px;
+            background-color: #DD2111;
+            color: white;
+            padding: 12px 0;
+        }
+
+        .lottery-round {
+            border: 1px solid rgba(255,255,255,0.5);
+            padding: 2px 32px;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+
+        .lottery-amount {
+            font-family: DINCond-Black,"Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 56px;
+            padding: 0;
+        }
+
+        .lottery-amount-div {
+            line-height: 1;
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: baseline;
+            margin: 4px 0;
+        }
+
+        .lottery-timer {
+            height: 104px;
+            background-color: #F7F8F9;
+            border-bottom: 1px dashed #E4E4DF;
+        }
+
+        .lottery-participate-btn {
+            border: none;
+            background-color: #1B1B1D;
+            color: white;
+            padding: 8px 42px;
+            border-radius: 9999px;
+            margin-top: 6px;
+        }
+
+        .lottery-stats-label {
+            margin: 2px 0;
+        }
+
+        .lottery-stats {
+            width: 332px;
+            background-color: #F7F8F9;
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+            padding: 8px;
+        }
+
+        .countdown {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .number {
+            font-family: DINCond-Black,"Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 36px;
+            padding: 4px 12px;
+            margin: 24px 12px 6px;
+            border-radius: 10px;
+            color: #302F2F;
+        }
+        .hours,
+        .minutes,
+        .seconds{
+            background-color: #ECEDEF; /* red */
+            border: 1px solid #DD5232 ;
+        }
     </style>
     <style about="team-card-in-top">
-
     </style>
     <style about="about-user-div">
 
@@ -728,37 +810,44 @@
     <div class="right-operation-area">
 
         <div class="lottery-game-info" id="lottery-game-info">
-            <div class="lottery-round">第<span class="lottery-game-round-no">2</span>期</div>
-            <div class="lottery-amount-div">
-                <span class="lottery-amount">1.260</span>
-                <span class="eth-symbol">eth</span>
-                <span class="lottery-amount-tips">本期奖池</span>
+            <div class="lottery-round-info">
+                <div class="lottery-round">第<span class="lottery-game-round-no">2</span>期</div>
+                <div class="lottery-amount-div">
+                    <span class="lottery-amount">1.260</span>
+                    <span class="eth-symbol">eth</span>
+                </div>
+                <div class="lottery-amount-tips" style="color: rgba(255,255,255,0.5)">本期奖池</div>
             </div>
             <div class="lottery-timer">
-                开奖：<span id="lottery-timer">02:43:22</span>
+                <div class="countdown" id="lottery-count-down">
+                    <div class="number days">00</div>:
+                    <div class="number hours">00</div>:
+                    <div class="number minutes">00</div>:
+                    <div class="number seconds">00</div>
+                </div>
+                <span style="color: #A0A0A5; font-size: 12px">开奖时间</span>
             </div>
 
             <div class="lottery-stats">
                 <div class="lottery-stats-label">
                     累计奖金:
-                    <span class="lottery-stats-no" id="lottery-total-amount">120.001</span>
+                    <span class="lottery-stats-no" id="lottery-total-amount" style="font-weight: bold">120.001</span>
                     <span class="lottery-stats-unit">eth</span>
                 </div>
 
                 <div class="lottery-stats-label">
                     彩票数(我的):
-                    <span class="lottery-stats-no" id="lottery-user-ticket-amount">2</span>
+                    <span class="lottery-stats-no" id="lottery-user-ticket-amount" style="font-weight: bold">2</span>
                     <span class="lottery-stats-unit">张</span>
                 </div>
 
                 <div class="lottery-stats-label">
                     彩票数(总):
-                    <span class="lottery-stats-no" id="lottery-current-ticket-amount">200</span>
+                    <span class="lottery-stats-no" id="lottery-current-ticket-amount" style="font-weight: bold">200</span>
                     <span class="lottery-stats-unit">张</span>
                 </div>
-
+                <button class="lottery-participate-btn" onclick="openLotteryMainPage()">我的彩票</button>
             </div>
-            <button class="lottery-participate-btn" onclick="openLotteryMainPage()">我的彩票</button>
         </div>
 
     </div>

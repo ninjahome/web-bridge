@@ -24,23 +24,15 @@ function startCountdown(targetTime, callback) {
         }
 
         const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+        let hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-        let countdownText = '';
-        if (days > 0) {
-            countdownText += days + '天 ';
-        }
-        if (hours > 0) {
-            countdownText += hours + '时 ';
-        }
-        if (minutes > 0) {
-            countdownText += minutes + '分 ';
-        }
-        countdownText += seconds + '秒';
+        hours = hours < 10 ? "0" + hours : hours;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        callback(countdownText, false);
+        callback(days,hours,minutes,seconds, false);
     }, 1000);
 }
 
