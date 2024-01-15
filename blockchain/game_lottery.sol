@@ -8,10 +8,10 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     uint256 public __lotteryGameRoundTime = 48 hours;
     uint256 public __currentLotteryTicketID = 100000;
     uint8 public __bonusRateToWinner = 50;
-    bool public __openToOuterPlayer = false;
+    bool public __openToOuterPlayer = true;
 
     uint256 public __ticketPriceForOuter = 1e6 gwei;
-    uint8 public __serviceFeeRateForTicketBuy = 5;
+    uint8 public __serviceFeeRateForTicketBuy = 10;
 
     uint256 public totalBonus = 0 gwei;
     uint256 public currentRoundNo = 0;
@@ -40,6 +40,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     mapping(uint256 => bytes32) public buyerInfoIdxForTickets;
     mapping(bytes32 => BuyerInfo) public buyerInfoRecords;
 
+    mapping(address => GameInfoOneRound[]) public winnerGameInfo;
     mapping(uint256 => GameInfoOneRound) public gameInfoRecord;
     mapping(uint256 => uint256[]) public ticketsRecords;
 
@@ -304,6 +305,8 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
 
         currentRoundNo += 1;
         totalBonus += gInfo.bonus;
+
+        winnerGameInfo[winner.addr].push(gInfo);
 
         gameInfoRecord[currentRoundNo] = GameInfoOneRound({
             randomHash: nextRoundRandomHash,
@@ -595,5 +598,13 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             __ticketPriceForOuter,
             __openToOuterPlayer
         );
+    }
+
+    function userWinnerData(address winner)
+    public
+    view
+    returns (GameInfoOneRound[] memory winInfos)
+    {
+        return winnerGameInfo[winner];
     }
 }
