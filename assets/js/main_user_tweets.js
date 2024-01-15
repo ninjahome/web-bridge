@@ -77,7 +77,7 @@ async function removeUnPaidTweets(createTime) {
         __globalTweetMemCache.delete(createTime);
         return true;
     } catch (e) {
-        showDialog("err", "remove unpaid tweet failed:" + e.toString());
+        showDialog(DLevel.Error, "remove unpaid tweet failed:" + e.toString());
         return false;
     }
 }

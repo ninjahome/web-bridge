@@ -74,7 +74,7 @@ async function checkCurrentChainID(chainId) {
         return;
     }
 
-    showDialog("tips", "switch to arbitrum", switchToWorkChain, function () {
+    showDialog(DLevel.Tips, "switch to arbitrum", switchToWorkChain, function () {
         metamaskProvider = null;
     });
 }
@@ -92,7 +92,7 @@ async function switchChain(chainId) {
         if (error.code === 4902) {
             return {switched: false, needAdd: true};
         } else {
-            showDialog("error", "Failed switching to Arbitrum network");
+            showDialog(DLevel.Error, "Failed switching to Arbitrum network");
             return {switched: false, needAdd: false};
         }
     }
@@ -107,7 +107,7 @@ async function addChain(chainId) {
         });
         location.reload();
     } catch (addError) {
-        showDialog("error", "Add to network failed: " + addError.toString());
+        showDialog(DLevel.Error, "Add to network failed: " + addError.toString());
     }
 }
 
@@ -128,7 +128,7 @@ function metamaskAccountChanged(accounts) {
 
 async function procPaymentForPostedTweet(tweet, callback) {
     if (!metamaskProvider) {
-        showDialog("tips", "please change metamask to arbitrum network")
+        showDialog(DLevel.Tips, "please change metamask to arbitrum network")
         return;
     }
 
@@ -151,7 +151,7 @@ async function procPaymentForPostedTweet(tweet, callback) {
 
         hideLoading();
 
-        showDialog("transaction " + (txReceipt.status ? "confirmed" : "failed"));
+        showDialog(DLevel.Tips,"transaction " + (txReceipt.status ? "confirmed" : "failed"));
 
         tweet.payment_status = txStatus;
     } catch (err) {
@@ -183,14 +183,14 @@ function checkMetamaskErr(err) {
     if (code.includes("duplicate post")) {
         return code;
     }
-    showDialog(code);
+    showDialog(DLevel.Warning,code);
     return code;
 }
 
 
 async function procTweetVotePayment(voteCount, tweet, callback) {
     if (!metamaskProvider) {
-        showDialog("tips", "please change metamask to arbitrum network")
+        showDialog(DLevel.Tips, "please change metamask to arbitrum network")
         return;
     }
 
@@ -209,7 +209,7 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
 
         const txReceipt = await txResponse.wait();
         console.log("Transaction Receipt: ", txReceipt);
-        showDialog("Transaction: " + txReceipt.status ? "success" : "failed");
+        showDialog(DLevel.Tips,"Transaction: " + txReceipt.status ? "success" : "failed");
 
         hideLoading();
 
@@ -238,7 +238,7 @@ async function withdrawLotteryGameIncome() {
     const balance = Number(valStr);
 
     if (!balance || balance <= 0) {
-        showDialog("tips", "balance invalid");
+        showDialog(DLevel.Tips, "balance invalid");
         hideLoading();
         return;
     }
@@ -253,7 +253,7 @@ async function withdrawFromUserTweetIncome() {
     const valStr = document.getElementById('lottery-game-income').innerText;
     const balance = Number(valStr);
     if (balance <= 0) {
-        showDialog("tips", "balance too low");
+        showDialog(DLevel.Tips, "balance too low");
         hideLoading();
         return;
     }

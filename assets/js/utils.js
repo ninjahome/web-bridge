@@ -12,14 +12,14 @@ function formatTime(createTime) {
     return `${hours}:${minutes}:${seconds} ${day}/${month}`;
 }
 
-function startCountdown(targetTime,callback) {
+function startCountdown(targetTime, callback) {
     const countdownInterval = setInterval(() => {
         const now = new Date().getTime();
         const timeLeft = targetTime - now;
 
         if (timeLeft <= 0) {
             clearInterval(countdownInterval);
-            callback('开奖中',true);
+            callback('开奖中', true);
             return;
         }
 
@@ -40,7 +40,7 @@ function startCountdown(targetTime,callback) {
         }
         countdownText += seconds + '秒';
 
-        callback(countdownText,false);
+        callback(countdownText, false);
     }, 1000);
 }
 
@@ -308,10 +308,10 @@ class TwitterBasicInfo {
     }
 }
 
-class NJUserBasicInfo{
+class NJUserBasicInfo {
 
-    constructor(address, eth_addr,create_at,tw_id,update_at,
-                tweet_count,vote_count,be_voted_count) {
+    constructor(address, eth_addr, create_at, tw_id, update_at,
+                tweet_count, vote_count, be_voted_count) {
         this.address = address;
         this.eth_addr = eth_addr;
         this.create_at = create_at;
@@ -329,8 +329,8 @@ class NJUserBasicInfo{
             return null
         }
         const nuObj = JSON.parse(storedData);
-        return new NJUserBasicInfo(nuObj.address,nuObj.eth_addr,nuObj.create_at,nuObj.tw_id,
-            nuObj.update_at,nuObj.tweet_count,nuObj.vote_count,nuObj.be_voted_count);
+        return new NJUserBasicInfo(nuObj.address, nuObj.eth_addr, nuObj.create_at, nuObj.tw_id,
+            nuObj.update_at, nuObj.tweet_count, nuObj.vote_count, nuObj.be_voted_count);
     }
 
     static async cacheNJUsrObj(obj) {
@@ -342,3 +342,74 @@ class NJUserBasicInfo{
     }
 }
 
+
+const DLevel = Object.freeze({
+    Tips: 1, Warning: 2, Error: 3
+});
+
+function createDialogElement(imageSrc) {
+    const dialog = document.createElement('div');
+    dialog.id = 'custom-dialog';
+    dialog.style.position = 'fixed';
+    dialog.style.top = '0';
+    dialog.style.left = '0';
+    dialog.style.width = '100%';
+    dialog.style.height = '100%';
+    dialog.style.display = 'flex';
+    dialog.style.justifyContent = 'center';
+    dialog.style.alignItems = 'center';
+    dialog.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    dialog.style.zIndex = '10000';
+    dialog.innerHTML = `
+        <div style="background: white; padding: 24px 32px; border-radius: 8px; text-align: center;">
+             <img src="${imageSrc}" alt="dialog image" style="max-width: 100%; height: auto; margin-bottom: 2px">
+            <p id="dialog-message" style="margin-top: 0; margin-bottom: 16px">Message</p>
+            <div style="display: flex; flex-direction: row; justify-content: center">
+                <button id="dialog-close" style="margin:0 8px; padding: 8px 42px; border-radius: 9999px; background-color: transparent; border: 1px solid rgb(221, 221, 222);font-size: 14px; color: #7E7F82">关闭</button>
+                <button id="dialog-confirm" style="margin:0 8px; padding: 8px 42px; border-radius: 9999px; border: none;font-size: 14px; color: #ffffff; background-color: #4848D8">确定</button>
+            </div>
+        </div>
+        `;
+    return dialog;
+}
+
+function showDialog(type, msg, confirmCB, cancelCB) {
+    let imageSrc;
+    switch (type) {
+        case DLevel.Tips:
+            imageSrc = "/assets/file/info-img.png";
+            break;
+        case DLevel.Error:
+            imageSrc = "/assets/file/error-img.png";
+            break;
+        case DLevel.Warning:
+            imageSrc = "/assets/file/warning-img.png";
+            break;
+    }
+
+    const dialog = createDialogElement(imageSrc);
+    document.body.appendChild(dialog);
+    const dialogMessage = document.getElementById('dialog-message');
+
+    const dialogCloseButton = document.getElementById('dialog-close');
+    const dialogConfirmButton = document.getElementById('dialog-confirm');
+
+    dialogMessage.textContent = msg;
+
+    dialogCloseButton.addEventListener('click', function () {
+        document.body.removeChild(dialog);
+        if (cancelCB) {
+            cancelCB();
+        }
+    });
+
+    if (confirmCB) {
+        dialogConfirmButton.style.display = 'block';
+        dialogConfirmButton.addEventListener('click', function () {
+            document.body.removeChild(dialog);
+            confirmCB();
+        });
+    } else {
+        dialogConfirmButton.style.display = 'none';
+    }
+}

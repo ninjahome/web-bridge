@@ -244,7 +244,7 @@ async function showTweetDetail(parentName) {
 
     const obj = __globalTweetMemCache.get(create_time)
     if (!obj) {
-        showDialog("error", "can't find tweet obj");
+        showDialog(DLevel.Error, "can't find tweet obj");
         return;
     }
 
@@ -306,7 +306,7 @@ async function __updateVoteNumberForTweet(tweetObj, newVote) {
 async function voteToTheTweet(obj, callback) {
 
     if (Number(obj.payment_status) !== TXStatus.Success) {
-        showDialog("tips", "can't vote to unpaid tweet")
+        showDialog(DLevel.Warning, "can't vote to unpaid tweet")
         return;
     }
 
@@ -380,7 +380,7 @@ async function withdrawAction(contract) {
         const txReceipt = await txResponse.wait();
         console.log("Transaction Receipt: ", txReceipt);
 
-        showDialog("Transaction: " + txReceipt.status ? "success" : "failed");
+        showDialog(DLevel.Tips,"Transaction: " + txReceipt.status ? "success" : "failed");
         hideLoading();
     } catch (err) {
         checkMetamaskErr(err);

@@ -156,7 +156,7 @@
     function initPages() {
         setupBasicInfos();
         if (typeof window.ethereum === 'undefined') {
-            showDialog("error", "您已关闭了metamask，请打开metamask并确切换到：" + _curNinjaEthAddr);
+            showDialog(DLevel.Tips, "您已关闭了metamask，请打开metamask并确切换到：" + _curNinjaEthAddr);
             return
         }
         metamaskObj = window.ethereum;
@@ -174,12 +174,12 @@
         try {
             const accounts = await metamaskObj.request({method: 'eth_accounts'})
             if (accounts.length === 0) {
-                showDialog("tips", "请登录metamask")
+                showDialog(DLevel.Tips, "请登录metamask")
                 return
             }
             const curAccId = accounts[0]
             if (curAccId !== _curNinjaEthAddr) {
-                showDialog("error", "请打开metamask并确切换到：" + _curNinjaEthAddr);
+                showDialog(DLevel.Warning, "请打开metamask并确切换到：" + _curNinjaEthAddr);
                 return;
             }
 
@@ -198,10 +198,10 @@
                 window.location.href = "/main";
             }).catch(err => {
                 hideLoading();
-                showDialog("error", "bind failed:" + err.toString())
+                showDialog(DLevel.Error, "bind failed:" + err.toString())
             })
         } catch (err) {
-            showDialog("error", "bind failed:" + err.toString())
+            showDialog(DLevel.Error, "bind failed:" + err.toString())
         }
     }
 

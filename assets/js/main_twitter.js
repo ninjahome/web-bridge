@@ -1,6 +1,7 @@
 const cachedGlobalTweets = new MemCachedTweets();
 
 function bindingTwitter() {
+    showWaiting("prepare to bind twitter");
     window.location.href = "/signUpByTwitter";
 }
 
@@ -14,7 +15,7 @@ async function __loadTweetsAtHomePage(newest) {
         }
     } catch (err) {
         console.log(err);
-        showDialog("error", err.toString());
+        showDialog(DLevel.Error, err.toString());
     }
 }
 
@@ -111,7 +112,7 @@ async function fillTweetParkAtHomePage(clear) {
 async function preparePostMsg() {
     const content = document.getElementById("tweets-content-txt-area").textContent.trim();
     if (!content) {
-        showDialog("tips", "content can't be empty")
+        showDialog(DLevel.Warning, "content can't be empty")
         return null;
     }
 
@@ -123,7 +124,7 @@ async function preparePostMsg() {
         method: 'personal_sign', params: [message, ninjaUserObj.eth_addr],
     });
     if (!signature) {
-        showDialog("tips", "empty signature")
+        showDialog(DLevel.Warning, "empty signature")
         return null;
     }
     return new SignDataForPost(message, signature);
@@ -142,11 +143,14 @@ function updatePaymentStatusToSrv(tweet) {
 async function postTweetWithPayment() {
     try {
         const tweetObj = await preparePostMsg();
+        if(!tweetObj){
+            return;
+        }
         showWaiting("posting to twitter");
         const resp = await PostToSrvByJson("/postTweet", tweetObj);
         if (!resp) {
             hideLoading();
-            showDialog("error", "post tweet failed");
+            showDialog(DLevel.Error, "post tweet failed");
             return;
         }
         const basicTweet = JSON.parse(resp);
@@ -174,12 +178,12 @@ async function postTweetWithPayment() {
 
 async function showPostTweetDiv() {
     if (!metamaskProvider) {
-        showDialog("tips", "please change metamask to arbitrum network")
+        showDialog(DLevel.Warning, "please change metamask to arbitrum network")
         return;
     }
 
     if (!ninjaUserObj.tw_id) {
-        showDialog("tips", "bind twitter first", bindingTwitter);
+        showDialog(DLevel.Warning, "bind twitter first", bindingTwitter);
         return;
     }
 
