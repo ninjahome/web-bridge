@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hopwesley/fdlimit"
+	"github.com/ninjahome/web-bridge/blockchain"
 	"github.com/ninjahome/web-bridge/server"
 	"github.com/ninjahome/web-bridge/util"
 	"github.com/spf13/cobra"
@@ -69,6 +70,11 @@ func mainRun(_ *cobra.Command, _ []string) {
 	var basisSrv = server.NewMainService()
 	go func() {
 		basisSrv.Start()
+	}()
+
+	var daemon = blockchain.NewDaemon()
+	go func() {
+		daemon.Monitor()
 	}()
 
 	waitShutdownSignal()

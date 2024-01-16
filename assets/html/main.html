@@ -835,14 +835,15 @@
 </div>
 
 <div class="hover-card" id="hover-card" onmouseleave="hideHoverCard(this)">
-    <img src="" alt="Avatar" id="hover-avatar">
+    <img src="" alt="Avatar" id="hover-avatar" class="twitterAvatar">
+    <div id="hover-name" class="name twitterName"></div>
+    <span id="hover-user-name"  class="username twitterUserName">@wsliss</span>
     <div class="hover-card-content">
-        <div id="hover-name"></div>
         <div>推文总数: <span id="hover-tweet-count"></span></div>
         <div>被打赏数: <span id="hover-vote-count"></span></div>
         <div>打赏数: <span id="hover-voted-count"></span></div>
     </div>
-    <button class="buy-key-button">购买Key</button>
+    <button id="buy-key-button" class="buy-key-button">查看详情</button>
 </div>
 <div id="vote-no-chose-modal" class="vote-chose-modal-class">
     <div class="vote-no-modal-content">

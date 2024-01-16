@@ -110,30 +110,33 @@ function clearCachedData() {
 
 
 async function showHoverCard(event, web3ID) {
+
     const hoverCard = document.getElementById('hover-card');
     const rect = event.currentTarget.getBoundingClientRect();
     const avatar = event.currentTarget.querySelector('img').src;
     const name = event.currentTarget.querySelector('.name').textContent;
+    const userName = event.currentTarget.querySelector('.username').textContent;
 
     const njUsrInfo = await loadNJUserInfoFromSrv(web3ID, true);
 
-
-
     document.getElementById('hover-avatar').src = avatar;
     document.getElementById('hover-name').textContent = name;
-
+    document.getElementById('hover-user-name').textContent = userName;
 
     hoverCard.style.display = 'block';
     hoverCard.style.left = `${rect.left}px`;
     hoverCard.style.top = `${rect.bottom + window.scrollY}px`;
 
-    if (!njUsrInfo){
-        console.log("failed to load web3 user:",web3ID);
+    if (!njUsrInfo) {
+        console.log("failed to load web3 user:", web3ID);
         return;
     }
+
     document.getElementById('hover-tweet-count').textContent = njUsrInfo.tweet_count;
     document.getElementById('hover-vote-count').textContent = njUsrInfo.vote_count;
     document.getElementById('hover-voted-count').textContent = njUsrInfo.be_voted_count;
+
+    document.getElementById('buy-key-button').onclick = () => showUserProfile(njUsrInfo.eth_addr);
 }
 
 function hideHoverCard(obj) {
@@ -146,10 +149,14 @@ function hideHoverCard(obj) {
     }, 300);
 }
 
+function showUserProfile(web3ID) {
+    console.log(web3ID);
+}
+
 function cachedToMem(tweetArray, cacheObj) {
     tweetArray.map(tweet => {
         __globalTweetMemCache.set(tweet.create_time, tweet);
-        __globalTweetMemCacheByHash.set(tweet.prefixed_hash,tweet);
+        __globalTweetMemCacheByHash.set(tweet.prefixed_hash, tweet);
         if (tweet.create_time < cacheObj.latestID || cacheObj.latestID === 0) {
             cacheObj.latestID = tweet.create_time;
         }
@@ -215,7 +222,7 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
 }
 
 function refreshTwitterInfo() {
-    showWaiting("tips","loading from twitter server");
+    showWaiting("tips", "loading from twitter server");
     loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true).then(twInfo => {
         hideLoading();
         setupTwitterElem(twInfo);
@@ -361,7 +368,8 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
         }
 
         const obj = await response.json();
-        NJUserBasicInfo.cacheNJUsrObj(obj).then(r=>{})
+        NJUserBasicInfo.cacheNJUsrObj(obj).then(r => {
+        })
 
         return obj;
     } catch (err) {
@@ -380,7 +388,7 @@ async function withdrawAction(contract) {
         const txReceipt = await txResponse.wait();
         console.log("Transaction Receipt: ", txReceipt);
 
-        showDialog(DLevel.Tips,"Transaction: " + txReceipt.status ? "success" : "failed");
+        showDialog(DLevel.Tips, "Transaction: " + txReceipt.status ? "success" : "failed");
         hideLoading();
     } catch (err) {
         checkMetamaskErr(err);

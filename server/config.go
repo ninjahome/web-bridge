@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
+	"github.com/ninjahome/web-bridge/blockchain"
 	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
@@ -93,29 +94,6 @@ func (c *TwitterConf) String() string {
 	return s
 }
 
-type BlockChainConf struct {
-	TweeTVoteContractAddress string `json:"tweet_vote_contract_address"`
-	GameContract             string `json:"game_plugin_contract_address"`
-	KolKeyContractAddress    string `json:"kol_key_contract_address"`
-	InfuraUrl                string `json:"infura_url"`
-	GameTimeInMinute         int    `json:"game_time_in_minute,omitempty"`
-	TxCheckerInSeconds       int    `json:"tx_checker_in_seconds,omitempty"`
-	ChainID                  int64  `json:"chain_id,omitempty"`
-}
-
-func (c *BlockChainConf) String() string {
-	s := "\n------block chain config------"
-	s += "\ntweet vote:" + c.TweeTVoteContractAddress
-	s += "\ngame:" + c.GameContract
-	s += "\nkol key:" + c.KolKeyContractAddress
-	s += "\ninfura url:" + c.InfuraUrl
-	s += "\ngame check time(minutes):" + fmt.Sprintf("%d", c.GameTimeInMinute)
-	s += "\ntransaction check time(seconds):" + fmt.Sprintf("%d", c.TxCheckerInSeconds)
-	s += "\nchain id:" + fmt.Sprintf("%d", c.ChainID)
-	s += "\n--------------------------"
-	return s
-}
-
 type SysConf struct {
 	LogLevel string `json:"log_level"`
 	UrlHome  string `json:"url_home"`
@@ -128,7 +106,7 @@ type SysConf struct {
 	*TwitterConf
 	*database.FileStoreConf
 	twOauthCfg *oauth2.Config
-	*BlockChainConf
+	*blockchain.BCConf
 }
 
 func (c *SysConf) String() any {
@@ -140,7 +118,7 @@ func (c *SysConf) String() any {
 	s += "\n" + c.HttpConf.String()
 	s += "\n" + c.TwitterConf.String()
 	s += "\n" + c.FileStoreConf.String()
-	s += "\n" + c.BlockChainConf.String()
+	s += "\n" + c.BCConf.String()
 	s += "\n=============================================================="
 	return s
 }
@@ -159,6 +137,7 @@ func InitConf(c *SysConf) {
 	_globalCfg = c
 	database.InitConf(c.FileStoreConf)
 
+	blockchain.InitConf(c.BCConf)
 	twitterSignUpCallbackURL = _globalCfg.UrlHome + "/tw_callback"
 	conf := _globalCfg.TwitterConf
 	var oauth2Config = &oauth2.Config{
