@@ -4,10 +4,208 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kol Key</title>
+    <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
+    <script src="/assets/js/abi_kol_key.js"></script>
+    <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/kol.js"></script>
+    <style>
+        .content-area > div {
+            display: none;
+        }
+
+        .menu-area {
+            margin-bottom: 20px;
+        }
+
+        .return-to-main {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
 </head>
 <body>
-Kol Key
-<button onclick="window.location.href='/main'">返回</button>
+
+<div class="return-to-main">
+    <button onclick="window.location.href='/main'">返回</button>
+</div>
+
+<div class="main-container">
+    <div class="menu-area">
+        <button onclick="showDiv('top-range-area')">排行榜</button>
+        <button onclick="showDiv('kol-setting-detail')">Kol设置</button>
+        <button onclick="showDiv('user-kol-key-holder')">我的Key</button>
+    </div>
+    <div class="content-area">
+        <div id="top-range-area" class="top-range-area">
+            <div class="kol-tops">
+                <table>
+                    <thead>
+                    <tr>
+                        <td>kol地址</td>
+                        <td>总收入</td>
+                        <td>key数量</td>
+                        <td>持有者数量</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2</td>
+                        <td>210.01 eth</td>
+                        <td>2030</td>
+                        <td>100</td>
+                    </tr>
+                    <tr>
+                        <td>0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</td>
+                        <td>123.01 eth</td>
+                        <td>1030</td>
+                        <td>1000</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="holder-tops">
+                <table>
+                    <thead>
+                    <tr>
+                        <td>持有者地址</td>
+                        <td>持有数</td>
+                        <td>持有价值</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr>
+                        <td>0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2</td>
+                        <td>1203</td>
+                        <td>102.30 eth</td>
+                    </tr>
+
+                    <tr>
+                        <td>0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</td>
+                        <td>883</td>
+                        <td>54.02 eth</td>
+                    </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+        <div id="kol-setting-detail"  class="kol-setting-detail">
+            <div class="open-or-show-detail">
+                <div class="open-kol-key" id="open-kol-key">
+                    <input value="1"> Finney
+                    <button>开通</button>
+                </div>
+
+                <div class="kol-key-detail" id="kol-key-detail">
+                    <div class="key-price">key 价格：<span class="key-price-val">0.001</span> eth</div>
+                    <div class="key-total-income">key 池总收入<span class="key-total-income-val">10.023</span>eth</div>
+                    <div class="key-total-no">
+                        key 总量<span class="key-total-no-val">1756</span>
+                        <button>详情</button>
+                    </div>
+                    <div class="key-income-no">当前key期次<span class="key-price-val">101</span>期</div>
+                </div>
+            </div>
+            <div class="kol-key-operation">
+                <div>Key收入：<span class="kol-key-balance">0.23</span> eth</div>
+                <div class="operation-area">
+                    <button class="kol-key-withdraw">提现</button>
+                    <button class="show-nonce-price">每期key价格详情</button>
+                </div>
+                <div class="price-per-nonce">
+                    <div class="price-per-item">
+                        <div class="nonce">第<span class="nonce-val">1</span>期</div>
+                        <div class="price">每key:<span class="nonce-val">0.00001</span> eth</div>
+                    </div>
+                    <div class="price-per-item">
+                        <div class="nonce">第<span class="nonce-val">2</span>期</div>
+                        <div class="price">每key:<span class="nonce-val">0.00023</span> eth</div>
+                    </div>
+                    <div class="price-per-item">
+                        <div class="nonce">第<span class="nonce-val">3</span>期</div>
+                        <div class="price">每key:<span class="nonce-val">0.0004</span> eth</div>
+                    </div>
+                </div>
+            </div>
+            <div class="holder-address-list">
+                <div class="holder-address">
+                    <span class="holder-address-val">0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</span>
+                    <div class="holder-detail">
+                        <div class="hold-nonce">第<span class="hold-nonce-val"> 2 </span>期</div>
+                        <div class="hold-count">数量：<span class="hold-count-val"> 5</span></div>
+                    </div>
+                    <div class="holder-detail">
+                        <div class="hold-nonce">第<span class="hold-nonce-val"> 12 </span>期</div>
+                        <div class="hold-count">数量：<span class="hold-count-val"> 45</span></div>
+                    </div>
+                </div>
+
+                <div class="holder-address">
+                    <span class="holder-address-val">0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2</span>
+                    <div class="holder-detail">
+                        <div class="hold-nonce">第<span class="hold-nonce-val"> 4 </span>期</div>
+                        <div class="hold-count">数量：<span class="hold-count-val"> 15</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="user-kol-key-holder" class="user-kol-key-holder">
+            <div class="user-income-sum">
+                <div class="income-info">总收入:<span class="income-info-val">0.02</span> eth</div>
+                <button>提现</button>
+            </div>
+            <div class="kol-list-of-investor">
+                <div class="kol-list-tittle">持有key详情(<span class="kol-address-no">2</span>)</div>
+
+                <div class="kol-card">
+                    <div class="kol-header">
+                        <div class="kol-address">
+                            Kol地址： <span class="holder-address-val">0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</span>
+                        </div>
+                        <div class="kol-income">
+                            收入：<span class="kol-income-val">0.023</span> eth
+                        </div>
+                        <div>
+                            <button>提现</button>
+                            <button>转出</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="holder-key-nonce">期次：第<span class="holder-key-nonce-val">1</span>期</div>
+                        <div class="holder-key-amount">持有量：<span class="holder-address-val">12</span>枚</div>
+                        <div class="holder-key-price">持有价格：<span class="holder-key-price-val">0.0002</span> eth/枚
+                        </div>
+                        <div class="holder-key-amount">价值：<span class="holder-address-val">0.002</span> eth</div>
+                        <div>
+                            <button>提现</button>
+                            <button>转出</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showDiv(divId) {
+        // Hide all divs
+        document.querySelectorAll('.content-area > div').forEach(div => {
+            div.style.display = 'none';
+        });
+
+        // Show the selected div
+        document.getElementById(divId).style.display = 'block';
+    }
+    document.addEventListener("DOMContentLoaded", initMainPage);
+    async function initMainPage() {
+        showDiv('top-range-area');
+    }
+</script>
 </body>
 </html>
 
