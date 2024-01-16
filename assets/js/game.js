@@ -23,7 +23,6 @@ class GameRoundInfo {
         this.curBonus = curBonus;
         this.random = random;
         this.TeamCount = 0;
-        this.MemCount = 0;
         this.TickCount = 0;
     }
 
@@ -103,11 +102,10 @@ async function loadCurrentRoundMeta() {
 
         currentRoundData = GameRoundInfo.fromBlockChainObj(gameInfo);
 
-        const [teamNo, memNo, voteNo] = await lotteryGameContract.allTeamInfoNo(gameSettings.roundNo);
-        console.log(teamNo, memNo, voteNo);
+        const [teamNo, voteNo] = await lotteryGameContract.allTeamInfoNo(gameSettings.roundNo);
+        console.log(teamNo, voteNo);
 
         currentRoundData.TeamCount = teamNo;
-        currentRoundData.MemCount = memNo;
         currentRoundData.TickCount = voteNo;
 
         console.log(currentRoundData);
@@ -160,7 +158,6 @@ function setupCurrentRoundData() {
     document.getElementById("prize-pool-random-hash").textContent = currentRoundData.hash;
     document.getElementById("prize-pool-team-no").textContent = currentRoundData.TeamCount;
     document.getElementById("prize-pool-tick-no").textContent = currentRoundData.TickCount;
-    document.getElementById("prize-pool-member-no").textContent = currentRoundData.MemCount;
 
     const elem = document.getElementById("prize-pool-discover-time");
     startCountdown(currentRoundData.dTime, function (days, hours, minutes, seconds, finished) {
@@ -216,8 +213,11 @@ function showTeamDetail() {
     teamDiv.style.display = isShowing ? 'none' : 'block';
 
     if (isShowing) {
+        const teamDetailDiv = document.querySelector('.team-detail-for-one');
+        teamDetailDiv.style.display =  'none';
         return;
     }
+
     const tableBody = document.getElementById("team-detail-body");
     tableBody.innerHTML = '';
     for (let i = 0; i < personalData.teams.length; i++) {
@@ -233,6 +233,7 @@ function hideOneTeamDetails(){
     const teamDetailDiv = document.querySelector('.team-detail-for-one');
     teamDetailDiv.style.display =  'none';
 }
+
 async function showOneTeamDetails(team) {
     console.log(team);
     const teamDetailDiv = document.querySelector('.team-detail-for-one');
@@ -251,8 +252,8 @@ async function showOneTeamDetails(team) {
 
             let row = tableBody.insertRow();
             let cell = row.insertCell();
-
             cell.innerHTML = obj.members[i];
+
             cell = row.insertCell();
             cell.innerHTML = obj.voteNos[i];
 
@@ -273,5 +274,19 @@ async function buyTicket() {
         showDialog(DLevel.Tips, "not open for personal user");
         return;
     }
+}
 
+function showUserWinHistory(){
+    showDialog(DLevel.Tips,"not ok now");
+    // const historyDiv = document.querySelector('.winning-history');
+    // const isShowing = historyDiv.style.display === 'block';
+    // historyDiv.style.display = isShowing ? 'none' : 'block';
+    // if (isShowing){
+    //     return;
+    // }
+}
+
+function showGameRule(className){
+    const gameRuleDiv = document.querySelector(className);
+    gameRuleDiv.style.display = gameRuleDiv.style.display === 'none' ? 'block' : 'none';
 }

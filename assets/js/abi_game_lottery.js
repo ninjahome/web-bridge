@@ -526,11 +526,6 @@ const gameContractABI =`
             },
             {
                 "internalType": "uint256",
-                "name": "memCountNo",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
                 "name": "voteCountNo",
                 "type": "uint256"
             }

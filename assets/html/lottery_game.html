@@ -312,10 +312,9 @@
             <li>
                 <p>中奖记录: <span class="winning-count"
                                    style="font-size: 20px; font-weight:bold; color: #DE8633">0</span></p>
-                <button class="winning-btn rule-info-btn">查看详情</button>
+                <button class="winning-btn rule-info-btn" onclick="showUserWinHistory()">查看详情</button>
             </li>
         </ul>
-
 
     </div>
     <div class="game-section">
@@ -352,13 +351,10 @@
                 <div class="prize-pool-value" id="prize-pool-tick-no">0</div>
                 <p style="color: rgba(29,29,31,0.5);font-size: 14px">彩票数</p>
             </div>
-            <div style="margin-left: 16px; margin-right: 12px">
-                <div class="prize-pool-value" id="prize-pool-member-no">0</div>
-                <p style="color: rgba(29,29,31,0.5);font-size: 14px">人数</p>
-            </div>
         </div>
         <div class="game-rules" style="padding: 12px 0;border-bottom: 1px solid #E8E8E8">
-            <div style="display: flex; justify-content: space-between; align-items: center">
+            <div style="display: flex; justify-content: space-between; align-items: center"
+                 onclick="showGameRule('.rule-info')">
                 <p>游戏规则</p>
                 <button class="game-rule-btn"><img src="/assets/file/rules-info-icon.png"></button>
             </div>
@@ -382,7 +378,8 @@
 
         </div>
         <div class="game-algorithm" style="padding-top: 12px">
-            <div style="display: flex; justify-content: space-between; align-items: center">
+            <div style="display: flex; justify-content: space-between; align-items: center"
+                 onclick="showGameRule('.game-algorithm-info')">
                 <p>彩票算法</p>
                 <button class="game-algorithm-btn"><img src="/assets/file/rules-info-icon.png" alt=" "></button>
             </div>
@@ -398,8 +395,8 @@
                 <ul class="algorithm-detail" style="color: #7E7F82">
                     <li>算法:<span class="algorithm-title" style="color: #DE4033; font-size: 16px; font-weight: bold">(中奖者地址)</span>
                     </li>
-                    <li>购买地址列表:<span class="algorithm-description"
-                                           style="color: #4848D8; font-size: 16px; font-weight: bold">[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数].</span>
+                    <li><span class="algorithm-description"
+                              style="color: #4848D8; font-size: 16px; font-weight: bold">购买地址列表[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数].</span>
                     </li>
                     <li>合约地址: <span class="contract-address-value" style="color: #1B1B1D; font-size: 16px">0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</span>
                     </li>
@@ -517,20 +514,6 @@
     const ninjaUserObj = {{ .NinjaUsrInfoJson }};
     document.addEventListener("DOMContentLoaded", initGamePage);
 
-    document.querySelector('.winning-btn.rule-info-btn').addEventListener('click', function () {
-        var teamDiv = document.querySelector('.winning-history');
-        teamDiv.style.display = teamDiv.style.display === 'none' ? 'block' : 'none';
-    });
-
-    document.querySelector('.game-rule-btn').addEventListener('click', function () {
-        var teamDiv = document.querySelector('.rule-info');
-        teamDiv.style.display = teamDiv.style.display === 'none' ? 'block' : 'none';
-    });
-
-    document.querySelector('.game-algorithm-btn').addEventListener('click', function () {
-        var teamDiv = document.querySelector('.game-algorithm-info');
-        teamDiv.style.display = teamDiv.style.display === 'none' ? 'block' : 'none';
-    });
 
     document.querySelector('.query-btn').addEventListener('click', function () {
         var teamDiv = document.querySelector('.history-details');
