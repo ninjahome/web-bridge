@@ -24,7 +24,7 @@ abstract contract Owner {
         owner = newOwner;
     }
 
-    function changeOwner(bool stop) public isOwner {
+    function changeStatus(bool stop) public isOwner {
         paused = stop;
     }
 
@@ -140,11 +140,17 @@ interface IsValidNjContract {
     function checkPluginInterface() external pure returns (bool);
 }
 
-interface TweetVotePlugInI is IsValidNjContract{
+interface TweetVotePlugInI is IsValidNjContract {
     function tweetBought(
         bytes32 tweetHash,
         address owner,
         address buyer,
         uint256 voteNo
     ) external payable;
+}
+
+interface KolIncomeToPoolI is IsValidNjContract {
+    function kolGotIncome(int8 sourceID, address kolAddr) external payable;
+
+    function kolOpenKeyPool(address sourceAddr) external view returns (bool);
 }

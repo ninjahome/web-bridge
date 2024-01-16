@@ -8,10 +8,10 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     uint256 public __lotteryGameRoundTime = 48 hours;
     uint256 public __currentLotteryTicketID = 100000;
     uint8 public __bonusRateToWinner = 50;
-    bool public __openToOuterPlayer = false;
+    bool public __openToOuterPlayer = true;
 
-    uint256 public __ticketPriceForOuter = 1e6 gwei;
-    uint8 public __serviceFeeRateForTicketBuy = 5;
+    uint256 public __ticketPriceForOuter = 5 * 1e6 gwei;
+    uint8 public __serviceFeeRateForTicketBuy = 10;
 
     uint256 public totalBonus = 0 gwei;
     uint256 public currentRoundNo = 0;
@@ -39,11 +39,10 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
 
     mapping(uint256 => bytes32) public buyerInfoIdxForTickets;
     mapping(bytes32 => BuyerInfo) public buyerInfoRecords;
-
     mapping(uint256 => GameInfoOneRound) public gameInfoRecord;
     mapping(uint256 => uint256[]) public ticketsRecords;
-
     mapping(uint256 => mapping(bytes32 => TweetTeam)) private tweetTeamMap;
+
     mapping(uint256 => mapping(address => uint256[])) public ticketsOfBuyer;
     mapping(uint256 => bytes32[]) public teamList;
 

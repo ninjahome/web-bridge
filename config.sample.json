@@ -27,5 +27,6 @@
 	"infura_url": "https://arbitrum-mainnet.infura.io/v3/",
 	"game_time_in_minute": 10,
 	"tx_checker_in_seconds": 15,
-	"chain_id": 421614
+	"chain_id": 421614,
+	"check_time_in_second": 10
 }

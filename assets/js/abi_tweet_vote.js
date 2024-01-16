@@ -486,9 +486,9 @@ const tweetVoteContractABI =`
     {
         "inputs": [
             {
-                "internalType": "bool",
-                "name": "stop",
-                "type": "bool"
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
             }
         ],
         "name": "changeOwner",
@@ -499,12 +499,12 @@ const tweetVoteContractABI =`
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
+                "internalType": "bool",
+                "name": "stop",
+                "type": "bool"
             }
         ],
-        "name": "changeOwner",
+        "name": "changeStatus",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -569,6 +569,19 @@ const tweetVoteContractABI =`
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "kolKeyIncomeSourceID",
+        "outputs": [
+            {
+                "internalType": "int8",
+                "name": "",
+                "type": "int8"
             }
         ],
         "stateMutability": "view",

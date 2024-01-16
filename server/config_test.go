@@ -3,7 +3,8 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	database2 "github.com/ninjahome/web-bridge/database"
+	"github.com/ninjahome/web-bridge/blockchain"
+	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"os"
 	"testing"
@@ -32,14 +33,14 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			ConsumerKey:    "",
 			ConsumerSecret: "",
 		},
-		FileStoreConf: &database2.FileStoreConf{
+		FileStoreConf: &database.FileStoreConf{
 			TweetsPageSize: 20,
-			ProjectID:      database2.DefaultFirestoreProjectID,
-			DatabaseID:     database2.DefaultDatabaseID,
+			ProjectID:      database.DefaultFirestoreProjectID,
+			DatabaseID:     database.DefaultDatabaseID,
 			KeyFilePath:    "dessage-c3b5c95267fb.json",
 			LocalRun:       false,
 		},
-		BlockChainConf: &BlockChainConf{
+		BCConf: &blockchain.BCConf{
 			TweeTVoteContractAddress: "0x63713037a9E337D7Db5D383070199B948598e0Da",
 			GameContract:             "0x57F0bbE85f5822911003A8fa425D5595D139FDFe",
 			KolKeyContractAddress:    "",
@@ -47,6 +48,7 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			GameTimeInMinute:         10,
 			TxCheckerInSeconds:       15,
 			ChainID:                  421614,
+			CheckTimeInSecond:        10,
 		},
 	}
 
