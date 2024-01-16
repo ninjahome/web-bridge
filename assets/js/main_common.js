@@ -131,12 +131,13 @@ async function showHoverCard(event, web3ID) {
         console.log("failed to load web3 user:", web3ID);
         return;
     }
-
+    document.getElementById('buy-key-button').onclick = () => {
+        hoverCard.style.display = 'none';
+        showUserProfile(njUsrInfo)
+    };
     document.getElementById('hover-tweet-count').textContent = njUsrInfo.tweet_count;
     document.getElementById('hover-vote-count').textContent = njUsrInfo.vote_count;
     document.getElementById('hover-voted-count').textContent = njUsrInfo.be_voted_count;
-
-    document.getElementById('buy-key-button').onclick = () => showUserProfile(njUsrInfo.eth_addr);
 }
 
 function hideHoverCard(obj) {
@@ -149,8 +150,28 @@ function hideHoverCard(obj) {
     }, 300);
 }
 
-function showUserProfile(web3ID) {
-    console.log(web3ID);
+async function showUserProfile(njUser) {
+    console.log(njUser);
+    const detail = document.querySelector('#nj-user-profile');
+    detail.style.display = 'block';
+    let parentNode;
+    document.querySelectorAll('.content-in-middle-area').forEach(c => {
+        if (c.classList.contains('active')) {
+            parentNode = c;
+        }
+        c.classList.remove('active')
+    });
+
+    detail.querySelector(".back-button").onclick = function () {
+        if (parentNode) {
+            parentNode.classList.add('active');
+        }
+        detail.style.display = 'none';
+    }
+
+    detail.querySelector(".web3id").textContent = njUser.eth_addr;
+    const header = detail.querySelector(".tweet-header")
+    await __setOnlyHeader(header, njUser.tw_id);
 }
 
 function cachedToMem(tweetArray, cacheObj) {
@@ -160,7 +181,6 @@ function cachedToMem(tweetArray, cacheObj) {
         if (tweet.create_time < cacheObj.latestID || cacheObj.latestID === 0) {
             cacheObj.latestID = tweet.create_time;
         }
-
         cacheObj.CachedItem.push(tweet);
     });
 }
@@ -214,10 +234,10 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
 
     if (overlap) {
+        const tweetCard = wrappedHeader.parentNode;
         wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event, tweet.web3_id));
         wrappedHeader.addEventListener('mouseleave', (event) => hideHoverCard(wrappedHeader));
     }
-
     return contentArea;
 }
 
