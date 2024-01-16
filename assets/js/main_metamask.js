@@ -25,10 +25,10 @@ async function initGameContractMeta() {
     const dTime = gameInfo.discoverTime.toNumber() * 1000;
     const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
 
-    const [teamNo, memNo, voteNo]  = await lotteryGameContract.allTeamInfoNo(currentRoundNo);
+    const [teamNo, voteNo]  = await lotteryGameContract.allTeamInfoNo(currentRoundNo);
     gameContractMeta = new GameBasicInfo(currentRoundNo,
         totalBonusInEth, voteNo, curBonusInEth,
-        teamNo,memNo, dTime);
+        teamNo, dTime);
 }
 
 async function initBlockChainContract(provider) {

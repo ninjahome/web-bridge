@@ -50,13 +50,12 @@ class TweetVoteContractSetting {
 }
 
 class GameBasicInfo {
-    constructor(curRound, totalBonus,ticketNo,curBonus, teamNo,memNo, dTime) {
+    constructor(curRound, totalBonus,ticketNo,curBonus, teamNo, dTime) {
         this.curRound = curRound;
         this.totalBonus = totalBonus;
         this.ticketNo = ticketNo;
         this.curBonus = curBonus;
         this.teamNo = teamNo;
-        this.memNo = memNo;
         this.dTime = dTime;
     }
 }
