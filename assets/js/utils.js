@@ -336,7 +336,7 @@ class NJUserBasicInfo {
 
 
 const DLevel = Object.freeze({
-    Tips: 1, Warning: 2, Error: 3
+    Tips: 1, Warning: 2, Error: 3, Success:4
 });
 
 function createDialogElement(imageSrc) {
@@ -376,6 +376,9 @@ function showDialog(type, msg, confirmCB, cancelCB) {
             break;
         case DLevel.Warning:
             imageSrc = "/assets/file/warning-img.png";
+            break;
+        case DLevel.Success:
+            imageSrc = "/assets/file/success-img.png";
             break;
     }
 
