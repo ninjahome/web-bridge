@@ -177,7 +177,7 @@ async function postTweetWithPayment() {
 }
 
 async function showPostTweetDiv() {
-    if (!metamaskProvider) {
+    if (!voteContractMeta) {
         showDialog(DLevel.Warning, "please change metamask to arbitrum network")
         return;
     }

@@ -19,7 +19,7 @@ function startCountdown(targetTime, callback) {
 
         if (timeLeft <= 0) {
             clearInterval(countdownInterval);
-            callback('','','','', true);
+            callback('', '', '', '', true);
             return;
         }
 
@@ -32,7 +32,7 @@ function startCountdown(targetTime, callback) {
         minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        callback(days,hours,minutes,seconds, false);
+        callback(days, hours, minutes, seconds, false);
     }, 1000);
 }
 
@@ -403,5 +403,85 @@ function showDialog(type, msg, confirmCB, cancelCB) {
         });
     } else {
         dialogConfirmButton.style.display = 'none';
+    }
+}
+
+let metamaskObj = null;
+
+async function checkMetaMaskEnvironment(callback) {
+
+    if (typeof window.ethereum === 'undefined') {
+        window.location.href = "/signIn";
+        return
+    }
+
+    metamaskObj = window.ethereum;
+    metamaskObj.on('accountsChanged', metamaskAccountChanged);
+    metamaskObj.on('chainChanged', function (chainID){
+        checkCurrentChainID(chainID,callback)
+    });
+    const chainID = await metamaskObj.request({method: 'eth_chainId'});
+
+    await checkCurrentChainID(chainID, callback);
+}
+
+function metamaskAccountChanged(accounts) {
+    if (accounts.length === 0) {
+        window.location.href = "/signOut";
+        return;
+    }
+    window.location.href = "/signOut";
+}
+
+async function checkCurrentChainID(chainId, callback) {
+    if (__globalTargetChainNetworkID === chainId) {
+        const provider = new ethers.providers.Web3Provider(metamaskObj);
+        if (callback) {
+            await callback(provider);
+        }
+        return;
+    }
+
+    showDialog(DLevel.Tips, "switch to arbitrum", switchToWorkChain, function () {
+        window.location.href = "/signOut";
+    });
+}
+
+async function switchToWorkChain() {
+    const result = await switchChain(__globalTargetChainNetworkID);
+    if (result.needAdd) {
+        await addChain(__globalTargetChainNetworkID);
+    }
+}
+
+async function switchChain(chainId) {
+    try {
+        await metamaskObj.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{chainId}],
+        });
+        location.reload();
+        return {switched: true, needAdd: false};
+    } catch (error) {
+
+        if (error.code === 4902) {
+            return {switched: false, needAdd: true};
+        } else {
+            showDialog(DLevel.Error, "Failed switching to Arbitrum network");
+            return {switched: false, needAdd: false};
+        }
+    }
+}
+
+async function addChain(chainId) {
+    try {
+        const chainParams = __globalMetaMaskNetworkParam.get(chainId);
+        await metamaskObj.request({
+            method: 'wallet_addEthereumChain',
+            params: [chainParams],
+        });
+        location.reload();
+    } catch (addError) {
+        showDialog(DLevel.Error, "Add to network failed: " + addError.toString());
     }
 }

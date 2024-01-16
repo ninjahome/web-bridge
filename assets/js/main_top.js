@@ -96,6 +96,10 @@ async function joinTeam(obj, hash, team_card) {
 async function showTeammates(tweetHash, team_card) {
     try {
         showWaiting("syncing members from block chain");
+        if(!lotteryGameContract){
+            hideLoading();
+            return;
+        }
         const allMates = await lotteryGameContract.teamMembers(gameContractMeta.curRound, tweetHash);
         console.log(allMates);
         if (allMates.memNo === 0) {

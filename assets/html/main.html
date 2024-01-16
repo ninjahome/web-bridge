@@ -19,6 +19,7 @@
         .d-radius {
             border-radius: 9999px;
         }
+
         .container {
             display: flex; /* 启用flex布局 */
             height: 100vh; /* 容器高度设置为视窗高度 */
@@ -405,7 +406,7 @@
     </style>
     <style about="game-lottery">
         .lottery-round-info,
-        .lottery-timer{
+        .lottery-timer {
             width: 348px;
             display: flex;
             flex-direction: column;
@@ -422,14 +423,14 @@
         }
 
         .lottery-round {
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             padding: 2px 32px;
             font-size: 12px;
             margin-top: 12px;
         }
 
         .lottery-amount {
-            font-family: DINCond-Black,"Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: DINCond-Black, "Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-size: 56px;
             padding: 0;
         }
@@ -474,21 +475,24 @@
             justify-content: center;
             align-items: center;
         }
+
         .number {
-            font-family: DINCond-Black,"Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: DINCond-Black, "Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-size: 36px;
             padding: 4px 12px;
             margin: 24px 12px 6px;
             border-radius: 10px;
             color: #302F2F;
         }
+
         .hours,
         .minutes,
-        .seconds{
+        .seconds {
             background-color: #ECEDEF; /* red */
-            border: 1px solid #DD5232 ;
+            border: 1px solid #DD5232;
         }
-        .countdown-result{
+
+        .countdown-result {
             display: none;
         }
     </style>
@@ -790,8 +794,8 @@
                 </div>
                 <button>发布推文</button>
                 <button>投票推文</button>
-                <div id="nj-user-posted-tweets"  class="tweets-park"></div>
-                <div id="nj-user-vote-tweets"  class="tweets-park"></div>
+                <div id="nj-user-posted-tweets" class="tweets-park"></div>
+                <div id="nj-user-vote-tweets" class="tweets-park"></div>
             </div>
         </div>
     </div>
@@ -808,9 +812,12 @@
             <div class="lottery-timer">
                 <div class="countdown-result" id="countdown-result">开奖中</div>
                 <div class="countdown" id="lottery-count-down">
-                    <div class="number days">00</div>:
-                    <div class="number hours">00</div>:
-                    <div class="number minutes">00</div>:
+                    <div class="number days">00</div>
+                    :
+                    <div class="number hours">00</div>
+                    :
+                    <div class="number minutes">00</div>
+                    :
                     <div class="number seconds">00</div>
                 </div>
                 <span style="color: #A0A0A5; font-size: 12px">开奖时间</span>
@@ -840,7 +847,7 @@
 <div class="hover-card" id="hover-card" onmouseleave="hideHoverCard(this)">
     <img src="" alt="Avatar" id="hover-avatar" class="twitterAvatar">
     <div id="hover-name" class="name twitterName"></div>
-    <span id="hover-user-name"  class="username twitterUserName">@wsliss</span>
+    <span id="hover-user-name" class="username twitterUserName">@wsliss</span>
     <div class="hover-card-content">
         <div>推文总数: <span id="hover-tweet-count"></span></div>
         <div>被打赏数: <span id="hover-vote-count"></span></div>
@@ -905,7 +912,7 @@
 
     async function initMainPage() {
         initNjBasic();
-        await checkMetaMaskEnvironment();
+        await checkMetaMaskEnvironment(initBlockChainContract);
         await loadTweetsForHomePage();
     }
 
@@ -957,7 +964,7 @@
     async function setupUserBasicInfoInSetting() {
         document.getElementById("basic-web3-id").innerText = ninjaUserObj.eth_addr;
         const twitterInfo = await loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, true, false);
-        if (!twitterInfo){
+        if (!twitterInfo) {
             console.log("no such twitter user");
             return;
         }
