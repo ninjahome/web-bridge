@@ -12,36 +12,92 @@
     <script src="/assets/js/main_metamask.js"></script>
     <script src="/assets/js/game.js"></script>
     <style about="basic">
-        .back-to-main-btn {
-            position: absolute;
-            top: 0;
-            left: 0;
-            margin: 10px;
+
+        html, body {
+            height: 100%; /* Full height for the body */
+            margin: 0; /* Reset default margin */
+            padding: 0;
+            display: flex; /* Enable Flexbox */
+            justify-content: center; /* Center horizontally */
+            overflow-x: hidden; /* Hide horizontal scrollbar at the body level */
         }
 
         .main-container {
-            display: flex;
-            justify-content: space-between;
-            height: 100vh; /* 让 main-container 占据整个视口高度 */
-            align-items: center; /* 垂直居中对齐 */
+            width: auto;
+            margin: 0 auto; /* Center the container */
         }
 
-        .user-section {
-            flex: 1;
-            margin: 10px;
+        @media (max-width: 1000px) {
+            body {
+                overflow-x: auto; /* Enable horizontal scrollbar when viewport width is less than 1000px */
+            }
         }
 
-        .game-section {
-            flex: 2; /* 设置为2，占据两倍的弹性空间 */
-            margin: 10px;
+        * {
+            margin: 0;
+            padding: 0;
         }
 
-        .history-section {
-            flex: 1;
-            margin: 10px;
+        body {
+            font-family: DIN,"Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
 
-</style>
+        .main-container {
+            margin-top: 72px;
+        }
+        .rule-info-btn:hover {
+            color: #4848D8;
+        }
+
+        .return-main-btn {
+            color: #898989;
+            background-color: #F1F2F3;
+            padding: 8px 24px;
+            border: none;
+            border-radius: 999px;
+        }
+        h3,h4,p,ul {
+            margin: 0;
+            padding:0;
+        }
+
+        .user-section,
+        .game-section,
+        .history-section{
+            max-width: 800px;
+            padding: 24px 24px;
+            border: 1px solid #EDEEF2;
+            margin: 12px 0;
+            border-radius: 24px;
+            color: #1B1B1D;
+        }
+
+        .withdraw-btn,
+        .betting-btn,
+        .query-btn {
+            width: 86px;
+            height: 42px;
+            border-radius: 999px;
+            border: none;
+            color: white;
+            font-size: 16px;
+            background-color: #4848D8;
+        }
+
+
+        .rule-info-btn,
+        .game-algorithm-btn,
+        .game-rule-btn {
+            border: none;
+            background-color: transparent;
+            color: #898989;
+            padding: 0;
+        }
+
+        h3 {
+           margin: 8px 0;
+        }
+    </style>
     <style about="user-balance">
         /* 当内容过长时，取消 text-overflow 和显示所有文本 */
         .tickets-detail:hover .team-id-txt,
@@ -51,79 +107,232 @@
             overflow: visible; /* 显示所有文本 */
         }
 
-        .tickets-detail,
-        .team-detail {
-            max-width: 100%; /* 设置最大宽度为父容器宽度 */
-            overflow-x: auto; /* 启用横向滚动 */
-            word-wrap: break-word; /* 允许单词内换行 */
-        }
-
         .team-id-txt {
             white-space: normal; /* 允许文字换行 */
             word-break: break-all; /* 允许单词内换行 */
         }
 
-        /* 使用 Flexbox 排列元素在同一行 */
-        .ticket-action {
-            display: flex; /* 使用 Flexbox 布局 */
-            align-items: center; /* 垂直居中对齐按钮和文本 */
+        .user-balance {
+            display: flex;
         }
-
-        .ticket-action p,
-        .ticket-action button {
-            margin-right: 10px; /* 添加一些右侧间距，以分隔文本和按钮 */
-        }
-
 
         /* 使用 Flexbox 排列元素在同一行 */
         .user-balance {
             display: flex; /* 使用 Flexbox 布局 */
             align-items: center; /* 垂直居中对齐按钮和文本 */
+            flex-direction: row;
+            justify-content: space-between;
+            margin-bottom: 16px;
         }
 
         .balance-value {
-            margin-right: 10px; /* 添加一些右侧间距，以分隔数值和按钮 */
+            margin-right: 6px; /* 添加一些右侧间距，以分隔数值和按钮 */
+            font-weight: bold;
+            font-size: 36px;
         }
 
+        .ticket-action {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            list-style-type: none;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #E8E8E8;
+        }
+
+        .user-tickets,
+        .user-team,
+        .rule-info,
+        .round-history,
+        .winning-history,
+        .game-algorithm-info {
+            background-color: #F8F8F8;
+            border-radius: 16px;
+            margin: 12px 0;
+        }
+        .user-team,
+        .rule-info,
+        .round-history,
+        .winning-history,
+        .game-algorithm-info {
+            padding: 16px;
+        }
+
+        .tickets-detail {
+            border-collapse: separate;
+            border-spacing: 24px 12px; /* Horizontal spacing is 12px, vertical spacing is 0 */
+        }
+
+        .tickets-num td {
+            width: 83px;
+            height: 38px;
+            border: 1px solid #D3D5D6;
+            font-size: 14px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .team-detail {
+            border-collapse: collapse; /* Removes space between borders */
+            width: 100%; /* Optional: Adjusts the width of the table */
+        }
+
+        .team-detail th,
+        .team-detail td {
+            border: 1px solid #D3D5D6; /* Optional: Adds a border to each cell */
+            height: 38px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        .team-detail .team-id-txt {
+            word-break: break-all; /* Ensures long text in this class breaks to prevent overflow */
+        }
+        .team-detail td {
+            border: 1px solid #D3D5D6;
+            height: 38px;
+
+        }
+    </style>
+    <style about="history-section">
+        .round-title-betting {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: space-between;
+        }
+        .round-title-number,
+        .round-time-betting {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+        }
+        .round-summary {
+            background-color: rgba(222,64,51,0.1);
+            border: 1px dashed rgba(222,64,51,0.2);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            margin-top: 16px;
+            height: 88px;
+
+        }
+        .prize-pool-value {
+            font-size: 26px;
+            font-weight: bold;
+            color: #1B1B1D;
+        }
+
+        ul{
+            margin-top: 6px;
+        }
+
+        ul li {
+            font-size: 14px;
+            line-height: 1.5;
+            list-style-type: none;
+        }
+    </style>
+    <style about="history-section">
+
+        .history-query {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-right: 8px;
+        }
+        .round-query-input {
+            height: 42px;
+            width: 692px;
+            border-radius: 999px;
+            border: 1px solid #D3D5D6;
+            background-color: #F1F2F3;
+            padding-left: 8px;
+        }
+
+        .round-query-input:focus {
+            border-color: #4848D8;
+        }
+
+        .round-history ul li span {
+            color: #1B1B1D;
+        }
+
+        .load-history-btn {
+            color: #898989;
+            background-color: #F1F2F3;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 999px;
+    }
+        .contract-code-btn {
+            background-color: #white;
+            border-radius: 999px;
+            color: #1B1B1D;
+            border: none;
+            padding-right: 12px;
+            padding-left: 4px;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            display: flex;
+            align-items: center;
+    }
     </style>
 </head>
 
 <body>
-<div class="back-to-main-btn">
-    <button onclick="window.location.href='/main'" class="return-main-btn">返回首页</button>
-</div>
+
 <div class="main-container">
+    <div class="back-to-main-btn">
+        <button onclick="window.location.href='/main'" class="return-main-btn"><img src="/assets/file/back-icon.png"> 返回首页</button>
+    </div>
     <div class="user-section">
+        <div class="user-info"></div>
         <h3 class="user-title">我的彩票</h3>
         <div class="user-balance">
-            <p>奖金: <span class="balance-value">0.02</span> ETH</p>
+            <p style="margin: 0">奖金: <span class="balance-value">0.02</span> ETH</p>
             <button class="withdraw-btn">提现</button>
         </div>
-        <div class="ticket-action">
-            <p>彩票数: <span class="ticket-count">0</span></p>
-            <button class="ticket-details-btn">刷新</button>
-            <p>团队数: <span class="team-count">0</span></p>
-            <button class="team-details-btn">刷新</button>
-        </div>
-        <div class="user-tickets">
+        <ul class="ticket-action">
+            <li>
+                <p>彩票数: <span class="ticket-count" style="font-size: 20px;font-weight:bold; color: #DE4033">0</span></p>
+                <button class="ticket-count-btn rule-info-btn">查看详情</button>
+            </li>
+            <li>
+                <p>团队数: <span class="team-count" style="font-size: 20px; font-weight:bold; color: #4848D8">0</span></p>
+                <button class="team-count-btn rule-info-btn">查看详情</button>
+            </li>
+            <li>
+                <p>中奖记录: <span class="winning-count" style="font-size: 20px; font-weight:bold; color: #DE8633">0</span></p>
+                <button class="winning-btn rule-info-btn">查看详情</button>
+            </li>
+        </ul>
+
+        <div class="user-tickets" style="display: none;">
             <table class="tickets-detail">
                 <thead>
                 <tr>
                     <th>彩票ID</th>
-                    <th>团队 ID</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody class="tickets-num">
                 <tr>
                     <td>10002</td>
-                    <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                    <td>10003</td>
+                    <td>10004</td>
+                    <td>10005</td>
+                    <td>10006</td>
+                    <td>10007</td>
+                    <td>10007</td>
                 </tr>
                 <tr>
                     <td>10003</td>
-                    <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
                 </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="user-team" style="display: none;">
             <table class="team-detail">
                 <thead>
                 <tr>
@@ -146,83 +355,154 @@
                 </tbody>
             </table>
         </div>
+        <div class="winning-history" style="display: none">
+            <ul style="color: #7E7F82">
+                <li>金额: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.02 ETH</span></li>
+                <li>期数: <span class="one-round-discover-val" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span></li>
+                <li>类型: <span class="team-id-txt" style="color: #1B1B1D; font-size: 16px; font-weight: bold">个人</span></li>
+                <li>个人彩票/团队ID: <span class="team-id-txt" style="color: #1B1B1D; font-size: 16px">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span></li>
+            </ul>
+        </div>
     </div>
 
     <!-- 当前彩票游戏信息区域 -->
     <div class="game-section">
-        <h3 class="round-title">当前彩票信息</h3>
+        <div class="round-title-betting">
+            <div class="round-title-number">
+                <h3 class="round-title">当前彩票信息</h3>
+                <p style="background-color:rgba(216,216,216,0.1); border: 1px solid rgba(151,151,151,0.2);padding: 2px 12px; margin-left: 4px; color: #DE4033; font-size: 14px">第<span class="round-number">12</span>期</p>
+            </div>
+            <div class="round-time-betting">
+                <p style="font-size: 14px">开奖时间: <span class="round-discover-time-val" style="font-size: 14px; font-weight: bolder;color: #DE4033; margin-right: 6px">2天2小时24分</span></p>
+                <button class="betting-btn" style="background-color: #DE4033">投注</button>
+            </div>
+        </div>
         <div class="round-summary">
-            <p>第: <span class="round-number">12</span>期</p>
-            <p>开奖hash:
-                <span class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46 </span>
-            </p>
+            <div style="border:1px dashed #D3D5D6; border-radius:18px; background-color: #F1F2F3; height: 48px;padding: 20px 12px">
+                <h4>开奖hash:</h4>
+                <p class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46 </p>
+            </div>
+            <div style="margin-left: 16px; margin-right: 12px">
+                <div class="prize-pool-value">10<span style="font-weight: lighter;font-size: 14px">ETH</span></div>
+                <p style="color: rgba(29,29,31,0.5);font-size: 14px">奖池</p>
+            </div>
+            <div style="margin-left: 16px; margin-right: 12px">
+                <div class="prize-pool-value">10</div>
+                <p style="color: rgba(29,29,31,0.5);font-size: 14px">团队数</p>
+            </div>
+            <div style="margin-left: 16px; margin-right: 12px">
+                <div class="prize-pool-value">10 </div>
+                <p style="color: rgba(29,29,31,0.5);font-size: 14px">彩票数</p>
+            </div>
+        </div>
+        <div class="game-rules" style="padding: 12px 0;border-bottom: 1px solid #E8E8E8">
+            <div style="display: flex; justify-content: space-between; align-items: center">
+                <p >游戏规则</p>
+                <button class="game-rule-btn"><img src="/assets/file/rules-info-icon.png"></button>
+            </div>
+            <div class="rule-info" style="display: none">
+                <h4>团队购买规则</h4>
+            <ul>
+                <li>1. 通过为KOL打赏获得彩票.</li>
+                <li>2. KOL打赏的60%金额进入奖池.</li>
+                <li>3. 每48小时开一次奖.</li>
+                <li>4. 奖金一半归中奖人，一半归中奖团队.</li>
+            </ul>
+                <h4>个人投注规则</h4>
+                <ul>
+                    <li>1.随机数链下生成.</li>
+                    <li>2.每期开奖结束后，将下期开奖随机数的hash值写入区块链.</li>
+                    <li>3.开奖日期截止是，智能合约接受随机数.</li>
+                    <li>4.智能合约计算随机数hash值与区块链随机数hash比对.</li>
+                    <li>5.比对成功后随机选择中奖者web3ID</li>
+                </ul>
+            </div>
 
-            <div>
-                <p>奖池: <span class="prize-pool-value">10 </span>ETH</p>
+        </div>
+        <div class="game-algorithm" style="padding-top: 12px">
+            <div style="display: flex; justify-content: space-between; align-items: center">
+                <p>彩票算法</p>
+                <button class="game-algorithm-btn"><img src="/assets/file/rules-info-icon.png" alt=" "></button>
+            </div>
+            <div class="game-algorithm-info" style="display: none">
+                <h4>彩票算法</h4>
+                <ul>
+                    <li>1.随机数链下生成.</li>
+                    <li>2.每期开奖结束后，将下期开奖随机数的hash值写入区块链.</li>
+                    <li>3.开奖日期截止是，智能合约接受随机数.</li>
+                    <li>4.智能合约计算随机数hash值与区块链随机数hash比对.</li>
+                    <li>5.比对成功后随机选择中奖者web3ID</li>
+                </ul>
+                <ul class="algorithm-detail" style="color: #7E7F82">
+                    <li>算法:<span class="algorithm-title" style="color: #DE4033; font-size: 16px; font-weight: bold">(中奖者地址)</span></li>
+                    <li>购买地址列表:<span class="algorithm-description" style="color: #4848D8; font-size: 16px; font-weight: bold">[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数].</span></li>
+                    <li>合约地址: <span class="contract-address-value" style="color: #1B1B1D; font-size: 16px">0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</span>
+                    </li>
+                </ul>
+                <button class="contract-code-btn"><img src="/assets/file/GitHub-logo.png" alt="GitHub">GitHub</button>
+            </div>
+        </div>
 
-            </div>
-            <div>
-                <p>团队数: <span class="prize-pool-value">10 </span></p>
-                <p>彩票数: <span class="prize-pool-value">10 </span></p>
-            </div>
-            <div>
-                <p>开奖时间: <span class="round-discover-time-val">倒计时 </span>ETH</p>
-            </div>
-
-        </div>
-        <div class="game-rules">
-            <h4>游戏规则</h4>
-            <p>1. 通过为KOL打赏获得彩票</p>
-            <p>2. KOL打赏的60%金额进入奖池.</p>
-            <p>3. 每48小时开一次奖.</p>
-            <p>4. 奖金一半归中奖人，一半归中奖团队.</p>
-        </div>
-        <div class="game-algorithm">
-            <h4>彩票算法</h4>
-            <p>1. 随机数链下生成.</p>
-            <p>2. 每期开奖结束后，将下期开奖随机数的hash值写入区块链.</p>
-            <p>3. 开奖日期截止是，智能合约接受随机数.</p>
-            <p>4. 智能合约计算随机数hash值与区块链随机数hash比对.</p>
-            <p>5. 比对成功后随机选择中奖者web3ID.</p>
-            <div class="algorithm-detail">
-                <span class="algorithm-title">算法:(中奖者地址)</span>
-                <span class="algorithm-description">购买地址列表[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数].</span>
-            </div>
-        </div>
-        <div class="contract-info">
-            <p>合约地址: <span class="contract-address-value">0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</span>
-            </p>
-            <button class="contract-code-btn"><img src="/assets/file/GitHub-logo.png" alt="GitHub">GitHub</button>
-        </div>
     </div>
     <!-- 游戏历史记录区域 -->
     <div class="history-section">
         <h3 class="history-title">游戏历史记录</h3>
         <div class="history-query">
-            <label for="round-input" class="round-query-label">期序号:</label>
-            <input id="round-input" value="1" class="round-query-input">
+            <input id="round-input" class="round-query-input" placeholder="请输入序期号">
             <button class="query-btn">查询</button>
         </div>
-        <div class="history-details">
+        <div class="history-details" style="display: none">
             <div class="round-history" id="history-data-one-round-template">
-                <p>奖金: <span class="one-round-bonus-val">0.02 ETH</span></p>
-                <p>开奖时间: <span class="one-round-discover-val">2024-01-15 23:35:44</span></p>
-                <p>随机数: <span class="team-id-txt">37482194388201444118418062240926890660227596936268075126588913967857445000838</span>
-                </p>
-                <p>随机数 Hash: <span class="team-id-txt">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
-                </p>
-                <p>获奖者: <span class="one-round-winner-val">0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB</span></p>
-                <p>获奖团队: <span class="team-id-txt">0x182bd38d6f81c8d77e4cc49dab221109e03fdea8978cab7e04f928435368562a</span>
-                </p>
-                <p>获奖彩票ID: <span class="one-round-win-ticket-val">100023</span></p>
+                <ul style="color: #7E7F82">
+                    <li>奖金: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.02 ETH</span></li>
+                    <li>开奖时间: <span class="one-round-discover-val" style="font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span></li>
+                    <li>随机数: <span class="team-id-txt">37482194388201444118418062240926890660227596936268075126588913967857445000838</span></li>
+                    <li>随机数 Hash: <span class="team-id-txt">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span></li>
+                    <li>获奖者: <span class="one-round-winner-val" style=" font-size: 16px; font-weight: bold">0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB</span></li>
+                    <li>获奖团队: <span class="team-id-txt" style=" font-size: 16px; font-weight: bold">0x182bd38d6f81c8d77e4cc49dab221109e03fdea8978cab7e04f928435368562a</span></li>
+                    <li>获奖彩票ID: <span class="one-round-win-ticket-val" style="font-size: 16px; font-weight: bold">100023</span></li>
+                </ul>
+
             </div>
-            <div class="all-history">
-                <button class="load-history-btn">加载历史数据</button>
-                <div class="history-data-list"></div>
-            </div>
+        </div>
+        <div class="all-history" style="margin-top: 8px">
+            <button class="load-history-btn">加载历史数据</button>
+            <div class="history-data-list"></div>
         </div>
     </div>
 </div>
+<script>
+    document.querySelector('.ticket-count-btn.rule-info-btn').addEventListener('click', function() {
+        var ticketsDiv = document.querySelector('.user-tickets');
+        ticketsDiv.style.display = ticketsDiv.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.querySelector('.team-count-btn.rule-info-btn').addEventListener('click', function() {
+        var teamDiv = document.querySelector('.user-team');
+        teamDiv.style.display = teamDiv.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.querySelector('.winning-btn.rule-info-btn').addEventListener('click', function() {
+        var teamDiv = document.querySelector('.winning-history');
+        teamDiv.style.display = teamDiv.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.querySelector('.game-rule-btn').addEventListener('click', function() {
+        var teamDiv = document.querySelector('.rule-info');
+        teamDiv.style.display = teamDiv.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.querySelector('.game-algorithm-btn').addEventListener('click', function() {
+        var teamDiv = document.querySelector('.game-algorithm-info');
+        teamDiv.style.display = teamDiv.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.querySelector('.query-btn').addEventListener('click', function() {
+        var teamDiv = document.querySelector('.history-details');
+        teamDiv.style.display = teamDiv.style.display === 'none' ? 'block' : 'none';
+    });
+</script>
+
 </body>
 </html>
 
