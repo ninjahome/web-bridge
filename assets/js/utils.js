@@ -19,7 +19,7 @@ function startCountdown(targetTime, callback) {
 
         if (timeLeft <= 0) {
             clearInterval(countdownInterval);
-            callback('开奖中', true);
+            callback('','','','', true);
             return;
         }
 

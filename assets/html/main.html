@@ -488,6 +488,9 @@
             background-color: #ECEDEF; /* red */
             border: 1px solid #DD5232 ;
         }
+        .countdown-result{
+            display: none;
+        }
     </style>
     <style about="team-card-in-top">
     </style>
@@ -707,53 +710,9 @@
                 </div>
 
                 <div class="income-kol-area">
-                    <div class="income-header">Kol Key</div>
+                    <div class="income-header">Key收入</div>
                     <div class="income-body">
-                        <div><span>价值池: <span class="income-val">0.000</span> eth</span></div>
-                        <div><span>Key收入: <span class="income-val">0.000</span> eth</span>
-                            <button>提现</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="income-key-interest-area">
-                    <div class="income-header">Kol Key 分红</div>
-                    <div class="income-body">
-                        <table>
-                            <thead>
-                            <tr>
-                                <th>key 期数</th>
-                                <th>key 数量</th>
-                                <th>key 期价格</th>
-                                <th>key 收益</th>
-                                <th>提现</th>
-                            </tr>
-                            </thead>
-
-                            <tbody id="kol-key-body">
-                            <tr id="kol-key-row">
-                                <td class="kol-key-id">1</td>
-                                <td class="kol-key-no">10</td>
-                                <td class="kol-key-price">0.002 eth</td>
-                                <td class="income-val">0.02 eth</td>
-                                <td class="kol-key-withdraw">
-                                    <button class="kol-key-withdraw-btn">提现</button>
-                                </td>
-                            </tr>
-                            <tr id="kol-key-row">
-                                <td class="kol-key-id">4</td>
-                                <td class="kol-key-no">30</td>
-                                <td class="kol-key-price">0.015 eth</td>
-                                <td class="income-val">0.45 eth</td>
-                                <td class="kol-key-withdraw">
-                                    <button class="kol-key-withdraw-btn">提现</button>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-
-                        <span>Key总收入: <span class="income-val">0.47</span> eth</span>
-                        <button>全部提现</button>
+                        <button onclick="openKolKeyMainPage()">key主页查看</button>
                     </div>
                 </div>
             </div>
@@ -806,9 +765,34 @@
                 </div>
             </div>
         </div>
+        <div id="nj-user-profile" class="nj-user-profile">
+            <button id="back-button" class="back-button">返回</button>
+            <div class="nj-user-summary">
+                <div class="tweet-header">
+                    <img src="" alt="Avatar" class="twitterAvatar">
+                    <span class="name twitterName">ws</span>
+                    <span class="username twitterUserName">@wsliss</span>
+                    <span class="web3id">0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2</span>
+                </div>
+            </div>
+
+            <div class="nj-user-tweet-area">
+                <div id="tweetTemplateForNjUsrProfile" class="tweet-card" style="display: none;">
+                    <div class="tweet-footer">
+                        <div class="tweet-info">
+                            <span class="vote-count">投票数: <span class="vote-number">0</span></span>
+                        </div>
+                        <div class="tweet-action">
+                            <button class="tweet-action-vote">0.01 eth投票</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="nj-user-posted-tweets"  class="tweets-park"></div>
+                <div id="nj-user-vote-tweets"  class="tweets-park"></div>
+            </div>
+        </div>
     </div>
     <div class="right-operation-area">
-
         <div class="lottery-game-info" id="lottery-game-info">
             <div class="lottery-round-info">
                 <div class="lottery-round">第<span class="lottery-game-round-no">0</span>期</div>
@@ -828,29 +812,25 @@
                 </div>
                 <span style="color: #A0A0A5; font-size: 12px">开奖时间</span>
             </div>
-
             <div class="lottery-stats">
                 <div class="lottery-stats-label">
                     累计奖金:
                     <span class="lottery-stats-no" id="lottery-total-amount" style="font-weight: bold">120.001</span>
                     <span class="lottery-stats-unit">eth</span>
                 </div>
-
                 <div class="lottery-stats-label">
                     彩票数(我的):
                     <span class="lottery-stats-no" id="lottery-user-ticket-amount" style="font-weight: bold">2</span>
                     <span class="lottery-stats-unit">张</span>
                 </div>
-
                 <div class="lottery-stats-label">
                     彩票数(总):
-                    <span class="lottery-stats-no" id="lottery-current-ticket-amount" style="font-weight: bold">200</span>
+                    <span class="lottery-stats-no" id="lottery-current-ticket-amount" style="font-weight: bold">0</span>
                     <span class="lottery-stats-unit">张</span>
                 </div>
                 <button class="lottery-participate-btn" onclick="openLotteryMainPage()">我的彩票</button>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -934,6 +914,7 @@
         document.querySelectorAll('.content-in-middle-area').forEach(c => c.classList.remove('active'));
         document.getElementById(contentId).classList.add('active');
         document.getElementById("tweet-detail").style.display = 'none';
+        document.getElementById("nj-user-profile").style.display = 'none';
 
         if (contentId === "middle-div-user-tweets") {
             loadTweetsUserPosted();

@@ -45,6 +45,7 @@ func NewMainService() *MainService {
 			bh.assetsStaticFile(w, r, fileName)
 		})
 	}
+
 	r.HandleFunc("/user_profile/{web3-id}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		web3ID := vars["web3-id"]

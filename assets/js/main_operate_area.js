@@ -17,7 +17,7 @@ async function setupGameInfo(startCounter) {
         const countDown = document.getElementById("lottery-count-down");
         const countDownResult = document.getElementById("countdown-result");
         if (finished) {
-            countDownResult.style.display ='';
+            countDownResult.style.display ='block';
             countDown.style.display = 'none';
             initGameContractMeta().then(r => {
                 setupGameInfo(true);
