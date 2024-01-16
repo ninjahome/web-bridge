@@ -285,7 +285,7 @@
         <div class="user-info"></div>
         <h3 class="user-title">我的彩票</h3>
         <div class="user-balance">
-            <p style="margin: 0">奖金: <span class="balance-value">0.02</span> ETH</p>
+            <p style="margin: 0">奖金: <span class="balance-value">0.00</span> ETH</p>
             <button class="withdraw-btn">提现</button>
         </div>
         <ul class="ticket-action">
@@ -351,7 +351,7 @@
         </div>
         <div class="winning-history" style="display: none">
             <ul style="color: #7E7F82">
-                <li>金额: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.02 ETH</span></li>
+                <li>金额: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00 ETH</span></li>
                 <li>期数: <span class="one-round-discover-val" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span></li>
                 <li>类型: <span class="team-id-txt" style="color: #1B1B1D; font-size: 16px; font-weight: bold">个人</span></li>
                 <li>个人彩票/团队ID: <span class="team-id-txt" style="color: #1B1B1D; font-size: 16px">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span></li>
@@ -364,29 +364,34 @@
         <div class="round-title-betting">
             <div class="round-title-number">
                 <h3 class="round-title">当前彩票信息</h3>
-                <p style="background-color:rgba(216,216,216,0.1); border: 1px solid rgba(151,151,151,0.2);padding: 2px 12px; margin-left: 4px; color: #DE4033; font-size: 14px">第<span class="round-number">12</span>期</p>
+                <p style="background-color:rgba(216,216,216,0.1); border: 1px solid rgba(151,151,151,0.2);padding: 2px 12px; margin-left: 4px; color: #DE4033; font-size: 14px">第<span class="round-number">0</span>期</p>
             </div>
             <div class="round-time-betting">
-                <p style="font-size: 14px">开奖时间: <span class="round-discover-time-val" style="font-size: 14px; font-weight: bolder;color: #DE4033; margin-right: 6px">2天2小时24分</span></p>
-                <button class="betting-btn" style="background-color: #DE4033">投注</button>
+                <p style="font-size: 14px">开奖时间: <span class="round-discover-time-val" id="prize-pool-discover-time" style="font-size: 14px; font-weight: bolder;color: #DE4033; margin-right: 6px">2天2小时24分</span></p>
+                <button class="betting-btn" style="background-color: #DE4033" onclick="buyTicket()">投注</button>
+                <p><span class="ticket-price-for-outer-user"> 0.00 </span> eth/票</p>
             </div>
         </div>
         <div class="round-summary">
             <div style="border:1px dashed #D3D5D6; border-radius:18px; background-color: #F1F2F3; height: 48px;padding: 20px 12px">
                 <h4>开奖hash:</h4>
-                <p class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46 </p>
+                <p class="team-id-txt" id="prize-pool-random-hash">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46 </p>
             </div>
             <div style="margin-left: 16px; margin-right: 12px">
-                <div class="prize-pool-value">10<span style="font-weight: lighter;font-size: 14px">ETH</span></div>
+                <div class="prize-pool-value" ><span id="prize-pool-bonus-val">0</span><span style="font-weight: lighter;font-size: 14px"> ETH</span></div>
                 <p style="color: rgba(29,29,31,0.5);font-size: 14px">奖池</p>
             </div>
             <div style="margin-left: 16px; margin-right: 12px">
-                <div class="prize-pool-value">10</div>
+                <div class="prize-pool-value"  id="prize-pool-team-no">0</div>
                 <p style="color: rgba(29,29,31,0.5);font-size: 14px">团队数</p>
             </div>
             <div style="margin-left: 16px; margin-right: 12px">
-                <div class="prize-pool-value">10 </div>
+                <div class="prize-pool-value" id="prize-pool-tick-no">0 </div>
                 <p style="color: rgba(29,29,31,0.5);font-size: 14px">彩票数</p>
+            </div>
+            <div style="margin-left: 16px; margin-right: 12px">
+                <div class="prize-pool-value" id="prize-pool-member-no">0 </div>
+                <p style="color: rgba(29,29,31,0.5);font-size: 14px">人数</p>
             </div>
         </div>
         <div class="game-rules" style="padding: 12px 0;border-bottom: 1px solid #E8E8E8">
@@ -440,7 +445,7 @@
     </div>
     <!-- 游戏历史记录区域 -->
     <div class="history-section">
-        <h3 class="history-title">游戏历史记录</h3>
+        <h3 class="history-title">历史记录(累计奖金: <span class="history-total-bonus"></span> eth)</h3>
         <div class="history-query">
             <input id="round-input" class="round-query-input" placeholder="请输入序期号">
             <button class="query-btn">查询</button>

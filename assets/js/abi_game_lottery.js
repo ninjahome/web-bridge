@@ -512,6 +512,35 @@ const gameContractABI =`
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "roundNo",
+                "type": "uint256"
+            }
+        ],
+        "name": "allTeamInfoNo",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "tweetNo",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "memCountNo",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "voteCountNo",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
                 "name": "",
                 "type": "address"
@@ -823,11 +852,6 @@ const gameContractABI =`
                 "type": "uint256"
             },
             {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            },
-            {
                 "internalType": "bool",
                 "name": "",
                 "type": "bool"
@@ -1059,7 +1083,7 @@ const gameContractABI =`
                 "type": "address"
             }
         ],
-        "name": "voteNoOfTeamate",
+        "name": "voteNoOfTeammate",
         "outputs": [
             {
                 "internalType": "uint256",
