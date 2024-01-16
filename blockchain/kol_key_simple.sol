@@ -4,7 +4,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import "./common.sol";
 
-contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPool {
+contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPoolI {
     struct KeySettings {
         uint256 price;
         uint256 nonce;
@@ -115,7 +115,7 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPool {
     }
 
     function kolGotIncome(int8 sourceID, address kolAddr)
-    public
+    external
     payable
     noReentrant
     isValidAddress(kolAddr)

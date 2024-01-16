@@ -253,10 +253,10 @@ contract TweetVote is TweetVoteAmin {
         uint256 reminders = minusWithdrawFee(amount);
 
         if (kolKeyAddress != address(0) && kolKeyStop == false) {
-            if (KolIncomeToPool(kolKeyAddress).kolOpenKeyPool(msg.sender)) {
-                uint256 kolKeyPool = reminders * kolKeyIncomeRate;
+            if (KolIncomeToPoolI(kolKeyAddress).kolOpenKeyPool(msg.sender)) {
+                uint256 kolKeyPool = (amount / 100) * kolKeyIncomeRate;
                 reminders -= kolKeyPool;
-                KolIncomeToPool(kolKeyAddress).kolGotIncome{value: kolKeyPool}(
+                KolIncomeToPoolI(kolKeyAddress).kolGotIncome{value: kolKeyPool}(
                     kolKeyIncomeSourceID,
                     msg.sender
                 );

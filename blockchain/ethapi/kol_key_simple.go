@@ -29,16 +29,9 @@ var (
 	_ = abi.ConvertType
 )
 
-// KolKeySimpleKeySettings is an auto generated low-level Go binding around an user-defined struct.
-type KolKeySimpleKeySettings struct {
-	Price   *big.Int
-	Nonce   *big.Int
-	TotalNo *big.Int
-}
-
 // KolKeySimpleMetaData contains all meta data concerning the KolKeySimple contract.
 var KolKeySimpleMetaData = &bind.MetaData{
-	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"opType\",\"type\":\"bool\"}],\"name\":\"AdminOperation\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"val\",\"type\":\"uint256\"}],\"name\":\"InvestorWithdrawAllIncome\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"val\",\"type\":\"uint256\"}],\"name\":\"InvestorWithdrawByOneKol\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"val\",\"type\":\"uint256\"}],\"name\":\"InvestorWithdrawByOneNonce\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"KeyTransfered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"}],\"name\":\"KeyTransferedAll\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"int8\",\"name\":\"sourceID\",\"type\":\"int8\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sourceConract\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"keyNo\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"keyNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"valPerKey\",\"type\":\"uint256\"}],\"name\":\"KolIncomeToPoolAction\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kolAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"keyNo\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"curNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"KoltotalNo\",\"type\":\"uint256\"}],\"name\":\"KolKeyBought\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"pricePerKey\",\"type\":\"uint256\"}],\"name\":\"KolKeyOpened\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnerSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newSerficeFeeRate\",\"type\":\"uint256\"}],\"name\":\"ServiceFeeChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"num\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"op\",\"type\":\"string\"}],\"name\":\"SystemSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newContract\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"name\":\"UpgradeToNewRule\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"name\":\"WithdrawService\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"}],\"name\":\"AllIncomeOfAllKol\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"}],\"name\":\"AllIncomeOfOneKol\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"}],\"name\":\"IncomeOfOneNonce\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"IncomeOfOneNonceByAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"}],\"name\":\"InvestorAllKeysOfKol\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"nonce\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amounts\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"}],\"name\":\"InvestorOfKol\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"KeySettingsRecord\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalNo\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"}],\"name\":\"KeyStatusOfKol\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalNo\",\"type\":\"uint256\"}],\"internalType\":\"structKolKeySimple.KeySettings\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"}],\"name\":\"KolOfOneInvestor\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"__admins\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__minValCheck\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"isDelete\",\"type\":\"bool\"}],\"name\":\"adminOperation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"adminServiceFeeWithdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetKeyFeeRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetKolIncomeRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetWithdrawFeeRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"adminUpgradeToNewRule\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kolAddr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"keyNo\",\"type\":\"uint256\"}],\"name\":\"buyKolKey\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"stop\",\"type\":\"bool\"}],\"name\":\"changeOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"changeOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"checkPluginInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getOwner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"incomePerNoncePerKey\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int8\",\"name\":\"sourceID\",\"type\":\"int8\"},{\"internalType\":\"address\",\"name\":\"kolAddr\",\"type\":\"address\"}],\"name\":\"kolGotIncome\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kolIncomeRatePerKeyBuy\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sourceAddr\",\"type\":\"address\"}],\"name\":\"kolOpenKeyPool\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"pricePerKey\",\"type\":\"uint256\"}],\"name\":\"kolOpenKeySale\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"serviceFeeRatePerKeyBuy\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"serviceFeeReceived\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"}],\"name\":\"transferAllKey\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferKey\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawAllIncome\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawFeeRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"}],\"name\":\"withdrawFromOneKol\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"}],\"name\":\"withdrawFromOneNonce\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}]",
+	ABI: "[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"opType\",\"type\":\"bool\"}],\"name\":\"AdminOperation\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"val\",\"type\":\"uint256\"}],\"name\":\"InvestorWithdrawAllIncome\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"val\",\"type\":\"uint256\"}],\"name\":\"InvestorWithdrawByOneKol\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"val\",\"type\":\"uint256\"}],\"name\":\"InvestorWithdrawByOneNonce\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"KeyTransfered\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"}],\"name\":\"KeyTransferedAll\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"int8\",\"name\":\"sourceID\",\"type\":\"int8\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"sourceConract\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"keyNo\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"keyNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"valPerKey\",\"type\":\"uint256\"}],\"name\":\"KolIncomeToPoolAction\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kolAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"keyNo\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"curNonce\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"KoltotalNo\",\"type\":\"uint256\"}],\"name\":\"KolKeyBought\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"pricePerKey\",\"type\":\"uint256\"}],\"name\":\"KolKeyOpened\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnerSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newSerficeFeeRate\",\"type\":\"uint256\"}],\"name\":\"ServiceFeeChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"num\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"op\",\"type\":\"string\"}],\"name\":\"SystemSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newContract\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"name\":\"UpgradeToNewRule\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"name\":\"WithdrawService\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"}],\"name\":\"AllIncomeOfAllKol\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"}],\"name\":\"AllIncomeOfOneKol\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"AllKolAddr\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"}],\"name\":\"IncomeOfOneNonce\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"IncomeOfOneNonceByAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"}],\"name\":\"InvestorAllKeysOfKol\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"nonce\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"amounts\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"}],\"name\":\"InvestorOfKol\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"KeySettingsRecord\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"price\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalVal\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalNo\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"investor\",\"type\":\"address\"}],\"name\":\"KolOfOneInvestor\",\"outputs\":[{\"internalType\":\"address[]\",\"name\":\"\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"__admins\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__minValCheck\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"isDelete\",\"type\":\"bool\"}],\"name\":\"adminOperation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"adminServiceFeeWithdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetKeyFeeRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetKolIncomeRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetWithdrawFeeRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"adminUpgradeToNewRule\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"allKolInSystem\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kolAddr\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"keyNo\",\"type\":\"uint256\"}],\"name\":\"buyKolKey\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"changeOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"stop\",\"type\":\"bool\"}],\"name\":\"changeStatus\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"checkPluginInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getOwner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"incomePerNoncePerKey\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int8\",\"name\":\"sourceID\",\"type\":\"int8\"},{\"internalType\":\"address\",\"name\":\"kolAddr\",\"type\":\"address\"}],\"name\":\"kolGotIncome\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kolIncomeRatePerKeyBuy\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sourceAddr\",\"type\":\"address\"}],\"name\":\"kolOpenKeyPool\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"priceInFin\",\"type\":\"uint256\"}],\"name\":\"kolOpenKeySale\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"serviceFeeRatePerKeyBuy\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"serviceFeeReceived\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"}],\"name\":\"transferAllKey\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferKey\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawAllIncome\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawFeeRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"}],\"name\":\"withdrawFromOneKol\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"nonce\",\"type\":\"uint256\"}],\"name\":\"withdrawFromOneNonce\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}]",
 }
 
 // KolKeySimpleABI is the input ABI used to generate the binding from.
@@ -249,6 +242,37 @@ func (_KolKeySimple *KolKeySimpleCallerSession) AllIncomeOfOneKol(kol common.Add
 	return _KolKeySimple.Contract.AllIncomeOfOneKol(&_KolKeySimple.CallOpts, kol, investor)
 }
 
+// AllKolAddr is a free data retrieval call binding the contract method 0x399ccecf.
+//
+// Solidity: function AllKolAddr() view returns(address[])
+func (_KolKeySimple *KolKeySimpleCaller) AllKolAddr(opts *bind.CallOpts) ([]common.Address, error) {
+	var out []interface{}
+	err := _KolKeySimple.contract.Call(opts, &out, "AllKolAddr")
+
+	if err != nil {
+		return *new([]common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new([]common.Address)).(*[]common.Address)
+
+	return out0, err
+
+}
+
+// AllKolAddr is a free data retrieval call binding the contract method 0x399ccecf.
+//
+// Solidity: function AllKolAddr() view returns(address[])
+func (_KolKeySimple *KolKeySimpleSession) AllKolAddr() ([]common.Address, error) {
+	return _KolKeySimple.Contract.AllKolAddr(&_KolKeySimple.CallOpts)
+}
+
+// AllKolAddr is a free data retrieval call binding the contract method 0x399ccecf.
+//
+// Solidity: function AllKolAddr() view returns(address[])
+func (_KolKeySimple *KolKeySimpleCallerSession) AllKolAddr() ([]common.Address, error) {
+	return _KolKeySimple.Contract.AllKolAddr(&_KolKeySimple.CallOpts)
+}
+
 // IncomeOfOneNonce is a free data retrieval call binding the contract method 0x3a99f6a0.
 //
 // Solidity: function IncomeOfOneNonce(address kol, uint256 nonce, address investor) view returns(uint256)
@@ -389,19 +413,21 @@ func (_KolKeySimple *KolKeySimpleCallerSession) InvestorOfKol(kol common.Address
 
 // KeySettingsRecord is a free data retrieval call binding the contract method 0x94447f45.
 //
-// Solidity: function KeySettingsRecord(address ) view returns(uint256 price, uint256 nonce, uint256 totalNo)
+// Solidity: function KeySettingsRecord(address ) view returns(uint256 price, uint256 nonce, uint256 totalVal, uint256 totalNo)
 func (_KolKeySimple *KolKeySimpleCaller) KeySettingsRecord(opts *bind.CallOpts, arg0 common.Address) (struct {
-	Price   *big.Int
-	Nonce   *big.Int
-	TotalNo *big.Int
+	Price    *big.Int
+	Nonce    *big.Int
+	TotalVal *big.Int
+	TotalNo  *big.Int
 }, error) {
 	var out []interface{}
 	err := _KolKeySimple.contract.Call(opts, &out, "KeySettingsRecord", arg0)
 
 	outstruct := new(struct {
-		Price   *big.Int
-		Nonce   *big.Int
-		TotalNo *big.Int
+		Price    *big.Int
+		Nonce    *big.Int
+		TotalVal *big.Int
+		TotalNo  *big.Int
 	})
 	if err != nil {
 		return *outstruct, err
@@ -409,7 +435,8 @@ func (_KolKeySimple *KolKeySimpleCaller) KeySettingsRecord(opts *bind.CallOpts, 
 
 	outstruct.Price = *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 	outstruct.Nonce = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
-	outstruct.TotalNo = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
+	outstruct.TotalVal = *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
+	outstruct.TotalNo = *abi.ConvertType(out[3], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
 
@@ -417,55 +444,26 @@ func (_KolKeySimple *KolKeySimpleCaller) KeySettingsRecord(opts *bind.CallOpts, 
 
 // KeySettingsRecord is a free data retrieval call binding the contract method 0x94447f45.
 //
-// Solidity: function KeySettingsRecord(address ) view returns(uint256 price, uint256 nonce, uint256 totalNo)
+// Solidity: function KeySettingsRecord(address ) view returns(uint256 price, uint256 nonce, uint256 totalVal, uint256 totalNo)
 func (_KolKeySimple *KolKeySimpleSession) KeySettingsRecord(arg0 common.Address) (struct {
-	Price   *big.Int
-	Nonce   *big.Int
-	TotalNo *big.Int
+	Price    *big.Int
+	Nonce    *big.Int
+	TotalVal *big.Int
+	TotalNo  *big.Int
 }, error) {
 	return _KolKeySimple.Contract.KeySettingsRecord(&_KolKeySimple.CallOpts, arg0)
 }
 
 // KeySettingsRecord is a free data retrieval call binding the contract method 0x94447f45.
 //
-// Solidity: function KeySettingsRecord(address ) view returns(uint256 price, uint256 nonce, uint256 totalNo)
+// Solidity: function KeySettingsRecord(address ) view returns(uint256 price, uint256 nonce, uint256 totalVal, uint256 totalNo)
 func (_KolKeySimple *KolKeySimpleCallerSession) KeySettingsRecord(arg0 common.Address) (struct {
-	Price   *big.Int
-	Nonce   *big.Int
-	TotalNo *big.Int
+	Price    *big.Int
+	Nonce    *big.Int
+	TotalVal *big.Int
+	TotalNo  *big.Int
 }, error) {
 	return _KolKeySimple.Contract.KeySettingsRecord(&_KolKeySimple.CallOpts, arg0)
-}
-
-// KeyStatusOfKol is a free data retrieval call binding the contract method 0x9e4f5b5f.
-//
-// Solidity: function KeyStatusOfKol(address kol) view returns((uint256,uint256,uint256))
-func (_KolKeySimple *KolKeySimpleCaller) KeyStatusOfKol(opts *bind.CallOpts, kol common.Address) (KolKeySimpleKeySettings, error) {
-	var out []interface{}
-	err := _KolKeySimple.contract.Call(opts, &out, "KeyStatusOfKol", kol)
-
-	if err != nil {
-		return *new(KolKeySimpleKeySettings), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(KolKeySimpleKeySettings)).(*KolKeySimpleKeySettings)
-
-	return out0, err
-
-}
-
-// KeyStatusOfKol is a free data retrieval call binding the contract method 0x9e4f5b5f.
-//
-// Solidity: function KeyStatusOfKol(address kol) view returns((uint256,uint256,uint256))
-func (_KolKeySimple *KolKeySimpleSession) KeyStatusOfKol(kol common.Address) (KolKeySimpleKeySettings, error) {
-	return _KolKeySimple.Contract.KeyStatusOfKol(&_KolKeySimple.CallOpts, kol)
-}
-
-// KeyStatusOfKol is a free data retrieval call binding the contract method 0x9e4f5b5f.
-//
-// Solidity: function KeyStatusOfKol(address kol) view returns((uint256,uint256,uint256))
-func (_KolKeySimple *KolKeySimpleCallerSession) KeyStatusOfKol(kol common.Address) (KolKeySimpleKeySettings, error) {
-	return _KolKeySimple.Contract.KeyStatusOfKol(&_KolKeySimple.CallOpts, kol)
 }
 
 // KolOfOneInvestor is a free data retrieval call binding the contract method 0xce92faa2.
@@ -559,6 +557,37 @@ func (_KolKeySimple *KolKeySimpleSession) MinValCheck() (*big.Int, error) {
 // Solidity: function __minValCheck() view returns(uint256)
 func (_KolKeySimple *KolKeySimpleCallerSession) MinValCheck() (*big.Int, error) {
 	return _KolKeySimple.Contract.MinValCheck(&_KolKeySimple.CallOpts)
+}
+
+// AllKolInSystem is a free data retrieval call binding the contract method 0x2d5e031d.
+//
+// Solidity: function allKolInSystem(uint256 ) view returns(address)
+func (_KolKeySimple *KolKeySimpleCaller) AllKolInSystem(opts *bind.CallOpts, arg0 *big.Int) (common.Address, error) {
+	var out []interface{}
+	err := _KolKeySimple.contract.Call(opts, &out, "allKolInSystem", arg0)
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// AllKolInSystem is a free data retrieval call binding the contract method 0x2d5e031d.
+//
+// Solidity: function allKolInSystem(uint256 ) view returns(address)
+func (_KolKeySimple *KolKeySimpleSession) AllKolInSystem(arg0 *big.Int) (common.Address, error) {
+	return _KolKeySimple.Contract.AllKolInSystem(&_KolKeySimple.CallOpts, arg0)
+}
+
+// AllKolInSystem is a free data retrieval call binding the contract method 0x2d5e031d.
+//
+// Solidity: function allKolInSystem(uint256 ) view returns(address)
+func (_KolKeySimple *KolKeySimpleCallerSession) AllKolInSystem(arg0 *big.Int) (common.Address, error) {
+	return _KolKeySimple.Contract.AllKolInSystem(&_KolKeySimple.CallOpts, arg0)
 }
 
 // Balance is a free data retrieval call binding the contract method 0xe3d670d7.
@@ -987,46 +1016,46 @@ func (_KolKeySimple *KolKeySimpleTransactorSession) BuyKolKey(kolAddr common.Add
 	return _KolKeySimple.Contract.BuyKolKey(&_KolKeySimple.TransactOpts, kolAddr, keyNo)
 }
 
-// ChangeOwner is a paid mutator transaction binding the contract method 0x64d13339.
-//
-// Solidity: function changeOwner(bool stop) returns()
-func (_KolKeySimple *KolKeySimpleTransactor) ChangeOwner(opts *bind.TransactOpts, stop bool) (*types.Transaction, error) {
-	return _KolKeySimple.contract.Transact(opts, "changeOwner", stop)
-}
-
-// ChangeOwner is a paid mutator transaction binding the contract method 0x64d13339.
-//
-// Solidity: function changeOwner(bool stop) returns()
-func (_KolKeySimple *KolKeySimpleSession) ChangeOwner(stop bool) (*types.Transaction, error) {
-	return _KolKeySimple.Contract.ChangeOwner(&_KolKeySimple.TransactOpts, stop)
-}
-
-// ChangeOwner is a paid mutator transaction binding the contract method 0x64d13339.
-//
-// Solidity: function changeOwner(bool stop) returns()
-func (_KolKeySimple *KolKeySimpleTransactorSession) ChangeOwner(stop bool) (*types.Transaction, error) {
-	return _KolKeySimple.Contract.ChangeOwner(&_KolKeySimple.TransactOpts, stop)
-}
-
-// ChangeOwner0 is a paid mutator transaction binding the contract method 0xa6f9dae1.
+// ChangeOwner is a paid mutator transaction binding the contract method 0xa6f9dae1.
 //
 // Solidity: function changeOwner(address newOwner) returns()
-func (_KolKeySimple *KolKeySimpleTransactor) ChangeOwner0(opts *bind.TransactOpts, newOwner common.Address) (*types.Transaction, error) {
-	return _KolKeySimple.contract.Transact(opts, "changeOwner0", newOwner)
+func (_KolKeySimple *KolKeySimpleTransactor) ChangeOwner(opts *bind.TransactOpts, newOwner common.Address) (*types.Transaction, error) {
+	return _KolKeySimple.contract.Transact(opts, "changeOwner", newOwner)
 }
 
-// ChangeOwner0 is a paid mutator transaction binding the contract method 0xa6f9dae1.
+// ChangeOwner is a paid mutator transaction binding the contract method 0xa6f9dae1.
 //
 // Solidity: function changeOwner(address newOwner) returns()
-func (_KolKeySimple *KolKeySimpleSession) ChangeOwner0(newOwner common.Address) (*types.Transaction, error) {
-	return _KolKeySimple.Contract.ChangeOwner0(&_KolKeySimple.TransactOpts, newOwner)
+func (_KolKeySimple *KolKeySimpleSession) ChangeOwner(newOwner common.Address) (*types.Transaction, error) {
+	return _KolKeySimple.Contract.ChangeOwner(&_KolKeySimple.TransactOpts, newOwner)
 }
 
-// ChangeOwner0 is a paid mutator transaction binding the contract method 0xa6f9dae1.
+// ChangeOwner is a paid mutator transaction binding the contract method 0xa6f9dae1.
 //
 // Solidity: function changeOwner(address newOwner) returns()
-func (_KolKeySimple *KolKeySimpleTransactorSession) ChangeOwner0(newOwner common.Address) (*types.Transaction, error) {
-	return _KolKeySimple.Contract.ChangeOwner0(&_KolKeySimple.TransactOpts, newOwner)
+func (_KolKeySimple *KolKeySimpleTransactorSession) ChangeOwner(newOwner common.Address) (*types.Transaction, error) {
+	return _KolKeySimple.Contract.ChangeOwner(&_KolKeySimple.TransactOpts, newOwner)
+}
+
+// ChangeStatus is a paid mutator transaction binding the contract method 0x9b3de49b.
+//
+// Solidity: function changeStatus(bool stop) returns()
+func (_KolKeySimple *KolKeySimpleTransactor) ChangeStatus(opts *bind.TransactOpts, stop bool) (*types.Transaction, error) {
+	return _KolKeySimple.contract.Transact(opts, "changeStatus", stop)
+}
+
+// ChangeStatus is a paid mutator transaction binding the contract method 0x9b3de49b.
+//
+// Solidity: function changeStatus(bool stop) returns()
+func (_KolKeySimple *KolKeySimpleSession) ChangeStatus(stop bool) (*types.Transaction, error) {
+	return _KolKeySimple.Contract.ChangeStatus(&_KolKeySimple.TransactOpts, stop)
+}
+
+// ChangeStatus is a paid mutator transaction binding the contract method 0x9b3de49b.
+//
+// Solidity: function changeStatus(bool stop) returns()
+func (_KolKeySimple *KolKeySimpleTransactorSession) ChangeStatus(stop bool) (*types.Transaction, error) {
+	return _KolKeySimple.Contract.ChangeStatus(&_KolKeySimple.TransactOpts, stop)
 }
 
 // KolGotIncome is a paid mutator transaction binding the contract method 0xd842f385.
@@ -1052,23 +1081,23 @@ func (_KolKeySimple *KolKeySimpleTransactorSession) KolGotIncome(sourceID int8, 
 
 // KolOpenKeySale is a paid mutator transaction binding the contract method 0x5c1ec100.
 //
-// Solidity: function kolOpenKeySale(uint256 pricePerKey) returns()
-func (_KolKeySimple *KolKeySimpleTransactor) KolOpenKeySale(opts *bind.TransactOpts, pricePerKey *big.Int) (*types.Transaction, error) {
-	return _KolKeySimple.contract.Transact(opts, "kolOpenKeySale", pricePerKey)
+// Solidity: function kolOpenKeySale(uint256 priceInFin) returns()
+func (_KolKeySimple *KolKeySimpleTransactor) KolOpenKeySale(opts *bind.TransactOpts, priceInFin *big.Int) (*types.Transaction, error) {
+	return _KolKeySimple.contract.Transact(opts, "kolOpenKeySale", priceInFin)
 }
 
 // KolOpenKeySale is a paid mutator transaction binding the contract method 0x5c1ec100.
 //
-// Solidity: function kolOpenKeySale(uint256 pricePerKey) returns()
-func (_KolKeySimple *KolKeySimpleSession) KolOpenKeySale(pricePerKey *big.Int) (*types.Transaction, error) {
-	return _KolKeySimple.Contract.KolOpenKeySale(&_KolKeySimple.TransactOpts, pricePerKey)
+// Solidity: function kolOpenKeySale(uint256 priceInFin) returns()
+func (_KolKeySimple *KolKeySimpleSession) KolOpenKeySale(priceInFin *big.Int) (*types.Transaction, error) {
+	return _KolKeySimple.Contract.KolOpenKeySale(&_KolKeySimple.TransactOpts, priceInFin)
 }
 
 // KolOpenKeySale is a paid mutator transaction binding the contract method 0x5c1ec100.
 //
-// Solidity: function kolOpenKeySale(uint256 pricePerKey) returns()
-func (_KolKeySimple *KolKeySimpleTransactorSession) KolOpenKeySale(pricePerKey *big.Int) (*types.Transaction, error) {
-	return _KolKeySimple.Contract.KolOpenKeySale(&_KolKeySimple.TransactOpts, pricePerKey)
+// Solidity: function kolOpenKeySale(uint256 priceInFin) returns()
+func (_KolKeySimple *KolKeySimpleTransactorSession) KolOpenKeySale(priceInFin *big.Int) (*types.Transaction, error) {
+	return _KolKeySimple.Contract.KolOpenKeySale(&_KolKeySimple.TransactOpts, priceInFin)
 }
 
 // TransferAllKey is a paid mutator transaction binding the contract method 0x01c6c8da.

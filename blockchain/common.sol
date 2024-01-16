@@ -149,7 +149,7 @@ interface TweetVotePlugInI is IsValidNjContract {
     ) external payable;
 }
 
-interface KolIncomeToPool is IsValidNjContract {
+interface KolIncomeToPoolI is IsValidNjContract {
     function kolGotIncome(int8 sourceID, address kolAddr) external payable;
 
     function kolOpenKeyPool(address sourceAddr) external view returns (bool);

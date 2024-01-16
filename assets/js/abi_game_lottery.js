@@ -587,9 +587,9 @@ const gameContractABI =`
     {
         "inputs": [
             {
-                "internalType": "bool",
-                "name": "stop",
-                "type": "bool"
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
             }
         ],
         "name": "changeOwner",
@@ -600,12 +600,12 @@ const gameContractABI =`
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
+                "internalType": "bool",
+                "name": "stop",
+                "type": "bool"
             }
         ],
-        "name": "changeOwner",
+        "name": "changeStatus",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
