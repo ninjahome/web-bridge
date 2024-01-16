@@ -37,7 +37,12 @@ class GameRoundInfo {
 }
 
 class PersonalData {
-
+    constructor(balance, tickets, teams, map) {
+        this.balance = balance;
+        this.tickets = tickets;
+        this.teams = teams;
+        this.tickMap = map;
+    }
 }
 
 async function initGamePage() {
@@ -57,11 +62,11 @@ async function initGameContract(provider) {
     loadGameSettings().then(async r => {
         setupSystemData();
 
-        loadCurrentRoundMeta().then(r=>{
+        loadCurrentRoundMeta().then(r => {
             setupCurrentRoundData();
         });
 
-        loadPersonalMeta().then(r=>{
+        loadPersonalMeta().then(r => {
             setupPersonalData();
         });
 
@@ -79,7 +84,7 @@ async function loadGameSettings() {
         const tickPriceInEth = ethers.utils.formatUnits(tickPriceForOuter, 'ether');
 
         gameSettings = new GameSettings(currentRoundNo, totalBonusInEth,
-             tickPriceForOuter, tickPriceInEth, isOpenToOuter);
+            tickPriceForOuter, tickPriceInEth, isOpenToOuter);
 
         console.log(gameSettings);
 
@@ -95,6 +100,7 @@ async function loadCurrentRoundMeta() {
     try {
 
         const gameInfo = await lotteryGameContract.gameInfoRecord(gameSettings.roundNo);
+
         currentRoundData = GameRoundInfo.fromBlockChainObj(gameInfo);
 
         const [teamNo, memNo, voteNo] = await lotteryGameContract.allTeamInfoNo(gameSettings.roundNo);
@@ -113,20 +119,33 @@ async function loadCurrentRoundMeta() {
 }
 
 async function loadPersonalMeta() {
-    const obj = await lotteryGameContract.tickList(gameSettings.roundNo, ninjaUserObj.eth_addr);
-    if (obj[0].length === 0){
-        return;
-    }
-    const map = new Map();
+    try {
+        const balance = await lotteryGameContract.balance(ninjaUserObj.eth_addr);
+        const balanceInEth = ethers.utils.formatUnits(balance, 'ether');
 
-    for (let i = 0; i < obj[0].length; i++) {
-        map.set(obj[0][i],obj[0][i]);
-    }
-    for (const tickID of obj[0]) {
+        const obj = await lotteryGameContract.tickList(gameSettings.roundNo, ninjaUserObj.eth_addr);
+        if (obj[0].length === 0) {
+            personalData = new PersonalData(balanceInEth, [], [], null);
+            return;
+        }
 
+        const mapTickets = new Map();
+        const mapTeams = new Map();
+        for (let i = 0; i < obj[0].length; i++) {
+            const tickId = obj[0][i];
+            const teamHash = obj[1][i];
+            mapTickets.set(tickId, teamHash);
+            mapTeams.set(teamHash, true);
+        }
+
+        personalData = new PersonalData(balanceInEth, Array.from(mapTickets.keys()),
+            Array.from(mapTeams.keys()), mapTickets);
+
+        console.log(personalData);
+    } catch (err) {
+        console.log(err);
+        showDialog(DLevel.Warning, "load personal data from block chain failed")
     }
-    console.log(obj[0]);
-    console.log(obj[1]);
 }
 
 function setupSystemData() {
@@ -144,18 +163,105 @@ function setupCurrentRoundData() {
     document.getElementById("prize-pool-member-no").textContent = currentRoundData.MemCount;
 
     const elem = document.getElementById("prize-pool-discover-time");
-    startCountdown(currentRoundData.dTime,function (days,hours,minutes,seconds, finished){
-        if(finished){
+    startCountdown(currentRoundData.dTime, function (days, hours, minutes, seconds, finished) {
+        if (finished) {
             elem.innerText = "开奖中";
             return;
         }
 
-        elem.innerText = days +" 天" +hours+ " 时"+minutes+" 分"+seconds+" 秒";
+        elem.innerText = days + " 天" + hours + " 时" + minutes + " 分" + seconds + " 秒";
     });
 }
 
-function setupPersonalData(){
+function setupPersonalData() {
+    document.getElementById("personal-balance-val").textContent = personalData.balance;
+    document.getElementById("personal-ticket-no-val").textContent = personalData.tickets.length;
+    document.getElementById("personal-team-no-val").textContent = personalData.teams.length;
+}
 
+function showPersonalTicket() {
+    if (!personalData || personalData.tickets.length === 0) {
+        return;
+    }
+    const ticketsDiv = document.querySelector('.user-tickets');
+    const isShowing = ticketsDiv.style.display === 'block';
+    ticketsDiv.style.display = isShowing ? 'none' : 'block';
+
+    if (isShowing) {
+        return;
+    }
+
+    const tableBody = ticketsDiv.querySelector(".tickets-num");
+    tableBody.innerHTML = '';
+    let counter = 0;
+    let row = tableBody.insertRow();
+    for (let i = 0; i < personalData.tickets.length; i++) {
+        if (counter % 7 === 0 && counter !== 0) {
+            row = tableBody.insertRow();
+        }
+        let cell = row.insertCell();
+        cell.innerHTML = personalData.tickets[i];
+        cell.title = "团队: " + personalData.tickMap.get(personalData.tickets[i]);
+        counter++;
+    }
+}
+
+function showTeamDetail() {
+    if (!personalData || personalData.tickets.length === 0) {
+        return;
+    }
+
+    const teamDiv = document.querySelector('.user-team');
+    const isShowing = teamDiv.style.display === 'block';
+    teamDiv.style.display = isShowing ? 'none' : 'block';
+
+    if (isShowing) {
+        return;
+    }
+    const tableBody = document.getElementById("team-detail-body");
+    tableBody.innerHTML = '';
+    for (let i = 0; i < personalData.teams.length; i++) {
+        let row = tableBody.insertRow();
+        let cell = row.insertCell();
+        const teamHash = personalData.teams[i];
+        cell.innerHTML = teamHash
+        cell = row.insertCell();
+        cell.innerHTML = `<button class="team-detail-in-one-team" onclick="showOneTeamDetails('${teamHash}')">详情</button>`;
+    }
+}
+function hideOneTeamDetails(){
+    const teamDetailDiv = document.querySelector('.team-detail-for-one');
+    teamDetailDiv.style.display =  'none';
+}
+async function showOneTeamDetails(team) {
+    console.log(team);
+    const teamDetailDiv = document.querySelector('.team-detail-for-one');
+    teamDetailDiv.style.display =  'block';
+
+    try {
+        showWaiting("syncing from block chain")
+        const obj = await lotteryGameContract.teamMembers(gameSettings.roundNo, team);
+        console.log(obj);
+        document.getElementById("team-detail-for-one-memNo").textContent = obj.memNo;
+        document.getElementById("team-detail-for-one-tickNo").textContent = obj.voteNo;
+
+        const tableBody = document.getElementById("team-detail-for-one-body");
+        tableBody.innerHTML = '';
+        for (let i = 0; i < obj.voteNos.length; i++) {
+
+            let row = tableBody.insertRow();
+            let cell = row.insertCell();
+
+            cell.innerHTML = obj.members[i];
+            cell = row.insertCell();
+            cell.innerHTML = obj.voteNos[i];
+
+        }
+    } catch (err) {
+        showDialog(DLevel.Warning, "load team detail failed")
+    } finally {
+        hideLoading();
+    }
 }
 
 async function buyTicket() {
