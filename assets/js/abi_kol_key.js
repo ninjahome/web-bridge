@@ -394,6 +394,19 @@ const kolKeyContractABI = `
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "AllKolAddr",
+        "outputs": [
+            {
+                "internalType": "address[]",
+                "name": "",
+                "type": "address[]"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "internalType": "address",
@@ -521,44 +534,13 @@ const kolKeyContractABI = `
             },
             {
                 "internalType": "uint256",
+                "name": "totalVal",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
                 "name": "totalNo",
                 "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "kol",
-                "type": "address"
-            }
-        ],
-        "name": "KeyStatusOfKol",
-        "outputs": [
-            {
-                "components": [
-                    {
-                        "internalType": "uint256",
-                        "name": "price",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "nonce",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256",
-                        "name": "totalNo",
-                        "type": "uint256"
-                    }
-                ],
-                "internalType": "struct KolKeySimple.KeySettings",
-                "name": "",
-                "type": "tuple"
             }
         ],
         "stateMutability": "view",
@@ -695,6 +677,25 @@ const kolKeyContractABI = `
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "allKolInSystem",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
                 "name": "",
                 "type": "address"
@@ -732,9 +733,9 @@ const kolKeyContractABI = `
     {
         "inputs": [
             {
-                "internalType": "bool",
-                "name": "stop",
-                "type": "bool"
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
             }
         ],
         "name": "changeOwner",
@@ -745,12 +746,12 @@ const kolKeyContractABI = `
     {
         "inputs": [
             {
-                "internalType": "address",
-                "name": "newOwner",
-                "type": "address"
+                "internalType": "bool",
+                "name": "stop",
+                "type": "bool"
             }
         ],
-        "name": "changeOwner",
+        "name": "changeStatus",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -859,7 +860,7 @@ const kolKeyContractABI = `
         "inputs": [
             {
                 "internalType": "uint256",
-                "name": "pricePerKey",
+                "name": "priceInFin",
                 "type": "uint256"
             }
         ],
