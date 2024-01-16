@@ -246,7 +246,7 @@
     </style>
     <style about="tweet vote div">
         .vote-chose-modal-class {
-            display: none; /* 默认隐藏 */
+            display: block; /* 默认隐藏 */
             position: fixed; /* 固定位置 */
             z-index: 1; /* 置于顶层 */
             left: 0;
@@ -261,9 +261,51 @@
         .vote-no-modal-content {
             background-color: #fefefe;
             margin: 15% auto; /* 15% 从顶部开始 */
-            padding: 20px;
+            padding: 32px;
             border: 1px solid #888;
-            width: 80%; /* 宽度 */
+            border-radius: 24px;
+            width: 50%; /* 宽度 */
+
+        }
+        .vote-no-modal-body {
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-content: center;
+
+
+        }
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            margin-top: 24px;
+        }
+
+        .quantity-selector button {
+            width: 42px;
+            height: 42px;
+            font-size: 16px;
+            padding: 0;
+            border: none;
+            background-color: #F1F2F3;
+        }
+
+        .quantity-selector button:hover {
+            background-color: #D3D5D6; /* 鼠标经过时的背景色 */
+        }
+
+        .quantity-selector button:active {
+            background-color: #B0B2B3; /* 鼠标点击时的背景色 */
+            color: #4848D8;
+        }
+
+        .quantity-selector input {
+            height: 40px;
+            text-align: center;
+            border: 1px solid #F1F2F3;
+            padding: 0;
         }
 
         /* 关闭按钮 */
@@ -281,6 +323,31 @@
             cursor: pointer;
         }
 
+        .vote-no-modal-footer {
+            display: flex;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        .cancel-btn {
+            margin:0 8px;
+            padding: 10px 42px;
+            border-radius: 9999px;
+            background-color: transparent;
+            border: 1px solid rgb(221, 221, 222);
+            font-size: 14px;
+            color: #7E7F82
+        }
+
+        .confirm-btn {
+            margin:0 8px;
+            padding: 10px 42px;
+            border-radius: 9999px;
+            border: none;
+            background-color: #4848D8;
+            font-size: 14px;
+            color: #ffffff;
+        }
     </style>
     <style about="tweet post div">
         .d-radius {
@@ -402,6 +469,7 @@
         .tweet-post-close-btn:hover {
             color: black; /* 悬停时颜色 */
         }
+
     </style>
     <style about="game-lottery">
         .lottery-round-info,
@@ -852,20 +920,24 @@
     <div class="vote-no-modal-content">
         <div class="vote-no-modal-header">
             <span class="vote-no-close" onclick="closeVoteModal()">&times;</span>
-            <h2>推文投票</h2>
+            <h2 style="margin: 0">推文投票</h2>
         </div>
         <div class="vote-no-modal-body">
-            <p>票数：<input type="number" id="voteCount" value="1" min="1"></p>
-            <button id="decreaseVote" onclick="decreaseVote()">-</button>
-            <button id="increaseVote" onclick="increaseVote()">+</button>
-            <label>
+
+            <div class="quantity-selector">
+                <p style="padding: 0; margin: 0;">票数：</p>
+                <button id="decreaseVote" onclick="decreaseVote()" style="border-bottom-left-radius: 12px;border-top-left-radius: 12px">-</button>
+                <input type="number" id="voteCount" value="1" min="1">
+                <button id="increaseVote" onclick="increaseVote()" style="border-bottom-right-radius: 12px;border-top-right-radius: 12px">+</button>
+            </div>
+            <label style="color: #898989; font-size: 14px; margin-left: 54px">
                 <input type="checkbox" id="shareOnTwitter" checked>
                 转发到推特
             </label>
         </div>
         <div class="vote-no-modal-footer">
-            <button id="cancelButton" onclick="closeVoteModal()">取消</button>
-            <button id="confirmButton" onclick="confirmVoteModal()">确定</button>
+            <button id="cancelButton" class="cancel-btn" onclick="closeVoteModal()">取消</button>
+            <button id="confirmButton" class="confirm-btn" onclick="confirmVoteModal()">确定</button>
         </div>
     </div>
 </div>
