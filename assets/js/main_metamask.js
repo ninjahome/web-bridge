@@ -81,7 +81,11 @@ async function procPaymentForPostedTweet(tweet, callback) {
 
         hideLoading();
 
-        showDialog(DLevel.Tips,"transaction " + (txReceipt.status ? "confirmed" : "failed"));
+        if(txReceipt.status){
+            showDialog(DLevel.Success,"transaction " + "confirmed");
+        }else {
+            showDialog(DLevel.Error,"transaction " + "failed");
+        }
 
         tweet.payment_status = txStatus;
     } catch (err) {
@@ -139,7 +143,12 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
 
         const txReceipt = await txResponse.wait();
         console.log("Transaction Receipt: ", txReceipt);
-        showDialog(DLevel.Tips,"Transaction: " + txReceipt.status ? "success" : "failed");
+
+        if(txReceipt.status){
+            showDialog(DLevel.Success,"transaction " + "confirmed");
+        }else {
+            showDialog(DLevel.Error,"transaction " + "failed");
+        }
 
         hideLoading();
 
