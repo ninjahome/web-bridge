@@ -453,6 +453,11 @@
             box-shadow: rgba(0, 0, 0, 0.08) 0 8px 28px;
         }
 
+        .cancel-btn:hover {
+            background-color: #F1F2F3; /* 悬停时背景颜色 */
+        }
+
+        .confirm-btn:hover,
         .show-post-tweet-div:hover {
             background-color: #3333BE; /* 悬停时背景颜色 */
         }
@@ -946,9 +951,10 @@
     <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
     <div class="tweets-content-txt-area .d-radius" id="tweets-content-txt-area" contenteditable="true"
          data-placeholder="What's happening!?"></div>
-    <div style="display: flex; justify-content: space-between; align-items: center">
-        <img src="/assets/file/image-icon.png" alt="photo"
-             style="width: 20px; margin-right: 6px; display: inline-block">
+    <div style="display: flex; justify-content: flex-end; align-items: center">
+        <!-- 图片注释掉 -->
+        <!--<img src="/assets/file/image-icon.png" alt="photo"
+             style="width: 20px; margin-right: 6px; display: inline-block">-->
         <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()" class="d-radius">
             <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">
             <span id="tweet-post-with-eth-btn-txt">发布推文</span></button>
