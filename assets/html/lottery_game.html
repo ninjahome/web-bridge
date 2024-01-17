@@ -315,6 +315,75 @@
                 <button class="winning-btn rule-info-btn" onclick="showUserWinHistory()">查看详情</button>
             </li>
         </ul>
+        <div class="user-tickets" style="display: none;">
+            <table class="tickets-detail">
+                <thead>
+                <tr>
+                    <th>彩票ID</th>
+                </tr>
+                </thead>
+                <tbody class="tickets-num">
+                <tr>
+                    <td class="ticket-id-td"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="user-team" style="display: none;">
+            <table class="team-detail">
+                <thead>
+                <tr>
+                    <th>团队ID</th>
+                    <th>团队详情</th>
+                </tr>
+                </thead>
+                <tbody id="team-detail-body">
+                <tr>
+                    <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                    <td>
+                        <button class="team-detail-in-one-team">详情</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="team-detail-for-one" style="display: none;">
+            <div class="team-detail-for-one-header">
+                人数:<span id="team-detail-for-one-memNo"></span>
+                票数:<span id="team-detail-for-one-tickNo"></span>
+                <button onclick="hideOneTeamDetails()">隐藏</button>
+                <table class="team-detail">
+                    <thead>
+                    <tr>
+                        <th>队员</th>
+                        <th>票数</th>
+                    </tr>
+                    </thead>
+                    <tbody id="team-detail-for-one-body">
+                    <tr style="display: none">
+                        <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                        <td>0</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="winning-history" style="display: none">
+            <ul style="color: #7E7F82">
+                <li>金额: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00 ETH</span>
+                </li>
+                <li>期数: <span class="one-round-discover-val"
+                                style="color: #1B1B1D; font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
+                </li>
+                <li>类型: <span class="team-id-txt"
+                                style="color: #1B1B1D; font-size: 16px; font-weight: bold">个人</span></li>
+                <li>个人彩票/团队ID: <span class="team-id-txt" style="color: #1B1B1D; font-size: 16px">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
+                </li>
+            </ul>
+        </div>
 
     </div>
     <div class="game-section">
@@ -439,77 +508,7 @@
         </div>
     </div>
 </div>
-<div class="detail-area">
-    <div class="user-tickets" style="display: none;">
-        <table class="tickets-detail">
-            <thead>
-            <tr>
-                <th>彩票ID</th>
-            </tr>
-            </thead>
-            <tbody class="tickets-num">
-            <tr>
-                <td class="ticket-id-td"></td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
 
-    <div class="user-team" style="display: none;">
-        <table class="team-detail">
-            <thead>
-            <tr>
-                <th>团队ID</th>
-                <th>团队详情</th>
-            </tr>
-            </thead>
-            <tbody id="team-detail-body">
-            <tr>
-                <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
-                <td>
-                    <button class="team-detail-in-one-team">详情</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="team-detail-for-one" style="display: none;">
-        <div class="team-detail-for-one-header">
-            人数:<span id="team-detail-for-one-memNo"></span>
-            票数:<span id="team-detail-for-one-tickNo"></span>
-            <button onclick="hideOneTeamDetails()">隐藏</button>
-            <table class="team-detail">
-                <thead>
-                <tr>
-                    <th>队员</th>
-                    <th>票数</th>
-                </tr>
-                </thead>
-                <tbody id="team-detail-for-one-body">
-                <tr style="display: none">
-                    <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
-                    <td>0</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="winning-history" style="display: none">
-        <ul style="color: #7E7F82">
-            <li>金额: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00 ETH</span>
-            </li>
-            <li>期数: <span class="one-round-discover-val"
-                            style="color: #1B1B1D; font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
-            </li>
-            <li>类型: <span class="team-id-txt"
-                            style="color: #1B1B1D; font-size: 16px; font-weight: bold">个人</span></li>
-            <li>个人彩票/团队ID: <span class="team-id-txt" style="color: #1B1B1D; font-size: 16px">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
-            </li>
-        </ul>
-    </div>
-</div>
 <script>
     const ninjaUserObj = {{ .NinjaUsrInfoJson }};
     document.addEventListener("DOMContentLoaded", initGamePage);
