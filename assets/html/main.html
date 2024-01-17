@@ -622,6 +622,61 @@
             background-color: #0d8ed2; /* 深一点的推特蓝 */
         }
 
+        .user-area-tittle {
+            color: #333; /* 深色文本 */
+            font-weight: bold;
+            padding: 5px 10px;
+            background-color: #d9d9d9; /* 灰色 */
+            border-radius: 4px;
+        }
+
+        /* 用户信息样式 */
+        .user-info {
+            padding: 10px;
+            background-color: #f2f2f2; /* 浅灰色 */
+            border-radius: 8px;
+        }
+
+        /* Twitter 信息样式 */
+        .about-twitter {
+            color: #666; /* 中度深色文本 */
+            padding: 5px;
+        }
+
+        /* Web3 ID 和 积分信息样式 */
+        .about-ninja {
+            color: #666; /* 中度深色文本 */
+            padding: 5px;
+        }
+
+        /* 用户设置行动按钮样式 */
+        .user-setting-action button {
+            background-color: #4CAF50; /* 绿色 */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .user-setting-action button:hover {
+            background-color: #45a049; /* 深绿色 */
+        }
+
+        /* Twitter 头像和用户名样式 */
+        .user-twitter-avatar img {
+            width: 50px; /* 调整为适合的尺寸 */
+            height: 50px;
+            border-radius: 50%;
+        }
+
+        .user-twitter-name, .user-twitter-username {
+            color: #333; /* 深色文本 */
+            padding: 0 5px;
+        }
+
+
     </style>
 
 </head>
@@ -768,7 +823,6 @@
         </div>
         <div id="middle-div-about-user" class="content-in-middle-area">
             <div class="middle-div-income-inner">
-                <div class="income-area-tittle">收入</div>
                 <div class="income-tweet-area">
                     <div class="income-header">推文收入</div>
                     <div class="income-body">
@@ -796,17 +850,19 @@
                 </div>
             </div>
             <div class="user-settings">
-                <div class="user-settings-tittle">设置</div>
+                <div class="user-area-tittle">设置</div>
 
-                <div class="user-setting-about-twitter">
-                    <div>
-                        <span>Web3 ID:<span id="basic-web3-id" class="user-web3-id">0x123...</span></span>
-                        <span>积分:<span id="dessage-web3-token" class="user-ninja-noun">0.00 </span>dsg</span>
+                <div class="user-info">
+                    <div class="about-twitter">
                         <span class="user-twitter-avatar"><img id="user-twitter-avatar" src="/assets/file/logo.png"
                                                                alt="twitter-avatar"></span>
                         <span class="user-twitter-name"><span id="user-setting-name">未绑定</span></span>
                         <span class="user-twitter-username"><span id="user-setting-user-name">未绑定</span></span>
                         <button onclick="refreshTwitterInfo()">同步推特</button>
+                    </div>
+                    <div class="about-ninja">
+                        <span>Web3 ID:<span id="basic-web3-id" class="user-web3-id">0x123...</span></span>
+                        <span>积分:<span id="dessage-web3-token" class="user-ninja-noun">0.00 </span>dsg</span>
                     </div>
                 </div>
 
@@ -814,6 +870,7 @@
                     <button onclick="quitFromService()">退出</button>
                     <button onclick="clearCachedData()">清空缓存</button>
                 </div>
+
             </div>
         </div>
         <div id="tweet-detail" class="tweet-detail" style="display: none;">
@@ -1060,6 +1117,7 @@
         showWaiting("syncing from block chain");
 
         await reloadGameBalance();
+        await reloadTweetBalance();
 
         const obj = await loadNJUserInfoFromSrv(ninjaUserObj.eth_addr, true);
         if (!obj) {
@@ -1069,7 +1127,6 @@
         }
         document.getElementById('tweet-no-has-income').innerText = obj.tweet_count;
 
-        await reloadTweetBalance();
 
         hideLoading();
     }

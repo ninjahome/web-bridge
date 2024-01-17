@@ -71,7 +71,7 @@ async function procPaymentForPostedTweet(tweet, callback) {
             {value: voteContractMeta.postPrice}
         );
 
-        changeLoadingTips("waiting for blockchain packaging:" + txResponse.hash);
+        changeLoadingTips("packaging:" + txResponse.hash);
         const txReceipt = await txResponse.wait();
 
         tweet.payment_status = txReceipt.status ? TXStatus.Success : TXStatus.Failed;
@@ -126,7 +126,8 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
 }
 
 async function reloadGameBalance() {
-    const b = await lotteryGameContract.balance(ninjaUserObj.eth_addr)
+    const b = await lotteryGameContract.balance(ninjaUserObj.eth_addr);
+    console.log(b);
     document.getElementById('lottery-game-income').innerText = ethers.utils.formatUnits(b, 'ether');
 }
 
