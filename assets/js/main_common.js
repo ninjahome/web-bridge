@@ -67,47 +67,11 @@ function contentScroll() {
     });
 }
 
-let confirmCallback = null;
-
-function openVoteModal(callback) {
-    const modal = document.getElementById("vote-no-chose-modal");
-    modal.style.display = "block";
-    const voteCount = document.getElementById("voteCount");
-    voteCount.value = 1;
-    confirmCallback = callback;
-}
-
-function confirmVoteModal() {
-    if (confirmCallback) {
-        const voteCount = document.getElementById("voteCount").value;
-        const shareOnTwitter = document.getElementById("shareOnTwitter").checked;
-        confirmCallback(voteCount, shareOnTwitter);
-    }
-    closeVoteModal();
-}
-
-function closeVoteModal() {
-    const modal = document.getElementById("vote-no-chose-modal");
-    modal.style.display = "none";
-}
-
-function increaseVote() {
-    const voteCount = document.getElementById("voteCount");
-    voteCount.value = parseInt(voteCount.value) + 1;
-}
-
-function decreaseVote() {
-    const voteCountElement = document.getElementById("voteCount");
-    const newVoteCount = Math.max(1, parseInt(voteCountElement.value) - 1);
-    voteCountElement.value = newVoteCount.toString();
-}
-
 function clearCachedData() {
     localStorage.clear();
     sessionStorage.clear();
     window.location.href = "/signIn";
 }
-
 
 async function showHoverCard(event, web3ID) {
 
@@ -351,14 +315,6 @@ async function voteToTheTweet(obj, callback) {
             }
         });
     });
-}
-
-async function __shareVoteToTweet(create_time, vote_count) {
-    const resp = await PostToSrvByJson("/shareVoteAction", {
-        create_time: create_time,
-        vote_count: Number(vote_count),
-    });
-    console.log(resp);
 }
 
 async function updateVoteStatusToSrv(create_time, vote_count) {

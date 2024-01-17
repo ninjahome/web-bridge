@@ -29,7 +29,6 @@ class GameRoundInfo {
     static fromBlockChainObj(obj) {
         const curBonusInEth = ethers.utils.formatUnits(obj.bonus, 'ether');
         const dTime = obj.discoverTime.toNumber() * 1000;
-        console.log(obj);
         return new GameRoundInfo(obj.randomHash, dTime, obj.winner,
             obj.winTeam, obj.winTicketID, curBonusInEth, obj.randomVal);
     }
@@ -66,6 +65,10 @@ async function initGameContract(provider) {
     const conf = __globalContractConf.get(__globalTargetChainNetworkID);
     lotteryGameContract = new ethers.Contract(conf.gameLottery, gameContractABI, signer);
 
+    __loadPageData();
+}
+
+function __loadPageData() {
     loadGameSettings().then(async r => {
         setupSystemData();
 
@@ -76,7 +79,6 @@ async function initGameContract(provider) {
         loadPersonalMeta().then(r => {
             setupPersonalData();
         });
-
     });
 }
 
@@ -109,7 +111,6 @@ async function loadCurrentRoundMeta() {
         currentRoundData = GameRoundInfo.fromBlockChainObj(gameInfo);
 
         const [teamNo, voteNo] = await lotteryGameContract.allTeamInfoNo(gameSettings.roundNo);
-        console.log(teamNo, voteNo);
 
         currentRoundData.TeamCount = teamNo;
         currentRoundData.TickCount = voteNo;
@@ -196,13 +197,23 @@ function showPersonalTicket() {
     tableBody.innerHTML = '';
     let counter = 0;
     let row = tableBody.insertRow();
+
     for (let i = 0; i < personalData.tickets.length; i++) {
+
         if (counter % 7 === 0 && counter !== 0) {
             row = tableBody.insertRow();
         }
         let cell = row.insertCell();
-        cell.innerHTML = personalData.tickets[i];
-        cell.title = "团队: " + personalData.tickMap.get(personalData.tickets[i]);
+        const tid = personalData.tickets[i];
+        cell.innerHTML = tid;
+
+        const teamID = personalData.tickMap.get(tid)
+        if (teamID === __noTeamID) {
+            cell.title = "独立购买";
+        } else {
+            cell.title = "团队: " + teamID;
+        }
+
         counter++;
     }
 }
@@ -226,8 +237,15 @@ function showTeamDetail() {
     tableBody.innerHTML = '';
     for (let i = 0; i < personalData.teams.length; i++) {
         let row = tableBody.insertRow();
+
         let cell = row.insertCell();
         const teamHash = personalData.teams[i];
+        if (teamHash === __noTeamID) {
+            cell.innerHTML = "独立购买"
+            cell = row.insertCell();
+            continue;
+        }
+
         cell.innerHTML = teamHash
         cell = row.insertCell();
         cell.innerHTML = `<button class="team-detail-in-one-team" onclick="showOneTeamDetails('${teamHash}')">详情</button>`;
@@ -247,7 +265,7 @@ async function showOneTeamDetails(team) {
     try {
         showWaiting("syncing from block chain")
         const obj = await lotteryGameContract.teamMembers(gameSettings.roundNo, team);
-        console.log(obj);
+
         document.getElementById("team-detail-for-one-memNo").textContent = obj.memNo;
         document.getElementById("team-detail-for-one-tickNo").textContent = obj.voteNo;
 
@@ -269,26 +287,6 @@ async function showOneTeamDetails(team) {
     }
 }
 
-async function buyTicket() {
-    if (!gameSettings) {
-        await loadGameSettings();
-    }
-
-    if (!gameSettings.isOpen) {
-        showDialog(DLevel.Tips, "not open for personal user");
-        return;
-    }
-}
-
-function showUserWinHistory() {
-    showDialog(DLevel.Tips, "not ok now");
-    // const historyDiv = document.querySelector('.winning-history');
-    // const isShowing = historyDiv.style.display === 'block';
-    // historyDiv.style.display = isShowing ? 'none' : 'block';
-    // if (isShowing){
-    //     return;
-    // }
-}
 
 function showGameRule(className) {
     const gameRuleDiv = document.querySelector(className);
@@ -324,8 +322,7 @@ async function showOneRoundGameInfo() {
 function fullFillGameCard(obj, cardDiv) {
     cardDiv.style.display = 'block';
 
-    const bonus = ethers.utils.formatUnits(obj.bonus, 'ether');
-    cardDiv.querySelector('.one-round-bonus-val').textContent = bonus;
+    cardDiv.querySelector('.one-round-bonus-val').textContent = ethers.utils.formatUnits(obj.bonus, 'ether');
 
     const dTime = new Date(obj.discoverTime * 1000);
     cardDiv.querySelector('.one-round-discover-val').textContent = dTime.toString();
@@ -388,4 +385,66 @@ async function __loadHistoryData(parentDiv) {
     } finally {
         hideLoading();
     }
+}
+
+async function buyTicket() {
+    if (!gameSettings) {
+        await loadGameSettings();
+    }
+
+    if (!gameSettings.isOpen) {
+        showDialog(DLevel.Tips, "not open for personal user");
+        return;
+    }
+
+    openVoteModal(procTicketPayment);
+}
+
+
+async function procTicketPayment(no, ifShare) {
+    if (no === 0) {
+        showDialog(DLevel.Tips, "on ticket at lest")
+        return;
+    }
+
+    const val = gameSettings.tickPrice.mul(no);
+    try {
+        showWaiting("prepare to pay")
+        const txResponse = await lotteryGameContract.buyTicketFromOuter(no, {value: val});
+
+        changeLoadingTips("packaging:" + txResponse.hash);
+        const txReceipt = await txResponse.wait();
+
+        if (!txReceipt.status) {
+            showDialog(DLevel.Error, "transaction " + "failed");
+            return;
+        }
+        showDialog(DLevel.Success, "buy success");
+
+        if (ifShare) {
+            __shareVoteToTweet(0, no).then(r => {
+                console.log("share to twitter success")
+            });
+        }
+        __loadPageData();
+
+    } catch (err) {
+        checkMetamaskErr(err);
+    } finally {
+        hideLoading();
+    }
+}
+
+function showUserWinHistory() {
+    showDialog(DLevel.Tips, "not ok now");
+    // const historyDiv = document.querySelector('.winning-history');
+    // const isShowing = historyDiv.style.display === 'block';
+    // historyDiv.style.display = isShowing ? 'none' : 'block';
+    // if (isShowing){
+    //     return;
+    // }
+}
+
+function withdrawBonus() {
+
 }

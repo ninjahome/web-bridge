@@ -70,57 +70,24 @@ async function procPaymentForPostedTweet(tweet, callback) {
             tweet.signature,
             {value: voteContractMeta.postPrice}
         );
-        console.log("Transaction Response: ", txResponse);
 
         changeLoadingTips("waiting for blockchain packaging:" + txResponse.hash);
-
         const txReceipt = await txResponse.wait();
-        console.log("Transaction Receipt: ", txReceipt);
 
-        const txStatus = txReceipt.status ? TXStatus.Success : TXStatus.Failed;
+        tweet.payment_status = txReceipt.status ? TXStatus.Success : TXStatus.Failed;
 
-        hideLoading();
-
-        if(txReceipt.status){
-            showDialog(DLevel.Success,"transaction " + "confirmed");
-        }else {
-            showDialog(DLevel.Error,"transaction " + "failed");
-        }
-
-        tweet.payment_status = txStatus;
     } catch (err) {
         const newErr = checkMetamaskErr(err);
         if (newErr && newErr.includes("duplicate post")) {
             tweet.payment_status = TXStatus.Success;
         }
     } finally {
+        hideLoading();
         if (callback) {
             callback(tweet);
         }
     }
 }
-
-function checkMetamaskErr(err) {
-    console.error("Transaction error: ", err);
-    hideLoading();
-
-    if (err.code === 4001) {
-        return null;
-    }
-
-    let code = err.code;
-    if (!err.data || !err.data.message) {
-        code = code + err.message;
-    } else {
-        code = "code:" + err.data.code + " " + err.data.message
-    }
-    if (code.includes("duplicate post")) {
-        return code;
-    }
-    showDialog(DLevel.Warning,code);
-    return code;
-}
-
 
 async function procTweetVotePayment(voteCount, tweet, callback) {
     if (!tweetVoteContract|| !voteContractMeta) {
@@ -138,25 +105,23 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
             voteCount,
             {value: amount}
         );
-        console.log("Transaction Response: ", txResponse);
-        changeLoadingTips("waiting for blockchain packaging:" + txResponse.hash);
+        changeLoadingTips("packaging: " + txResponse.hash);
 
         const txReceipt = await txResponse.wait();
-        console.log("Transaction Receipt: ", txReceipt);
 
-        if(txReceipt.status){
-            showDialog(DLevel.Success,"transaction " + "confirmed");
-        }else {
-            showDialog(DLevel.Error,"transaction " + "failed");
+        if(!txReceipt.status){
+            showDialog(DLevel.Error,"transaction failed");
+            return;
         }
-
-        hideLoading();
+        showDialog(DLevel.Success,"transaction success");
 
         if (callback) {
             callback(tweet.create_time, voteCount);
         }
     } catch (err) {
         checkMetamaskErr(err);
+    }finally {
+        hideLoading();
     }
 }
 

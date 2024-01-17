@@ -268,6 +268,7 @@
             width: 50%; /* 宽度 */
 
         }
+
         .vote-no-modal-body {
             display: flex;
             flex-direction: column;
@@ -276,6 +277,7 @@
 
 
         }
+
         .quantity-selector {
             display: flex;
             align-items: center;
@@ -331,7 +333,7 @@
         }
 
         .cancel-btn {
-            margin:0 8px;
+            margin: 0 8px;
             padding: 10px 42px;
             border-radius: 9999px;
             background-color: transparent;
@@ -341,7 +343,7 @@
         }
 
         .confirm-btn {
-            margin:0 8px;
+            margin: 0 8px;
             padding: 10px 42px;
             border-radius: 9999px;
             border: none;
@@ -937,9 +939,13 @@
         <div class="vote-no-modal-body">
             <div class="quantity-selector">
                 <p style="padding: 0; margin: 0;">票数：</p>
-                <button id="decreaseVote" onclick="decreaseVote()" style="border-bottom-left-radius: 12px;border-top-left-radius: 12px">-</button>
+                <button id="decreaseVote" onclick="decreaseVote()"
+                        style="border-bottom-left-radius: 12px;border-top-left-radius: 12px">-
+                </button>
                 <input type="number" id="voteCount" value="1" min="1">
-                <button id="increaseVote" onclick="increaseVote()" style="border-bottom-right-radius: 12px;border-top-right-radius: 12px">+</button>
+                <button id="increaseVote" onclick="increaseVote()"
+                        style="border-bottom-right-radius: 12px;border-top-right-radius: 12px">+
+                </button>
             </div>
             <label style="color: #898989; font-size: 14px; margin-left: 54px">
                 <input type="checkbox" id="shareOnTwitter" checked>
@@ -958,9 +964,6 @@
     <div class="tweets-content-txt-area .d-radius" id="tweets-content-txt-area" contenteditable="true"
          data-placeholder="What's happening!?"></div>
     <div style="display: flex; justify-content: flex-end; align-items: center">
-        <!-- 图片注释掉 -->
-        <!--<img src="/assets/file/image-icon.png" alt="photo"
-             style="width: 20px; margin-right: 6px; display: inline-block">-->
         <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()" class="d-radius">
             <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">
             <span id="tweet-post-with-eth-btn-txt">发布推文</span></button>

@@ -139,7 +139,7 @@ const DefaultAvatarSrc = "/assets/file/logo.png"
 const __globalContractConf = new Map([
     [toHex(421614), {
         tweetVote: "0x161d386717C842a9D6C51ff0b15913A46d3D7A6c",
-        gameLottery: "0xE32a4d7bf3A0bC124f9F057820F136852f2697De",
+        gameLottery: "0xe1D1d5387730d80362e1ABd990771aEE040DB2d1",
         kolKey: "0xE66eb9175DAa4AD992E1d7b207E590E322aca31B",
         kolKeyAbi: "",
         postPrice: "0.005",
@@ -336,7 +336,7 @@ class NJUserBasicInfo {
 
 
 const DLevel = Object.freeze({
-    Tips: 1, Warning: 2, Error: 3, Success:4
+    Tips: 1, Warning: 2, Error: 3, Success: 4
 });
 
 function createDialogElement(imageSrc) {
@@ -420,8 +420,8 @@ async function checkMetaMaskEnvironment(callback) {
 
     metamaskObj = window.ethereum;
     metamaskObj.on('accountsChanged', metamaskAccountChanged);
-    metamaskObj.on('chainChanged', function (chainID){
-        checkCurrentChainID(chainID,callback)
+    metamaskObj.on('chainChanged', function (chainID) {
+        checkCurrentChainID(chainID, callback)
     });
     const chainID = await metamaskObj.request({method: 'eth_chainId'});
 
@@ -488,3 +488,70 @@ async function addChain(chainId) {
         showDialog(DLevel.Error, "Add to network failed: " + addError.toString());
     }
 }
+
+
+let confirmCallback = null;
+
+function openVoteModal(callback) {
+    const modal = document.getElementById("vote-no-chose-modal");
+    modal.style.display = "block";
+    const voteCount = document.getElementById("voteCount");
+    voteCount.value = 1;
+    confirmCallback = callback;
+}
+
+function confirmVoteModal() {
+    if (confirmCallback) {
+        const voteCount = document.getElementById("voteCount").value;
+        const shareOnTwitter = document.getElementById("shareOnTwitter").checked;
+        confirmCallback(voteCount, shareOnTwitter);
+    }
+    closeVoteModal();
+}
+
+function closeVoteModal() {
+    const modal = document.getElementById("vote-no-chose-modal");
+    modal.style.display = "none";
+}
+
+function increaseVote() {
+    const voteCount = document.getElementById("voteCount");
+    voteCount.value = parseInt(voteCount.value) + 1;
+}
+
+function decreaseVote() {
+    const voteCountElement = document.getElementById("voteCount");
+    const newVoteCount = Math.max(1, parseInt(voteCountElement.value) - 1);
+    voteCountElement.value = newVoteCount.toString();
+}
+
+async function __shareVoteToTweet(create_time, vote_count) {
+    const resp = await PostToSrvByJson("/shareVoteAction", {
+        create_time: create_time,
+        vote_count: Number(vote_count),
+    });
+    console.log(resp);
+}
+
+function checkMetamaskErr(err) {
+    console.error("Transaction error: ", err);
+    hideLoading();
+
+    if (err.code === 4001) {
+        return null;
+    }
+
+    let code = err.code;
+    if (!err.data || !err.data.message) {
+        code = code + err.message;
+    } else {
+        code = "code:" + err.data.code + " " + err.data.message
+    }
+    if (code.includes("duplicate post")) {
+        return code;
+    }
+    showDialog(DLevel.Warning, code);
+    return code;
+}
+
+const __noTeamID = '0x0000000000000000000000000000000000000000000000000000000000000000';

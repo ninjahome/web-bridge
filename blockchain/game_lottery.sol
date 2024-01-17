@@ -460,7 +460,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         require(ticketNo > 0, "invalid ticket number");
         require(__openToOuterPlayer, "not open now");
         uint256 b = msg.value;
-        require(b == __ticketPriceForOuter, "ticket price change");
+        require(b == __ticketPriceForOuter * ticketNo, "ticket price change");
 
         uint256 serFee = (b / 100) * __serviceFeeRateForTicketBuy;
         recordServiceFee(serFee);
