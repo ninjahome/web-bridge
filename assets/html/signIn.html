@@ -21,10 +21,7 @@
     }
 
     .d-radius {
-        border-top-right-radius: 9999px;
-        border-top-left-radius: 9999px;
-        border-bottom-left-radius: 9999px;
-        border-bottom-right-radius: 9999px;
+        border-radius: 9999px;
     }
 
     .d-radius2 {
@@ -424,7 +421,6 @@
     }
 
     document.addEventListener("DOMContentLoaded", initElmStatus);
-    let metamaskObj = null;
 
     async function initElmStatus() {
         if (typeof window.ethereum === 'undefined') {

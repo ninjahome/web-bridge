@@ -138,8 +138,6 @@
     const _curNinjaEthAddr = "{{ .EthAddr }}";
     const _bindingDate = {{ .SignUpAt }};
 
-    let metamaskObj = null;
-
     function setupBasicInfos() {
         document.getElementById("profile-image").innerHTML = `
                 <img src="${twitterObj.profile_image_url}" alt="Profile Image">
@@ -154,17 +152,9 @@
 
     function initPages() {
         setupBasicInfos();
-        if (typeof window.ethereum === 'undefined') {
-            showDialog(DLevel.Tips, "您已关闭了metamask，请打开metamask并确切换到：" + _curNinjaEthAddr);
-            return
-        }
-        metamaskObj = window.ethereum;
-        metamaskObj.on('accountsChanged', metamaskAccountChanged);
+        checkMetaMaskEnvironment(null);
+    }
 
-    }
-    function metamaskAccountChanged(){
-        window.location.href = "/signOut";
-    }
     function backToHome(){
         window.location.href = "/main";
     }

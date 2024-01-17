@@ -1,24 +1,9 @@
-let metamaskObj = null;
-let metamaskProvider;
+
 let tweetVoteContract;
 let lotteryGameContract = null;
 let voteContractMeta = TweetVoteContractSetting.load();
 let gameContractMeta = null;
 
-async function checkMetaMaskEnvironment() {
-
-    if (typeof window.ethereum === 'undefined') {
-        window.location.href = "/signIn";
-        return
-    }
-
-    metamaskObj = window.ethereum;
-    metamaskObj.on('accountsChanged', metamaskAccountChanged);
-    metamaskObj.on('chainChanged', checkCurrentChainID);
-    const chainID = await metamaskObj.request({method: 'eth_chainId'});
-
-    await checkCurrentChainID(chainID);
-}
 
 async function initVoteContractMeta() {
     const [
@@ -33,25 +18,28 @@ async function initVoteContractMeta() {
 
 async function initGameContractMeta() {
 
-    const [currentRoundNo, totalBonus, ticketNo] = await lotteryGameContract.systemSettings();
+    const [currentRoundNo, totalBonus] = await lotteryGameContract.systemSettings();
     const gameInfo = await lotteryGameContract.gameInfoRecord(currentRoundNo);
 
     const curBonusInEth = ethers.utils.formatUnits(gameInfo.bonus, 'ether');
     const dTime = gameInfo.discoverTime.toNumber() * 1000;
     const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
 
-    const [allTickets] = await lotteryGameContract.tickList(currentRoundNo, ninjaUserObj.eth_addr);
+    const [teamNo, voteNo]  = await lotteryGameContract.allTeamInfoNo(currentRoundNo);
     gameContractMeta = new GameBasicInfo(currentRoundNo,
-        totalBonusInEth, ticketNo, curBonusInEth,
-        allTickets.length, dTime, gameInfo.randomHash);
+        totalBonusInEth, voteNo, curBonusInEth,
+        teamNo, dTime);
 }
 
-async function initBlockChainContract() {
+async function initBlockChainContract(provider) {
     try {
-        metamaskProvider = new ethers.providers.Web3Provider(metamaskObj);
-        const signer = metamaskProvider.getSigner(ninjaUserObj.eth_addr);
+        if (!provider){
+            tweetVoteContract = null;
+            lotteryGameContract = null
+            return
+        }
+        const signer = provider.getSigner(ninjaUserObj.eth_addr);
         const conf = __globalContractConf.get(__globalTargetChainNetworkID);
-
         tweetVoteContract = new ethers.Contract(conf.tweetVote, tweetVoteContractABI, signer);
         lotteryGameContract = new ethers.Contract(conf.gameLottery, gameContractABI, signer);
 
@@ -68,66 +56,8 @@ async function initBlockChainContract() {
     }
 }
 
-async function checkCurrentChainID(chainId) {
-    if (__globalTargetChainNetworkID === chainId) {
-        await initBlockChainContract();
-        return;
-    }
-
-    showDialog(DLevel.Tips, "switch to arbitrum", switchToWorkChain, function () {
-        metamaskProvider = null;
-    });
-}
-
-async function switchChain(chainId) {
-    try {
-        await metamaskObj.request({
-            method: 'wallet_switchEthereumChain',
-            params: [{chainId}],
-        });
-        location.reload();
-        return {switched: true, needAdd: false};
-    } catch (error) {
-
-        if (error.code === 4902) {
-            return {switched: false, needAdd: true};
-        } else {
-            showDialog(DLevel.Error, "Failed switching to Arbitrum network");
-            return {switched: false, needAdd: false};
-        }
-    }
-}
-
-async function addChain(chainId) {
-    try {
-        const chainParams = __globalMetaMaskNetworkParam.get(chainId);
-        await metamaskObj.request({
-            method: 'wallet_addEthereumChain',
-            params: [chainParams],
-        });
-        location.reload();
-    } catch (addError) {
-        showDialog(DLevel.Error, "Add to network failed: " + addError.toString());
-    }
-}
-
-async function switchToWorkChain() {
-    const result = await switchChain(__globalTargetChainNetworkID);
-    if (result.needAdd) {
-        await addChain(__globalTargetChainNetworkID);
-    }
-}
-
-function metamaskAccountChanged(accounts) {
-    if (accounts.length === 0) {
-        window.location.href = "/signOut";
-        return;
-    }
-    window.location.href = "/signOut";
-}
-
 async function procPaymentForPostedTweet(tweet, callback) {
-    if (!metamaskProvider) {
+    if (!tweetVoteContract) {
         showDialog(DLevel.Tips, "please change metamask to arbitrum network")
         return;
     }
@@ -151,7 +81,11 @@ async function procPaymentForPostedTweet(tweet, callback) {
 
         hideLoading();
 
-        showDialog(DLevel.Tips,"transaction " + (txReceipt.status ? "confirmed" : "failed"));
+        if(txReceipt.status){
+            showDialog(DLevel.Success,"transaction " + "confirmed");
+        }else {
+            showDialog(DLevel.Error,"transaction " + "failed");
+        }
 
         tweet.payment_status = txStatus;
     } catch (err) {
@@ -189,8 +123,8 @@ function checkMetamaskErr(err) {
 
 
 async function procTweetVotePayment(voteCount, tweet, callback) {
-    if (!metamaskProvider) {
-        showDialog(DLevel.Tips, "please change metamask to arbitrum network")
+    if (!tweetVoteContract|| !voteContractMeta) {
+        showDialog(DLevel.Tips, "please wait for metamask syncing data")
         return;
     }
 
@@ -209,7 +143,12 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
 
         const txReceipt = await txResponse.wait();
         console.log("Transaction Receipt: ", txReceipt);
-        showDialog(DLevel.Tips,"Transaction: " + txReceipt.status ? "success" : "failed");
+
+        if(txReceipt.status){
+            showDialog(DLevel.Success,"transaction " + "confirmed");
+        }else {
+            showDialog(DLevel.Error,"transaction " + "failed");
+        }
 
         hideLoading();
 

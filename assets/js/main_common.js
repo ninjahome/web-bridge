@@ -243,9 +243,9 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
 
 function refreshTwitterInfo() {
     showWaiting("tips", "loading from twitter server");
-    loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true).then(twInfo => {
+    loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true).then(async twInfo => {
         hideLoading();
-        setupTwitterElem(twInfo);
+        await setupUserBasicInfoInSetting();
     })
 }
 
@@ -257,7 +257,6 @@ function quitFromService() {
         window.location.href = "/signIn";
     })
 }
-
 
 async function showTweetDetail(parentName) {
     const detail = document.querySelector('#tweet-detail');

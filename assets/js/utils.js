@@ -19,7 +19,7 @@ function startCountdown(targetTime, callback) {
 
         if (timeLeft <= 0) {
             clearInterval(countdownInterval);
-            callback('','','','', true);
+            callback('', '', '', '', true);
             return;
         }
 
@@ -32,7 +32,7 @@ function startCountdown(targetTime, callback) {
         minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        callback(days,hours,minutes,seconds, false);
+        callback(days, hours, minutes, seconds, false);
     }, 1000);
 }
 
@@ -139,7 +139,7 @@ const DefaultAvatarSrc = "/assets/file/logo.png"
 const __globalContractConf = new Map([
     [toHex(421614), {
         tweetVote: "0x161d386717C842a9D6C51ff0b15913A46d3D7A6c",
-        gameLottery: "0xEaBc643dfee1dDdc07788A26edAbd38f9AF6d109",
+        gameLottery: "0xE361BAEDb65bcd61698aa2a5EB158d79fb7B3a89",
         kolKey: "0xE66eb9175DAa4AD992E1d7b207E590E322aca31B",
         kolKeyAbi: "",
         postPrice: "0.005",
@@ -336,7 +336,7 @@ class NJUserBasicInfo {
 
 
 const DLevel = Object.freeze({
-    Tips: 1, Warning: 2, Error: 3
+    Tips: 1, Warning: 2, Error: 3, Success:4
 });
 
 function createDialogElement(imageSrc) {
@@ -377,6 +377,9 @@ function showDialog(type, msg, confirmCB, cancelCB) {
         case DLevel.Warning:
             imageSrc = "/assets/file/warning-img.png";
             break;
+        case DLevel.Success:
+            imageSrc = "/assets/file/success-img.png";
+            break;
     }
 
     const dialog = createDialogElement(imageSrc);
@@ -403,5 +406,85 @@ function showDialog(type, msg, confirmCB, cancelCB) {
         });
     } else {
         dialogConfirmButton.style.display = 'none';
+    }
+}
+
+let metamaskObj = null;
+
+async function checkMetaMaskEnvironment(callback) {
+
+    if (typeof window.ethereum === 'undefined') {
+        window.location.href = "/signIn";
+        return
+    }
+
+    metamaskObj = window.ethereum;
+    metamaskObj.on('accountsChanged', metamaskAccountChanged);
+    metamaskObj.on('chainChanged', function (chainID){
+        checkCurrentChainID(chainID,callback)
+    });
+    const chainID = await metamaskObj.request({method: 'eth_chainId'});
+
+    await checkCurrentChainID(chainID, callback);
+}
+
+function metamaskAccountChanged(accounts) {
+    if (accounts.length === 0) {
+        window.location.href = "/signOut";
+        return;
+    }
+    window.location.href = "/signOut";
+}
+
+async function checkCurrentChainID(chainId, callback) {
+    if (__globalTargetChainNetworkID === chainId) {
+        const provider = new ethers.providers.Web3Provider(metamaskObj);
+        if (callback) {
+            await callback(provider);
+        }
+        return;
+    }
+
+    showDialog(DLevel.Tips, "switch to arbitrum", switchToWorkChain, function () {
+        window.location.href = "/signOut";
+    });
+}
+
+async function switchToWorkChain() {
+    const result = await switchChain(__globalTargetChainNetworkID);
+    if (result.needAdd) {
+        await addChain(__globalTargetChainNetworkID);
+    }
+}
+
+async function switchChain(chainId) {
+    try {
+        await metamaskObj.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{chainId}],
+        });
+        location.reload();
+        return {switched: true, needAdd: false};
+    } catch (error) {
+
+        if (error.code === 4902) {
+            return {switched: false, needAdd: true};
+        } else {
+            showDialog(DLevel.Error, "Failed switching to Arbitrum network");
+            return {switched: false, needAdd: false};
+        }
+    }
+}
+
+async function addChain(chainId) {
+    try {
+        const chainParams = __globalMetaMaskNetworkParam.get(chainId);
+        await metamaskObj.request({
+            method: 'wallet_addEthereumChain',
+            params: [chainParams],
+        });
+        location.reload();
+    } catch (addError) {
+        showDialog(DLevel.Error, "Add to network failed: " + addError.toString());
     }
 }
