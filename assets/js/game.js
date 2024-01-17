@@ -45,7 +45,15 @@ class PersonalData {
 }
 
 async function initGamePage() {
-    await checkMetaMaskEnvironment(initGameContract)
+    await checkMetaMaskEnvironment(initGameContract);
+    const address = __globalContractConf.get(__globalTargetChainNetworkID).gameLottery;
+    document.querySelector('.contract-address-value').textContent = address;
+}
+
+function showContractUrl() {
+    const address = __globalContractConf.get(__globalTargetChainNetworkID).gameLottery;
+    const url = __globalMetaMaskNetworkParam.get(__globalTargetChainNetworkID).blockExplorerUrls;
+    window.open(url + "/address/" + address);
 }
 
 async function initGameContract(provider) {
@@ -85,8 +93,6 @@ async function loadGameSettings() {
         gameSettings = new GameSettings(currentRoundNo, totalBonusInEth,
             tickPriceForOuter, tickPriceInEth, isOpenToOuter);
 
-        console.log(gameSettings);
-
     } catch (err) {
         console.log(err);
         showDialog(DLevel.Warning, "load game settings from block chain failed");
@@ -107,8 +113,6 @@ async function loadCurrentRoundMeta() {
 
         currentRoundData.TeamCount = teamNo;
         currentRoundData.TickCount = voteNo;
-
-        console.log(currentRoundData);
 
     } catch (err) {
         console.log(err);
@@ -214,7 +218,7 @@ function showTeamDetail() {
 
     if (isShowing) {
         const teamDetailDiv = document.querySelector('.team-detail-for-one');
-        teamDetailDiv.style.display =  'none';
+        teamDetailDiv.style.display = 'none';
         return;
     }
 
@@ -229,15 +233,16 @@ function showTeamDetail() {
         cell.innerHTML = `<button class="team-detail-in-one-team" onclick="showOneTeamDetails('${teamHash}')">详情</button>`;
     }
 }
-function hideOneTeamDetails(){
+
+function hideOneTeamDetails() {
     const teamDetailDiv = document.querySelector('.team-detail-for-one');
-    teamDetailDiv.style.display =  'none';
+    teamDetailDiv.style.display = 'none';
 }
 
 async function showOneTeamDetails(team) {
     console.log(team);
     const teamDetailDiv = document.querySelector('.team-detail-for-one');
-    teamDetailDiv.style.display =  'block';
+    teamDetailDiv.style.display = 'block';
 
     try {
         showWaiting("syncing from block chain")
@@ -256,7 +261,6 @@ async function showOneTeamDetails(team) {
 
             cell = row.insertCell();
             cell.innerHTML = obj.voteNos[i];
-
         }
     } catch (err) {
         showDialog(DLevel.Warning, "load team detail failed")
@@ -276,8 +280,8 @@ async function buyTicket() {
     }
 }
 
-function showUserWinHistory(){
-    showDialog(DLevel.Tips,"not ok now");
+function showUserWinHistory() {
+    showDialog(DLevel.Tips, "not ok now");
     // const historyDiv = document.querySelector('.winning-history');
     // const isShowing = historyDiv.style.display === 'block';
     // historyDiv.style.display = isShowing ? 'none' : 'block';
@@ -286,7 +290,102 @@ function showUserWinHistory(){
     // }
 }
 
-function showGameRule(className){
+function showGameRule(className) {
     const gameRuleDiv = document.querySelector(className);
     gameRuleDiv.style.display = gameRuleDiv.style.display === 'none' ? 'block' : 'none';
+}
+
+async function showOneRoundGameInfo() {
+
+    try {
+        const roundNo = document.getElementById('round-input').value;
+        if (!roundNo) {
+            showDialog(DLevel.Tips, "invalid round no");
+            return;
+        }
+        const queryNo = Number(roundNo);
+        if (queryNo > gameSettings.roundNo) {
+            showDialog(DLevel.Tips, "bigger than current round no:" + gameSettings.roundNo);
+            return;
+        }
+        showWaiting("syncing from block chain");
+        const obj = await lotteryGameContract.gameInfoRecord(queryNo);
+        const cardDiv = document.querySelector('.round-history');
+
+        fullFillGameCard(obj, cardDiv);
+
+    } catch (err) {
+        showDialog(DLevel.Error, "failed to query form block chain:" + err.toString());
+    } finally {
+        hideLoading();
+    }
+}
+
+function fullFillGameCard(obj, cardDiv) {
+    cardDiv.style.display = 'block';
+
+    const bonus = ethers.utils.formatUnits(obj.bonus, 'ether');
+    cardDiv.querySelector('.one-round-bonus-val').textContent = bonus;
+
+    const dTime = new Date(obj.discoverTime * 1000);
+    cardDiv.querySelector('.one-round-discover-val').textContent = dTime.toString();
+
+    document.getElementById('history-game-random').textContent = obj.randomVal;
+    document.getElementById('history-game-random-hash').textContent = obj.randomHash;
+    document.getElementById('history-game-winner-address').textContent = obj.winner;
+    document.getElementById('history-game-winner-team').textContent = obj.winTeam;
+    document.getElementById('history-game-winner-ticket').textContent = obj.winTicketID;
+}
+
+let __toRoundNo = 0;
+
+async function loadHistoryData() {
+    const moreBtn = document.querySelector('.history-data-list-more-btn');
+    moreBtn.style.display = 'block';
+    __toRoundNo = gameSettings.roundNo;
+
+    const parentDiv = document.querySelector('.history-data-list');
+    parentDiv.style.display = 'block';
+    parentDiv.innerHTML = '';
+
+    await __loadHistoryData(parentDiv);
+}
+
+async function moreHistoryData() {
+    const parentDiv = document.querySelector('.history-data-list');
+    parentDiv.style.display = 'block';
+    await __loadHistoryData(parentDiv);
+}
+
+async function __loadHistoryData(parentDiv) {
+
+    try {
+        if (__toRoundNo === 0) {
+            showDialog(DLevel.Tips, "no more data");
+
+            return;
+        }
+        const from = __toRoundNo > 20 ? (__toRoundNo - 20) : 0;
+        showWaiting("syncing history game data from block chain")
+
+        const obj = await lotteryGameContract.historyRoundInfo(from, __toRoundNo);
+        let reversedArray = obj.slice().reverse();
+
+        for (const gameInfo of reversedArray) {
+            const div = document.getElementById('history-data-one-round-template').cloneNode(true);
+            fullFillGameCard(gameInfo, div);
+            parentDiv.appendChild(div);
+        }
+
+        __toRoundNo = from;
+        if (__toRoundNo === 0) {
+            const moreBtn = document.querySelector('.history-data-list-more-btn');
+            moreBtn.style.display = 'none';
+        }
+
+    } catch (err) {
+        showDialog(DLevel.Warning, "load history data err:" + err.toString());
+    } finally {
+        hideLoading();
+    }
 }

@@ -567,9 +567,11 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     view
     returns (GameInfoOneRound[] memory infos)
     {
-        infos = new GameInfoOneRound[](to - from + 1);
-        for (uint256 i = from; i <= to; i++) {
-            infos[i] = gameInfoRecord[i];
+        require(to >= from, "invalid param");
+        uint256 size = to - from + 1;
+        infos = new GameInfoOneRound[](size);
+        for (uint256 i = 0; i < size; i++) {
+            infos[i] = gameInfoRecord[i + from];
         }
         return infos;
     }
