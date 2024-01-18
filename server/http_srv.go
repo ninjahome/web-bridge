@@ -68,8 +68,18 @@ func NewMainService() *MainService {
 				return
 			}
 
+			if url == "/buyRights" || url == "/buyFromShare" {
+				var param = OuterLinkParam{
+					TweetID:  request.URL.Query().Get(NjTweetID),
+					ShareID:  request.URL.Query().Get(SharedID),
+					ShareUsr: request.URL.Query().Get(SharedUsr),
+				}
+				_ = SMInst().Set(request, writer, BuyRightsUrlKey, param.Data())
+			}
+
 			var token = validateUsrRights(request)
 			if token == nil {
+
 				http.Redirect(writer, request, "/signIn", http.StatusFound)
 				return
 			}
