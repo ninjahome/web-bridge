@@ -270,7 +270,7 @@ async function __updateVoteNumberForTweet(tweetObj, newVote) {
 
     tweetCard = document.getElementById("tweet-card-for-njusr-vote-" + tweetObj.create_time)
     if (tweetCard) {
-        tweetCard.querySelector('.vote-number').textContent = tweetObj.vote_count;
+        tweetCard.querySelector('.total-vote-count').textContent = tweetObj.vote_count;
     }
 }
 
