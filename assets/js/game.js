@@ -210,6 +210,7 @@ function showPersonalTicket() {
         const teamID = personalData.tickMap.get(tid)
         if (teamID === __noTeamID) {
             cell.title = "独立购买";
+            cell.style.background = 'rgba(222, 64, 51, 0.3)';
         } else {
             cell.title = "团队: " + teamID;
         }
@@ -357,11 +358,11 @@ async function moreHistoryData() {
 async function __loadHistoryData(parentDiv) {
 
     try {
-        if (__toRoundNo === 0) {
+        if (__toRoundNo <= 0) {
             showDialog(DLevel.Tips, "no more data");
-
             return;
         }
+
         const from = __toRoundNo > 20 ? (__toRoundNo - 20) : 0;
         showWaiting("syncing history game data from block chain")
 
@@ -374,8 +375,8 @@ async function __loadHistoryData(parentDiv) {
             parentDiv.appendChild(div);
         }
 
-        __toRoundNo = from;
-        if (__toRoundNo === 0) {
+        __toRoundNo = from - 1;
+        if (__toRoundNo <= 0) {
             const moreBtn = document.querySelector('.history-data-list-more-btn');
             moreBtn.style.display = 'none';
         }
@@ -445,6 +446,29 @@ function showUserWinHistory() {
     // }
 }
 
-function withdrawBonus() {
+async function withdrawBonus() {
+    try {
+        showWaiting("calling to block chain");
 
+        const txResponse = await lotteryGameContract.withdraw(0, true);
+
+        changeLoadingTips("packaging:" + txResponse.hash);
+        const txReceipt = await txResponse.wait();
+
+        if (!txReceipt.status) {
+            showDialog(DLevel.Error, "transaction " + "failed");
+            return;
+        }
+
+        showDialog(DLevel.Success, "withdraw success");
+
+        loadPersonalMeta().then(r => {
+            setupPersonalData();
+        });
+
+    } catch (err) {
+        checkMetamaskErr(err);
+    } finally {
+        hideLoading();
+    }
 }
