@@ -30,7 +30,7 @@
 
         .left-menu-area {
             flex: 1; /* 左边菜单区域占据剩余空间的一部分 */
-            background-color: #f4f4f4; /* 背景色，可根据需要调整 */
+            background-color: #ffffff; /* 背景色，可根据需要调整 */
             padding: 10px; /* 内边距 */
         }
 
@@ -44,7 +44,7 @@
 
         .right-operation-area {
             flex: 1; /* 右边操作区域占据剩余空间的一部分 */
-            background-color: #f4f4f4; /* 背景色，可根据需要调整 */
+            background-color: transparent;/* 背景色，可根据需要调整 */
             padding: 10px; /* 内边距 */
         }
 
@@ -53,18 +53,36 @@
             padding: 0;
         }
 
+        .menu-icon {
+            vertical-align: middle;
+            /* 可以添加更多样式，例如设置图标大小 */
+            height: auto; /* 或任何适合你设计的尺寸 */
+            width: 16px; /* 保持图像比例 */
+            margin-right: 8px; /* 在图标和文本之间添加一些空间 */
+        }
+
         .menu-item-left-area {
-            padding: 10px;
+            content: '';
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+            background-size: contain;
+            background-repeat: no-repeat;
+            white-space: nowrap;
+            padding: 11px 32px;
             cursor: pointer;
-            color: #333; /* 默认颜色 */
+            color: #1B1B1D; /* 默认颜色 */
         }
 
         .menu-item-left-area:hover {
-            background-color: #a7a7af; /* 鼠标悬停时的颜色 */
+            background-color: #F7F8F9; /* 鼠标悬停时的颜色 */
+            border-radius: 999px;
         }
 
         .menu-item-left-area.active {
-            color: #1DA1F2; /* 被选中的菜单项颜色 */
+            background-color: #F7F8F9; /* 被选中的菜单项颜色 */
+            border-radius: 999px;
+            font-weight: bolder;
         }
 
         .content-in-middle-area {
@@ -549,13 +567,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            margin-top: 18px;
         }
 
         .number {
             font-family: DINCond-Black, "Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
             font-size: 36px;
             padding: 4px 12px;
-            margin: 24px 12px 6px;
+            margin: 0 12px 6px;
             border-radius: 10px;
             color: #302F2F;
         }
@@ -691,20 +710,20 @@
              style="width: 40px;height: 40px;border-radius: 50%;cursor: pointer" alt="avatar">
         <ul class="menu-list-left-area">
             <li onclick="menuOnClicked.call(this,0)" class="menu-item-left-area active" data-content="middle-div-home">
-                主页
+                <img src="/assets/file/path-to-home-icon.png" alt="Home" class="menu-icon" /> 主页
             </li>
             <li onclick="menuOnClicked.call(this,1)" class="menu-item-left-area" data-content="middle-div-leaderboard">
-                排行榜
+                <img src="/assets/file/path-to-leaderboard-icon.png" alt="Home" class="menu-icon" /> 排行榜
             </li>
 
             <li onclick="menuOnClicked.call(this,2)" class="menu-item-left-area" data-content="middle-div-user-tweets">
-                推文
+                <img src="/assets/file/path-to-twitter-icon.png" alt="Home" class="menu-icon" /> 推文
             </li>
             <li onclick="menuOnClicked.call(this,3)" class="menu-item-left-area" data-content="middle-div-about-user">
-                我的
+                <img src="/assets/file/path-to-user-icon.png" alt="Home" class="menu-icon" /> 我的
             </li>
             <li onclick="openKolKeyMainPage()" class="menu-item-left-area" data-content="middle-div-userKolKey">
-                Keys
+                <img src="/assets/file/path-to-keys-icon.png" alt="Home" class="menu-icon" /> Keys
             </li>
         </ul>
         <button class="show-post-tweet-div d-radius" onclick="showPostTweetDiv()">发推</button>
@@ -947,8 +966,8 @@
             <div class="lottery-timer">
                 <div class="countdown-result" id="countdown-result">开奖中</div>
                 <div class="countdown" id="lottery-count-down">
-                    <div class="number days">00</div>
-                    :
+                    <div class="number days" style="padding: 0 ;margin: 0 6px">02</div>
+                    天
                     <div class="number hours">00</div>
                     :
                     <div class="number minutes">00</div>
