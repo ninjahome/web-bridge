@@ -34,7 +34,7 @@
             flex: 1; /* 左边菜单区域占据剩余空间的一部分 */
             background-color: #ffffff; /* 背景色，可根据需要调整 */
             padding: 10px; /* 内边距 */
-            display: flex;          /* 添加flex布局 */
+            display: flex; /* 添加flex布局 */
             flex-direction: column; /* 确保子元素垂直排列 */
         }
 
@@ -54,9 +54,9 @@
             list-style: none;
             padding: 0;
             border-right: 1px solid #F7F8F9; /* 右边框线 */
-            display: flex;          /* 添加flex布局 */
+            display: flex; /* 添加flex布局 */
             flex-direction: column; /* 确保子元素垂直排列 */
-            width: 100%;            /* 设置宽度为父容器的100% */
+            width: 100%; /* 设置宽度为父容器的100% */
         }
 
         .menu-icon {
@@ -107,6 +107,11 @@
             margin-bottom: 20px;
         }
 
+        .tweet-first-half {
+            display: flex; /* 启用flex布局 */
+            align-items: center; /* 垂直居中对齐子元素 */
+        }
+
         .tweet-header {
             display: inline-block;
             align-items: center;
@@ -134,7 +139,7 @@
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            margin-top: -8px;
+            /*margin-top: -4px;*/
         }
 
         .tweet-footer .tweet-action {
@@ -778,17 +783,20 @@
         <button class="show-post-tweet-div d-radius" onclick="showPostTweetDiv()">发推</button>
     </div>
 
-    <div class="tweet-first-half" id="tweet-header-template" style="display: none">
-        <div>
-            <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar">
-        </div>
-        <div class="tweet-header">
-            <div style="margin-top: 2px">
-                <span class="name twitterName"></span>
-                <span class="username twitterUserName"></span>
+
+    <div id="tweet-header-template" style="display: none">
+        <div class="tweet-first-half">
+            <div>
+                <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar">
             </div>
-            <span class="time tweetCreateTime"
-                  style="font-size: 12px; color: #898989">2024-01-18</span>
+            <div class="tweet-header">
+                <div style="margin-top: 2px">
+                    <span class="name twitterName"></span>
+                    <span class="username twitterUserName"></span>
+                </div>
+                <span class="time tweetCreateTime"
+                      style="font-size: 12px; color: #898989">2024-01-18</span>
+            </div>
         </div>
         <div class="tweet-content tweet-content-collapsed">
         </div>
@@ -820,39 +828,37 @@
                         <div>
                             <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar">
                         </div>
-                        <div>
-                            <div class="tweet-header">
-                                <div style="margin-top: 2px">
-                                    <span class="name twitterName">wesely</span>
-                                    <span class="username twitterUserName">@wesley777</span>
-                                </div>
-                                <span class="time tweetCreateTime"
-                                      style="font-size: 12px; color: #898989">2024-01-18</span>
+                        <div class="tweet-header">
+                            <div style="margin-top: 2px">
+                                <span class="name twitterName">wesely</span>
+                                <span class="username twitterUserName">@wesley777</span>
                             </div>
-                            <div class="tweet-content tweet-content-collapsed"
-                                 onclick="showTweetDetail.call(this,'.tweet-card')">
-                                本地人吃切仔面，是数十年地吃下来。熟铺公休，附近再挑一间即可。众店之中，最老的近百年，年轻一点的，也有三十好几。质素皆颇可以，各有强项。面有粗细之差，汤有清浊之别，有切肉甜的，或内脏特别嫩的。面店可以当作家庭吃饭的延伸，食材一点也不显赫，调味简净得近乎原始，然而经过仔细的处置。通常价格还非常廉宜。
-                                因此约人去吃切仔面，意思近乎于，家里随便坐坐，吃个便饭。如今人们在社群媒体上，轻易积累数百上千位朋友，不小心就信以为真。实则心里一筛，即知误会。能随便一起吃碗面的对象，百千之中，实没有几位。
-                                长年吃面，同伴有消有长，儿时是整个家族一起去，长大后，一个人去得多。如今加上眼前这位男子，就有两人。两人吃切仔面，总是比一个人好。此说非是基于感性，是讲实情。世上许多面都适合独食，但说到切仔面，人数愈伙，就愈好吃。
-                                从前我家吃面，偌大阵仗，一家三代数辆车同行。外公是白手起家的商人，模样清瘦，聪明有神。外公饮食挑剔，
-                                比如他每年夏天，酿一年份的荔枝酒和蛇酒，仅供自酌。比如他吃粥，粒米不进，只喝顶层的米汤，闽南语说“泔”(ám)。因此家里熬粥，
-                                米落得多，才能熬足泔，供外公晨起喝上两碗。用潮流话讲，外公很不好搞。外公晚年跌坏了脚，此后只能短程走路，因此外公想吃面，
-                                晚辈们速去驾车，一家人浩浩荡荡陪着他去。
-                            </div>
-                            <span class="show-more" data-more="true"
-                                  onclick="showFullTweetContent.call(this)">更多</span>
+                            <span class="time tweetCreateTime"
+                                  style="font-size: 12px; color: #898989">2024-01-18</span>
                         </div>
                     </div>
-                    <div class="tweet-footer">
-                        <div class="tweet-info">
-                            <span class="vote-count">投票数: <span class="vote-number">0</span></span>
-                        </div>
-                        <div class="tweet-action">
-                            <button class="tweet-action-vote"><img src="/assets/file/tweet-action-vote-eth.png"
-                                                                   style="width: 22px;height: auto" alt=""/>
-                                <span style="font-weight: lighter">0.01eth</span> 投票
-                            </button>
-                        </div>
+                    <div class="tweet-content tweet-content-collapsed"
+                         onclick="showTweetDetail.call(this,'.tweet-card')">
+                        本地人吃切仔面，是数十年地吃下来。熟铺公休，附近再挑一间即可。众店之中，最老的近百年，年轻一点的，也有三十好几。质素皆颇可以，各有强项。面有粗细之差，汤有清浊之别，有切肉甜的，或内脏特别嫩的。面店可以当作家庭吃饭的延伸，食材一点也不显赫，调味简净得近乎原始，然而经过仔细的处置。通常价格还非常廉宜。
+                        因此约人去吃切仔面，意思近乎于，家里随便坐坐，吃个便饭。如今人们在社群媒体上，轻易积累数百上千位朋友，不小心就信以为真。实则心里一筛，即知误会。能随便一起吃碗面的对象，百千之中，实没有几位。
+                        长年吃面，同伴有消有长，儿时是整个家族一起去，长大后，一个人去得多。如今加上眼前这位男子，就有两人。两人吃切仔面，总是比一个人好。此说非是基于感性，是讲实情。世上许多面都适合独食，但说到切仔面，人数愈伙，就愈好吃。
+                        从前我家吃面，偌大阵仗，一家三代数辆车同行。外公是白手起家的商人，模样清瘦，聪明有神。外公饮食挑剔，
+                        比如他每年夏天，酿一年份的荔枝酒和蛇酒，仅供自酌。比如他吃粥，粒米不进，只喝顶层的米汤，闽南语说“泔”(ám)。因此家里熬粥，
+                        米落得多，才能熬足泔，供外公晨起喝上两碗。用潮流话讲，外公很不好搞。外公晚年跌坏了脚，此后只能短程走路，因此外公想吃面，
+                        晚辈们速去驾车，一家人浩浩荡荡陪着他去。
+                    </div>
+                    <span class="show-more" data-more="true"
+                          onclick="showFullTweetContent.call(this)">更多</span>
+                </div>
+                <div class="tweet-footer">
+                    <div class="tweet-info">
+                        <span class="vote-count">投票数: <span class="vote-number">0</span></span>
+                    </div>
+                    <div class="tweet-action">
+                        <button class="tweet-action-vote"><img src="/assets/file/tweet-action-vote-eth.png"
+                                                               style="width: 22px;height: auto" alt=""/>
+                            <span style="font-weight: lighter">0.01eth</span> 投票
+                        </button>
                     </div>
                 </div>
             </div>

@@ -99,8 +99,10 @@ async function __fillNormalTweet(clear, parkID, data, templateId, cardID, overla
         const showMoreBtn = tweetCard.querySelector('.show-more');
         if (contentArea.scrollHeight <= contentArea.clientHeight) {
             showMoreBtn.style.display = 'none';
+            sibling.style.marginTop = '8px';
         } else {
             showMoreBtn.style.display = 'block';
+            sibling.style.marginTop = '-12px';
         }
     }
 }
