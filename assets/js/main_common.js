@@ -46,6 +46,14 @@ function contentScroll() {
             cacheObj = cachedUserVotedTweets;
             uiCallback = olderVotedTweets;
             break;
+        case 51:
+            cacheObj = cachedNinjaUserPostedTweets;
+            uiCallback = olderNinjaUsrPostedTweets;
+            break;
+        case 52:
+            cacheObj = cachedNinjaUserVotedTweets;
+            uiCallback = olderNinjaUsrVotedTweets;
+            break;
         default:
             return;
     }

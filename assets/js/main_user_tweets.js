@@ -9,7 +9,7 @@ async function loadTweetsUserPosted() {
     votedDiv.style.display = 'none';
     const detail = document.querySelector('#tweet-detail');
     detail.style.display = 'none';
-    __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(r => {
+    __loadTweetAtUserPost(true, ninjaUserObj.eth_addr, cachedUserTweets, fillUserPostedTweetsList).then(r => {
         console.log("load newest tweets of user posted success");
     });
 }
@@ -19,16 +19,16 @@ async function olderPostedTweets() {
         console.log("no need to load older posted data");
         return;
     }
-    return __loadTweetAtUserPost(false, ninjaUserObj.eth_addr);
+    return __loadTweetAtUserPost(false, ninjaUserObj.eth_addr, cachedUserTweets, fillUserPostedTweetsList);
 }
 
-async function __loadTweetAtUserPost(newest, web3ID) {
+async function __loadTweetAtUserPost(newest, web3ID, cache, callback) {
     const param = new TweetQueryParam(0, web3ID, []);
 
-    const needUpdateUI = await TweetsQuery(param, newest, cachedUserTweets);
+    const needUpdateUI = await TweetsQuery(param, newest, cache);
     if (needUpdateUI) {
-        await fillUserPostedTweetsList(param.start_id === 0);
-        cachedUserTweets.CachedItem = [];
+        await callback(param.start_id === 0);
+        cache.CachedItem = [];
     }
 }
 
@@ -153,6 +153,7 @@ async function __loadTweetIDsUserVoted(newest, web3ID, cache, voteStatusCache, c
     cache.CachedItem = [];
 }
 
+
 async function fillUserVotedTweetsList(clear) {
     return __fillNormalTweet(clear, 'tweets-voted-by-user',
         cachedUserVotedTweets.CachedItem,
@@ -169,8 +170,8 @@ async function fillUserVotedTweetsList(clear) {
 
 async function showUserProfile(njUser) {
     console.log(njUser);
-    if (njUser.eth_addr === ninjaUserObj.eth_addr){
-        showDialog(DLevel.Tips,"This is yourself");
+    if (njUser.eth_addr === ninjaUserObj.eth_addr) {
+        showDialog(DLevel.Tips, "This is yourself");
         return;
     }
     currentNinjaUsrLoading = njUser;
@@ -194,10 +195,15 @@ async function showUserProfile(njUser) {
     detail.querySelector(".web3id").textContent = njUser.eth_addr;
     const header = detail.querySelector(".tweet-header")
     await __setOnlyHeader(header, njUser.tw_id);
-    loadPostedTweetsOfNjUsr();
+    await loadPostedTweetsOfNjUsr();
 }
 
-function loadPostedTweetsOfNjUsr() {
+const cachedNinjaUserPostedTweets = new MemCachedTweets();
+async function olderNinjaUsrPostedTweets() {
+    await __loadTweetAtUserPost(false, currentNinjaUsrLoading.eth_addr,
+        cachedNinjaUserPostedTweets, fillNinjaUserPostedTweetsList)
+}
+async function loadPostedTweetsOfNjUsr() {
     curScrollContentID = 51;
 
     const postedDiv = document.getElementById('nj-user-posted-tweets');
@@ -205,6 +211,24 @@ function loadPostedTweetsOfNjUsr() {
 
     const votedDiv = document.getElementById('nj-user-vote-tweets');
     votedDiv.style.display = 'none';
+
+    await __loadTweetAtUserPost(true, currentNinjaUsrLoading.eth_addr, cachedNinjaUserPostedTweets, fillNinjaUserPostedTweetsList)
+}
+
+async function fillNinjaUserPostedTweetsList(clear) {
+    return __fillNormalTweet(clear, 'nj-user-posted-tweets',
+        cachedNinjaUserPostedTweets.CachedItem,
+        'tweetTemplateForNjUsrProfile', "tweet-card-for-njusr-post-", false,
+        function (tweetCard, tweetHeader, tweet) {
+            tweetCard.querySelector('.total-vote-count').textContent = tweet.vote_count;
+
+            tweetCard.querySelector('.tweet-content').onclick = null;
+            tweetCard.querySelector('.tweet-content').style.cursor = "default";
+
+            tweetCard.querySelector('.vote-count').style.display = 'none';
+            tweetCard.dataset.detailType = '6';
+            __showVoteButton(tweetCard, tweet);
+        });
 }
 
 const cachedNinjaUserVotedTweets = new MemCachedTweets();
