@@ -18,12 +18,13 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPoolI {
     }
 
     struct MapArray {
-        mapping(address => bool) filter;
+        mapping(address => uint256) filter;
         address[] list;
     }
 
     uint8 public kolIncomeRatePerKeyBuy = 90;
     uint8 public serviceFeeRatePerKeyBuy = 10;
+    uint256 public maxKeyNoForKol = 100;
 
     mapping(address => KeySettings) public KeySettingsRecord;
     mapping(address => mapping(address => KolKey)) keyBalance;
@@ -59,15 +60,15 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPoolI {
         uint256 curNonce,
         uint256 KoltotalNo
     );
-    event KeyTransfered(
+    event KeyTransfer(
         address from,
         address to,
         address kol,
         uint256 nonce,
         uint256 amount
     );
-    event KeyTransferedAll(address from, address to, address kol);
-
+    event KeyTransferAll(address from, address to, address kol);
+    event KeyRebound(address from, address to);
     event SystemSet(uint256 num, string op);
 
     receive() external payable {}
@@ -86,6 +87,12 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPoolI {
         require(newRate >= 0 && newRate <= 100, "invalid rate");
         serviceFeeRatePerKeyBuy = newRate;
         emit SystemSet(newRate, "kol_key_fee_rate_changed");
+    }
+
+    function adminSetMaxKolKeyNo(uint256 keyNo) public isOwner {
+        require(maxKeyNoForKol != keyNo, "no need to change");
+        maxKeyNoForKol = keyNo;
+        emit SystemSet(keyNo, "kol_key_max_no_changed");
     }
 
     /********************************************************************************
@@ -164,6 +171,10 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPoolI {
         require(ks.nonce >= 1 && ks.price > __minValCheck, "key not open");
         uint256 amount = ks.price * keyNo;
         require(msg.value == amount, "price of kol's key has changed");
+        require(
+            maxKeyNoForKol >= ks.totalNo + keyNo,
+            "more than key limitation"
+        );
 
         ks.totalNo += keyNo;
 
@@ -174,15 +185,15 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPoolI {
         kk.amount[ks.nonce] += keyNo;
 
         MapArray storage investors = keyHoldersOfKol[kolAddr];
-        if (investors.filter[msg.sender] == false) {
-            investors.filter[msg.sender] = true;
+        if (investors.filter[msg.sender] == 0) {
             investors.list.push(msg.sender);
+            investors.filter[msg.sender] = investors.list.length;
         }
 
         MapArray storage kols = kolsOfKeyHolder[msg.sender];
-        if (kols.filter[kolAddr] == false) {
-            kols.filter[kolAddr] = true;
+        if (kols.filter[kolAddr] == 0) {
             kols.list.push(kolAddr);
+            kols.filter[kolAddr] = kols.list.length;
         }
 
         uint256 fee = (amount / 100) * serviceFeeRatePerKeyBuy;
@@ -216,7 +227,7 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPoolI {
         key.amount[nonce] -= amount;
         toKey.amount[nonce] += amount;
 
-        emit KeyTransfered(msg.sender, to, kol, nonce, amount);
+        emit KeyTransfer(msg.sender, to, kol, nonce, amount);
     }
 
     function transferAllKey(address to, address kol)
@@ -246,7 +257,61 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPoolI {
         delete key.nonce;
         delete keyBalance[msg.sender][kol];
 
-        emit KeyTransferedAll(msg.sender, to, kol);
+        emit KeyTransferAll(msg.sender, to, kol);
+    }
+
+    function rebindKolKey(address to) public {
+        require(to != address(0), "invalid to address");
+
+        KeySettings storage fromSetting = KeySettingsRecord[msg.sender];
+        KeySettings storage toSetting = KeySettingsRecord[to];
+
+        require(fromSetting.nonce >= 1, "not key for kol");
+        require(toSetting.nonce == 0, "to address has open");
+
+        for (uint256 y = 0; y < fromSetting.nonce; y++) {
+            incomePerNoncePerKey[to][y] = incomePerNoncePerKey[msg.sender][y];
+            delete incomePerNoncePerKey[msg.sender][y];
+        }
+
+        KeySettingsRecord[to] = fromSetting;
+        delete KeySettingsRecord[msg.sender];
+
+        MapArray storage from_holders = keyHoldersOfKol[msg.sender];
+        MapArray storage to_holders = keyHoldersOfKol[msg.sender];
+
+        for (uint256 i = 0; i < from_holders.list.length; i++) {
+            address holder = from_holders.list[i];
+
+            to_holders.list.push(holder);
+            to_holders.filter[holder] = to_holders.list.length;
+
+            KolKey storage key_from = keyBalance[holder][msg.sender];
+            KolKey storage key_to = keyBalance[holder][to];
+
+            for (uint256 x = 0; x < key_from.nonce.length; x++) {
+                uint256 nonce = key_from.nonce[x];
+                uint256 amount = key_from.amount[nonce];
+                if (amount == 0) {
+                    continue;
+                }
+                key_to.nonce.push(nonce);
+                key_to.amount[nonce] = amount;
+            }
+            delete keyBalance[holder][msg.sender];
+
+            uint256 idx = kolsOfKeyHolder[holder].filter[msg.sender];
+            if (idx > 0) {
+                kolsOfKeyHolder[holder].list[idx - 1] = to;
+                kolsOfKeyHolder[holder].filter[to] = idx;
+            }
+        }
+
+        delete keyHoldersOfKol[msg.sender];
+
+        allKolInSystem.push(to);
+
+        emit KeyRebound(msg.sender, to);
     }
 
     /********************************************************************************
