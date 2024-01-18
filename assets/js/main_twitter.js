@@ -78,6 +78,8 @@ async function __fillNormalTweet(clear, parkID, data, templateId, cardID, overla
         tweetCard.dataset.createTime = tweet.create_time;
         const tweetHeader = document.getElementById('tweet-header-template').cloneNode(true);
         tweetHeader.style.display = '';
+        tweetHeader.id="";
+
 
         const sibling = tweetCard.querySelector('.tweet-footer')
         const contentArea = await setupCommonTweetHeader(tweetHeader, tweet, overlap);

@@ -96,7 +96,7 @@ async function joinTeam(obj, hash, team_card) {
 async function showTeammates(tweetHash, team_card) {
     try {
         showWaiting("syncing members from block chain");
-        if(!lotteryGameContract){
+        if (!lotteryGameContract) {
             hideLoading();
             return;
         }
@@ -150,7 +150,14 @@ function __queryAndFillTeamHeader(tweetHeader, tweetHash) {
 async function __queryTweetFoTeam(tweetHeader, tweetHash) {
     try {
         const response = await GetToSrvByJson("/queryTweetByHash?tweet_hash=" + tweetHash);
-        const obj = TwitterBasicInfo.cacheTwBasicInfo(response);
+
+        if (!response.ok) {
+            console.log("query twitter basic info failed")
+            return null;
+        }
+
+        const text = await response.text();
+        const obj = TwitterBasicInfo.cacheTwBasicInfo(text);
         __globalTweetMemCacheByHash.set(tweetHash, obj);
         __globalTweetMemCache.set(obj.create_time, obj);
         return obj;
@@ -173,7 +180,7 @@ async function fillMostVotedTweet(clear, tweetArray) {
 
     return __fillNormalTweet(clear, "top-most-voted-tweet", tweetArray,
         "tweetTemplateForTop", "tweet-card-for-most-voted-",
-        true,TweetDetailSource.MostVoted,
+        true, TweetDetailSource.MostVoted,
         function (tweetCard, tweetHeader, tweet) {
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
             __showVoteButton(tweetCard, tweet);

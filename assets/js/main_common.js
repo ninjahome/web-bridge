@@ -244,7 +244,7 @@ function __showVoteButton(tweetCard, tweet, callback) {
     if (!voteContractMeta) {
         return;
     }
-    voteBtn.textContent = `投票(${voteContractMeta.votePriceInEth} eth)`;
+    tweetCard.querySelector('.tweet-action-vote-val').textContent = voteContractMeta.votePriceInEth;
     voteBtn.onclick = () => voteToTheTweet(tweet, callback);
 }
 
