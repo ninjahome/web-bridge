@@ -163,12 +163,14 @@ func mainPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo)
 
 	data := struct {
 		NinjaUsrInfoJson template.JS
-		TargetTweet      string
+		TargetTweet      template.JS
 	}{
 		NinjaUsrInfoJson: template.JS(nu.RawData()),
 	}
 	if tweet != nil {
-		data.TargetTweet = tweet.String()
+		data.TargetTweet = template.JS(tweet.String())
+	} else {
+		data.TargetTweet = template.JS("{}")
 	}
 
 	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "main.html", data)

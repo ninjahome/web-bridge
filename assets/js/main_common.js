@@ -354,9 +354,16 @@ async function withdrawAction(contract) {
 }
 
 async function showTargetTweetDetail() {
-    if (!targetTweet) {
+    if (!targetTweet || !targetTweet.create_time) {
         return;
     }
 
-    await showTweetDetail('tweets-park', targetTweet, TweetDetailSource.HomePage)
+    await showTweetDetail('tweets-park', targetTweet, TweetDetailSource.HomePage);
+
+    const protocol = window.location.protocol;
+    const host = window.location.host;
+    const rootUrl = protocol + "//" + host;
+    const newUrl = rootUrl + '/main';
+
+    history.pushState(null, '', newUrl);
 }
