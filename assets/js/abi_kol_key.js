@@ -108,6 +108,25 @@ const kolKeyContractABI = `
                 "internalType": "address",
                 "name": "to",
                 "type": "address"
+            }
+        ],
+        "name": "KeyRebound",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
             },
             {
                 "indexed": false,
@@ -128,7 +147,7 @@ const kolKeyContractABI = `
                 "type": "uint256"
             }
         ],
-        "name": "KeyTransfered",
+        "name": "KeyTransfer",
         "type": "event"
     },
     {
@@ -153,7 +172,7 @@ const kolKeyContractABI = `
                 "type": "address"
             }
         ],
-        "name": "KeyTransferedAll",
+        "name": "KeyTransferAll",
         "type": "event"
     },
     {
@@ -651,6 +670,19 @@ const kolKeyContractABI = `
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "keyNo",
+                "type": "uint256"
+            }
+        ],
+        "name": "adminSetMaxKolKeyNo",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "uint8",
                 "name": "newRate",
                 "type": "uint8"
@@ -865,6 +897,32 @@ const kolKeyContractABI = `
             }
         ],
         "name": "kolOpenKeySale",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "maxKeyNoForKol",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            }
+        ],
+        "name": "rebindKolKey",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
