@@ -131,7 +131,7 @@ func votedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 		return
 	}
 
-	ids, err := database.DbInst().QueryVotedTweetIDByMe(_globalCfg.TweetsPageSize, para.StartID, nu.EthAddr)
+	ids, err := database.DbInst().QueryVotedTweetIDByMe(_globalCfg.TweetsPageSize, para.StartID, para.Web3ID)
 	if err != nil {
 		util.LogInst().Err(err).Str("user-web3-id", nu.EthAddr).
 			Msg("failed to query voted tweets ")
@@ -145,6 +145,18 @@ func votedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 
 	util.LogInst().Debug().Int("id-len", len(ids)).Str("param", para.String()).
 		Msg(" query voted  tweet success")
+}
+
+func postedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	var para database.TweetQueryParm
+	var err = util.ReadRequest(r, &para)
+	if err != nil {
+		util.LogInst().Err(err).Str("param", para.String()).
+			Msg("invalid query parameter")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
 }
 
 func removeUnpaidTweet(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {

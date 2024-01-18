@@ -901,7 +901,6 @@
                 </div>
             </div>
         </div>
-
         <div id="nj-user-profile" class="nj-user-profile">
             <button id="back-button" class="back-button">返回</button>
             <div class="nj-user-summary">
@@ -917,15 +916,20 @@
                 <div id="tweetTemplateForNjUsrProfile" class="tweet-card" style="display: none;">
                     <div class="tweet-footer">
                         <div class="tweet-info">
-                            <span class="vote-count">投票数: <span class="vote-number">0</span></span>
+                            <span class="total-vote-count">投票数: <span class="vote-number">0</span></span>
                         </div>
+
+                        <div class="tweet-info">
+                            <span class="nj-user-vote-count">他的投票数: <span class="vote-number">0</span></span>
+                        </div>
+
                         <div class="tweet-action">
                             <button class="tweet-action-vote">0.01 eth投票</button>
                         </div>
                     </div>
                 </div>
-                <button>发布推文</button>
-                <button>投票推文</button>
+                <button class="tweetsPostedByNjUser" onclick="loadPostedTweetsOfNjUsr()">他发布推文</button>
+                <button class="tweetsVotedNjUser" onclick="loadVotedTweetsOfNjUsr()">他投票推文</button>
                 <div id="nj-user-posted-tweets" class="tweets-park"></div>
                 <div id="nj-user-vote-tweets" class="tweets-park"></div>
             </div>

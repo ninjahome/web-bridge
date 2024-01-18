@@ -36,6 +36,7 @@ var (
 		"/buyFromShare":             {mainPage, true},
 		"/tweetQuery":               {globalTweetQuery, true},
 		"/votedTweetIds":            {votedTweetsQuery, true},
+		"/postedTweetIds":           {postedTweetsQuery, true},
 		"/removeUnpaidTweet":        {removeUnpaidTweet, true},
 		"/mostVotedTweet":           {mostVotedTweet, true},
 		"/mostVotedKol":             {mostVotedKol, true},

@@ -114,30 +114,6 @@ function hideHoverCard(obj) {
     }, 300);
 }
 
-async function showUserProfile(njUser) {
-    console.log(njUser);
-    const detail = document.querySelector('#nj-user-profile');
-    detail.style.display = 'block';
-    let parentNode;
-    document.querySelectorAll('.content-in-middle-area').forEach(c => {
-        if (c.classList.contains('active')) {
-            parentNode = c;
-        }
-        c.classList.remove('active')
-    });
-
-    detail.querySelector(".back-button").onclick = function () {
-        if (parentNode) {
-            parentNode.classList.add('active');
-        }
-        detail.style.display = 'none';
-    }
-
-    detail.querySelector(".web3id").textContent = njUser.eth_addr;
-    const header = detail.querySelector(".tweet-header")
-    await __setOnlyHeader(header, njUser.tw_id);
-}
-
 function cachedToMem(tweetArray, cacheObj) {
     tweetArray.map(tweet => {
         __globalTweetMemCache.set(tweet.create_time, tweet);
@@ -288,6 +264,11 @@ async function __updateVoteNumberForTweet(tweetObj, newVote) {
     }
 
     tweetCard = document.getElementById("tweet-card-for-home-" + tweetObj.create_time)
+    if (tweetCard) {
+        tweetCard.querySelector('.vote-number').textContent = tweetObj.vote_count;
+    }
+
+    tweetCard = document.getElementById("tweet-card-for-njusr-vote-" + tweetObj.create_time)
     if (tweetCard) {
         tweetCard.querySelector('.vote-number').textContent = tweetObj.vote_count;
     }

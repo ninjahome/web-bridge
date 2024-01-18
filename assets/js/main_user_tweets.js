@@ -103,7 +103,7 @@ async function loadTweetsUserVoted() {
     const detail = document.querySelector('#tweet-detail');
     detail.style.display = 'none';
 
-    await __loadTweetIDsUserVoted(true);
+    await __loadTweetIDsUserVoted(true, ninjaUserObj.eth_addr, cachedUserVotedTweets, cachedVoteStatusForUser, fillUserVotedTweetsList);
 }
 
 async function olderVotedTweets() {
@@ -112,45 +112,44 @@ async function olderVotedTweets() {
         console.log("no need to load older data");
         return;
     }
-    return __loadTweetIDsUserVoted(false);
+    return __loadTweetIDsUserVoted(false, ninjaUserObj.eth_addr, cachedUserVotedTweets, cachedVoteStatusForUser, fillUserVotedTweetsList);
 }
 
 const cachedUserVotedTweets = new MemCachedTweets();
 const cachedVoteStatusForUser = new Map()
 
-async function __loadTweetIDsUserVoted(newest) {
+async function __loadTweetIDsUserVoted(newest, web3ID, cache, voteStatusCache, callback) {
 
-    const param = new TweetQueryParam(0, ninjaUserObj.eth_addr, []);
+    const param = new TweetQueryParam(0, web3ID, []);
     if (!newest) {
-        param.start_id = cachedUserVotedTweets.latestID;
+        param.start_id = cache.latestID;
     }
-
     const resp = await PostToSrvByJson("/votedTweetIds", param);
     if (!resp) {
         return;
     }
-    console.log(resp);
+    // console.log(resp);
     let status = JSON.parse(resp);
     if (status.length === 0) {
         if (!newest) {
-            cachedUserVotedTweets.moreOldTweets = false;
+            cache.moreOldTweets = false;
         }
         return;
     }
 
     const currentIds = [];
     status.forEach(obj => {
-            cachedVoteStatusForUser.set(obj.create_time, obj.vote_count);
+            voteStatusCache.set(obj.create_time, obj.vote_count);
             currentIds.push(obj.create_time);
         }
     );
-    console.log(currentIds)
+    // console.log(currentIds)
 
     const paramForDetail = new TweetQueryParam(0, "", currentIds);
-    const needUpdateUI = await TweetsQuery(paramForDetail, newest, cachedUserVotedTweets);
-    if (needUpdateUI) {
-        await fillUserVotedTweetsList(newest);
-        cachedUserVotedTweets.CachedItem = [];
+    const needUpdateUI = await TweetsQuery(paramForDetail, newest, cache);
+    cache.CachedItem = [];
+    if (needUpdateUI && callback) {
+        await callback(newest);
     }
 }
 
@@ -168,3 +167,75 @@ async function fillUserVotedTweetsList(clear) {
         });
 }
 
+async function showUserProfile(njUser) {
+    console.log(njUser);
+    currentNinjaUsrLoading = njUser;
+    const detail = document.getElementById('nj-user-profile');
+    detail.style.display = 'block';
+    let parentNode;
+    document.querySelectorAll('.content-in-middle-area').forEach(c => {
+        if (c.classList.contains('active')) {
+            parentNode = c;
+        }
+        c.classList.remove('active')
+    });
+
+    detail.querySelector(".back-button").onclick = function () {
+        if (parentNode) {
+            parentNode.classList.add('active');
+        }
+        detail.style.display = 'none';
+    }
+
+    detail.querySelector(".web3id").textContent = njUser.eth_addr;
+    const header = detail.querySelector(".tweet-header")
+    await __setOnlyHeader(header, njUser.tw_id);
+}
+
+
+function loadPostedTweetsOfNjUsr() {
+    curScrollContentID = 51;
+
+    const postedDiv = document.getElementById('nj-user-posted-tweets');
+    postedDiv.style.display = 'block';
+
+    const votedDiv = document.getElementById('nj-user-vote-tweets');
+    votedDiv.style.display = 'none';
+}
+
+const cachedNinjaUserVotedTweets = new MemCachedTweets();
+const cachedNinjaVoteStatusForUser = new Map()
+let currentNinjaUsrLoading = null
+
+async function olderNinjaUsrVotedTweets() {
+    await __loadTweetIDsUserVoted(false, currentNinjaUsrLoading.eth_addr,
+        cachedNinjaUserVotedTweets, cachedNinjaVoteStatusForUser, fillNinjaUserVotedTweetsList);
+}
+
+async function loadVotedTweetsOfNjUsr() {
+    curScrollContentID = 52;
+    const postedDiv = document.getElementById('nj-user-posted-tweets');
+    postedDiv.style.display = 'none';
+
+    const votedDiv = document.getElementById('nj-user-vote-tweets');
+    votedDiv.style.display = 'block';
+
+    await __loadTweetIDsUserVoted(true, currentNinjaUsrLoading.eth_addr,
+        cachedNinjaUserVotedTweets, cachedNinjaVoteStatusForUser, fillNinjaUserVotedTweetsList);
+}
+
+
+async function fillNinjaUserVotedTweetsList(clear) {
+    return __fillNormalTweet(clear, 'nj-user-posted-tweets',
+        cachedNinjaUserVotedTweets.CachedItem,
+        'tweetTemplateForNjUsrProfile', "tweet-card-for-njusr-vote-", false,
+        function (tweetCard, tweetHeader, tweet) {
+            tweetCard.querySelector('.total-vote-count').textContent = tweet.vote_count;
+
+            const userVoteCounter = tweetCard.querySelector('.user-vote-number');
+            userVoteCounter.textContent = cachedVoteStatusForUser.get(tweet.create_time) ?? 0;
+
+            tweetCard.dataset.detailType = '5';
+            __showVoteButton(tweetCard, tweet);
+        });
+}
