@@ -79,8 +79,8 @@ const TXStatus = Object.freeze({
 });
 
 const TweetDetailSource = Object.freeze({
-    HomePage: '1', MyPosted: '2', MyVoted: '3', MostVoted: '4',
-    MostTeam: '5', UserVoted: '6', UserPosted: '7'
+    NoNeed:'0', HomePage: '1',  MyVoted: '2', MostVoted: '3',
+    MostTeam: '4',
 });
 
 class TweetQueryParam {

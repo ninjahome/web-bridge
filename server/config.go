@@ -166,10 +166,16 @@ func InitConf(c *SysConf) {
 	_globalCfg.imgFont = f
 }
 
+const (
+	NjTweetID = "NjTID"
+	SharedID  = "sharedID"
+	SharedUsr = "shareUsr"
+)
+
 func (c *SysConf) GetNjProtocolAd(NjTwID int64) string {
-	return fmt.Sprintf("\n%s:%s/buyRights?id=%d", c.Slogan, c.UrlHome, NjTwID)
+	return fmt.Sprintf("\n%s:%s/buyRights?"+NjTweetID+"=%d", c.Slogan, c.UrlHome, NjTwID)
 }
 
 func (c *SysConf) GetNjVoteAd(NjTwID int64, voteCount int, web3Id string) string {
-	return fmt.Sprintf("\n%s [%d] bets:%s/buyFromShare?sharedID=%d&&shareUsr=%s", c.VoteSlogan, voteCount, c.UrlHome, NjTwID, web3Id)
+	return fmt.Sprintf("\n%s [%d] bets:%s/buyFromShare?"+SharedID+"=%d&&"+SharedUsr+"=%s", c.VoteSlogan, voteCount, c.UrlHome, NjTwID, web3Id)
 }

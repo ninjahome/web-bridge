@@ -206,41 +206,35 @@ function quitFromService() {
     })
 }
 
-async function showTweetDetail(parentName) {
+async function showTweetDetail(parentEleID, tweet, detailType) {
     const detail = document.querySelector('#tweet-detail');
     detail.style.display = 'block';
 
-    const tweetCard = this.closest(parentName);
-    tweetCard.parentNode.style.display = 'none';
-
-    const create_time = Number(tweetCard.dataset.createTime);
-    const detailType = Number(tweetCard.dataset.detailType);
-
-    const obj = __globalTweetMemCache.get(create_time)
-    if (!obj) {
-        showDialog(DLevel.Error, "can't find tweet obj");
+    const parentNode = document.getElementById(parentEleID);
+    if (!parentNode){
         return;
     }
+    parentNode.style.display = 'none';
 
-    detail.querySelector('.tweetCreateTime').textContent = formatTime(obj.create_time);
-    await __setOnlyHeader(detail, obj.twitter_id);
+    detail.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
+    await __setOnlyHeader(detail, tweet.twitter_id);
 
-    detail.querySelector('.tweet-text').textContent = obj.text;
-    detail.querySelector('#tweet-prefixed-hash').textContent = obj.prefixed_hash;
+    detail.querySelector('.tweet-text').textContent = tweet.text;
+    detail.querySelector('#tweet-prefixed-hash').textContent = tweet.prefixed_hash;
     detail.querySelector('.back-button').onclick = () => {
-        tweetCard.parentNode.style.display = 'block';
+        parentNode.style.display = 'block';
         detail.style.display = 'none';
     }
 
     const counter = detail.querySelector('.vote-number');
-    counter.textContent = obj.vote_count;
-    __showVoteButton(detail, obj, function (newVote) {
+    counter.textContent = tweet.vote_count;
+    __showVoteButton(detail, tweet, function (newVote) {
         counter.textContent = newVote.vote_count;
     });
 
     const statusElem = detail.querySelector('.tweetPaymentStatus');
-    statusElem.textContent = TXStatus.Str(obj.payment_status);
-    if (detailType !== 3 && obj.payment_status !== TXStatus.NoPay) {
+    statusElem.textContent = TXStatus.Str(tweet.payment_status);
+    if (detailType !== 3 && tweet.payment_status !== TXStatus.NoPay) {
         detail.querySelector('.tweetRemoveUnPaid').style.display = 'none';
     }
 }
@@ -357,4 +351,12 @@ async function withdrawAction(contract) {
     } catch (err) {
         checkMetamaskErr(err);
     }
+}
+
+async function showTargetTweetDetail() {
+    if (!targetTweet) {
+        return;
+    }
+
+    await showTweetDetail('tweets-park', targetTweet, TweetDetailSource.HomePage)
 }

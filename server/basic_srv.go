@@ -137,12 +137,40 @@ func showKolKeyPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUs
 }
 
 func mainPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	var tweetId = r.URL.Query().Get(NjTweetID)
+	var shareID = r.URL.Query().Get(SharedID)
+	var shareUsr = r.URL.Query().Get(SharedUsr)
+
+	util.LogInst().Debug().Str("share-id", shareID).
+		Str("share-user", shareUsr).
+		Str("tweet-id", tweetId).Msg("main page param")
+
+	if len(tweetId) == 0 {
+		tweetId = shareID
+	}
+	var tweet *database.NinjaTweet
+	if len(tweetId) > 0 {
+		createAt, err := strconv.ParseInt(tweetId, 10, 60)
+		if err != nil {
+			util.LogInst().Err(err).Str("tweet-id", tweetId).Msg("invalid tweet id")
+		} else {
+			tweet, err = database.DbInst().NjTweetDetails(createAt)
+			if err != nil {
+				util.LogInst().Err(err).Str("tweet-id", tweetId).Msg("failed to load the tweet")
+			}
+		}
+	}
 
 	data := struct {
 		NinjaUsrInfoJson template.JS
+		TargetTweet      string
 	}{
 		NinjaUsrInfoJson: template.JS(nu.RawData()),
 	}
+	if tweet != nil {
+		data.TargetTweet = tweet.String()
+	}
+
 	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "main.html", data)
 	if err != nil {
 		util.LogInst().Err(err).Msg("main html failed")

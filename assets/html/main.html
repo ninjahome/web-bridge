@@ -787,7 +787,7 @@
             <span class="username twitterUserName"></span>
             <span class="time tweetCreateTime"></span>
         </div>
-        <div onclick="showTweetDetail.call(this,'.tweet-card')" class="tweet-content tweet-content-collapsed">
+        <div class="tweet-content tweet-content-collapsed">
         </div>
         <button class="show-more" data-more="true" onclick="showFullTweetContent.call(this)">更多</button>
     </div>
@@ -1136,6 +1136,8 @@
 <script>
 
     const ninjaUserObj = {{ .NinjaUsrInfoJson }};
+    const targetTweet = {{.TargetTweet}};
+
     let curScrollContentID = 0;
 
     document.addEventListener("DOMContentLoaded", initMainPage);
@@ -1157,6 +1159,7 @@
         initNjBasic();
         await checkMetaMaskEnvironment(initBlockChainContract);
         await loadTweetsForHomePage();
+        await showTargetTweetDetail();
     }
 
     function menuOnClicked(curMenuId) {

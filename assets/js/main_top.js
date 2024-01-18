@@ -170,10 +170,11 @@ async function initTopPage() {
 }
 
 async function fillMostVotedTweet(clear, tweetArray) {
+
     return __fillNormalTweet(clear, "top-most-voted-tweet", tweetArray,
         "tweetTemplateForTop", "tweet-card-for-most-voted-",
-        true, function (tweetCard, tweetHeader, tweet) {
-            tweetCard.dataset.detailType = TweetDetailSource.MostVoted;
+        true,TweetDetailSource.MostVoted,
+        function (tweetCard, tweetHeader, tweet) {
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
             __showVoteButton(tweetCard, tweet);
         });

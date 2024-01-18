@@ -84,11 +84,12 @@ async function removeUnPaidTweets(createTime) {
 
 async function fillUserPostedTweetsList(clear) {
 
-    return __fillNormalTweet(clear, 'tweets-post-by-user', cachedUserTweets.CachedItem,
+    return __fillNormalTweet(clear, 'tweets-post-by-user',
+        cachedUserTweets.CachedItem,
         'tweetTemplateForUserSelf', "tweet-card-for-user-", false,
-        function (tweetCard, tweetHeader, tweet) {
-            tweetCard.dataset.detailType = TweetDetailSource.MyPosted;
+        TweetDetailSource.NoNeed,function (tweetCard, tweetHeader, tweet) {
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
+            tweetCard.querySelector('.tweet-content').style.cursor = "default";
             __checkPayment(tweetCard, tweet);
         });
 }
@@ -157,13 +158,15 @@ async function __loadTweetIDsUserVoted(newest, web3ID, cache, voteStatusCache, c
 async function fillUserVotedTweetsList(clear) {
     return __fillNormalTweet(clear, 'tweets-voted-by-user',
         cachedUserVotedTweets.CachedItem,
-        'tweetTemplateForVoted', "tweet-card-for-vote-", true,
+        'tweetTemplateForVoted',
+        "tweet-card-for-vote-",
+        true,  TweetDetailSource.MyVoted,
         function (tweetCard, tweetHeader, tweet) {
+
             tweetCard.querySelector('.total-vote-number').textContent = tweet.vote_count;
             const userVoteCounter = tweetCard.querySelector('.user-vote-number');
 
             userVoteCounter.textContent = cachedVoteStatusForUser.get(tweet.create_time) ?? 0;
-            tweetCard.dataset.detailType = TweetDetailSource.MyVoted;
             __showVoteButton(tweetCard, tweet);
         });
 }
@@ -219,14 +222,13 @@ async function fillNinjaUserPostedTweetsList(clear) {
     return __fillNormalTweet(clear, 'nj-user-posted-tweets',
         cachedNinjaUserPostedTweets.CachedItem,
         'tweetTemplateForNjUsrProfile', "tweet-card-for-njusr-post-", false,
+        TweetDetailSource.NoNeed,
         function (tweetCard, tweetHeader, tweet) {
             tweetCard.querySelector('.total-vote-count').textContent = tweet.vote_count;
 
-            tweetCard.querySelector('.tweet-content').onclick = null;
             tweetCard.querySelector('.tweet-content').style.cursor = "default";
 
             tweetCard.querySelector('.vote-count').style.display = 'none';
-            tweetCard.dataset.detailType = TweetDetailSource.UserPosted;
             __showVoteButton(tweetCard, tweet);
         });
 }
@@ -256,15 +258,18 @@ async function loadVotedTweetsOfNjUsr() {
 async function fillNinjaUserVotedTweetsList(clear) {
     return __fillNormalTweet(clear, 'nj-user-vote-tweets',
         cachedNinjaUserVotedTweets.CachedItem,
-        'tweetTemplateForNjUsrProfile', "tweet-card-for-njusr-vote-", false,
+        'tweetTemplateForNjUsrProfile',
+        "tweet-card-for-njusr-vote-",
+        false,
+        TweetDetailSource.NoNeed,
         function (tweetCard, tweetHeader, tweet) {
+
             tweetCard.querySelector('.total-vote-count').textContent = tweet.vote_count;
-            tweetCard.querySelector('.tweet-content').onclick = null;
             tweetCard.querySelector('.tweet-content').style.cursor = "default";
+
             const userVoteCounter = tweetCard.querySelector('.nj-user-vote-count');
             userVoteCounter.textContent = cachedNinjaVoteStatusForUser.get(tweet.create_time) ?? 0;
 
-            tweetCard.dataset.detailType = TweetDetailSource.UserVoted;
             __showVoteButton(tweetCard, tweet);
         });
 }
