@@ -16,11 +16,13 @@
     <script src="/assets/js/main_operate_area.js"></script>
 
     <style about="frame div">
+
         .d-radius {
             border-radius: 9999px;
         }
 
         .container {
+            font-family: DIN, "Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
             display: flex; /* 启用flex布局 */
             height: 100vh; /* 容器高度设置为视窗高度 */
             width: 80%;
@@ -37,20 +39,19 @@
         .middle-content-area {
             flex: 3; /* 中间主要内容区域占据剩余空间的两部分 */
             background-color: #fff; /* 背景色，可根据需要调整 */
-            padding: 10px; /* 内边距 */
-            border-left: 1px solid #ddd; /* 左边框线 */
-            border-right: 1px solid #ddd; /* 右边框线 */
+            border-right: 1px solid #F7F8F9; /* 右边框线 */
         }
 
         .right-operation-area {
             flex: 1; /* 右边操作区域占据剩余空间的一部分 */
-            background-color: transparent;/* 背景色，可根据需要调整 */
+            background-color: transparent; /* 背景色，可根据需要调整 */
             padding: 10px; /* 内边距 */
         }
 
         .menu-list-left-area {
             list-style: none;
             padding: 0;
+            border-right: 1px solid #F7F8F9; /* 右边框线 */
         }
 
         .menu-icon {
@@ -104,7 +105,7 @@
         .tweet-header {
             display: inline-block;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .tweet-header img {
@@ -115,6 +116,7 @@
         }
 
         .tweet-header .name {
+            font-size: 18px;
             font-weight: bold;
         }
 
@@ -125,24 +127,50 @@
 
         .tweet-footer {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
+            margin-top: 16px;
         }
 
         .tweet-footer .tweet-action {
             display: flex;
             align-items: center;
+            white-space: nowrap;
+        }
+
+        .tweet-action button {
+            display: flex;
+            align-items: center;
+            /* 其他必要的样式 */
+        }
+
+        .tweet-action-vote img {
+            width: 22px;
+            height: auto;
+        }
+
+
+        .vote-count {
+            white-space: nowrap;
+            font-size: 14px;
+            color: #898989;
+        }
+        .vote-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #4848D8;
         }
     </style>
     <style about="tweet card">
+
         .tweet-card {
+            display: flex;
             min-height: 100px;
             max-height: 400px;
             overflow: hidden;
-            border: 1px solid #ccc;
-            padding: 15px;
-            margin-bottom: 20px;
-            background-color: #f9f9f9;
+            background-color: #fff;
+            border-bottom: 1px solid #F7F8F9;
+            padding: 16px;
             transition: max-height 0.3s ease;
         }
 
@@ -150,36 +178,46 @@
             font-style: italic;
         }
 
+        .twitterAvatar {
+            width: 48px;
+            margin-right: 8px;
+        }
+
         .tweet-action-vote {
-            background-color: #4CAF50;
+            background-color: #4848D8;
             color: white;
-            padding: 6px 12px;
-            margin: 4px 2px;
+            padding: 10px 24px;
+            margin-left: 8px;
             border: none;
-            border-radius: 4px;
+            border-radius: 999px;
             cursor: pointer;
             transition: background-color 0.3s;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .tweet-action-vote span {
+            font-weight: lighter;
         }
 
         .tweet-action-vote:hover {
-            background-color: #45a049;
+            background-color: #3333BE;
         }
 
         .show-more {
-            background-color: #4CAF50;
-            color: white;
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
+            color: #4848D8;
             cursor: pointer;
-            transition: background-color 0.3s;
-            text-align: center;
-            display: block;
-            margin: 10px auto;
+            margin: 0 0 0 4px;
+            font-size: 14px;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            border: none;
+            padding: 0.5em;
         }
 
         .show-more:hover {
-            background-color: #45a049;
+            color: #3333BE;
+
         }
 
         .tweet-content {
@@ -196,6 +234,20 @@
             display: -webkit-box;
             -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
+            font-size: 16px;
+            line-height: 1.5;
+            font-weight: normal;
+            color: #1B1B1D;
+            max-height: 8em;
+            position: relative;
+        }
+
+        .tweet-content {
+            /* 设置一个基本高度，大约为文本行数的高度。 */
+            /* 例如，假设每行的高度约为1.6em，则5行的高度约为8em。 */
+            max-height: 8em;
+            overflow: hidden;
+            position: relative;
         }
 
         .tweetPaymentDelete {
@@ -696,7 +748,7 @@
         }
     </style>
     <style about="ninja user profile">
-        .nj-user-profile{
+        .nj-user-profile {
             display: none;
         }
 
@@ -710,20 +762,20 @@
              style="width: 40px;height: 40px;border-radius: 50%;cursor: pointer" alt="avatar">
         <ul class="menu-list-left-area">
             <li onclick="menuOnClicked.call(this,0)" class="menu-item-left-area active" data-content="middle-div-home">
-                <img src="/assets/file/path-to-home-icon.png" alt="Home" class="menu-icon" /> 主页
+                <img src="/assets/file/path-to-home-icon.png" alt="Home" class="menu-icon"/> 主页
             </li>
             <li onclick="menuOnClicked.call(this,1)" class="menu-item-left-area" data-content="middle-div-leaderboard">
-                <img src="/assets/file/path-to-leaderboard-icon.png" alt="Home" class="menu-icon" /> 排行榜
+                <img src="/assets/file/path-to-leaderboard-icon.png" alt="Home" class="menu-icon"/> 排行榜
             </li>
 
             <li onclick="menuOnClicked.call(this,2)" class="menu-item-left-area" data-content="middle-div-user-tweets">
-                <img src="/assets/file/path-to-twitter-icon.png" alt="Home" class="menu-icon" /> 推文
+                <img src="/assets/file/path-to-twitter-icon.png" alt="Home" class="menu-icon"/> 推文
             </li>
             <li onclick="menuOnClicked.call(this,3)" class="menu-item-left-area" data-content="middle-div-about-user">
-                <img src="/assets/file/path-to-user-icon.png" alt="Home" class="menu-icon" /> 我的
+                <img src="/assets/file/path-to-user-icon.png" alt="Home" class="menu-icon"/> 我的
             </li>
             <li onclick="openKolKeyMainPage()" class="menu-item-left-area" data-content="middle-div-userKolKey">
-                <img src="/assets/file/path-to-keys-icon.png" alt="Home" class="menu-icon" /> Keys
+                <img src="/assets/file/path-to-keys-icon.png" alt="Home" class="menu-icon"/> Keys
             </li>
         </ul>
         <button class="show-post-tweet-div d-radius" onclick="showPostTweetDiv()">发推</button>
@@ -751,7 +803,39 @@
                     </div>
                 </div>
             </div>
-            <div class="tweets-park" id="tweets-park"></div>
+            <div class="tweets-park" id="tweets-park">
+                <div class="tweet-card">
+                    <div>
+                        <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar"><!-- 更改位置 -->
+                    </div>
+                    <div>
+                        <div class="tweet-header">
+                            <div style="margin-top: 2px">
+                                <span class="name twitterName">wesely</span>
+                                <span class="username twitterUserName">@wesley777</span>
+                            </div>
+                            <span class="time tweetCreateTime" style="font-size: 12px; color: #898989">2024-01-18</span>
+                        </div>
+                        <div onclick="showTweetDetail.call(this,'.tweet-card')"
+                             class="tweet-content tweet-content-collapsed">
+                            本地人吃切仔面，是数十年地吃下来。熟铺公休，附近再挑一间即可。众店之中，最老的近百年，年轻一点的，也有三十好几。质素皆颇可以，各有强项。面有粗细之差，汤有清浊之别，有切肉甜的，或内脏特别嫩的。面店可以当作家庭吃饭的延伸，食材一点也不显赫，调味简净得近乎原始，然而经过仔细的处置。通常价格还非常廉宜。
+                            因此约人去吃切仔面，意思近乎于，家里随便坐坐，吃个便饭。如今人们在社群媒体上，轻易积累数百上千位朋友，不小心就信以为真。实则心里一筛，即知误会。能随便一起吃碗面的对象，百千之中，实没有几位。
+                            长年吃面，同伴有消有长，儿时是整个家族一起去，长大后，一个人去得多。如今加上眼前这位男子，就有两人。两人吃切仔面，总是比一个人好。此说非是基于感性，是讲实情。世上许多面都适合独食，但说到切仔面，人数愈伙，就愈好吃。
+                            从前我家吃面，偌大阵仗，一家三代数辆车同行。外公是白手起家的商人，模样清瘦，聪明有神。外公饮食挑剔，比如他每年夏天，酿一年份的荔枝酒和蛇酒，仅供自酌。比如他吃粥，粒米不进，只喝顶层的米汤，闽南语说“泔”(ám)。因此家里熬粥，米落得多，才能熬足泔，供外公晨起喝上两碗。用潮流话讲，外公很不好搞。外公晚年跌坏了脚，此后只能短程走路，因此外公想吃面，晚辈们速去驾车，一家人浩浩荡荡陪着他去。
+                            <span class="show-more" data-more="true" onclick="showFullTweetContent.call(this)">更多</span>  <!-- 更改了位置 -->
+                        </div>
+                        <div class="tweet-footer">
+                            <div class="tweet-info">
+                                <span class="vote-count">投票数: <span class="vote-number">0</span></span>
+                            </div>
+                            <div class="tweet-action">
+                                <button class="tweet-action-vote"><img src="/assets/file/tweet-action-vote-eth.png" style="width: 22px;height: auto" alt=""/><span style="font-weight: lighter">0.01eth</span> 投票</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
         <div id="middle-div-leaderboard" class="content-in-middle-area">
             <div class="topic-switch">
