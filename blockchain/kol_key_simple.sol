@@ -24,6 +24,7 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPoolI {
 
     uint8 public kolIncomeRatePerKeyBuy = 90;
     uint8 public serviceFeeRatePerKeyBuy = 10;
+    uint256 public maxKeyNoForKol = 100;
 
     mapping(address => KeySettings) public KeySettingsRecord;
     mapping(address => mapping(address => KolKey)) keyBalance;
@@ -86,6 +87,12 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPoolI {
         require(newRate >= 0 && newRate <= 100, "invalid rate");
         serviceFeeRatePerKeyBuy = newRate;
         emit SystemSet(newRate, "kol_key_fee_rate_changed");
+    }
+
+    function adminSetMaxKolKeyNo(uint256 keyNo) public isOwner {
+        require(maxKeyNoForKol != keyNo, "no need to change");
+        maxKeyNoForKol = keyNo;
+        emit SystemSet(keyNo, "kol_key_max_no_changed");
     }
 
     /********************************************************************************
@@ -164,6 +171,10 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPoolI {
         require(ks.nonce >= 1 && ks.price > __minValCheck, "key not open");
         uint256 amount = ks.price * keyNo;
         require(msg.value == amount, "price of kol's key has changed");
+        require(
+            maxKeyNoForKol >= ks.totalNo + keyNo,
+            "more than key limitation"
+        );
 
         ks.totalNo += keyNo;
 
