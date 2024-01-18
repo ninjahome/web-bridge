@@ -147,18 +147,6 @@ func votedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 		Msg(" query voted  tweet success")
 }
 
-func postedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
-	var para database.TweetQueryParm
-	var err = util.ReadRequest(r, &para)
-	if err != nil {
-		util.LogInst().Err(err).Str("param", para.String()).
-			Msg("invalid query parameter")
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-}
-
 func removeUnpaidTweet(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 
 	var status TweetPaymentStatus
