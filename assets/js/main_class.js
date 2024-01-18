@@ -9,7 +9,7 @@ class TweetContentToPost {
     }
 }
 
-class MemCachedTweets{
+class MemCachedTweets {
     constructor() {
         this.latestID = 0;
         this.moreOldTweets = true;
@@ -17,12 +17,13 @@ class MemCachedTweets{
         this.CachedItem = [];
     }
 
-    canLoadMoreOldData(){
+    canLoadMoreOldData() {
         return this.moreOldTweets && !this.isLoading
     }
 }
 
 const dbKeyCachedVoteContractMeta = "__db_key_cached_vote_contract_meta__"
+
 class TweetVoteContractSetting {
     constructor(postPrice, votePrice, votePriceInEth, maxVote, pluginAddr, pluginStop, kolRate, feeRate) {
         this.postPrice = postPrice;
@@ -50,7 +51,7 @@ class TweetVoteContractSetting {
 }
 
 class GameBasicInfo {
-    constructor(curRound, totalBonus,ticketNo,curBonus, teamNo, dTime) {
+    constructor(curRound, totalBonus, ticketNo, curBonus, teamNo, dTime) {
         this.curRound = curRound;
         this.totalBonus = totalBonus;
         this.ticketNo = ticketNo;
@@ -77,8 +78,13 @@ const TXStatus = Object.freeze({
     }
 });
 
-class TweetQueryParam{
-    constructor(startID,web3ID,voted,hashList) {
+const TweetDetailSource = Object.freeze({
+    HomePage: '1', MyPosted: '2', MyVoted: '3', MostVoted: '4',
+    MostTeam: '5', UserVoted: '6', UserPosted: '7'
+});
+
+class TweetQueryParam {
+    constructor(startID, web3ID, voted, hashList) {
         this.start_id = startID;
         this.web3_id = web3ID;
         this.voted_ids = voted;
@@ -86,10 +92,10 @@ class TweetQueryParam{
     }
 }
 
-class TeamDetailOnBlockChain{
-    constructor(tweetHash, memCount,voteCount) {
-        this.tweetHash=tweetHash;
-        this.memCount=memCount;
-        this.voteCount=voteCount;
+class TeamDetailOnBlockChain {
+    constructor(tweetHash, memCount, voteCount) {
+        this.tweetHash = tweetHash;
+        this.memCount = memCount;
+        this.voteCount = voteCount;
     }
 }

@@ -71,7 +71,7 @@ async function fulfillTopTeam(cachedTopTeam) {
             team_card.dataset.createTime = tweet.create_time;
 
         }
-        team_card.dataset.detailType = '5';
+        team_card.dataset.detailType = TweetDetailSource.MostTeam;
 
         team_card.querySelector('.team-voted-count').innerText = teamDetails.voteCount;
         team_card.querySelector('.team-members-count').innerText = teamDetails.memCount;
@@ -173,7 +173,7 @@ async function fillMostVotedTweet(clear, tweetArray) {
     return __fillNormalTweet(clear, "top-most-voted-tweet", tweetArray,
         "tweetTemplateForTop", "tweet-card-for-most-voted-",
         true, function (tweetCard, tweetHeader, tweet) {
-            tweetCard.dataset.detailType = '4';
+            tweetCard.dataset.detailType = TweetDetailSource.MostVoted;
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
             __showVoteButton(tweetCard, tweet);
         });

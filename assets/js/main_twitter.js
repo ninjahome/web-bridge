@@ -103,7 +103,7 @@ async function fillTweetParkAtHomePage(clear) {
     return __fillNormalTweet(clear, 'tweets-park',
         cachedGlobalTweets.CachedItem, 'tweetTemplateForHomePage',
         "tweet-card-for-home-", true, function (tweetCard, tweetHeader, tweet) {
-            tweetCard.dataset.detailType = '1';
+            tweetCard.dataset.detailType = TweetDetailSource.HomePage;
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
             __showVoteButton(tweetCard, tweet);
         });

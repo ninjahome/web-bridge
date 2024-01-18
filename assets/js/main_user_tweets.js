@@ -87,7 +87,7 @@ async function fillUserPostedTweetsList(clear) {
     return __fillNormalTweet(clear, 'tweets-post-by-user', cachedUserTweets.CachedItem,
         'tweetTemplateForUserSelf', "tweet-card-for-user-", false,
         function (tweetCard, tweetHeader, tweet) {
-            tweetCard.dataset.detailType = '2';
+            tweetCard.dataset.detailType = TweetDetailSource.MyPosted;
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
             __checkPayment(tweetCard, tweet);
         });
@@ -163,7 +163,7 @@ async function fillUserVotedTweetsList(clear) {
             const userVoteCounter = tweetCard.querySelector('.user-vote-number');
 
             userVoteCounter.textContent = cachedVoteStatusForUser.get(tweet.create_time) ?? 0;
-            tweetCard.dataset.detailType = '3';
+            tweetCard.dataset.detailType = TweetDetailSource.MyVoted;
             __showVoteButton(tweetCard, tweet);
         });
 }
@@ -226,7 +226,7 @@ async function fillNinjaUserPostedTweetsList(clear) {
             tweetCard.querySelector('.tweet-content').style.cursor = "default";
 
             tweetCard.querySelector('.vote-count').style.display = 'none';
-            tweetCard.dataset.detailType = '6';
+            tweetCard.dataset.detailType = TweetDetailSource.UserPosted;
             __showVoteButton(tweetCard, tweet);
         });
 }
@@ -264,7 +264,7 @@ async function fillNinjaUserVotedTweetsList(clear) {
             const userVoteCounter = tweetCard.querySelector('.nj-user-vote-count');
             userVoteCounter.textContent = cachedNinjaVoteStatusForUser.get(tweet.create_time) ?? 0;
 
-            tweetCard.dataset.detailType = '5';
+            tweetCard.dataset.detailType = TweetDetailSource.UserVoted;
             __showVoteButton(tweetCard, tweet);
         });
 }
