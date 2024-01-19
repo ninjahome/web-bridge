@@ -191,6 +191,7 @@
             margin-top: 12px;
             padding-top: 12px;
         }
+
         .tickets-detail {
             border-collapse: separate;
             border-spacing: 24px 12px; /* Horizontal spacing is 12px, vertical spacing is 0 */
@@ -494,7 +495,6 @@
                 </tbody>
             </table>
         </div>
-
         <div class="user-team" style="display: none">
             <table class="team-detail">
                 <thead>
@@ -512,45 +512,46 @@
                 </tr>
                 </tbody>
             </table>
-            <div class="team-detail-for-one" style="display: none" >
-                <div class="team-detail-for-one-header" >
-                    人数:<span id="team-detail-for-one-memNo" style="font-size: 20px;font-weight: bolder;color: #4848D8; margin: 0 6px" ></span>
-                    票数:<span id="team-detail-for-one-tickNo" style="font-size: 20px;font-weight: bolder;color: #DE4033; margin: 0 6px"></span>
+            <div class="team-detail-for-one" style="display: none">
+                <div class="team-detail-for-one-header">
+                    人数:<span id="team-detail-for-one-memNo"
+                               style="font-size: 20px;font-weight: bolder;color: #4848D8; margin: 0 6px"></span>
+                    票数:<span id="team-detail-for-one-tickNo"
+                               style="font-size: 20px;font-weight: bolder;color: #DE4033; margin: 0 6px"></span>
                     <button class="rule-info-btn" onclick="hideOneTeamDetails()">隐藏</button>
                 </div>
-                    <table class="team-detail">
-                        <thead>
-                        <tr>
-                            <th>队员</th>
-                            <th>票数</th>
-                        </tr>
-                        </thead>
-                        <tbody id="team-detail-for-one-body">
-                        <tr style="display: none">
-                            <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
-                            <td>0</td>
-                        </tr>
-                        </tbody>
-                    </table>
+                <table class="team-detail">
+                    <thead>
+                    <tr>
+                        <th>队员</th>
+                        <th>票数</th>
+                    </tr>
+                    </thead>
+                    <tbody id="team-detail-for-one-body">
+                    <tr style="display: none">
+                        <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                        <td>0</td>
+                    </tr>
+                    </tbody>
+                </table>
 
             </div>
-
         </div>
 
-
-        <div class="winning-history" style="display: none">
+        <div class="winning-history" id="winning-history-template" style="display: none">
             <ul style="color: #7E7F82">
                 <li>金额: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00 ETH</span>
                 </li>
                 <li>期数: <span class="one-round-discover-val"
                                 style="color: #1B1B1D; font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
                 </li>
-                <li>类型: <span class="team-id-txt"
+                <li>类型: <span class="team-id-txt type"
                                 style="color: #1B1B1D; font-size: 16px; font-weight: bold">个人</span></li>
-                <li>个人彩票/团队ID: <span class="team-id-txt" style="color: #1B1B1D; font-size: 16px">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
+                <li>独立彩票/团队ID: <span class="team-id-txt" style="color: #1B1B1D; font-size: 16px">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
                 </li>
             </ul>
         </div>
+        <div class="winner-history-list"></div>
 
     </div>
     <div class="game-section">
@@ -562,11 +563,13 @@
             </div>
             <div class="round-time-betting">
                 <p style="font-size: 14px">开奖时间:
-                    <span class="round-discover-time-val" id="prize-pool-discover-time" style="font-size: 14px; font-weight: bolder;color: #DE4033; margin-right: 6px">2天2小时24分</span>
+                    <span class="round-discover-time-val" id="prize-pool-discover-time"
+                          style="font-size: 14px; font-weight: bolder;color: #DE4033; margin-right: 6px">2天2小时24分</span>
                 </p>
                 <div style="display: flex;flex-direction: column; align-items: flex-start; margin-top: 14px">
                     <button class="betting-btn" onclick="buyTicket()">投注</button>
-                    <span style="font-size: 14px; font-weight: lighter; color: #898989">(<span class="ticket-price-for-outer-user"> 0.00 </span> eth/票)</span>
+                    <span style="font-size: 14px; font-weight: lighter; color: #898989">(<span
+                                class="ticket-price-for-outer-user"> 0.00 </span> eth/票)</span>
                 </div>
             </div>
         </div>
@@ -591,7 +594,8 @@
             </div>
         </div>
         <div class="game-rules" style="border-bottom: 1px solid #E8E8E8">
-            <div class="game-rules-open" style="display: flex; justify-content: space-between; align-items: center;cursor: pointer"
+            <div class="game-rules-open"
+                 style="display: flex; justify-content: space-between; align-items: center;cursor: pointer"
                  onclick="showGameRule('.rule-info')">
                 <p>游戏规则</p>
                 <button class="game-rule-btn"><img src="/assets/file/rules-info-icon.png"></button>
@@ -607,7 +611,8 @@
 
         </div>
         <div class="game-algorithm">
-            <div class="game-algorithm-open" style="display: flex; justify-content: space-between; align-items: center;cursor: pointer"
+            <div class="game-algorithm-open"
+                 style="display: flex; justify-content: space-between; align-items: center;cursor: pointer"
                  onclick="showGameRule('.game-algorithm-info')">
                 <p>彩票算法</p>
                 <button class="game-algorithm-btn"><img src="/assets/file/rules-info-icon.png" alt=" "></button>
@@ -622,8 +627,9 @@
                     <li>5.比对成功后随机选择中奖者web3ID</li>
                 </ul>
                 <ul class="algorithm-detail" style="color: #7E7F82">
-                    <li >算法:
-                        <span class="algorithm-title" style="color: #DE4033; font-size: 16px; font-weight: bold ;background-color: #F1F2F3; border: 1px dashed #D3D5D6;padding: 6px;margin: 6px 0; border-radius: 12px">(中奖者地址)</span>
+                    <li>算法:
+                        <span class="algorithm-title"
+                              style="color: #DE4033; font-size: 16px; font-weight: bold ;background-color: #F1F2F3; border: 1px dashed #D3D5D6;padding: 6px;margin: 6px 0; border-radius: 12px">(中奖者地址)</span>
                     </li>
                     <li style="background-color: #F1F2F3; border: 1px dashed #D3D5D6;padding: 6px;margin: 6px 0; border-radius: 12px">
                         <span class="algorithm-description" style="color: #4848D8; font-size: 16px; font-weight: bold">购买地址列表[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数].</span>

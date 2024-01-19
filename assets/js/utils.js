@@ -63,6 +63,7 @@ function PostToSrvByJson(url, data) {
                 resolve(data);
             })
             .catch(error => {
+                console.log(error);
                 reject(error);
             });
     });
@@ -555,3 +556,4 @@ function checkMetamaskErr(err) {
 }
 
 const __noTeamID = '0x0000000000000000000000000000000000000000000000000000000000000000';
+const __noTeamTxt = '独立购买';
