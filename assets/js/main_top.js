@@ -61,7 +61,7 @@ async function fulfillTopTeam(cachedTopTeam) {
         if (!tweet) {
             const newTweet = await __queryTweetFoTeam(tweetHeader, teamDetails.tweetHash);
             if (!newTweet) {
-                return;
+                continue;
             }
             await __setOnlyHeader(tweetHeader, newTweet.twitter_id);
             team_card.dataset.createTime = newTweet.create_time;
