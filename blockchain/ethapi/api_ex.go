@@ -1,11 +1,11 @@
 package ethapi
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
 	"strings"
 )
@@ -35,12 +35,12 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) GameInfoRecordEx(opts *bind.Cal
 		return construct, err
 	}
 
-	construct.RandomHash = hex.EncodeToString((*abi.ConvertType(out[0], new([32]byte)).(*[32]byte))[:])
+	construct.RandomHash = hexutil.Encode((*abi.ConvertType(out[0], new([32]byte)).(*[32]byte))[:])
 	construct.DiscoverTime = (*abi.ConvertType(out[1], new(*big.Int)).(**big.Int)).Int64()
 	construct.Winner = (*abi.ConvertType(out[2], new(common.Address)).(*common.Address)).Hex()
 	construct.Winner = strings.ToLower(construct.Winner)
 
-	construct.WinTeam = hex.EncodeToString((*abi.ConvertType(out[3], new([32]byte)).(*[32]byte))[:])
+	construct.WinTeam = hexutil.Encode((*abi.ConvertType(out[3], new([32]byte)).(*[32]byte))[:])
 	construct.WinTicketID = (*abi.ConvertType(out[4], new(*big.Int)).(**big.Int)).Int64()
 	construct.RandomVal = (*abi.ConvertType(out[6], new(*big.Int)).(**big.Int)).String()
 
@@ -69,10 +69,10 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) HistoryRoundInfoEx(opts *bind.C
 	for _, round := range out0 {
 
 		var construct = new(GamInfoOnChain)
-		construct.RandomHash = hex.EncodeToString(round.RandomHash[:])
+		construct.RandomHash = hexutil.Encode(round.RandomHash[:])
 		construct.DiscoverTime = round.DiscoverTime.Int64()
 		construct.Winner = strings.ToLower(round.Winner.Hex())
-		construct.WinTeam = hex.EncodeToString(round.WinTeam[:])
+		construct.WinTeam = hexutil.Encode(round.WinTeam[:])
 		construct.WinTicketID = round.WinTicketID.Int64()
 		construct.RandomVal = round.RandomVal.String()
 

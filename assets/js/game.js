@@ -465,10 +465,12 @@ function showUserWinHistory() {
             winnerCard.querySelector('.one-round-bonus-val').textContent = obj.bonus + ' ETH';
             winnerCard.querySelector('.one-round-discover-val').textContent = formatTime(obj.discover_time);
 
+
             if (obj.win_team === __noTeamID) {
                 winnerCard.querySelector('.team-id-txt.type').textContent = __noTeamTxt;
+                winnerCard.querySelector('.team-id-txt.id').textContent = '';
             } else {
-                winnerCard.querySelector('.team-id-txt').textContent = obj.win_team;
+                winnerCard.querySelector('.team-id-txt.id').textContent = obj.win_team;
                 winnerCard.querySelector('.team-id-txt.type').textContent = '团队';
             }
 
