@@ -202,7 +202,7 @@ func (gs *GameService) performGameCheck() (*big.Int, bool) {
 		util.LogInst().Info().Msg("game checking:waiting for transaction packaging")
 		return nil, false
 	}
-	var curNo = big.NewInt(0)
+	var curNo = big.NewInt(-1)
 	nextTime, err := gs.gameTimeOn(curNo)
 	if err != nil {
 		util.LogInst().Err(err).Msg("check game status failed")
@@ -281,7 +281,7 @@ func (gs *GameService) gameInfoByRoundNo(cli *ethclient.Client, roundNo *big.Int
 		return nil, err
 	}
 
-	if roundNo == nil {
+	if roundNo.Int64() < 0 {
 		roundNo, err = game.CurrentRoundNo(nil)
 		if err != nil {
 			util.LogInst().Err(err).Str("contract-address", gs.conf.GameContract).Msg("failed to fetch current round no from blockchain")
