@@ -12,7 +12,7 @@ import (
 
 const (
 	sesKeyForRightCheck = "session-key-right-checking"
-	BuyRightsUrlKey     = "twOwner"
+	BuyRightsUrlKey     = "tweet-info-from-outer-link"
 )
 
 type SignDataByEth struct {
@@ -136,14 +136,63 @@ func showKolKeyPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUs
 	}
 }
 
+type OuterLinkParam struct {
+	TweetID  string `json:"tweet_id,omitempty"`
+	ShareID  string `json:"share_id,omitempty"`
+	ShareUsr string `json:"share_usr,omitempty"`
+}
+
+func (p *OuterLinkParam) Data() []byte {
+	bts, _ := json.Marshal(p)
+	return bts
+}
+func (p *OuterLinkParam) GetValidId() string {
+	if len(p.TweetID) > 0 {
+		return p.TweetID
+	}
+	return p.ShareID
+}
+
 func mainPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+
+	var param OuterLinkParam
+	sData, err := SMInst().Get(BuyRightsUrlKey, r)
+	if sData != nil {
+		util.LogInst().Debug().Msg(string(sData.([]byte)))
+		err = json.Unmarshal(sData.([]byte), &param)
+		if err != nil {
+			util.LogInst().Err(err).Msg("parse outer link param failed")
+		}
+		SMInst().Del(BuyRightsUrlKey, r, w)
+	}
+
+	var tweetId = param.GetValidId()
+	var tweet *database.NinjaTweet
+	if len(tweetId) > 0 {
+		createAt, err := strconv.ParseInt(tweetId, 10, 60)
+		if err != nil {
+			util.LogInst().Err(err).Str("tweet-id", tweetId).Msg("invalid tweet id")
+		} else {
+			tweet, err = database.DbInst().NjTweetDetails(createAt)
+			if err != nil {
+				util.LogInst().Err(err).Str("tweet-id", tweetId).Msg("failed to load the tweet")
+			}
+		}
+	}
 
 	data := struct {
 		NinjaUsrInfoJson template.JS
+		TargetTweet      template.JS
 	}{
 		NinjaUsrInfoJson: template.JS(nu.RawData()),
 	}
-	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "main.html", data)
+	if tweet != nil {
+		data.TargetTweet = template.JS(tweet.String())
+	} else {
+		data.TargetTweet = template.JS("{}")
+	}
+
+	err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "main.html", data)
 	if err != nil {
 		util.LogInst().Err(err).Msg("main html failed")
 		http.Redirect(w, r, "/signIn", http.StatusFound)
