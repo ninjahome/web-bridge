@@ -766,6 +766,23 @@
         }
 
     </style>
+    <style about="tweet details">
+        .tweet-detail-info{
+            display: flex;
+            margin-top: 20px;
+            flex-direction: column;
+        }
+        .tweet-info {
+            margin-bottom: 8px; /* 添加一些底部间距，使行与行之间有些距离 */
+        }
+        .tweet-signature {
+            display: block; /* 确保它是块级元素 */
+            word-wrap: break-word; /* 允许在单词内断行 */
+            max-width: 450px; /* 限制最大宽度，您可以根据需要调整这个值 */
+            height: 80px; /* 设置一个固定的高度以容纳三行文本 */
+            overflow: hidden; /* 隐藏超出部分 */
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -1001,28 +1018,15 @@
 
             <div class="tweet-text"></div>
 
-            <div class="tweet-interaction">
-
-                <div class="tweet-info">
-                    <span class="vote-count">投票数: <span class="vote-number">0</span></span>
-                    Payment Status: <span class="tweetPaymentStatus"></span>
-                    <div class="tweet-prefixed-hash">
-                        <span class="vote-count">推文Hash:<span id="tweet-prefixed-hash"></span></span>
-                    </div>
-                </div>
-
-                <div class="tweet-action">
-                    <button class="tweet-action-vote">
-                        <img src="/assets/file/tweet-action-vote-eth.png"
-                             style="width: 22px;height: auto" alt=""/>
-                        <span style="font-weight: lighter">
-                            <span class="tweet-action-vote-val">0.01</span> eth</span> 投票
-                    </button>
-                    <button class="tweetPaymentRetry" id="tweetPaymentRetryInDetail">继续支付</button>
-                    <button class="tweetRemoveUnPaid" id="tweetRemoveUnPaidInDetail">删除</button>
-                </div>
-
+            <div class="tweet-detail-info">
+                <span class="tweet-info">创建时间:<span class="tweet-create_time"></span></span>
+                <span class="tweet-info">作者Web3 ID:<span class="tweet-web3_id"></span></span>
+                <span class="tweet-info">推文Hash:<span class="tweet-prefixed-hash"></span></span>
+                <span class="tweet-info">推文数字签名:<span class="tweet-signature"></span></span>
+                <span class="tweet-info">支付状态: <span class="tweet-payment_status">0</span></span>
+                <span class="tweet-info">投票数: <span class="tweet-vote-number">0</span></span>
             </div>
+
         </div>
         <div id="nj-user-profile" class="nj-user-profile">
             <button id="back-button" class="back-button">返回</button>

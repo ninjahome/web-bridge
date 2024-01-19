@@ -515,7 +515,6 @@ async function addChain(chainId) {
     }
 }
 
-
 let confirmCallback = null;
 
 function openVoteModal(callback) {

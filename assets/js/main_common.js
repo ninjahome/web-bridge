@@ -215,23 +215,16 @@ async function showTweetDetail(parentEleID, tweet, detailType) {
     await __setOnlyHeader(detail, tweet.twitter_id);
 
     detail.querySelector('.tweet-text').textContent = tweet.text;
-    detail.querySelector('#tweet-prefixed-hash').textContent = tweet.prefixed_hash;
     detail.querySelector('.back-button').onclick = () => {
         parentNode.style.display = 'block';
         detail.style.display = 'none';
     }
-
-    const counter = detail.querySelector('.vote-number');
-    counter.textContent = tweet.vote_count;
-    __showVoteButton(detail, tweet, function (newVote) {
-        counter.textContent = newVote.vote_count;
-    });
-
-    const statusElem = detail.querySelector('.tweetPaymentStatus');
-    statusElem.textContent = TXStatus.Str(tweet.payment_status);
-    if (detailType !== 3 && tweet.payment_status !== TXStatus.NoPay) {
-        detail.querySelector('.tweetRemoveUnPaid').style.display = 'none';
-    }
+    detail.querySelector('.tweet-create_time') .textContent = formatTime(tweet.create_time);
+    detail.querySelector('.tweet-web3_id') .textContent = tweet.web3_id;
+    detail.querySelector('.tweet-prefixed-hash').textContent = tweet.prefixed_hash;
+    detail.querySelector('.tweet-signature') .textContent = tweet.signature;
+    detail.querySelector('.tweet-payment_status') .textContent = TXStatus.Str(tweet.payment_status);
+    detail.querySelector('.tweet-vote-number') .textContent = tweet.vote_count;
 }
 
 function __showVoteButton(tweetCard, tweet, callback) {
