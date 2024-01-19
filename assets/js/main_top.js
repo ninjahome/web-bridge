@@ -56,22 +56,23 @@ async function fulfillTopTeam(cachedTopTeam) {
         team_card.id = "team-header=" + teamDetails.tweetHash;
 
         team_card.querySelector('.team-id-txt').innerText = teamDetails.tweetHash;
-
-        const tweet = __globalTweetMemCacheByHash.get(teamDetails.tweetHash);
+        let tweet = __globalTweetMemCacheByHash.get(teamDetails.tweetHash);
         if (!tweet) {
-            const newTweet = await __queryTweetFoTeam(tweetHeader, teamDetails.tweetHash);
-            if (!newTweet) {
+            tweet = await __queryTweetFoTeam(tweetHeader, teamDetails.tweetHash);
+            if (!tweet) {
                 continue;
             }
-            await __setOnlyHeader(tweetHeader, newTweet.twitter_id);
-            team_card.dataset.createTime = newTweet.create_time;
+            await __setOnlyHeader(tweetHeader, tweet.twitter_id);
+            team_card.dataset.createTime = tweet.create_time;
 
         } else {
             await __setOnlyHeader(tweetHeader, tweet.twitter_id);
             team_card.dataset.createTime = tweet.create_time;
 
         }
-        team_card.dataset.detailType = TweetDetailSource.MostTeam;
+
+        team_card.querySelector('.team-id-txt').onclick= ()=>
+            showTweetDetail('top-hot-tweet-team',tweet, TweetDetailSource.MostTeam);
 
         team_card.querySelector('.team-voted-count').innerText = teamDetails.voteCount;
         team_card.querySelector('.team-members-count').innerText = teamDetails.memCount;
