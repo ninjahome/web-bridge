@@ -63,7 +63,7 @@ async function procPaymentForPostedTweet(tweet, callback) {
     }
 
     try {
-        showWaiting("paying for tweet post");
+        showWaiting("paying for tweet");
 
         const txResponse = await tweetVoteContract.publishTweet(
             tweet.prefixed_hash,

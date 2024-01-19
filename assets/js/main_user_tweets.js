@@ -41,17 +41,19 @@ function __checkPayment(tweetCard, tweet) {
     }
 
     const retryButton = tweetCard.querySelector('.tweetPaymentRetry');
+    const deleteButton = tweetCard.querySelector('.tweetPaymentDelete');
+
     retryButton.classList.add('show');
     retryButton.onclick = () => procPaymentForPostedTweet(tweet, function (newObj) {
         updatePaymentStatusToSrv(newObj).then();
         __globalTweetMemCache.set(newObj.create_time, newObj);
         if (newObj.payment_status !== TXStatus.NoPay) {
             retryButton.classList.remove('show');
+            deleteButton.classList.remove('show');
             statusElem.textContent = TXStatus.Str(newObj.payment_status);
         }
     });
 
-    const deleteButton = tweetCard.querySelector('.tweetPaymentDelete');
     deleteButton.classList.add('show');
     deleteButton.onclick = () => removeUnPaidTweets(tweet.create_time).then(r => {
         if (!r) {

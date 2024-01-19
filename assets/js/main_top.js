@@ -283,7 +283,7 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
 
         if (!usr.tw_id) {
             njUsrCard.querySelector(".twitterAvatar").src = __defaultLogo;
-            njUsrCard.querySelector(".twitterName").innerText = usr.eth_addr;
+            njUsrCard.querySelector(".twitterName").innerText = '未绑定@' + usr.eth_addr;
         } else {
             await __setOnlyHeader(njUsrCard, usr.tw_id);
         }
