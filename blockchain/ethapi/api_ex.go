@@ -2,6 +2,7 @@ package ethapi
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -10,13 +11,19 @@ import (
 )
 
 type GamInfoOnChain struct {
-	RandomHash   string  `json:"random_hash"  firestore:"random_hash"`
-	DiscoverTime int64   `json:"discover_time"  firestore:"discover_time"`
-	Winner       string  `json:"winner"  firestore:"winner"`
-	WinTeam      string  `json:"win_team"  firestore:"win_team"`
-	WinTicketID  int64   `json:"win_ticket_id"  firestore:"win_ticket_id"`
-	Bonus        float64 `json:"bonus"  firestore:"bonus"`
-	RandomVal    string  `json:"random_val"  firestore:"random_val"`
+	RoundNo      *big.Int `json:"_"  firestore:"_"`
+	RandomHash   string   `json:"random_hash"  firestore:"random_hash"`
+	DiscoverTime int64    `json:"discover_time"  firestore:"discover_time"`
+	Winner       string   `json:"winner"  firestore:"winner"`
+	WinTeam      string   `json:"win_team"  firestore:"win_team"`
+	WinTicketID  int64    `json:"win_ticket_id"  firestore:"win_ticket_id"`
+	Bonus        float64  `json:"bonus"  firestore:"bonus"`
+	RandomVal    string   `json:"random_val"  firestore:"random_val"`
+}
+
+func (c *GamInfoOnChain) String() string {
+	bts, _ := json.Marshal(c)
+	return string(bts)
 }
 
 func (_TweetLotteryGame *TweetLotteryGameCaller) GameInfoRecordEx(opts *bind.CallOpts, arg0 *big.Int) (*GamInfoOnChain, error) {

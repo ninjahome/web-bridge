@@ -202,21 +202,20 @@ func (gs *GameService) performGameCheck() (*big.Int, bool) {
 		util.LogInst().Info().Msg("game checking:waiting for transaction packaging")
 		return nil, false
 	}
-	var curNo = big.NewInt(-1)
-	nextTime, err := gs.gameTimeOn(curNo)
+	gameInfo, err := gs.gameTimeOn()
 	if err != nil {
 		util.LogInst().Err(err).Msg("check game status failed")
 		return nil, false
 	}
 
-	ti := time.Now().Add(time.Duration(gs.conf.GameTimeInMinute) * time.Minute)
-	if ti.Sub(*nextTime) <= 0 {
-		util.LogInst().Debug().Str("current-round", curNo.String()).
-			Str("next-time", nextTime.String()).Msg("time is not on")
-		return curNo, false
+	ti := time.Now().Add(time.Duration(gs.conf.GameTimeInMinute) * time.Minute).Unix()
+	if ti < gameInfo.DiscoverTime {
+		util.LogInst().Debug().Str("current-round", gameInfo.RoundNo.String()).
+			Int64("next-time", gameInfo.DiscoverTime).Msg("time is not on")
+		return gameInfo.RoundNo, false
 	}
-	util.LogInst().Info().Str("round-no", curNo.String()).Msg("start to find winner")
-	return curNo, true
+	util.LogInst().Info().Str("round-no", gameInfo.RoundNo.String()).Msg("start to find winner")
+	return gameInfo.RoundNo, true
 }
 
 func (gs *GameService) Server() {
@@ -272,35 +271,8 @@ func (gs *GameService) Server() {
 		}
 	}
 }
-func (gs *GameService) gameInfoByRoundNo(cli *ethclient.Client, roundNo *big.Int) (*ethapi.GamInfoOnChain, error) {
 
-	contractAddress := common.HexToAddress(gs.conf.GameContract)
-	game, err := ethapi.NewTweetLotteryGame(contractAddress, cli)
-	if err != nil {
-		util.LogInst().Err(err).Str("contract-address", gs.conf.GameContract).Msg("failed create game obj")
-		return nil, err
-	}
-
-	if roundNo.Int64() < 0 {
-		roundNo, err = game.CurrentRoundNo(nil)
-		if err != nil {
-			util.LogInst().Err(err).Str("contract-address", gs.conf.GameContract).Msg("failed to fetch current round no from blockchain")
-			return nil, err
-		}
-		util.LogInst().Debug().Str("current-round", roundNo.String()).Msg("load current round")
-	}
-
-	result, err := game.GameInfoRecordEx(nil, roundNo)
-	if err != nil {
-		util.LogInst().Err(err).Str("current-round", roundNo.String()).
-			Msg("failed to fetch game info of current round")
-		return nil, err
-	}
-
-	return result, nil
-}
-
-func (gs *GameService) gameTimeOn(roundNo *big.Int) (*time.Time, error) {
+func (gs *GameService) getContractObj() (*ethapi.TweetLotteryGame, error) {
 	cli, err := ethclient.Dial(gs.conf.InfuraUrl)
 	if err != nil {
 		util.LogInst().Err(err).Msg("dial eth failed")
@@ -308,18 +280,37 @@ func (gs *GameService) gameTimeOn(roundNo *big.Int) (*time.Time, error) {
 	}
 
 	defer cli.Close()
-	result, err := gs.gameInfoByRoundNo(cli, roundNo)
+
+	contractAddress := common.HexToAddress(gs.conf.GameContract)
+	game, err := ethapi.NewTweetLotteryGame(contractAddress, cli)
 	if err != nil {
-		util.LogInst().Err(err).Msg("failed to load game info from block chain")
+		util.LogInst().Err(err).Str("contract-address", gs.conf.GameContract).Msg("failed create game obj")
+		return nil, err
+	}
+	return game, nil
+}
+
+func (gs *GameService) gameTimeOn() (*ethapi.GamInfoOnChain, error) {
+
+	game, err := gs.getContractObj()
+	if err != nil {
+		util.LogInst().Err(err).Msg("dial up to  block chain failed")
+		return nil, err
+	}
+	roundNo, err := game.CurrentRoundNo(nil)
+	if err != nil {
+		util.LogInst().Err(err).Msg("query current round no failed")
 		return nil, err
 	}
 
-	discoverTime := time.Unix(result.DiscoverTime, 0)
-	str := fmt.Sprintf("randmon hash:0x%x discover time:%s bonuse:%.3f eth",
-		result.RandomHash, discoverTime.String(), result.Bonus)
-
-	util.LogInst().Debug().Str("current-round", roundNo.String()).Msg(str)
-	return &discoverTime, nil
+	info, err := game.GameInfoRecordEx(nil, roundNo)
+	if err != nil {
+		util.LogInst().Err(err).Msg("query current game info failed")
+		return nil, err
+	}
+	info.RoundNo = roundNo
+	util.LogInst().Debug().Msg(info.String())
+	return info, nil
 }
 
 func (gs *GameService) getTxClient() (*ethclient.Client, *bind.TransactOpts, error) {
@@ -486,9 +477,16 @@ func (gs *GameService) saveGameHistoryData(no string) {
 		return
 	}
 	defer cli.Close()
-	result, err := gs.gameInfoByRoundNo(cli, roundNo)
+	game, err := gs.getContractObj()
 	if err != nil {
 		util.LogInst().Err(err).Str("round-no", roundNo.String()).Msg("failed to query game info of round")
+		return
+	}
+
+	result, err := game.GameInfoRecordEx(nil, roundNo)
+	if err != nil {
+		util.LogInst().Err(err).Str("current-round", roundNo.String()).
+			Msg("failed to fetch game info of current round")
 		return
 	}
 
