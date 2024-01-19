@@ -40,6 +40,7 @@ var (
 		"/mostVotedTweet":           {mostVotedTweet, true},
 		"/mostVotedKol":             {mostVotedKol, true},
 		"/queryTweetByHash":         {queryTweetByHash, true},
+		"/queryWinHistory":          {queryWinHistory, true},
 	}
 
 	cfgHtmlFileRouter = map[string]string{
@@ -48,6 +49,10 @@ var (
 	}
 
 	_globalCfg *SysConf
+)
+
+const (
+	DBTableGameResult = " lottery_%s_history"
 )
 
 type LogicAction struct {

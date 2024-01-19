@@ -323,3 +323,20 @@ func queryTwBasicByTweetHash(w http.ResponseWriter, r *http.Request, _ *database
 	w.WriteHeader(http.StatusOK)
 	w.Write(twObj.RawData())
 }
+
+func queryWinHistory(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	var table = fmt.Sprintf(DBTableGameResult, _globalCfg.GameContract)
+	var data, err = database.DbInst().QueryGameWinner(table, nu.EthAddr)
+	if err != nil {
+		util.LogInst().Err(err).Str("web3-id", nu.EthAddr).
+			Msg("failed to query game winner")
+
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	bts, _ := json.Marshal(data)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(bts)
+}

@@ -28,7 +28,6 @@ import (
 
 const (
 	DBTableGameRandom = "game_lottery_random"
-	DBTableGameResult = " lottery_%s_history"
 )
 const (
 	TxStatusInit = iota
@@ -37,7 +36,7 @@ const (
 )
 
 func gameResultTableName(contractAddr string) string {
-	return fmt.Sprintf(DBTableGameResult, contractAddr)
+	return fmt.Sprintf(server.DBTableGameResult, contractAddr)
 }
 
 func initConfig(filePath string) *server.SysConf {
@@ -493,8 +492,8 @@ func (gs *GameService) saveGameHistoryData(no string) {
 
 	var tableName = gameResultTableName(gs.conf.GameContract)
 	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
-
 	defer cancel()
+
 	randomDoc := gs.fileCli.Collection(tableName).Doc(roundNo.String())
 	_, err = randomDoc.Set(opCtx, result)
 	if err != nil {

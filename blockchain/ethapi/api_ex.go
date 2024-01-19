@@ -6,6 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
+	"strings"
 )
 
 type GamInfoOnChain struct {
@@ -30,6 +31,8 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) GameInfoRecordEx(opts *bind.Cal
 	construct.RandomHash = hex.EncodeToString((*abi.ConvertType(out[0], new([32]byte)).(*[32]byte))[:])
 	construct.DiscoverTime = (*abi.ConvertType(out[1], new(*big.Int)).(**big.Int)).Int64()
 	construct.Winner = (*abi.ConvertType(out[2], new(common.Address)).(*common.Address)).Hex()
+	construct.Winner = strings.ToLower(construct.Winner)
+
 	construct.WinTeam = hex.EncodeToString((*abi.ConvertType(out[3], new([32]byte)).(*[32]byte))[:])
 	construct.WinTicketID = (*abi.ConvertType(out[4], new(*big.Int)).(**big.Int)).Int64()
 	construct.RandomVal = (*abi.ConvertType(out[6], new(*big.Int)).(**big.Int)).String()
@@ -61,7 +64,7 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) HistoryRoundInfoEx(opts *bind.C
 		var construct = new(GamInfoOnChain)
 		construct.RandomHash = hex.EncodeToString(round.RandomHash[:])
 		construct.DiscoverTime = round.DiscoverTime.Int64()
-		construct.Winner = round.Winner.Hex()
+		construct.Winner = strings.ToLower(round.Winner.Hex())
 		construct.WinTeam = hex.EncodeToString(round.WinTeam[:])
 		construct.WinTicketID = round.WinTicketID.Int64()
 		construct.RandomVal = round.RandomVal.String()
