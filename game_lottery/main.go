@@ -267,7 +267,6 @@ func (gs *GameService) Server() {
 			if err != nil {
 				util.LogInst().Err(err).Msg("update discover result failed")
 			}
-			go gs.saveGameHistoryData(result.RoundNo)
 		}
 	}
 }
@@ -432,7 +431,8 @@ func (gs *GameService) loadCurrentEncryptedRandom(no *big.Int) (*big.Int, error)
 func (gs *GameService) saveDiscoverInfo(no *big.Int, nextRandom GameRandomMeta) error {
 	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
 	defer cancel()
-	randomDoc := gs.fileCli.Collection(DBTableGameRandom).Doc(no.Add(no, big.NewInt(1)).String())
+	var docId = big.NewInt(0).Add(no, big.NewInt(1)).String()
+	randomDoc := gs.fileCli.Collection(DBTableGameRandom).Doc(docId)
 	_, err := randomDoc.Set(opCtx, nextRandom)
 	return err
 }
