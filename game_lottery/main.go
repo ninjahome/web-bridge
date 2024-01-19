@@ -202,7 +202,8 @@ func (gs *GameService) performGameCheck() (*big.Int, bool) {
 		util.LogInst().Info().Msg("game checking:waiting for transaction packaging")
 		return nil, false
 	}
-	curNo, nextTime, err := gs.gameTimeOn(nil)
+	var curNo = big.NewInt(0)
+	nextTime, err := gs.gameTimeOn(curNo)
 	if err != nil {
 		util.LogInst().Err(err).Msg("check game status failed")
 		return nil, false
@@ -214,7 +215,7 @@ func (gs *GameService) performGameCheck() (*big.Int, bool) {
 			Str("next-time", nextTime.String()).Msg("time is not on")
 		return curNo, false
 	}
-	util.LogInst().Info().Int64("round-no", curNo.Int64()).Msg("start to find winner")
+	util.LogInst().Info().Str("round-no", curNo.String()).Msg("start to find winner")
 	return curNo, true
 }
 
@@ -299,18 +300,18 @@ func (gs *GameService) gameInfoByRoundNo(cli *ethclient.Client, roundNo *big.Int
 	return result, nil
 }
 
-func (gs *GameService) gameTimeOn(roundNo *big.Int) (*big.Int, *time.Time, error) {
+func (gs *GameService) gameTimeOn(roundNo *big.Int) (*time.Time, error) {
 	cli, err := ethclient.Dial(gs.conf.InfuraUrl)
 	if err != nil {
 		util.LogInst().Err(err).Msg("dial eth failed")
-		return nil, nil, err
+		return nil, err
 	}
 
 	defer cli.Close()
 	result, err := gs.gameInfoByRoundNo(cli, roundNo)
 	if err != nil {
 		util.LogInst().Err(err).Msg("failed to load game info from block chain")
-		return nil, nil, err
+		return nil, err
 	}
 
 	discoverTime := time.Unix(result.DiscoverTime, 0)
@@ -318,7 +319,7 @@ func (gs *GameService) gameTimeOn(roundNo *big.Int) (*big.Int, *time.Time, error
 		result.RandomHash, discoverTime.String(), result.Bonus)
 
 	util.LogInst().Debug().Str("current-round", roundNo.String()).Msg(str)
-	return roundNo, &discoverTime, nil
+	return &discoverTime, nil
 }
 
 func (gs *GameService) getTxClient() (*ethclient.Client, *bind.TransactOpts, error) {
