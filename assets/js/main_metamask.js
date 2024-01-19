@@ -98,7 +98,7 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
     try {
         showWaiting("prepare to pay");
 
-        const amount = voteContractMeta.postPrice.mul(voteCount);
+        const amount = voteContractMeta.votePrice.mul(voteCount);
 
         const txResponse = await tweetVoteContract.voteToTweets(
             tweet.prefixed_hash,
@@ -135,7 +135,6 @@ async function reloadTweetBalance() {
     const b = await tweetVoteContract.balance(ninjaUserObj.eth_addr);
     document.getElementById("tweet-income-amount").innerText = ethers.utils.formatUnits(b, 'ether');
 }
-
 
 async function withdrawLotteryGameIncome() {
     showWaiting("prepare withdraw transaction");

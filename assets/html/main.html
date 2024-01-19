@@ -14,7 +14,6 @@
     <script src="/assets/js/main_user_tweets.js"></script>
     <script src="/assets/js/main_top.js"></script>
     <script src="/assets/js/main_operate_area.js"></script>
-
     <style about="frame div">
 
         .d-radius {
@@ -551,7 +550,6 @@
         .tweet-post-close-btn:hover {
             color: black; /* 悬停时颜色 */
         }
-
     </style>
     <style about="game-lottery">
         .lottery-round-info,
@@ -658,6 +656,7 @@
             padding: 16px;
             border-bottom: 1px solid #F7F8F9;
         }
+
         .middle-div-income-inner {
             display: flex;
             flex-direction: column;
@@ -730,16 +729,19 @@
             margin-bottom: 16px;
 
         }
+
         .about-ninja span {
             display: inline-block;
             margin: 2px 0;
         }
+
         .user-web3-id,
         .user-ninja-noun {
             font-size: 16px;
             font-weight: bolder;
             color: #1B1B1D;
         }
+
         .user-setting-action {
             display: flex;
             justify-content: flex-start;
@@ -790,7 +792,6 @@
         </ul>
         <button class="show-post-tweet-div d-radius" onclick="showPostTweetDiv()">发推</button>
     </div>
-
     <div id="tweet-header-template" style="display: none">
         <div class="tweet-first-half">
             <div>
@@ -810,7 +811,6 @@
         <span class="show-more" data-more="true"
               onclick="showFullTweetContent.call(this)">更多</span>
     </div>
-
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
             <div id="tweetTemplateForHomePage" class="tweet-card" style="display: none;">
@@ -829,7 +829,7 @@
                     </div>
                 </div>
             </div>
-            <div class="tweets-park" id="tweets-park">   </div>
+            <div class="tweets-park" id="tweets-park"></div>
         </div>
         <div id="middle-div-leaderboard" class="content-in-middle-area">
             <div class="topic-switch">
@@ -896,7 +896,6 @@
                 <button onclick="loadTweetsUserPosted()">我的推文</button>
                 <button onclick="loadTweetsUserVoted()">我的投票</button>
             </div>
-
             <div id="tweetTemplateForUserSelf" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
                     <div class="tweet-info">
@@ -909,9 +908,7 @@
                     </div>
                 </div>
             </div>
-
             <div id="tweets-post-by-user" class="tweets-park"></div>
-
             <div id="tweetTemplateForVoted" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
                     <div class="tweet-info">
@@ -935,24 +932,25 @@
                     <div class="income-header">推文收入</div>
                     <div class="income-body">
                         <div>
-                            <span>推文总数: <span class="tweet-no-has-income" id="tweet-no-has-income" style="font-size: 18px; font-weight: bold">0</span> 篇</span>
+                            <span>推文总数: <span class="tweet-no-has-income" id="tweet-no-has-income"
+                                                  style="font-size: 18px; font-weight: bold">0</span> 篇</span>
                             <br>
-                            <span>推文收入: <span class="income-val" id="tweet-income-amount" style="color: #4848D8;font-size: 22px; font-weight: bold">0.000</span> eth</span>
+                            <span>推文收入: <span class="income-val" id="tweet-income-amount"
+                                                  style="color: #4848D8;font-size: 22px; font-weight: bold">0.000</span> eth</span>
                         </div>
                         <button onclick="withdrawFromUserTweetIncome()" class="withdraw-btn">提现</button>
                     </div>
                 </div>
-
                 <div class="income-game-area">
                     <div class="income-header">游戏收入</div>
                     <div class="income-body ">
-                        <span>彩票收入: <span class="income-val" id="lottery-game-income" style="color: #DE4033;font-size: 22px; font-weight: bold" >0.000</span> eth</span>
+                        <span>彩票收入: <span class="income-val" id="lottery-game-income"
+                                              style="color: #DE4033;font-size: 22px; font-weight: bold">0.000</span> eth</span>
                         <button onclick="withdrawLotteryGameIncome()" class="withdraw-btn">提现</button>
                     </div>
                 </div>
-
                 <div class="income-kol-area">
-                    <div class="income-header" >Key收入</div>
+                    <div class="income-header">Key收入</div>
                     <div class="income-body">
                         <button onclick="openKolKeyMainPage()" class="withdraw-btn">key主页查看</button>
                     </div>
@@ -965,11 +963,13 @@
                     <div class="about-twitter">
                         <div style="display: flex;">
                             <span class="user-twitter-avatar"><img id="user-twitter-avatar" src="/assets/file/logo.png"
-                                                                                         alt="twitter-avatar"></span>
+                                                                   alt="twitter-avatar"></span>
                             <div>
-                                <span class="user-twitter-name name twitterName"><span id="user-setting-name">未绑定</span></span>
+                                <span class="user-twitter-name name twitterName"><span
+                                            id="user-setting-name">未绑定</span></span>
                                 <br>
-                                <span class="user-twitter-username username twitterUserName"><span id="user-setting-user-name">未绑定</span></span>
+                                <span class="user-twitter-username username twitterUserName"><span
+                                            id="user-setting-user-name">未绑定</span></span>
                             </div>
 
                         </div>
@@ -1101,7 +1101,6 @@
         </div>
     </div>
 </div>
-
 <div class="hover-card" id="hover-card" onmouseleave="hideHoverCard(this)">
     <img src="" alt="Avatar" id="hover-avatar" class="twitterAvatar">
     <div id="hover-name" class="name twitterName"></div>
@@ -1152,7 +1151,6 @@
             <span id="tweet-post-with-eth-btn-txt">发布推文</span></button>
     </div>
 </div>
-
 <script>
 
     const ninjaUserObj = {{ .NinjaUsrInfoJson }};

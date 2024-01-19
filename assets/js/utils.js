@@ -1,4 +1,4 @@
-const __defaultLogo = '/assets/file/logo';
+const __defaultLogo = '/assets/file/logo.png';
 
 function formatTime(createTime) {
     const date = new Date(createTime);
