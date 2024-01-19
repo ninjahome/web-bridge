@@ -411,7 +411,9 @@
             background-color: transparent;
             border: 1px solid rgb(221, 221, 222);
             font-size: 14px;
-            color: #7E7F82
+            color: #7E7F82;
+            cursor: pointer;
+            white-space: nowrap;
         }
 
         .confirm-btn {
@@ -648,93 +650,99 @@
     </style>
     <style about="about-user-div">
 
+        .income-tweet-area,
+        .income-game-area,
+        .income-kol-area,
+        .user-settings {
+            background-color: #ffffff;
+            padding: 16px;
+            border-bottom: 1px solid #F7F8F9;
+        }
         .middle-div-income-inner {
             display: flex;
             flex-direction: column;
-            gap: 20px;
         }
 
-        .middle-div-income-inner > div:nth-child(odd) {
-            background-color: #f2f2f2; /* 浅灰色 */
-        }
-
-        .middle-div-income-inner > div:nth-child(even) {
-            background-color: #e6e6e6; /* 深灰色 */
-        }
-
-        .income-header {
-            background-color: #d9d9d9; /* 灰色 */
-            color: #333; /* 深色文本 */
-            padding: 10px;
+        .income-header,
+        .user-area-tittle {
+            color: #1B1B1D; /* 深色文本 */
+            font-size: 24px;
             font-weight: bold;
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
+            margin-bottom: 12px;
         }
 
         .income-body {
             padding: 10px;
-            color: #666; /* 中度深色文本 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            white-space: nowrap;
         }
 
-        .income-val {
-            color: #ff4500; /* 鲜艳的橙色 */
-            font-weight: bold;
+        .income-body span {
+            color: #1B1B1D;
+            display: inline-block;
+            margin: 2px;
         }
 
-        .middle-div-income-inner button {
-            background-color: #1DA1F2; /* 推特蓝 */
-            color: white;
+        .withdraw-btn {
+            border-radius: 999px;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: normal;
+            padding: 8px 24px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            background-color: #4848D8;
+            flex-shrink: 0;
         }
 
         .middle-div-income-inner button:hover {
-            background-color: #0d8ed2; /* 深一点的推特蓝 */
+            background-color: #3333BE; /* 深一点的推特蓝 */
         }
 
         .user-area-tittle {
             color: #333; /* 深色文本 */
             font-weight: bold;
             padding: 5px 10px;
-            background-color: #d9d9d9; /* 灰色 */
             border-radius: 4px;
         }
 
-        /* 用户信息样式 */
-        .user-info {
-            padding: 10px;
-            background-color: #f2f2f2; /* 浅灰色 */
-            border-radius: 8px;
-        }
 
         /* Twitter 信息样式 */
         .about-twitter {
-            color: #666; /* 中度深色文本 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #7E7F82; /* 中度深色文本 */
             padding: 5px;
         }
 
         /* Web3 ID 和 积分信息样式 */
         .about-ninja {
-            color: #666; /* 中度深色文本 */
-            padding: 5px;
-        }
+            width: 100%;
+            background-color: #F1F2F3;
+            border: 1px dashed #D3D5D6;
+            border-radius: 16px;
+            padding: 8px; /* 添加一些内边距，使内容不紧贴边框 */
+            display: inline-block; /* 使背景色和边框只包裹内容 */
+            word-wrap: break-word; /* 在超出宽度时自动换行 */
+            margin-bottom: 16px;
 
-        /* 用户设置行动按钮样式 */
-        .user-setting-action button {
-            background-color: #4CAF50; /* 绿色 */
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
         }
-
-        .user-setting-action button:hover {
-            background-color: #45a049; /* 深绿色 */
+        .about-ninja span {
+            display: inline-block;
+            margin: 2px 0;
+        }
+        .user-web3-id,
+        .user-ninja-noun {
+            font-size: 16px;
+            font-weight: bolder;
+            color: #1B1B1D;
+        }
+        .user-setting-action {
+            display: flex;
+            justify-content: flex-start;
         }
 
         /* Twitter 头像和用户名样式 */
@@ -953,31 +961,32 @@
             </div>
             <div id="tweets-voted-by-user" class="tweets-park"></div>
         </div>
-        <div id="middle-div-about-user" class="content-in-middle-area">
+        <div id="middle-div-about-user" class="content-in-middle-area active">
             <div class="middle-div-income-inner">
                 <div class="income-tweet-area">
                     <div class="income-header">推文收入</div>
                     <div class="income-body">
-                        <span>推文总数: <span class="tweet-no-has-income" id="tweet-no-has-income">0</span> 篇</span>
-                        <div><span>推文收入: <span class="income-val" id="tweet-income-amount">0.000</span> eth</span>
-                            <button onclick="withdrawFromUserTweetIncome()">提现</button>
+                        <div>
+                            <span>推文总数: <span class="tweet-no-has-income" id="tweet-no-has-income" style="font-size: 18px; font-weight: bold">0</span> 篇</span>
+                            <br>
+                            <span>推文收入: <span class="income-val" id="tweet-income-amount" style="color: #4848D8;font-size: 22px; font-weight: bold">0.000</span> eth</span>
                         </div>
+                        <button onclick="withdrawFromUserTweetIncome()" class="withdraw-btn">提现</button>
                     </div>
                 </div>
 
                 <div class="income-game-area">
                     <div class="income-header">游戏收入</div>
-                    <div class="income-body">
-                        <div><span>彩票收入: <span class="income-val" id="lottery-game-income">0.000</span> eth</span>
-                            <button onclick="withdrawLotteryGameIncome()">提现</button>
-                        </div>
+                    <div class="income-body ">
+                        <span>彩票收入: <span class="income-val" id="lottery-game-income" style="color: #DE4033;font-size: 22px; font-weight: bold" >0.000</span> eth</span>
+                        <button onclick="withdrawLotteryGameIncome()" class="withdraw-btn">提现</button>
                     </div>
                 </div>
 
                 <div class="income-kol-area">
-                    <div class="income-header">Key收入</div>
+                    <div class="income-header" >Key收入</div>
                     <div class="income-body">
-                        <button onclick="openKolKeyMainPage()">key主页查看</button>
+                        <button onclick="openKolKeyMainPage()" class="withdraw-btn">key主页查看</button>
                     </div>
                 </div>
             </div>
@@ -986,21 +995,28 @@
 
                 <div class="user-info">
                     <div class="about-twitter">
-                        <span class="user-twitter-avatar"><img id="user-twitter-avatar" src="/assets/file/logo.png"
-                                                               alt="twitter-avatar"></span>
-                        <span class="user-twitter-name"><span id="user-setting-name">未绑定</span></span>
-                        <span class="user-twitter-username"><span id="user-setting-user-name">未绑定</span></span>
-                        <button onclick="refreshTwitterInfo()">同步推特</button>
+                        <div style="display: flex;">
+                            <span class="user-twitter-avatar"><img id="user-twitter-avatar" src="/assets/file/logo.png"
+                                                                                         alt="twitter-avatar"></span>
+                            <div>
+                                <span class="user-twitter-name name twitterName"><span id="user-setting-name">未绑定</span></span>
+                                <br>
+                                <span class="user-twitter-username username twitterUserName"><span id="user-setting-user-name">未绑定</span></span>
+                            </div>
+
+                        </div>
+                        <button onclick="refreshTwitterInfo()" class="withdraw-btn">同步推特</button>
                     </div>
                     <div class="about-ninja">
                         <span>Web3 ID:<span id="basic-web3-id" class="user-web3-id">0x123...</span></span>
+                        <br>
                         <span>积分:<span id="dessage-web3-token" class="user-ninja-noun">0.00 </span>dsg</span>
                     </div>
                 </div>
 
                 <div class="user-setting-action">
-                    <button onclick="quitFromService()">退出</button>
-                    <button onclick="clearCachedData()">清空缓存</button>
+                    <button onclick="quitFromService()" class="cancel-btn">退出</button>
+                    <button onclick="clearCachedData()" class="cancel-btn">清空缓存</button>
                 </div>
 
             </div>
