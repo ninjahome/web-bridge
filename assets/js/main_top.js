@@ -157,7 +157,7 @@ async function __queryTweetFoTeam(tweetHeader, tweetHash) {
         }
 
         const text = await response.text();
-        const obj = TwitterBasicInfo.cacheTwBasicInfo(text);
+        const obj = JSON.parse(text);
         __globalTweetMemCacheByHash.set(tweetHash, obj);
         __globalTweetMemCache.set(obj.create_time, obj);
         return obj;
