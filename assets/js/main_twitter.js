@@ -150,13 +150,8 @@ async function postTweetWithPayment() {
             return;
         }
         showWaiting("posting to twitter");
-        const resp = await PostToSrvByJson("/postTweet", tweetObj);
-        if (!resp) {
-            hideLoading();
-            showDialog(DLevel.Error, "post tweet failed");
-            return;
-        }
-        const basicTweet = JSON.parse(resp);
+        const basicTweet = await PostToSrvByJson("/postTweet", tweetObj);
+
         hideLoading();
         await procPaymentForPostedTweet(basicTweet);
 

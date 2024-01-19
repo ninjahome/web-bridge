@@ -180,14 +180,7 @@ async function __loadMostVotedTweets(newest) {
     }
 
     const param = new TweetQueryParam(cachedTopVotedTweets.latestID, "", []);
-    const resp = await PostToSrvByJson("/mostVotedTweet", param);
-    if (!resp) {
-        if (!newest) {
-            cachedTopVotedTweets.moreOldTweets = false;
-        }
-        return;
-    }
-    const tweetArray = JSON.parse(resp);
+    const tweetArray = await PostToSrvByJson("/mostVotedTweet", param);
     if (tweetArray.length === 0) {
         if (!newest) {
             cachedTopVotedTweets.moreOldTweets = false;
@@ -223,12 +216,7 @@ async function __loadMostVotedKolUserInfo(parkID, cache, newest, voter) {
     if (voter) (
         param.voted_ids.push(1)
     )
-    const resp = await PostToSrvByJson("/mostVotedKol", param);
-    if (!resp) {
-        return;
-    }
-
-    const userArray = JSON.parse(resp);
+    const userArray = await PostToSrvByJson("/mostVotedKol", param);
     if (userArray.length === 0) {
         if (!newest) {
             cache.moreOldTweets = false;

@@ -286,6 +286,7 @@ func (gs *GameService) gameInfoByRoundNo(cli *ethclient.Client, roundNo *big.Int
 			util.LogInst().Err(err).Str("contract-address", gs.conf.GameContract).Msg("failed to fetch current round no from blockchain")
 			return nil, err
 		}
+		util.LogInst().Debug().Str("current-round", roundNo.String()).Msg("load current round")
 	}
 
 	result, err := game.GameInfoRecordEx(nil, roundNo)

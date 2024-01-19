@@ -71,9 +71,6 @@ async function removeUnPaidTweets(createTime) {
     try {
         const resp = await PostToSrvByJson("/removeUnpaidTweet",
             {create_time: createTime, status: TXStatus.NoPay});
-        if (!resp) {
-            return false;
-        }
 
         console.log(resp);
         __globalTweetMemCache.delete(createTime);
@@ -127,12 +124,7 @@ async function __loadTweetIDsUserVoted(newest, web3ID, cache, voteStatusCache, c
     if (!newest) {
         param.start_id = cache.latestID;
     }
-    const resp = await PostToSrvByJson("/votedTweetIds", param);
-    if (!resp) {
-        return;
-    }
-    // console.log(resp);
-    let status = JSON.parse(resp);
+    const status = await PostToSrvByJson("/votedTweetIds", param);
     if (status.length === 0) {
         if (!newest) {
             cache.moreOldTweets = false;

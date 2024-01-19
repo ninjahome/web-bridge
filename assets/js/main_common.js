@@ -136,10 +136,7 @@ async function TweetsQuery(param, newest, cacheObj) {
         if (newest) {
             cacheObj.latestID = 0;
         }
-        const resp = await PostToSrvByJson("/tweetQuery", param);
-        // console.log(resp);
-        const tweetArray = JSON.parse(resp);
-
+        const tweetArray = await PostToSrvByJson("/tweetQuery", param);
         cacheObj.moreOldTweets = tweetArray.length !== 0 || newest;
         cachedToMem(tweetArray, cacheObj);
 
@@ -299,12 +296,10 @@ async function voteToTheTweet(obj, callback) {
 }
 
 async function updateVoteStatusToSrv(create_time, vote_count) {
-    const resp = await PostToSrvByJson("/updateTweetVoteStatus", {
+    return await PostToSrvByJson("/updateTweetVoteStatus", {
         create_time: create_time,
         vote_count: Number(vote_count),
     });
-    console.log(resp);
-    return JSON.parse(resp);
 }
 
 async function loadNJUserInfoFromSrv(ethAddr, useCache) {

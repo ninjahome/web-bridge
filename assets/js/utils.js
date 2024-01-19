@@ -63,7 +63,10 @@ function PostToSrvByJson(url, data) {
                         throw new Error('\tserver responded with an error:' + response.status);
                     });
                 }
-                return response.text();
+                if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
+                    return {};
+                }
+                return response.json();
             })
             .then(data => {
                 resolve(data);

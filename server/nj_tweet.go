@@ -167,8 +167,6 @@ func removeUnpaidTweet(w http.ResponseWriter, r *http.Request, nu *database.Ninj
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("success"))
-
 	util.LogInst().Info().Int64("create_time", status.CreateTime).
 		Str("web3-id", nu.EthAddr).Msg(" delete unpaid tweet success")
 
