@@ -440,12 +440,7 @@ async function procTicketPayment(no, ifShare) {
 let cachedWinnerHistoryData = []
 
 async function syncWinnerHistoryData() {
-    const resp = await GetToSrvByJson('/queryWinHistory')
-    if (!resp.ok) {
-        showDialog(DLevel.Tips, "server err:" + resp.status);
-        return;
-    }
-    cachedWinnerHistoryData = await resp.json();
+    cachedWinnerHistoryData = await GetToSrvByJson('/queryWinHistory');
     document.querySelector('.winning-count').textContent = "" + cachedWinnerHistoryData.length;
 }
 

@@ -51,13 +51,7 @@ async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) 
         }
 
         const response = await GetToSrvByJson("/queryTwBasicById?twitterID=" + twitterID + "&&forceSync=" + syncFromTwitter);
-        if (!response.ok) {
-            console.log("query twitter basic info failed")
-            return null;
-        }
-
-        const text = await response.text();
-        return TwitterBasicInfo.cacheTwBasicInfo(text);
+        return TwitterBasicInfo.cacheTwBasicInfo(response);
     } catch (err) {
         console.log("queryTwBasicById err:", err)
         return null;

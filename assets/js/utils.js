@@ -52,6 +52,12 @@ function PostToSrvByJson(url, data) {
         fetch(url, requestOptions)
             .then(response => {
                 if (!response.ok) {
+
+                    if (response.status === 302 || response.status === 301) {
+                        window.location = response.url;
+                        return;
+                    }
+
                     return response.text().then(text => {
                         console.log(text)
                         throw new Error('\tserver responded with an error:' + response.status);
@@ -76,7 +82,24 @@ async function GetToSrvByJson(url) {
             'Content-Type': 'application/json'
         },
     };
-    return await fetch(url, requestOptions)
+
+    try {
+        const response = await fetch(url, requestOptions);
+        if (!response.ok) {
+            if ([301, 302, 303, 307, 308].includes(response.status)) {
+                // 如果是重定向响应，获取重定向的 URL 并导航到那里
+                window.location = response.url;
+                return;
+            }
+            const text = await response.text();
+            console.log(text);
+            throw new Error('Server responded with an error: ' + response.status);
+        }
+        return await response.json(); // 假设响应是 JSON 格式
+    } catch (error) {
+        console.error('Error during fetch:', error);
+        throw error;
+    }
 }
 
 const __globalTargetChainNetworkID = toHex(421614);
@@ -291,12 +314,11 @@ class TwitterBasicInfo {
             twObj.profile_image_url, twObj.description);
     }
 
-    static cacheTwBasicInfo(objStr) {
-        const obj = JSON.parse(objStr)
+    static cacheTwBasicInfo(obj) {
         if (!obj.id) {
             throw new Error("invalid twitter basic info")
         }
-        localStorage.setItem(lclDbKeyForTwitterUserData(obj.id), objStr);
+        localStorage.setItem(lclDbKeyForTwitterUserData(obj.id), JSON.stringify(obj));
         return obj;
     }
 }

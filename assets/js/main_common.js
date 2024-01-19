@@ -137,9 +137,7 @@ async function TweetsQuery(param, newest, cacheObj) {
             cacheObj.latestID = 0;
         }
         const resp = await PostToSrvByJson("/tweetQuery", param);
-        if (!resp) {
-            return false;
-        }
+        // console.log(resp);
         const tweetArray = JSON.parse(resp);
 
         cacheObj.moreOldTweets = tweetArray.length !== 0 || newest;
@@ -147,6 +145,7 @@ async function TweetsQuery(param, newest, cacheObj) {
 
         return cacheObj.CachedItem.length > 0;
     } catch (err) {
+        console.log(err);
         throw new Error(err);
     }
 }
@@ -317,18 +316,11 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
                 return nj_data;
             }
         }
-
         const response = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
-        if (!response.ok) {
-            console.log("query twitter basic info failed")
-            return null;
-        }
-
-        const obj = await response.json();
-        NJUserBasicInfo.cacheNJUsrObj(obj).then(r => {
+        NJUserBasicInfo.cacheNJUsrObj(response).then(r => {
         })
 
-        return obj;
+        return response;
     } catch (err) {
         console.log("queryTwBasicById err:", err)
         return null;

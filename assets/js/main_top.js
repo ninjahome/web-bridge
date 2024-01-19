@@ -134,31 +134,9 @@ async function showTeammates(tweetHash, team_card) {
     }
 }
 
-function __queryAndFillTeamHeader(tweetHeader, tweetHash) {
-
-    const response = GetToSrvByJson("/queryTwBasicByTweetHash?tweet_hash=" + tweetHash);
-
-    response.then(r => {
-        r.text().then(async obj => {
-            const twObj = TwitterBasicInfo.cacheTwBasicInfo(obj);
-            await __setOnlyHeader(tweetHeader, twObj.twitter_id);
-        }).catch(err => {
-            console.log(err);
-        });
-    });
-}
-
 async function __queryTweetFoTeam(tweetHeader, tweetHash) {
     try {
-        const response = await GetToSrvByJson("/queryTweetByHash?tweet_hash=" + tweetHash);
-
-        if (!response.ok) {
-            console.log("query twitter basic info failed")
-            return null;
-        }
-
-        const text = await response.text();
-        const obj = JSON.parse(text);
+        const obj = await GetToSrvByJson("/queryTweetByHash?tweet_hash=" + tweetHash);
         __globalTweetMemCacheByHash.set(tweetHash, obj);
         __globalTweetMemCache.set(obj.create_time, obj);
         return obj;
