@@ -81,19 +81,16 @@ function clearCachedData() {
     window.location.href = "/signIn";
 }
 
-async function showHoverCard(event, web3ID) {
+async function showHoverCard(event,twitterObj, web3ID) {
 
     const hoverCard = document.getElementById('hover-card');
     const rect = event.currentTarget.getBoundingClientRect();
-    const avatar = event.currentTarget.querySelector('img').src;
-    const name = event.currentTarget.querySelector('.name').textContent;
-    const userName = event.currentTarget.querySelector('.username').textContent;
 
     const njUsrInfo = await loadNJUserInfoFromSrv(web3ID, true);
 
-    document.getElementById('hover-avatar').src = avatar;
-    document.getElementById('hover-name').textContent = name;
-    document.getElementById('hover-user-name').textContent = userName;
+    document.getElementById('hover-avatar').src = twitterObj.profile_image_url;
+    document.getElementById('hover-name').textContent = twitterObj.name;
+    document.getElementById('hover-user-name').textContent = '@' + twitterObj.username;
 
     hoverCard.style.display = 'block';
     hoverCard.style.left = `${rect.left}px`;
@@ -156,26 +153,28 @@ async function TweetsQuery(param, newest, cacheObj) {
 
 async function __setOnlyHeader(tweetHeader, twitter_id) {
     const twitterObj = TwitterBasicInfo.loadTwBasicInfo(twitter_id);
-    if (!twitterObj) {
-        const newObj = await loadTwitterUserInfoFromSrv(twitter_id, true)
-        if (!newObj) {
-            console.log("failed load twitter user info");
-            return;
-        }
-        tweetHeader.querySelector('.twitterAvatar').src = newObj.profile_image_url;
-        tweetHeader.querySelector('.twitterName').textContent = newObj.name;
-        tweetHeader.querySelector('.twitterUserName').textContent = '@' + newObj.username;
-
-    } else {
+    if (twitterObj) {
         tweetHeader.querySelector('.twitterAvatar').src = twitterObj.profile_image_url;
         tweetHeader.querySelector('.twitterName').textContent = twitterObj.name;
         tweetHeader.querySelector('.twitterUserName').textContent = '@' + twitterObj.username;
+        return twitterObj;
     }
+
+    const newObj = await loadTwitterUserInfoFromSrv(twitter_id, true)
+    if (!newObj) {
+        console.log("failed load twitter user info");
+        return;
+    }
+    tweetHeader.querySelector('.twitterAvatar').src = newObj.profile_image_url;
+    tweetHeader.querySelector('.twitterName').textContent = newObj.name;
+    tweetHeader.querySelector('.twitterUserName').textContent = '@' + newObj.username;
+
+    return newObj;
 }
 
 async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     tweetHeader.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
-    await __setOnlyHeader(tweetHeader, tweet.twitter_id);
+    const twitterObj = await __setOnlyHeader(tweetHeader, tweet.twitter_id);
 
     const contentArea = tweetHeader.querySelector('.tweet-content');
     contentArea.textContent = tweet.text;
@@ -183,7 +182,7 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
 
     if (overlap) {
         const tweetCard = wrappedHeader.parentNode;
-        wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event, tweet.web3_id));
+        wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event,twitterObj, tweet.web3_id));
         wrappedHeader.addEventListener('mouseleave', (event) => hideHoverCard(wrappedHeader));
     }
     return contentArea;
@@ -211,7 +210,7 @@ async function showTweetDetail(parentEleID, tweet, detailType) {
     detail.style.display = 'block';
 
     const parentNode = document.getElementById(parentEleID);
-    if (!parentNode){
+    if (!parentNode) {
         return;
     }
     parentNode.style.display = 'none';
