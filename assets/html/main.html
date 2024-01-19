@@ -1002,24 +1002,26 @@
             <div class="tweet-text"></div>
 
             <div class="tweet-interaction">
+
+                <div class="tweet-info">
+                    <span class="vote-count">投票数: <span class="vote-number">0</span></span>
+                    Payment Status: <span class="tweetPaymentStatus"></span>
+                    <div class="tweet-prefixed-hash">
+                        <span class="vote-count">推文Hash:<span id="tweet-prefixed-hash"></span></span>
+                    </div>
+                </div>
+
                 <div class="tweet-action">
                     <button class="tweet-action-vote">
                         <img src="/assets/file/tweet-action-vote-eth.png"
                              style="width: 22px;height: auto" alt=""/>
-                        <span style="font-weight: lighter"> <span
-                                    class="tweet-action-vote-val">0.01</span> eth</span> 投票
+                        <span style="font-weight: lighter">
+                            <span class="tweet-action-vote-val">0.01</span> eth</span> 投票
                     </button>
-                </div>
-                <div class="tweet-info">
-                    <span class="vote-count">投票数: <span class="vote-number">0</span></span>
-                    Payment Status: <span class="tweetPaymentStatus"></span>
                     <button class="tweetPaymentRetry" id="tweetPaymentRetryInDetail">继续支付</button>
                     <button class="tweetRemoveUnPaid" id="tweetRemoveUnPaidInDetail">删除</button>
-                    <div class="tweet-prefixed-hash">
-                        <span class="vote-count">推文Hash:</span>
-                        <span id="tweet-prefixed-hash"></span>
-                    </div>
                 </div>
+
             </div>
         </div>
         <div id="nj-user-profile" class="nj-user-profile">
