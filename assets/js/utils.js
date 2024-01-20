@@ -586,6 +586,10 @@ function checkMetamaskErr(err) {
     if (code.includes("duplicate post")) {
         return code;
     }
+    if (code.includes("insufficient funds")){
+        showDialog(DLevel.Warning, "insufficient funds");
+        return
+    }
     showDialog(DLevel.Warning, code);
     return code;
 }

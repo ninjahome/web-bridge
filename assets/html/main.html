@@ -1202,7 +1202,7 @@
         } else if (contentId === "middle-div-home") {
             loadTweetsForHomePage()
         } else if (contentId === "middle-div-leaderboard") {
-            initTopPage(true);
+            initTopPage();
         } else if (contentId === "middle-div-about-user") {
             initAboutUserPage();
         }
@@ -1233,6 +1233,9 @@
 
     async function setupUserBasicInfoInSetting() {
         document.getElementById("basic-web3-id").innerText = ninjaUserObj.eth_addr;
+        if (!ninjaUserObj.tw_id){
+            return;
+        }
         const twitterInfo = await loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, true, false);
         if (!twitterInfo) {
             console.log("no such twitter user");

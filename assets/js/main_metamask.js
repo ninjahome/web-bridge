@@ -90,7 +90,7 @@ async function procPaymentForPostedTweet(tweet, callback) {
 }
 
 async function procTweetVotePayment(voteCount, tweet, callback) {
-    if (!tweetVoteContract|| !voteContractMeta) {
+    if (!tweetVoteContract|| !voteContractMeta ||!voteContractMeta.votePrice) {
         showDialog(DLevel.Tips, "please wait for metamask syncing data")
         return;
     }

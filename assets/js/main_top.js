@@ -71,8 +71,8 @@ async function fulfillTopTeam(cachedTopTeam) {
 
         }
 
-        team_card.querySelector('.team-id-txt').onclick= ()=>
-            showTweetDetail('top-hot-tweet-team',tweet, TweetDetailSource.MostTeam);
+        team_card.querySelector('.team-id-txt').onclick = () =>
+            showTweetDetail('top-hot-tweet-team', tweet, TweetDetailSource.MostTeam);
 
         team_card.querySelector('.team-voted-count').innerText = teamDetails.voteCount;
         team_card.querySelector('.team-members-count').innerText = teamDetails.memCount;
@@ -137,7 +137,7 @@ async function showTeammates(tweetHash, team_card) {
 async function __queryTweetFoTeam(tweetHeader, tweetHash) {
     try {
         const obj = await GetToSrvByJson("/queryTweetByHash?tweet_hash=" + tweetHash);
-        if (!obj){
+        if (!obj) {
             return null;
         }
         __globalTweetMemCacheByHash.set(tweetHash, obj);
@@ -153,9 +153,17 @@ async function __queryTweetFoTeam(tweetHeader, tweetHash) {
 const cachedTopVotedTweets = new MemCachedTweets();
 
 async function initTopPage() {
-    curScrollContentID = 1;
-    initTopDivStatus("top-most-voted-tweet");
-    await __loadMostVotedTweets(true);
+    try {
+        showWaiting("loading...");
+        curScrollContentID = 1;
+        initTopDivStatus("top-most-voted-tweet");
+        await __loadMostVotedTweets(true);
+    } catch (err) {
+        console.log(err);
+        showDialog(DLevel.Error,err.toString());
+    }finally {
+        hideLoading();
+    }
 }
 
 async function fillMostVotedTweet(clear, tweetArray) {
