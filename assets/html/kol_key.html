@@ -19,9 +19,47 @@
 
         .return-to-main {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 20px;
+            left: 20px;
         }
+
+        .main-container {
+            width: 80%;
+            margin: auto;
+            background-color: white; /* 白色背景 */
+            padding: 20px; /* 添加一些内部间距 */
+            box-shadow: 0 0 10px #ccc; /* 轻微的阴影效果 */
+        }
+
+        .content-area {
+            margin-top: 20px; /* 内容区与菜单区的间距 */
+        }
+
+        .menu-area {
+            display: flex; /* 让按钮水平排列 */
+            border-bottom: 2px solid #007bff; /* 底部边框，模拟标签页的外观 */
+            margin-bottom: 20px;
+        }
+
+        .menu-area button {
+            background-color: white;
+            color: #007bff;
+            border: none;
+            padding: 10px 20px;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0; /* 只对上方的角进行圆角处理 */
+            cursor: pointer;
+        }
+
+        .menu-area button:hover {
+            background-color: #e7f3ff;
+        }
+
+        .menu-area button.active {
+            background-color: #007bff; /* 激活的按钮 */
+            color: white;
+        }
+
     </style>
 </head>
 <body>
@@ -32,9 +70,9 @@
 
 <div class="main-container">
     <div class="menu-area">
+        <button onclick="showDiv('user-kol-key-holder')">我的Key</button>
         <button onclick="showDiv('top-range-area')">排行榜</button>
         <button onclick="showDiv('kol-setting-detail')">Kol设置</button>
-        <button onclick="showDiv('user-kol-key-holder')">我的Key</button>
     </div>
     <div class="content-area">
         <div id="top-range-area" class="top-range-area">
@@ -93,7 +131,7 @@
             </div>
 
         </div>
-        <div id="kol-setting-detail"  class="kol-setting-detail">
+        <div id="kol-setting-detail" class="kol-setting-detail">
             <div class="open-or-show-detail">
                 <div class="open-kol-key" id="open-kol-key">
                     <input value="1"> Finney
@@ -192,18 +230,27 @@
 </div>
 
 <script>
+
     function showDiv(divId) {
-        // Hide all divs
+        // 隐藏所有内容区域
         document.querySelectorAll('.content-area > div').forEach(div => {
             div.style.display = 'none';
         });
-
-        // Show the selected div
+        // 显示选定的内容区域
         document.getElementById(divId).style.display = 'block';
+
+        // 更新按钮的激活状态
+        document.querySelectorAll('.menu-area button').forEach(button => {
+            button.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
     }
+
+
     document.addEventListener("DOMContentLoaded", initMainPage);
+
     async function initMainPage() {
-        showDiv('top-range-area');
+        showDiv('user-kol-key-holder');
     }
 </script>
 </body>
