@@ -154,8 +154,10 @@ async function postTweetWithPayment() {
         if (!basicTweet) {
             return;
         }
+        hideLoading();
         await procPaymentForPostedTweet(basicTweet);
 
+        showWaiting("updating tweet status")
         await updatePaymentStatusToSrv(basicTweet)
 
         if (curScrollContentID === 0) {
