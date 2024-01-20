@@ -217,7 +217,7 @@ contract KolKeySimple is ServiceFeeForWithdraw, KolIncomeToPoolI {
     ) public isValidAddress(kol) inRun {
         require(amount > 0, "invalid amount");
         KolKey storage key = keyBalance[msg.sender][kol];
-        require(key.amount[nonce] >= amount, "no enough key to bid");
+        require(key.amount[nonce] >= amount, "no enough key to transfer");
 
         KolKey storage toKey = keyBalance[to][kol];
 
