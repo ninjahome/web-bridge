@@ -11,7 +11,7 @@ import (
 )
 
 type GamInfoOnChain struct {
-	RoundNo      *big.Int `json:"_"  firestore:"_"`
+	RoundNo      *big.Int `json:"-"  firestore:"-"`
 	RandomHash   string   `json:"random_hash"  firestore:"random_hash"`
 	DiscoverTime int64    `json:"discover_time"  firestore:"discover_time"`
 	Winner       string   `json:"winner"  firestore:"winner"`
