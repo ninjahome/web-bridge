@@ -5,20 +5,17 @@ function initTopDivStatus(showID) {
 }
 
 async function switchToTopTeam() {
-    curScrollContentID = 12;
-    initTopDivStatus("top-hot-tweet-team");
-
-    showWaiting("syncing from block chain");
-
-    if (!gameContractMeta) {
-        await initGameContractMeta();
-    }
-
     try {
+        curScrollContentID = 12;
+        initTopDivStatus("top-hot-tweet-team");
+
+        showWaiting("syncing from block chain");
+        if (!gameContractMeta) {
+            await initGameContractMeta();
+        }
 
         changeLoadingTips("querying team detail from block chain");
         const obj = await lotteryGameContract.allTeamInfo(gameContractMeta.curRound);
-        console.log(obj);
         const cachedTopTeam = [];
 
         for (let i = 0; i < obj.tweets.length; i++) {
@@ -29,14 +26,13 @@ async function switchToTopTeam() {
         changeLoadingTips("sorting result");
         cachedTopTeam.sort((a, b) => b.voteCount - a.voteCount);
 
-        fulfillTopTeam(cachedTopTeam).then(r => {
-        });
+        await fulfillTopTeam(cachedTopTeam);
 
-        hideLoading();
     } catch (err) {
         console.log(err);
-        hideLoading();
         showDialog("error", err.toString());
+    } finally {
+        hideLoading();
     }
 }
 
@@ -160,8 +156,8 @@ async function initTopPage() {
         await __loadMostVotedTweets(true);
     } catch (err) {
         console.log(err);
-        showDialog(DLevel.Error,err.toString());
-    }finally {
+        showDialog(DLevel.Error, err.toString());
+    } finally {
         hideLoading();
     }
 }
