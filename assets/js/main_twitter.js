@@ -79,7 +79,7 @@ async function __fillNormalTweet(clear, parkID, data, templateId, cardID, overla
         const contentArea = await setupCommonTweetHeader(tweetHeader, tweet, overlap);
 
         if (TweetDetailSource.NoNeed !== detailType) {
-            contentArea.onclick = () => showTweetDetail(parkID, tweet, detailType)
+            contentArea.onclick = () => showTweetDetail(parkID, tweet)
         }
 
         tweetCard.insertBefore(tweetHeader, sibling);

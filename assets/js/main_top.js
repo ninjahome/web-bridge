@@ -68,7 +68,7 @@ async function fulfillTopTeam(cachedTopTeam) {
         }
 
         team_card.querySelector('.team-id-txt').onclick = () =>
-            showTweetDetail('top-hot-tweet-team', tweet, TweetDetailSource.MostTeam);
+            showTweetDetail('top-hot-tweet-team', tweet);
 
         team_card.querySelector('.team-voted-count').innerText = teamDetails.voteCount;
         team_card.querySelector('.team-members-count').innerText = teamDetails.memCount;

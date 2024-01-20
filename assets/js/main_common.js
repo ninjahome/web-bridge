@@ -68,8 +68,8 @@ function contentScroll() {
     }
 
     cacheObj.isLoading = true;
-    uiCallback().then(r => {
-    }).finally(r => {
+    uiCallback().then(() => {
+    }).finally(() => {
         cacheObj.isLoading = false;
     });
 }
@@ -181,23 +181,22 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
 
     if (overlap) {
-        const tweetCard = wrappedHeader.parentNode;
         wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, tweet.web3_id));
-        wrappedHeader.addEventListener('mouseleave', (event) => hideHoverCard(wrappedHeader));
+        wrappedHeader.addEventListener('mouseleave', () => hideHoverCard(wrappedHeader));
     }
     return contentArea;
 }
 
 function refreshTwitterInfo() {
     showWaiting("tips", "loading from twitter server");
-    loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true).then(async twInfo => {
+    loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true).then(async () => {
         hideLoading();
         await setupUserBasicInfoInSetting();
     })
 }
 
 function quitFromService() {
-    fetch("/signOut", {method: 'GET'}).then(r => {
+    fetch("/signOut", {method: 'GET'}).then(() => {
         window.location.href = "/signIn";
     }).catch(err => {
         console.log(err)
@@ -205,7 +204,7 @@ function quitFromService() {
     })
 }
 
-async function showTweetDetail(parentEleID, tweet, detailType) {
+async function showTweetDetail(parentEleID, tweet) {
     const detail = document.querySelector('#tweet-detail');
     detail.style.display = 'block';
 
@@ -279,10 +278,10 @@ async function voteToTheTweet(obj, callback) {
         procTweetVotePayment(voteCount, obj, async function (create_time, vote_count) {
             const newVote = await updateVoteStatusToSrv(create_time, vote_count);
             obj.vote_count = newVote.vote_count;
-            __updateVoteNumberForTweet(obj, newVote).then(r => {
+            __updateVoteNumberForTweet(obj, newVote).then(() => {
             });
             if (shareToTweet) {
-                __shareVoteToTweet(create_time, vote_count).then(r => {
+                __shareVoteToTweet(create_time, vote_count).then(() => {
                 });
             }
             if (callback) {
@@ -312,7 +311,7 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
         if(!response){
             return null;
         }
-        NJUserBasicInfo.cacheNJUsrObj(response).then(r => {
+        NJUserBasicInfo.cacheNJUsrObj(response).then(() => {
         })
 
         return response;
@@ -344,7 +343,7 @@ async function showTargetTweetDetail() {
         return;
     }
 
-    await showTweetDetail('tweets-park', targetTweet, TweetDetailSource.HomePage);
+    await showTweetDetail('tweets-park', targetTweet);
 
     const protocol = window.location.protocol;
     const host = window.location.host;
