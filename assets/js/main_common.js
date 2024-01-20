@@ -331,7 +331,7 @@ async function withdrawAction(contract) {
         const txReceipt = await txResponse.wait();
         console.log("Transaction Receipt: ", txReceipt);
 
-        showDialog(DLevel.Tips, "Transaction: " + txReceipt.status ? "success" : "failed");
+        showDialog(DLevel.Success, "Transaction: " + txReceipt.status ? "success" : "failed");
         hideLoading();
     } catch (err) {
         checkMetamaskErr(err);
