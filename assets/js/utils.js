@@ -51,6 +51,10 @@ function PostToSrvByJson(url, data) {
     return new Promise((resolve, reject) => {
         fetch(url, requestOptions)
             .then(response => {
+                if (response.redirected){
+                    window.location = response.url;
+                    return;
+                }
                 if (!response.ok) {
 
                     if (response.status === 302 || response.status === 301) {
@@ -88,6 +92,10 @@ async function GetToSrvByJson(url) {
 
     try {
         const response = await fetch(url, requestOptions);
+        if (response.redirected){
+            window.location = response.url;
+            return;
+        }
         if (!response.ok) {
             if ([301, 302, 303, 307, 308].includes(response.status)) {
                 // 如果是重定向响应，获取重定向的 URL 并导航到那里
