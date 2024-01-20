@@ -81,7 +81,7 @@ function clearCachedData() {
     window.location.href = "/signIn";
 }
 
-async function showHoverCard(event,twitterObj, web3ID) {
+async function showHoverCard(event, twitterObj, web3ID) {
 
     const hoverCard = document.getElementById('hover-card');
     const rect = event.currentTarget.getBoundingClientRect();
@@ -120,6 +120,9 @@ function hideHoverCard(obj) {
 }
 
 function cachedToMem(tweetArray, cacheObj) {
+    if (!tweetArray) {
+        return;
+    }
     tweetArray.map(tweet => {
         __globalTweetMemCache.set(tweet.create_time, tweet);
         __globalTweetMemCacheByHash.set(tweet.prefixed_hash, tweet);
@@ -137,7 +140,9 @@ async function TweetsQuery(param, newest, cacheObj) {
             cacheObj.latestID = 0;
         }
         const tweetArray = await PostToSrvByJson("/tweetQuery", param);
-        cacheObj.moreOldTweets = tweetArray.length !== 0 || newest;
+
+        cacheObj.moreOldTweets = tweetArray || tweetArray.length !== 0 || newest;
+
         cachedToMem(tweetArray, cacheObj);
 
         return cacheObj.CachedItem.length > 0;
@@ -178,7 +183,7 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
 
     if (overlap) {
         const tweetCard = wrappedHeader.parentNode;
-        wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event,twitterObj, tweet.web3_id));
+        wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, tweet.web3_id));
         wrappedHeader.addEventListener('mouseleave', (event) => hideHoverCard(wrappedHeader));
     }
     return contentArea;
@@ -219,12 +224,12 @@ async function showTweetDetail(parentEleID, tweet, detailType) {
         parentNode.style.display = 'block';
         detail.style.display = 'none';
     }
-    detail.querySelector('.tweet-create_time') .textContent = formatTime(tweet.create_time);
-    detail.querySelector('.tweet-web3_id') .textContent = tweet.web3_id;
+    detail.querySelector('.tweet-create_time').textContent = formatTime(tweet.create_time);
+    detail.querySelector('.tweet-web3_id').textContent = tweet.web3_id;
     detail.querySelector('.tweet-prefixed-hash').textContent = tweet.prefixed_hash;
-    detail.querySelector('.tweet-signature') .textContent = tweet.signature;
-    detail.querySelector('.tweet-payment_status') .textContent = TXStatus.Str(tweet.payment_status);
-    detail.querySelector('.tweet-vote-number') .textContent = tweet.vote_count;
+    detail.querySelector('.tweet-signature').textContent = tweet.signature;
+    detail.querySelector('.tweet-payment_status').textContent = TXStatus.Str(tweet.payment_status);
+    detail.querySelector('.tweet-vote-number').textContent = tweet.vote_count;
 }
 
 function __showVoteButton(tweetCard, tweet, callback) {
@@ -305,6 +310,9 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
             }
         }
         const response = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
+        if(!response){
+            return null;
+        }
         NJUserBasicInfo.cacheNJUsrObj(response).then(r => {
         })
 

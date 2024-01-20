@@ -440,7 +440,11 @@ async function procTicketPayment(no, ifShare) {
 let cachedWinnerHistoryData = []
 
 async function syncWinnerHistoryData() {
-    cachedWinnerHistoryData = await GetToSrvByJson('/queryWinHistory');
+    const data = await GetToSrvByJson('/queryWinHistory');
+    if (!data){
+        return;
+    }
+    cachedWinnerHistoryData = data;
     document.querySelector('.winning-count').textContent = "" + cachedWinnerHistoryData.length;
 }
 

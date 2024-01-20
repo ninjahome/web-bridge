@@ -137,6 +137,9 @@ async function showTeammates(tweetHash, team_card) {
 async function __queryTweetFoTeam(tweetHeader, tweetHash) {
     try {
         const obj = await GetToSrvByJson("/queryTweetByHash?tweet_hash=" + tweetHash);
+        if (!obj){
+            return null;
+        }
         __globalTweetMemCacheByHash.set(tweetHash, obj);
         __globalTweetMemCache.set(obj.create_time, obj);
         return obj;
@@ -181,7 +184,7 @@ async function __loadMostVotedTweets(newest) {
 
     const param = new TweetQueryParam(cachedTopVotedTweets.latestID, "", []);
     const tweetArray = await PostToSrvByJson("/mostVotedTweet", param);
-    if (tweetArray.length === 0) {
+    if (!tweetArray || tweetArray.length === 0) {
         if (!newest) {
             cachedTopVotedTweets.moreOldTweets = false;
         }
@@ -217,7 +220,7 @@ async function __loadMostVotedKolUserInfo(parkID, cache, newest, voter) {
         param.voted_ids.push(1)
     )
     const userArray = await PostToSrvByJson("/mostVotedKol", param);
-    if (userArray.length === 0) {
+    if (!userArray || userArray.length === 0) {
         if (!newest) {
             cache.moreOldTweets = false;
         }

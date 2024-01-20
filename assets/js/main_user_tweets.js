@@ -69,10 +69,8 @@ function __checkPayment(tweetCard, tweet) {
 
 async function removeUnPaidTweets(createTime) {
     try {
-        const resp = await PostToSrvByJson("/removeUnpaidTweet",
+        await PostToSrvByJson("/removeUnpaidTweet",
             {create_time: createTime, status: TXStatus.NoPay});
-
-        console.log(resp);
         __globalTweetMemCache.delete(createTime);
         return true;
     } catch (e) {
@@ -125,7 +123,7 @@ async function __loadTweetIDsUserVoted(newest, web3ID, cache, voteStatusCache, c
         param.start_id = cache.latestID;
     }
     const status = await PostToSrvByJson("/votedTweetIds", param);
-    if (status.length === 0) {
+    if (!status || status.length === 0) {
         if (!newest) {
             cache.moreOldTweets = false;
         }

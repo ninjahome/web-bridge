@@ -51,6 +51,9 @@ async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) 
         }
 
         const response = await GetToSrvByJson("/queryTwBasicById?twitterID=" + twitterID + "&&forceSync=" + syncFromTwitter);
+        if (!response){
+            return null;
+        }
         return TwitterBasicInfo.cacheTwBasicInfo(response);
     } catch (err) {
         console.log("queryTwBasicById err:", err)
@@ -151,8 +154,9 @@ async function postTweetWithPayment() {
         }
         showWaiting("posting to twitter");
         const basicTweet = await PostToSrvByJson("/postTweet", tweetObj);
-
-        hideLoading();
+        if (!basicTweet){
+            return;
+        }
         await procPaymentForPostedTweet(basicTweet);
 
         await updatePaymentStatusToSrv(basicTweet)
@@ -170,6 +174,7 @@ async function postTweetWithPayment() {
     } catch (err) {
         checkMetamaskErr(err);
     } finally {
+        hideLoading();
         closePostTweetDiv();
     }
 }

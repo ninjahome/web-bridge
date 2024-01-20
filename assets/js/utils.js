@@ -106,7 +106,11 @@ async function GetToSrvByJson(url) {
             console.log(text);
             throw new Error('Server responded with an error: ' + response.status);
         }
-        return await response.json(); // 假设响应是 JSON 格式
+        if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
+            return {};
+        }
+
+        return await response.json();
     } catch (error) {
         console.error('Error during fetch:', error);
         throw error;
@@ -559,11 +563,10 @@ function decreaseVote() {
 }
 
 async function __shareVoteToTweet(create_time, vote_count) {
-    const resp = await PostToSrvByJson("/shareVoteAction", {
+    await PostToSrvByJson("/shareVoteAction", {
         create_time: create_time,
         vote_count: Number(vote_count),
     });
-    console.log(resp);
 }
 
 function checkMetamaskErr(err) {
