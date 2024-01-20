@@ -127,7 +127,7 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
 
 async function reloadGameBalance() {
     const b = await lotteryGameContract.balance(ninjaUserObj.eth_addr);
-    console.log(b);
+    // console.log(b);
     document.getElementById('lottery-game-income').innerText = ethers.utils.formatUnits(b, 'ether');
 }
 
@@ -137,33 +137,27 @@ async function reloadTweetBalance() {
 }
 
 async function withdrawLotteryGameIncome() {
-    showWaiting("prepare withdraw transaction");
     const valStr = document.getElementById('lottery-game-income').innerText;
     const balance = Number(valStr);
 
     if (!balance || balance <= 0) {
         showDialog(DLevel.Tips, "balance invalid");
-        hideLoading();
         return;
     }
 
     await withdrawAction(lotteryGameContract);
     await reloadGameBalance();
-    hideLoading();
 }
 
 async function withdrawFromUserTweetIncome() {
-    showWaiting("prepare withdraw transaction");
     const valStr = document.getElementById('lottery-game-income').innerText;
     const balance = Number(valStr);
     if (balance <= 0) {
         showDialog(DLevel.Tips, "balance too low");
-        hideLoading();
         return;
     }
 
     await withdrawAction(tweetVoteContract);
     await reloadTweetBalance();
-    hideLoading();
 }
 

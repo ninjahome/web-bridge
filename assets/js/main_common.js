@@ -325,16 +325,14 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
 async function withdrawAction(contract) {
     try {
         const txResponse = await contract.withdraw("0x00", true);
-        console.log("Transaction Response: ", txResponse);
         showWaiting("prepare to withdraw:" + txResponse.hash);
 
         const txReceipt = await txResponse.wait();
-        console.log("Transaction Receipt: ", txReceipt);
-
         showDialog(DLevel.Success, "Transaction: " + txReceipt.status ? "success" : "failed");
-        hideLoading();
     } catch (err) {
         checkMetamaskErr(err);
+    }finally {
+        hideLoading();
     }
 }
 
