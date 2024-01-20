@@ -23,11 +23,8 @@ async function loadTweetsForHomePage() {
     const tweetsDiv = document.getElementById('tweets-park');
     tweetsDiv.style.display = 'block';
     showWaiting("loading.....");
-    __loadTweetsAtHomePage(true).then(r => {
-        console.log("load newest global tweets success");
-    }).finally(r => {
-        hideLoading();
-    });
+    await __loadTweetsAtHomePage(true);
+    hideLoading();
 }
 
 async function loadOlderTweetsForHomePage() {
@@ -51,7 +48,7 @@ async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) 
         }
 
         const response = await GetToSrvByJson("/queryTwBasicById?twitterID=" + twitterID + "&&forceSync=" + syncFromTwitter);
-        if (!response){
+        if (!response) {
             return null;
         }
         return TwitterBasicInfo.cacheTwBasicInfo(response);
@@ -75,14 +72,14 @@ async function __fillNormalTweet(clear, parkID, data, templateId, cardID, overla
         tweetCard.dataset.createTime = tweet.create_time;
         const tweetHeader = document.getElementById('tweet-header-template').cloneNode(true);
         tweetHeader.style.display = '';
-        tweetHeader.id="";
+        tweetHeader.id = "";
 
 
         const sibling = tweetCard.querySelector('.tweet-footer')
         const contentArea = await setupCommonTweetHeader(tweetHeader, tweet, overlap);
 
-        if (TweetDetailSource.NoNeed !== detailType){
-            contentArea.onclick =()=>showTweetDetail(parkID,tweet,detailType)
+        if (TweetDetailSource.NoNeed !== detailType) {
+            contentArea.onclick = () => showTweetDetail(parkID, tweet, detailType)
         }
 
         tweetCard.insertBefore(tweetHeader, sibling);
@@ -149,12 +146,12 @@ function updatePaymentStatusToSrv(tweet) {
 async function postTweetWithPayment() {
     try {
         const tweetObj = await preparePostMsg();
-        if(!tweetObj){
+        if (!tweetObj) {
             return;
         }
         showWaiting("posting to twitter");
         const basicTweet = await PostToSrvByJson("/postTweet", tweetObj);
-        if (!basicTweet){
+        if (!basicTweet) {
             return;
         }
         await procPaymentForPostedTweet(basicTweet);

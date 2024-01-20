@@ -1182,10 +1182,19 @@
     }
 
     async function initMainPage() {
-        initNjBasic();
-        await checkMetaMaskEnvironment(initBlockChainContract);
-        await loadTweetsForHomePage();
-        await showTargetTweetDetail();
+        try{
+            showWaiting("loading from block chain");
+
+            initNjBasic();
+            await checkMetaMaskEnvironment(initBlockChainContract);
+            await loadTweetsForHomePage();
+            await showTargetTweetDetail();
+        }catch (err){
+            showDialog(DLevel.Warning,err.toString());
+        }finally {
+            hideLoading();
+        }
+
     }
 
     function menuOnClicked(curMenuId) {

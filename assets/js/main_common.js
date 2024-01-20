@@ -69,7 +69,6 @@ function contentScroll() {
 
     cacheObj.isLoading = true;
     uiCallback().then(r => {
-        console.log("common load latest older data");
     }).finally(r => {
         cacheObj.isLoading = false;
     });
@@ -232,10 +231,10 @@ async function showTweetDetail(parentEleID, tweet, detailType) {
     detail.querySelector('.tweet-vote-number').textContent = tweet.vote_count;
 }
 
-function __showVoteButton(tweetCard, tweet, callback) {
+async function __showVoteButton(tweetCard, tweet, callback) {
     const voteBtn = tweetCard.querySelector('.tweet-action-vote');
     if (!voteContractMeta) {
-        return;
+        await initVoteContractMeta();
     }
     tweetCard.querySelector('.tweet-action-vote-val').textContent = voteContractMeta.votePriceInEth;
     voteBtn.onclick = () => voteToTheTweet(tweet, callback);
