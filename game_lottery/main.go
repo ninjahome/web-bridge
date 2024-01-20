@@ -267,6 +267,8 @@ func (gs *GameService) Server() {
 			if err != nil {
 				util.LogInst().Err(err).Msg("update discover result failed")
 			}
+			util.LogInst().Debug().Msg("start query history data to database")
+			gs.saveGameHistoryData(result.RoundNo)
 		}
 	}
 }

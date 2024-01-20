@@ -767,14 +767,16 @@
 
     </style>
     <style about="tweet details">
-        .tweet-detail-info{
+        .tweet-detail-info {
             display: flex;
             margin-top: 20px;
             flex-direction: column;
         }
+
         .tweet-info {
             margin-bottom: 8px; /* 添加一些底部间距，使行与行之间有些距离 */
         }
+
         .tweet-signature {
             display: block; /* 确保它是块级元素 */
             word-wrap: break-word; /* 允许在单词内断行 */
@@ -1233,7 +1235,7 @@
 
     async function setupUserBasicInfoInSetting() {
         document.getElementById("basic-web3-id").innerText = ninjaUserObj.eth_addr;
-        if (!ninjaUserObj.tw_id){
+        if (!ninjaUserObj.tw_id) {
             return;
         }
         const twitterInfo = await loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, true, false);
@@ -1247,22 +1249,26 @@
     }
 
     async function initAboutUserPage() {
+        try {
 
-        await setupUserBasicInfoInSetting();
+            showWaiting("syncing from block chain");
 
-        showWaiting("syncing from block chain");
+            await setupUserBasicInfoInSetting();
 
-        await reloadGameBalance();
-        await reloadTweetBalance();
+            await reloadGameBalance();
+            await reloadTweetBalance();
 
-        const obj = await loadNJUserInfoFromSrv(ninjaUserObj.eth_addr, true);
-        if (!obj) {
+            const obj = await loadNJUserInfoFromSrv(ninjaUserObj.eth_addr, true);
+            if (!obj) {
+                console.log("can't be empty")
+                return;
+            }
+            document.getElementById('tweet-no-has-income').innerText = obj.tweet_count;
+        } catch (err) {
+            checkMetamaskErr(err);
+        } finally {
             hideLoading();
-            console.log("can't be empty")
-            return;
         }
-        document.getElementById('tweet-no-has-income').innerText = obj.tweet_count;
-        hideLoading();
     }
 
 </script>

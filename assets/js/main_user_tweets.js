@@ -1,17 +1,22 @@
 const cachedUserTweets = new MemCachedTweets();
 
 async function loadTweetsUserPosted() {
-    curScrollContentID = 2;
+    try {
+        curScrollContentID = 2;
+        showWaiting("loading...");
+        const tweetsDiv = document.getElementById('tweets-post-by-user');
+        tweetsDiv.style.display = 'block';
+        const votedDiv = document.getElementById('tweets-voted-by-user');
+        votedDiv.style.display = 'none';
+        const detail = document.querySelector('#tweet-detail');
+        detail.style.display = 'none';
+        await __loadTweetAtUserPost(true, ninjaUserObj.eth_addr, cachedUserTweets, fillUserPostedTweetsList);
 
-    const tweetsDiv = document.getElementById('tweets-post-by-user');
-    tweetsDiv.style.display = 'block';
-    const votedDiv = document.getElementById('tweets-voted-by-user');
-    votedDiv.style.display = 'none';
-    const detail = document.querySelector('#tweet-detail');
-    detail.style.display = 'none';
-    __loadTweetAtUserPost(true, ninjaUserObj.eth_addr, cachedUserTweets, fillUserPostedTweetsList).then(r => {
-        console.log("load newest tweets of user posted success");
-    });
+    } catch (err) {
+        showDialog(DLevel.Warning, err.toString());
+    } finally {
+        hideLoading();
+    }
 }
 
 async function olderPostedTweets() {
@@ -84,7 +89,7 @@ async function fillUserPostedTweetsList(clear) {
     return __fillNormalTweet(clear, 'tweets-post-by-user',
         cachedUserTweets.CachedItem,
         'tweetTemplateForUserSelf', "tweet-card-for-user-", false,
-        TweetDetailSource.NoNeed,function (tweetCard, tweetHeader, tweet) {
+        TweetDetailSource.NoNeed, function (tweetCard, tweetHeader, tweet) {
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
             tweetCard.querySelector('.tweet-content').style.cursor = "default";
             __checkPayment(tweetCard, tweet);
@@ -152,7 +157,7 @@ async function fillUserVotedTweetsList(clear) {
         cachedUserVotedTweets.CachedItem,
         'tweetTemplateForVoted',
         "tweet-card-for-vote-",
-        true,  TweetDetailSource.MyVoted,
+        true, TweetDetailSource.MyVoted,
         function (tweetCard, tweetHeader, tweet) {
 
             tweetCard.querySelector('.total-vote-number').textContent = tweet.vote_count;
@@ -194,10 +199,12 @@ async function showUserProfile(njUser) {
 }
 
 const cachedNinjaUserPostedTweets = new MemCachedTweets();
+
 async function olderNinjaUsrPostedTweets() {
     await __loadTweetAtUserPost(false, currentNinjaUsrLoading.eth_addr,
         cachedNinjaUserPostedTweets, fillNinjaUserPostedTweetsList)
 }
+
 async function loadPostedTweetsOfNjUsr() {
     curScrollContentID = 51;
 
