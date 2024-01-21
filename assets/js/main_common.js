@@ -140,7 +140,7 @@ async function TweetsQuery(param, newest, cacheObj) {
         }
         const tweetArray = await PostToSrvByJson("/tweetQuery", param);
 
-        cacheObj.moreOldTweets = tweetArray || newest || tweetArray.length !== 0 ;
+        cacheObj.moreOldTweets = tweetArray || newest || tweetArray.length !== 0;
 
         cachedToMem(tweetArray, cacheObj);
 
@@ -280,7 +280,7 @@ async function voteToTheTweet(obj, callback) {
             obj.vote_count = newVote.vote_count;
             __updateVoteNumberForTweet(obj, newVote).then(() => {
             });
-            if (shareToTweet) {
+            if (shareToTweet && ninjaUserObj.tw_id) {
                 __shareVoteToTweet(create_time, vote_count).then(() => {
                 });
             }
@@ -308,7 +308,7 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
             }
         }
         const response = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
-        if(!response){
+        if (!response) {
             return null;
         }
         NJUserBasicInfo.cacheNJUsrObj(response).then(() => {
@@ -331,7 +331,7 @@ async function withdrawAction(contract) {
         showDialog(DLevel.Success, "Transaction: " + txReceipt.status ? "success" : "failed");
     } catch (err) {
         checkMetamaskErr(err);
-    }finally {
+    } finally {
         hideLoading();
     }
 }

@@ -8,8 +8,12 @@
     <script src="/assets/js/abi_kol_key.js"></script>
     <script src="/assets/js/utils.js"></script>
     <script src="/assets/js/kol.js"></script>
-    <style>
-        .content-area > div {
+    <style about="main frame">
+
+        .top-range-area {
+            display: none;
+        }
+        .kol-setting-detail {
             display: none;
         }
 
@@ -61,6 +65,39 @@
         }
 
     </style>
+
+    <style about="user-kol-key-holder">
+        .user-kol-key-holder {
+            display: block;
+        }
+
+        .user-income-sum, .kol-list-tittle {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            background-color: #f2f2f2;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .income-info-val, .kol-address-no {
+            color: #007bff;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .kol-list-of-investor {
+            display: none;
+        }
+
+        .kol-card {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+    </style>
 </head>
 <body>
 
@@ -70,11 +107,49 @@
 
 <div class="main-container">
     <div class="menu-area">
-        <button onclick="showDiv('user-kol-key-holder')">我的Key</button>
-        <button onclick="showDiv('top-range-area')">排行榜</button>
-        <button onclick="showDiv('kol-setting-detail')">Kol设置</button>
+        <button class="active" onclick="showDiv.call(this, 'user-kol-key-holder')">我的Key</button>
+        <button onclick="showDiv.call(this, 'top-range-area')">排行榜</button>
+        <button onclick="showDiv.call(this, 'kol-setting-detail')">Kol设置</button>
     </div>
     <div class="content-area">
+        <div id="user-kol-key-holder" class="user-kol-key-holder">
+            <div class="user-income-sum">
+                <div class="income-info">总收入:<span class="income-info-val">0.02</span> eth</div>
+                <button class="income-withdraw-all">提现</button>
+            </div>
+            <div class="kol-list-tittle">
+                持有key详情(<span class="kol-address-no">2</span>)
+                <button class="kol-key-details" onclick="loadKeyDetails()">详情</button>
+            </div>
+            <div class="kol-list-of-investor">
+                <div class="kol-card">
+                    <div class="kol-header">
+                        <div class="kol-address">
+                            Kol地址： <span class="holder-address-val">0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</span>
+                        </div>
+                        <div class="key-income">
+                            收入：<span class="kol-income-val">0.023</span> eth
+                        </div>
+                        <div class="key-action">
+                            <button class="income-withdraw-by-one-kol">提现</button>
+                            <button class="transfer-key-of-one-kol">转出</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="holder-key-nonce">期次：第<span class="holder-key-nonce-val">1</span>期</div>
+                        <div class="holder-key-amount">持有量：<span class="holder-address-val">12</span>枚</div>
+                        <div class="holder-key-price">持有价格：<span class="holder-key-price-val">0.0002</span> eth/枚
+                        </div>
+                        <div class="holder-key-amount">价值：<span class="holder-address-val">0.002</span> eth</div>
+                        <div>
+                            <button>提现</button>
+                            <button>转出</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div id="top-range-area" class="top-range-area">
             <div class="kol-tops">
                 <table>
@@ -191,46 +266,11 @@
                 </div>
             </div>
         </div>
-        <div id="user-kol-key-holder" class="user-kol-key-holder">
-            <div class="user-income-sum">
-                <div class="income-info">总收入:<span class="income-info-val">0.02</span> eth</div>
-                <button>提现</button>
-            </div>
-            <div class="kol-list-of-investor">
-                <div class="kol-list-tittle">持有key详情(<span class="kol-address-no">2</span>)</div>
-
-                <div class="kol-card">
-                    <div class="kol-header">
-                        <div class="kol-address">
-                            Kol地址： <span class="holder-address-val">0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</span>
-                        </div>
-                        <div class="kol-income">
-                            收入：<span class="kol-income-val">0.023</span> eth
-                        </div>
-                        <div>
-                            <button>提现</button>
-                            <button>转出</button>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="holder-key-nonce">期次：第<span class="holder-key-nonce-val">1</span>期</div>
-                        <div class="holder-key-amount">持有量：<span class="holder-address-val">12</span>枚</div>
-                        <div class="holder-key-price">持有价格：<span class="holder-key-price-val">0.0002</span> eth/枚
-                        </div>
-                        <div class="holder-key-amount">价值：<span class="holder-address-val">0.002</span> eth</div>
-                        <div>
-                            <button>提现</button>
-                            <button>转出</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
 <script>
-    const ninjaUserObjWeb3ID = {{.eth_addr}};
+    const ninjaUserObjWeb3ID = "{{.EthAddr}}";
 
     function showDiv(divId) {
         document.querySelectorAll('.content-area > div').forEach(div => {
@@ -241,15 +281,15 @@
         document.querySelectorAll('.menu-area button').forEach(button => {
             button.classList.remove('active');
         });
-        event.currentTarget.classList.add('active');
+        this.classList.add('active');
     }
 
 
     document.addEventListener("DOMContentLoaded", initMainPage);
 
     async function initMainPage() {
-        showDiv('user-kol-key-holder');
         await checkMetaMaskEnvironment(initBlockChainContract);
+        await loadUserIncomeFromKey();
     }
 </script>
 </body>

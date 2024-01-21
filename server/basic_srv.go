@@ -127,16 +127,12 @@ func queryTwBasicById(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 }
 
 func showKolKeyPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
-	var kolBasicInfo any = nil
-	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "kol_key.html", kolBasicInfo)
+	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "kol_key.html", nu)
 	if err != nil {
 		util.LogInst().Err(err).Msg("main html failed")
 		http.Redirect(w, r, "/signIn", http.StatusFound)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(nu.RawData())
 }
 
 type OuterLinkParam struct {
