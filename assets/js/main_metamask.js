@@ -97,7 +97,6 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
 
     try {
         showWaiting("prepare to pay");
-        console.log(voteContractMeta.votePrice.mul);
         const amount = voteContractMeta.votePrice.mul(voteCount);
 
         const txResponse = await tweetVoteContract.voteToTweets(

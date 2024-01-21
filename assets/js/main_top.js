@@ -91,42 +91,49 @@ async function joinTeam(obj, hash, team_card) {
 }
 
 async function showTeammates(tweetHash, team_card) {
+
+    const memberPark = team_card.querySelector('.team-members')
+    memberPark.innerHTML = '';
+
+    const isShowing = memberPark.style.display === 'block';
+    if (isShowing) {
+        memberPark.style.display = 'none';
+        return;
+    }
+    memberPark.style.display = 'block';
     try {
         showWaiting("syncing members from block chain");
         if (!lotteryGameContract) {
-            hideLoading();
             return;
         }
         const allMates = await lotteryGameContract.teamMembers(gameContractMeta.curRound, tweetHash);
-        console.log(allMates);
         if (allMates.memNo === 0) {
-            hideLoading();
+            memberPark.style.display = 'none';
             showDialog("tips", "empty members")
             return;
         }
-        const memberPark = team_card.querySelector('.team-member-park');
-        memberPark.innerHTML = '';
+
         for (let i = 0; i < allMates.members.length; i++) {
-            const memberCard = document.getElementById('team-members-template').cloneNode(true);
+            const memberCard = team_card.querySelector('.team-member-card-template').cloneNode(true);
             memberCard.style.display = '';
+            memberCard.querySelector('.user-voted-count').innerText = allMates.voteNos[i];
+            memberCard.querySelector(".team-members-number").innerText = ""+i;
 
             const ethAddr = allMates.members[i];
-            loadNJUserInfoFromSrv(ethAddr, true).then(njUsr => {
-                if (!njUsr) {
-                    console.log("query nj user failed:", ethAddr);
-                    return;
-                }
-                __setOnlyHeader(memberCard, njUsr.tw_id);
-            });
+            const njUsr = await loadNJUserInfoFromSrv(ethAddr, true);
+            if (!njUsr.tw_id){
+                memberCard.querySelector(".team-membersAvatar").src=__defaultLogo;
+                memberCard.querySelector(".team-membersName").innerText = ethAddr;
+            }else{
+                await __setOnlyHeader(memberCard,njUsr.tw_id);
+            }
 
-            memberCard.querySelector('.user-voted-count').innerText = allMates.voteNos[i];
             memberPark.appendChild(memberCard);
         }
-
-        hideLoading();
     } catch (err) {
-        hideLoading();
         checkMetamaskErr(err);
+    } finally {
+        hideLoading();
     }
 }
 

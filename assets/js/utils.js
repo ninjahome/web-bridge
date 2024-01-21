@@ -532,14 +532,14 @@ let confirmCallback = null;
 function openVoteModal(callback) {
     const modal = document.getElementById("vote-no-chose-modal");
     modal.style.display = "block";
-    const voteCount = document.getElementById("voteCount");
+    const voteCount = document.getElementById("voteCountInChoseModal");
     voteCount.value = 1;
     confirmCallback = callback;
 }
 
 function confirmVoteModal() {
     if (confirmCallback) {
-        const voteCount = document.getElementById("voteCount").value;
+        const voteCount = document.getElementById("voteCountInChoseModal").value;
         const shareOnTwitter = document.getElementById("shareOnTwitter").checked;
         confirmCallback(voteCount, shareOnTwitter);
     }
@@ -552,12 +552,12 @@ function closeVoteModal() {
 }
 
 function increaseVote() {
-    const voteCount = document.getElementById("voteCount");
+    const voteCount = document.getElementById("voteCountInChoseModal");
     voteCount.value = parseInt(voteCount.value) + 1;
 }
 
 function decreaseVote() {
-    const voteCountElement = document.getElementById("voteCount");
+    const voteCountElement = document.getElementById("voteCountInChoseModal");
     const newVoteCount = Math.max(1, parseInt(voteCountElement.value) - 1);
     voteCountElement.value = newVoteCount.toString();
 }

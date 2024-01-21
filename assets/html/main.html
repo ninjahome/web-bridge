@@ -377,6 +377,7 @@
             background: #4848D8;
             color: #fff;
         }
+
         .show-team-mates {
             color: #4848D8;
         }
@@ -408,6 +409,7 @@
             width: 42px;
             text-align: center;
         }
+
         .team-members-topOne {
             color: #ffffff;
             font-weight: bold;
@@ -423,6 +425,7 @@
             background-repeat: no-repeat; /* 防止背景图重复 */
             background-position: center; /* 背景图居中 */
         }
+
         .team-members-topThree {
             color: #ffffff;
             font-weight: bold;
@@ -430,7 +433,8 @@
             background-repeat: no-repeat; /* 防止背景图重复 */
             background-position: center; /* 背景图居中 */
         }
-        .team-members-topOther{
+
+        .team-members-topOther {
             color: #ffffff;
             font-weight: bold;
             background-image: url('/assets/file/top4-img.png'); /* 将 'path_to_your_image.jpg' 替换为你的图片路径 */
@@ -468,36 +472,49 @@
 
     </style>
     <style about="user profile detail vid">
-        .hover-card img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+
+        .hover-card-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #F7F8F9;
+
         }
 
         .hover-card-content {
-            margin-left: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #7E7F82;
+            margin-top: 8px;
         }
 
         .buy-key-button {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            padding: 5px 10px;
-            background-color: #4CAF50;
-            color: white;
+            padding: 2px 0;
+            color: #7E7F82;
+            background-color: transparent;
             border: none;
-            border-radius: 4px;
+            border-bottom: 1px solid #D3D5D6;
             cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .buy-key-button:hover {
+            color: #4848D8 ;
+            border-bottom: 1px solid #4848D8;
         }
 
         .hover-card {
-            display: none; /* 默认不显示 */
+            display: block; /* 默认不显示 */
             position: absolute;
             z-index: 5;
-            padding: 10px;
-            background: white;
+            width: 340px;
+            padding: 16px;
+            background: #ffffff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            border-radius: 5px;
+            border-radius: 12px;
             top: 100%; /* 定位到 tweet-header 下方 */
             left: 0;
         }
@@ -1017,7 +1034,7 @@
               onclick="showFullTweetContent.call(this)">更多</span>
     </div>
     <div class="middle-content-area">
-        <div id="middle-div-home" class="content-in-middle-area ">
+        <div id="middle-div-home" class="content-in-middle-area active">
             <div id="tweetTemplateForHomePage" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
                     <div class="tweet-info">
@@ -1036,13 +1053,14 @@
             </div>
             <div class="tweets-park" id="tweets-park"></div>
         </div>
-        <div id="middle-div-leaderboard" class="content-in-middle-area active">
+        <div id="middle-div-leaderboard" class="content-in-middle-area">
             <div class="topic-switch">
                 <button onclick="initTopPage()">推文排行榜</button>
-                <button onclick="switchToTopTeam(true)">彩票团队排行榜</button>
+                <button onclick="switchToTopTeam()">彩票团队排行榜</button>
                 <button onclick="switchToTopKol()">KOL人气排行榜</button>
                 <button onclick="switchToTopVoter()">投票人排行榜</button>
             </div>
+
             <div id="tweetTemplateForTop" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
                     <div class="tweet-info">
@@ -1057,7 +1075,10 @@
                     </div>
                 </div>
             </div>
-            <div class="team-card" id="team-card-in-top-template" style="display: block">
+
+            <div class="tweets-park" id="top-most-voted-tweet"></div>
+
+            <div class="team-card" id="team-card-in-top-template" style="display: none">
                 <div class="team-leader-info"> <!-- 新加 div 和 class -->
                     <div class="team-leader">
                         <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar">
@@ -1066,10 +1087,15 @@
                             <span class="username twitterUserName">@wesley777</span>
                             <span style="padding: 2px 12px; border: 1px solid #4848D8; background: transparent; color: #4848D8; border-radius: 18px">队长</span>
                             <div class="team-info">
-                                <span>票数<span class="team-voted-count" style="padding: 0 4px 0 0; font-weight: bold; color: #DE4033">120</span></span>  <!-- 加了span -->
-                                <span>人数<span class="team-members-count" style="padding: 0 4px 0 0; font-weight: bold; color: #4848D8">20</span></span> <!-- 加了span -->
+                                <span>票数<span class="team-voted-count"
+                                                style="padding: 0 4px 0 0; font-weight: bold; color: #DE4033">120</span></span>
+                                <!-- 加了span -->
+                                <span>人数<span class="team-members-count"
+                                                style="padding: 0 4px 0 0; font-weight: bold; color: #4848D8">20</span></span>
+                                <!-- 加了span -->
                             </div>
-                            <div class="team-id" onclick="showTweetDetail.call(this, '.team-card')" style="cursor: pointer">
+                            <div class="team-id" onclick="showTweetDetail.call(this, '.team-card')"
+                                 style="cursor: pointer">
                                 团队ID:<span
                                         class="team-id-txt">0xd57a74ac6f606422ffaa1612fb3ad766569b4d4172a78c3989383592689cbfbb</span>
                             </div>
@@ -1079,108 +1105,25 @@
                         <button class="join-team">加入</button>
                         <button class="show-team-mates">队伍信息</button>
                     </div>
-
                 </div>
-
-                <div class="team-member-park"></div>
-                <ul class="team-members" id="team-members-template" style="display: block">
-                    <li>
-                        <div><!-- 加了 div -->
-                            <div class="team-members-number">1</div>
-                            <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
-                            <div class="name twitterName team-membersName">nan
-                                <span class="username twitterUserName" style="font-weight: lighter">@123nan</span>
-                            </div>
-
-                        </div>
-                        <div class="user-voted-count user-voted-count-top">123</div> <!-- span 改 div -->
-                    </li>
-                    <li>
-                        <div><!-- 加了 div -->
-                            <div class="team-members-number">2</div>
-                            <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
-                            <div class="name twitterName team-membersName">
-                                wesley
-                                <span class="username twitterUserName" style="font-weight: lighter">@weley@123</span>
-                            </div>
-
-                        </div>
-                        <div class="user-voted-count user-voted-count-top">123</div> <!-- span 改 div -->
-                    </li>
-                    <li>
-                        <div><!-- 加了 div -->
-                            <div class="team-members-number">3</div>
-                            <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
-                            <div class="name twitterName team-membersName">
-                                wesley
-                                <span class="username twitterUserName" style="font-weight: lighter">@weley@123</span>
-                            </div>
-
-                        </div>
-                        <div class="user-voted-count user-voted-count-top">123</div> <!-- span 改 div -->
-                    </li>
-                    <li>
-                        <div><!-- 加了 div -->
-                            <div class="team-members-number">4</div>
-                            <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
-                            <div class="name twitterName team-membersName">
-                                wesley
-                                <span class="username twitterUserName" style="font-weight: lighter">@weley@123</span>
-                            </div>
-
-                        </div>
-                        <div class="user-voted-count">123</div> <!-- span 改 div -->
-                    </li>
-                </ul>
-
-
-                <ul class="team-members" id="team-members-template" style="display: block">
-                    <li>
-                        <div class="team-members-number team-members-topOne ">1</div>
+                <li class="team-member-card-template" style="display: none">
+                    <div>
+                        <div class="team-members-number">1</div>
                         <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
-                        <div class="name twitterName team-membersName">
-                            nancy
-                            <span class="username twitterUserName" style="font-weight: lighter">@nacyboss</span>
+                        <div class="team-membersName"><span class="name twitterName ">nan</span>
+                            <span class="username twitterUserName" style="font-weight: lighter">@123nan</span>
                         </div>
-                    </li>
-                    <li>
-                        <div class="team-members-number team-members-topTwo ">2</div>
-                        <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
-                        <div class="name twitterName team-membersName">
-                            nancy
-                            <span class="username twitterUserName" style="font-weight: lighter">@nacyboss</span>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="team-members-number team-members-topThree ">3</div>
-                        <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
-                        <div class="name twitterName team-membersName">
-                            nancy
-                            <span class="username twitterUserName" style="font-weight: lighter">@nacyboss</span>
-                        </div>
-                    </li>
-                    <li>
-                        <div class="team-members-number team-members-topOther">4</div>
-                        <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
-                        <div class="name twitterName team-membersName">
-                            nancy
-                            <span class="username twitterUserName" style="font-weight: lighter">@nacyboss</span>
-                        </div>
-                    </li>
-                </ul>
+                    </div>
+                    <div class="user-voted-count user-voted-count-top">123</div> <!-- span 改 div -->
+                </li>
+                <ul class="team-members" style="display: none"> </ul>
             </div>
-            <div class="tweets-park" id="top-most-voted-tweet"></div>
-            <div class="tweets-park" id="top-hot-tweet-team"></div>
-            <div id="ninjaUserCardTemplate" class="ninja-user-card" style="display: block">
-                <span class="voteOrVotedRangeNo"></span>
-                <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar">
-                <span class="name twitterName">wesley</span>
-                <span class="username twitterUserName">weley@123</span>
-                <span class="voteOrVotedNos">123</span>
-            </div>
+
+            <div id="top-hot-tweet-team"></div>
             <div class="tweets-park" id="top-hot-Kol"></div>
             <div class="tweets-park" id="top-hot-voter"></div>
         </div>
+
         <div id="middle-div-user-tweets" class="content-in-middle-area">
             <div class="user-tweet-top-button-area">
                 <button onclick="loadTweetsUserPosted()">我的推文</button>
@@ -1280,7 +1223,8 @@
             </div>
         </div>
         <div id="tweet-detail" class="tweet-detail" style="display: none;">
-            <button id="back-button" class="back-button"><img src="/assets/file/header-back-icon.png" alt=" ">返回</button>
+            <button id="back-button" class="back-button"><img src="/assets/file/header-back-icon.png" alt=" ">返回
+            </button>
             <div class="tweet-header">
                 <img src="" alt="Avatar" class="twitterAvatar">
                 <span class="name twitterName"></span>
@@ -1379,17 +1323,23 @@
         </div>
     </div>
 </div>
+
 <div class="hover-card" id="hover-card" onmouseleave="hideHoverCard(this)">
-    <img src="" alt="Avatar" id="hover-avatar" class="twitterAvatar">
-    <div id="hover-name" class="name twitterName"></div>
-    <span id="hover-user-name" class="username twitterUserName">@wsliss</span>
-    <div class="hover-card-content">
-        <div>推文总数: <span id="hover-tweet-count"></span></div>
-        <div>被打赏数: <span id="hover-vote-count"></span></div>
-        <div>打赏数: <span id="hover-voted-count"></span></div>
+    <div class="hover-card-info">
+        <div style=" display: flex; align-items: center;">
+            <img src="/assets/file/logo.png" alt="Avatar" id="hover-avatar" class="twitterAvatar">
+            <span id="hover-name" class="name twitterName">wesley</span>
+            <span id="hover-user-name" class="username twitterUserName">@wsliss</span>
+        </div>
+        <button id="buy-key-button" class="buy-key-button">查看详情 >></button>
     </div>
-    <button id="buy-key-button" class="buy-key-button">查看详情</button>
+    <div class="hover-card-content">
+        <div>推文总数: <span id="hover-tweet-count" style="font-size: 16px; font-weight: bold; color: #4848D8">2</span></div>
+        <div>被打赏数: <span id="hover-vote-count" style="font-size: 16px; font-weight: bold; color: #DE4033">3</span></div>
+        <div>打赏数: <span id="hover-voted-count"></span>4</div>
+    </div>
 </div>
+
 <div id="vote-no-chose-modal" class="vote-chose-modal-class">
     <div class="vote-no-modal-content">
         <div class="vote-no-modal-header">
@@ -1402,7 +1352,7 @@
                 <button id="decreaseVote" onclick="decreaseVote()"
                         style="border-bottom-left-radius: 12px;border-top-left-radius: 12px">-
                 </button>
-                <input type="number" id="voteCount" value="1" min="1">
+                <input type="number" id="voteCountInChoseModal" value="1" min="1">
                 <button id="increaseVote" onclick="increaseVote()"
                         style="border-bottom-right-radius: 12px;border-top-right-radius: 12px">+
                 </button>
@@ -1452,16 +1402,16 @@
     }
 
     async function initMainPage() {
-        try{
+        try {
             showWaiting("loading from block chain");
 
             initNjBasic();
             await checkMetaMaskEnvironment(initBlockChainContract);
             await loadTweetsForHomePage();
             await showTargetTweetDetail();
-        }catch (err){
-            showDialog(DLevel.Warning,err.toString());
-        }finally {
+        } catch (err) {
+            showDialog(DLevel.Warning, err.toString());
+        } finally {
             hideLoading();
         }
 
