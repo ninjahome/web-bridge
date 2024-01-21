@@ -1,13 +1,19 @@
-function initTopDivStatus(showID) {
+function initTopDivStatus(showID, idx) {
     const parent = document.getElementById("middle-div-leaderboard");
     parent.querySelectorAll(".top-div").forEach(r => r.style.display = 'none')
     document.getElementById(showID).style.display = 'block';
+    if (!idx) {
+        idx = 0;
+    }
+    const buttons = parent.querySelectorAll(".top-topic-btn");
+    buttons.forEach(r => r.classList.remove("active"));
+    buttons[idx].classList.add("active");
 }
 
 async function switchToTopTeam() {
     try {
         curScrollContentID = 12;
-        initTopDivStatus("top-hot-tweet-team");
+        initTopDivStatus("top-hot-tweet-team", 1);
 
         showWaiting("syncing from block chain");
         if (!gameContractMeta) {
@@ -69,7 +75,7 @@ async function fulfillTopTeam(cachedTopTeam) {
             tweetHeader.querySelector('.team-id').style.cursor = 'default';
             tweetHeader.querySelector('.twitterAvatar').src = __defaultLogo;
             tweetHeader.querySelector('.twitterName').textContent = "非本系统推文";
-        }else{
+        } else {
             await __setOnlyHeader(tweetHeader, tweet.twitter_id);
             team_card.dataset.createTime = tweet.create_time;
             team_card.querySelector('.team-id-txt').onclick = () =>
@@ -118,15 +124,15 @@ async function showTeammates(tweetHash, team_card) {
             const memberCard = document.getElementById('team-member-card-template').cloneNode(true);
             memberCard.style.display = '';
             memberCard.querySelector('.user-voted-count').innerText = allMates.voteNos[i];
-            memberCard.querySelector(".team-members-number").innerText = ""+i;
+            memberCard.querySelector(".team-members-number").innerText = "" + i;
 
             const ethAddr = allMates.members[i];
             const njUsr = await loadNJUserInfoFromSrv(ethAddr, true);
-            if (!njUsr.tw_id){
-                memberCard.querySelector(".team-membersAvatar").src=__defaultLogo;
+            if (!njUsr.tw_id) {
+                memberCard.querySelector(".team-membersAvatar").src = __defaultLogo;
                 memberCard.querySelector(".team-membersName").innerText = ethAddr;
-            }else{
-                await __setOnlyHeader(memberCard,njUsr.tw_id);
+            } else {
+                await __setOnlyHeader(memberCard, njUsr.tw_id);
             }
 
             memberPark.appendChild(memberCard);
@@ -160,7 +166,8 @@ async function initTopPage() {
     try {
         showWaiting("loading...");
         curScrollContentID = 1;
-        initTopDivStatus("top-most-voted-tweet");
+        initTopDivStatus("top-most-voted-tweet", 0);
+
         await __loadMostVotedTweets(true);
     } catch (err) {
         console.log(err);
@@ -211,7 +218,7 @@ const cachedTopVotedKolUser = new MemCachedTweets();
 
 async function switchToTopKol() {
     curScrollContentID = 13;
-    initTopDivStatus("top-hot-Kol");
+    initTopDivStatus("top-hot-Kol", 2);
     await __loadMostVotedKolUserInfo("top-hot-Kol", cachedTopVotedKolUser, true, false);
 }
 
@@ -271,13 +278,13 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
 
         const rankNo = njUsrCard.querySelector(".team-members-number");
         rankNo.innerText = userRankStartNo;
-        if (userRankStartNo === 1){
+        if (userRankStartNo === 1) {
             rankNo.classList.add('team-members-topOne');
-        }else if  (userRankStartNo === 2){
+        } else if (userRankStartNo === 2) {
             rankNo.classList.add('team-members-topTwo');
-        }else if  (userRankStartNo === 3){
+        } else if (userRankStartNo === 3) {
             rankNo.classList.add('team-members-topThree');
-        }else{
+        } else {
             rankNo.classList.add('team-members-topOther');
         }
 
@@ -296,7 +303,7 @@ const cachedTopVoterUser = new MemCachedTweets();
 
 async function switchToTopVoter() {
     curScrollContentID = 14;
-    initTopDivStatus("top-hot-voter");
+    initTopDivStatus("top-hot-voter", 3);
     await __loadMostVotedKolUserInfo("top-hot-voter", cachedTopVoterUser, true, true);
 }
 

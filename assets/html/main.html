@@ -107,7 +107,7 @@
             border-bottom: 1px solid #F7F8F9;
         }
 
-        .topic-switch button {
+        .top-topic-btn {
             background-color: transparent;
             border: none;
             font-size: 15px;
@@ -116,14 +116,14 @@
         }
 
         /* 鼠标经过按钮时的样式 */
-        .topic-switch button:hover {
+        .top-topic-btn:hover {
             background-color: #F7F8F9;
             border-radius: 999px;
             height: 42px;
         }
 
         /* 按钮被点击时的样式 */
-        .topic-switch button:active {
+        .top-topic-btn.active {
             background-color: #F7F8F9;
             border-radius: 999px;
             color: #4848D8;
@@ -502,7 +502,7 @@
         }
 
         .buy-key-button:hover {
-            color: #4848D8 ;
+            color: #4848D8;
             border-bottom: 1px solid #4848D8;
         }
 
@@ -1055,10 +1055,10 @@
         </div>
         <div id="middle-div-leaderboard" class="content-in-middle-area">
             <div class="topic-switch">
-                <button onclick="initTopPage()">推文排行榜</button>
-                <button onclick="switchToTopTeam()">彩票团队排行榜</button>
-                <button onclick="switchToTopKol()">KOL人气排行榜</button>
-                <button onclick="switchToTopVoter()">投票人排行榜</button>
+                <button class="top-topic-btn" onclick="initTopPage()">推文排行榜</button>
+                <button class="top-topic-btn" onclick="switchToTopTeam()">彩票团队排行榜</button>
+                <button class="top-topic-btn" onclick="switchToTopKol()">KOL人气排行榜</button>
+                <button class="top-topic-btn" onclick="switchToTopVoter()">投票人排行榜</button>
             </div>
 
             <div id="tweetTemplateForTop" class="tweet-card" style="display: none;">
@@ -1113,7 +1113,7 @@
                     </div>
                 </div>
 
-                <ul class="team-members" style="display: none"> </ul>
+                <ul class="team-members" style="display: none"></ul>
             </div>
             <div id="top-hot-tweet-team" class="top-div"></div>
             <ul class="team-members  top-div" style="display: none" id="top-hot-Kol"></ul>
@@ -1330,8 +1330,10 @@
         <button id="buy-key-button" class="buy-key-button">查看详情 >></button>
     </div>
     <div class="hover-card-content">
-        <div>推文总数: <span id="hover-tweet-count" style="font-size: 16px; font-weight: bold; color: #4848D8">2</span></div>
-        <div>被打赏数: <span id="hover-vote-count" style="font-size: 16px; font-weight: bold; color: #DE4033">3</span></div>
+        <div>推文总数: <span id="hover-tweet-count" style="font-size: 16px; font-weight: bold; color: #4848D8">2</span>
+        </div>
+        <div>被打赏数: <span id="hover-vote-count" style="font-size: 16px; font-weight: bold; color: #DE4033">3</span>
+        </div>
         <div>打赏数: <span id="hover-voted-count"></span>4</div>
     </div>
 </div>
