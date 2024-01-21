@@ -93,7 +93,7 @@
         }
 
         .content-in-middle-area {
-            display: block; /* 默认隐藏所有内容 */
+            display: none; /* 默认隐藏所有内容 */
         }
 
         .content-in-middle-area.active {
@@ -906,11 +906,15 @@
             top: 100%;
             left: 50%;
             margin-left: 212px;
-            box-shadow: 0 12px 18px 0 rgba(0,0,0,0.3);
+            box-shadow: 0 12px 18px 0 rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.5s ease, visibility 0s linear 0.5s;
         }
 
         .user-settings-icon:hover .user-tooltip {
             visibility: visible;
+            opacity: 1;
+            transition: opacity 0.5s ease;
         }
 
         .user-settings-icon img {
@@ -920,6 +924,7 @@
             width: 28px;
             margin: auto;
         }
+
         .user-tooltip ul {
             list-style: none;
             padding: 0;
@@ -933,6 +938,7 @@
             white-space: nowrap;
             margin: 6px;
         }
+
         .user-tooltip ul li a {
             color: #1B1B1D;
             text-decoration: none; /* 去除下划线 */
@@ -1291,12 +1297,12 @@
         </div>
         <div id="middle-div-about-user" class="content-in-middle-area">
             <div class="user-settings">
-                <div class="user-settings-icon">
-                    <img src="/assets/file/settings-icon.png" alt="设置"> <!-- 替换为你的图标文件路径 -->
+                <div class="user-settings-icon" >
+                    <img src="/assets/file/settings-icon.png" alt="设置">
                     <div class="user-setting-action user-tooltip">
                         <ul>
-                            <li><a onclick="quitFromService()" >退出</a></li>
-                            <li><a onclick="clearCachedData()" >清除缓存</a></li>
+                            <li><a onclick="quitFromService()">退出</a></li>
+                            <li><a onclick="clearCachedData()">清除缓存</a></li>
                         </ul>
                     </div>
                 </div>
@@ -1452,8 +1458,9 @@
                     <span class="lottery-stats-unit">张</span>
                 </div>
                 <button class="lottery-participate-btn" onclick="openLotteryMainPage()">我的彩票</button>
-                <div class="rule-info" >
-                    <h4 style="margin-top: 6px;margin-bottom: 4px">本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与</h4>
+                <div class="rule-info">
+                    <h4 style="margin-top: 6px;margin-bottom: 4px">
+                        本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与</h4>
                     <ul>
                         购买彩票的方式为:
                         <li>
@@ -1485,7 +1492,7 @@
     <img src="" alt="Avatar" id="hover-avatar" class="twitterAvatar">
     <div id="hover-name" class="name twitterName"></div>
     <span id="hover-user-name" class="username twitterUserName"> @wsliss </span>
-
+    <button id="buy-key-button" class="buy-key-button">查看详情 >></button>
     <div class="hover-card-content">
         <div>推文总数: <span id="hover-tweet-count" style="font-size: 16px; font-weight: bold; color: #4848D8">2</span>
         </div>

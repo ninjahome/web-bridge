@@ -222,7 +222,6 @@ async function showTweetDetail(parentEleID, tweet) {
         parentNode.style.display = 'block';
         detail.style.display = 'none';
     }
-    detail.querySelector('.tweet-create_time').textContent = formatTime(tweet.create_time);
     detail.querySelector('.tweet-web3_id').textContent = tweet.web3_id;
     detail.querySelector('.tweet-prefixed-hash').textContent = tweet.prefixed_hash;
     detail.querySelector('.tweet-signature').textContent = tweet.signature;
