@@ -23,11 +23,8 @@ async function loadTweetsForHomePage() {
     const tweetsDiv = document.getElementById('tweets-park');
     tweetsDiv.style.display = 'block';
     showWaiting("loading.....");
-    __loadTweetsAtHomePage(true).then(r => {
-        console.log("load newest global tweets success");
-    }).finally(r => {
-        hideLoading();
-    });
+    await __loadTweetsAtHomePage(true);
+    hideLoading();
 }
 
 async function loadOlderTweetsForHomePage() {
@@ -51,13 +48,10 @@ async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) 
         }
 
         const response = await GetToSrvByJson("/queryTwBasicById?twitterID=" + twitterID + "&&forceSync=" + syncFromTwitter);
-        if (!response.ok) {
-            console.log("query twitter basic info failed")
+        if (!response) {
             return null;
         }
-
-        const text = await response.text();
-        return TwitterBasicInfo.cacheTwBasicInfo(text);
+        return TwitterBasicInfo.cacheTwBasicInfo(response);
     } catch (err) {
         console.log("queryTwBasicById err:", err)
         return null;
@@ -78,14 +72,14 @@ async function __fillNormalTweet(clear, parkID, data, templateId, cardID, overla
         tweetCard.dataset.createTime = tweet.create_time;
         const tweetHeader = document.getElementById('tweet-header-template').cloneNode(true);
         tweetHeader.style.display = '';
-        tweetHeader.id="";
+        tweetHeader.id = "";
 
 
         const sibling = tweetCard.querySelector('.tweet-footer')
         const contentArea = await setupCommonTweetHeader(tweetHeader, tweet, overlap);
 
-        if (TweetDetailSource.NoNeed !== detailType){
-            contentArea.onclick =()=>showTweetDetail(parkID,tweet,detailType)
+        if (TweetDetailSource.NoNeed !== detailType) {
+            contentArea.onclick = () => showTweetDetail(parkID, tweet)
         }
 
         tweetCard.insertBefore(tweetHeader, sibling);
@@ -152,20 +146,18 @@ function updatePaymentStatusToSrv(tweet) {
 async function postTweetWithPayment() {
     try {
         const tweetObj = await preparePostMsg();
-        if(!tweetObj){
+        if (!tweetObj) {
             return;
         }
         showWaiting("posting to twitter");
-        const resp = await PostToSrvByJson("/postTweet", tweetObj);
-        if (!resp) {
-            hideLoading();
-            showDialog(DLevel.Error, "post tweet failed");
+        const basicTweet = await PostToSrvByJson("/postTweet", tweetObj);
+        if (!basicTweet) {
             return;
         }
-        const basicTweet = JSON.parse(resp);
         hideLoading();
         await procPaymentForPostedTweet(basicTweet);
 
+        showWaiting("updating tweet status")
         await updatePaymentStatusToSrv(basicTweet)
 
         if (curScrollContentID === 0) {
@@ -181,6 +173,7 @@ async function postTweetWithPayment() {
     } catch (err) {
         checkMetamaskErr(err);
     } finally {
+        hideLoading();
         closePostTweetDiv();
     }
 }

@@ -68,9 +68,8 @@ function contentScroll() {
     }
 
     cacheObj.isLoading = true;
-    uiCallback().then(r => {
-        console.log("common load latest older data");
-    }).finally(r => {
+    uiCallback().then(() => {
+    }).finally(() => {
         cacheObj.isLoading = false;
     });
 }
@@ -81,7 +80,7 @@ function clearCachedData() {
     window.location.href = "/signIn";
 }
 
-async function showHoverCard(event,twitterObj, web3ID) {
+async function showHoverCard(event, twitterObj, web3ID) {
 
     const hoverCard = document.getElementById('hover-card');
     const rect = event.currentTarget.getBoundingClientRect();
@@ -120,6 +119,9 @@ function hideHoverCard(obj) {
 }
 
 function cachedToMem(tweetArray, cacheObj) {
+    if (!tweetArray) {
+        return;
+    }
     tweetArray.map(tweet => {
         __globalTweetMemCache.set(tweet.create_time, tweet);
         __globalTweetMemCacheByHash.set(tweet.prefixed_hash, tweet);
@@ -136,17 +138,15 @@ async function TweetsQuery(param, newest, cacheObj) {
         if (newest) {
             cacheObj.latestID = 0;
         }
-        const resp = await PostToSrvByJson("/tweetQuery", param);
-        if (!resp) {
-            return false;
-        }
-        const tweetArray = JSON.parse(resp);
+        const tweetArray = await PostToSrvByJson("/tweetQuery", param);
 
-        cacheObj.moreOldTweets = tweetArray.length !== 0 || newest;
+        cacheObj.moreOldTweets = tweetArray || newest || tweetArray.length !== 0 ;
+
         cachedToMem(tweetArray, cacheObj);
 
         return cacheObj.CachedItem.length > 0;
     } catch (err) {
+        console.log(err);
         throw new Error(err);
     }
 }
@@ -181,23 +181,22 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
 
     if (overlap) {
-        const tweetCard = wrappedHeader.parentNode;
-        wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event,twitterObj, tweet.web3_id));
-        wrappedHeader.addEventListener('mouseleave', (event) => hideHoverCard(wrappedHeader));
+        wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, tweet.web3_id));
+        wrappedHeader.addEventListener('mouseleave', () => hideHoverCard(wrappedHeader));
     }
     return contentArea;
 }
 
 function refreshTwitterInfo() {
     showWaiting("tips", "loading from twitter server");
-    loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true).then(async twInfo => {
+    loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true).then(async () => {
         hideLoading();
         await setupUserBasicInfoInSetting();
     })
 }
 
 function quitFromService() {
-    fetch("/signOut", {method: 'GET'}).then(r => {
+    fetch("/signOut", {method: 'GET'}).then(() => {
         window.location.href = "/signIn";
     }).catch(err => {
         console.log(err)
@@ -205,7 +204,7 @@ function quitFromService() {
     })
 }
 
-async function showTweetDetail(parentEleID, tweet, detailType) {
+async function showTweetDetail(parentEleID, tweet) {
     const detail = document.querySelector('#tweet-detail');
     detail.style.display = 'block';
 
@@ -219,29 +218,22 @@ async function showTweetDetail(parentEleID, tweet, detailType) {
     await __setOnlyHeader(detail, tweet.twitter_id);
 
     detail.querySelector('.tweet-text').textContent = tweet.text;
-    detail.querySelector('#tweet-prefixed-hash').textContent = tweet.prefixed_hash;
     detail.querySelector('.back-button').onclick = () => {
         parentNode.style.display = 'block';
         detail.style.display = 'none';
     }
-
-    const counter = detail.querySelector('.vote-number');
-    counter.textContent = tweet.vote_count;
-    __showVoteButton(detail, tweet, function (newVote) {
-        counter.textContent = newVote.vote_count;
-    });
-
-    const statusElem = detail.querySelector('.tweetPaymentStatus');
-    statusElem.textContent = TXStatus.Str(tweet.payment_status);
-    if (detailType !== 3 && tweet.payment_status !== TXStatus.NoPay) {
-        detail.querySelector('.tweetRemoveUnPaid').style.display = 'none';
-    }
+    detail.querySelector('.tweet-create_time').textContent = formatTime(tweet.create_time);
+    detail.querySelector('.tweet-web3_id').textContent = tweet.web3_id;
+    detail.querySelector('.tweet-prefixed-hash').textContent = tweet.prefixed_hash;
+    detail.querySelector('.tweet-signature').textContent = tweet.signature;
+    detail.querySelector('.tweet-payment_status').textContent = TXStatus.Str(tweet.payment_status);
+    detail.querySelector('.tweet-vote-number').textContent = tweet.vote_count;
 }
 
-function __showVoteButton(tweetCard, tweet, callback) {
+async function __showVoteButton(tweetCard, tweet, callback) {
     const voteBtn = tweetCard.querySelector('.tweet-action-vote');
     if (!voteContractMeta) {
-        return;
+        await initVoteContractMeta();
     }
     tweetCard.querySelector('.tweet-action-vote-val').textContent = voteContractMeta.votePriceInEth;
     voteBtn.onclick = () => voteToTheTweet(tweet, callback);
@@ -286,10 +278,10 @@ async function voteToTheTweet(obj, callback) {
         procTweetVotePayment(voteCount, obj, async function (create_time, vote_count) {
             const newVote = await updateVoteStatusToSrv(create_time, vote_count);
             obj.vote_count = newVote.vote_count;
-            __updateVoteNumberForTweet(obj, newVote).then(r => {
+            __updateVoteNumberForTweet(obj, newVote).then(() => {
             });
             if (shareToTweet) {
-                __shareVoteToTweet(create_time, vote_count).then(r => {
+                __shareVoteToTweet(create_time, vote_count).then(() => {
                 });
             }
             if (callback) {
@@ -300,12 +292,10 @@ async function voteToTheTweet(obj, callback) {
 }
 
 async function updateVoteStatusToSrv(create_time, vote_count) {
-    const resp = await PostToSrvByJson("/updateTweetVoteStatus", {
+    return await PostToSrvByJson("/updateTweetVoteStatus", {
         create_time: create_time,
         vote_count: Number(vote_count),
     });
-    console.log(resp);
-    return JSON.parse(resp);
 }
 
 async function loadNJUserInfoFromSrv(ethAddr, useCache) {
@@ -317,18 +307,14 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
                 return nj_data;
             }
         }
-
         const response = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
-        if (!response.ok) {
-            console.log("query twitter basic info failed")
+        if(!response){
             return null;
         }
-
-        const obj = await response.json();
-        NJUserBasicInfo.cacheNJUsrObj(obj).then(r => {
+        NJUserBasicInfo.cacheNJUsrObj(response).then(() => {
         })
 
-        return obj;
+        return response;
     } catch (err) {
         console.log("queryTwBasicById err:", err)
         return null;
@@ -339,16 +325,14 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
 async function withdrawAction(contract) {
     try {
         const txResponse = await contract.withdraw("0x00", true);
-        console.log("Transaction Response: ", txResponse);
         showWaiting("prepare to withdraw:" + txResponse.hash);
 
         const txReceipt = await txResponse.wait();
-        console.log("Transaction Receipt: ", txReceipt);
-
-        showDialog(DLevel.Tips, "Transaction: " + txReceipt.status ? "success" : "failed");
-        hideLoading();
+        showDialog(DLevel.Success, "Transaction: " + txReceipt.status ? "success" : "failed");
     } catch (err) {
         checkMetamaskErr(err);
+    }finally {
+        hideLoading();
     }
 }
 
@@ -357,7 +341,7 @@ async function showTargetTweetDetail() {
         return;
     }
 
-    await showTweetDetail('tweets-park', targetTweet, TweetDetailSource.HomePage);
+    await showTweetDetail('tweets-park', targetTweet);
 
     const protocol = window.location.protocol;
     const host = window.location.host;

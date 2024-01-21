@@ -1,17 +1,22 @@
 const cachedUserTweets = new MemCachedTweets();
 
 async function loadTweetsUserPosted() {
-    curScrollContentID = 2;
+    try {
+        curScrollContentID = 2;
+        showWaiting("loading...");
+        const tweetsDiv = document.getElementById('tweets-post-by-user');
+        tweetsDiv.style.display = 'block';
+        const votedDiv = document.getElementById('tweets-voted-by-user');
+        votedDiv.style.display = 'none';
+        const detail = document.querySelector('#tweet-detail');
+        detail.style.display = 'none';
+        await __loadTweetAtUserPost(true, ninjaUserObj.eth_addr, cachedUserTweets, fillUserPostedTweetsList);
 
-    const tweetsDiv = document.getElementById('tweets-post-by-user');
-    tweetsDiv.style.display = 'block';
-    const votedDiv = document.getElementById('tweets-voted-by-user');
-    votedDiv.style.display = 'none';
-    const detail = document.querySelector('#tweet-detail');
-    detail.style.display = 'none';
-    __loadTweetAtUserPost(true, ninjaUserObj.eth_addr, cachedUserTweets, fillUserPostedTweetsList).then(r => {
-        console.log("load newest tweets of user posted success");
-    });
+    } catch (err) {
+        showDialog(DLevel.Warning, err.toString());
+    } finally {
+        hideLoading();
+    }
 }
 
 async function olderPostedTweets() {
@@ -41,17 +46,19 @@ function __checkPayment(tweetCard, tweet) {
     }
 
     const retryButton = tweetCard.querySelector('.tweetPaymentRetry');
+    const deleteButton = tweetCard.querySelector('.tweetPaymentDelete');
+
     retryButton.classList.add('show');
     retryButton.onclick = () => procPaymentForPostedTweet(tweet, function (newObj) {
         updatePaymentStatusToSrv(newObj).then();
         __globalTweetMemCache.set(newObj.create_time, newObj);
         if (newObj.payment_status !== TXStatus.NoPay) {
             retryButton.classList.remove('show');
+            deleteButton.classList.remove('show');
             statusElem.textContent = TXStatus.Str(newObj.payment_status);
         }
     });
 
-    const deleteButton = tweetCard.querySelector('.tweetPaymentDelete');
     deleteButton.classList.add('show');
     deleteButton.onclick = () => removeUnPaidTweets(tweet.create_time).then(r => {
         if (!r) {
@@ -67,13 +74,8 @@ function __checkPayment(tweetCard, tweet) {
 
 async function removeUnPaidTweets(createTime) {
     try {
-        const resp = await PostToSrvByJson("/removeUnpaidTweet",
+        await PostToSrvByJson("/removeUnpaidTweet",
             {create_time: createTime, status: TXStatus.NoPay});
-        if (!resp) {
-            return false;
-        }
-
-        console.log(resp);
         __globalTweetMemCache.delete(createTime);
         return true;
     } catch (e) {
@@ -87,7 +89,7 @@ async function fillUserPostedTweetsList(clear) {
     return __fillNormalTweet(clear, 'tweets-post-by-user',
         cachedUserTweets.CachedItem,
         'tweetTemplateForUserSelf', "tweet-card-for-user-", false,
-        TweetDetailSource.NoNeed,function (tweetCard, tweetHeader, tweet) {
+        TweetDetailSource.NoNeed, function (tweetCard, tweetHeader, tweet) {
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
             tweetCard.querySelector('.tweet-content').style.cursor = "default";
             __checkPayment(tweetCard, tweet);
@@ -125,13 +127,8 @@ async function __loadTweetIDsUserVoted(newest, web3ID, cache, voteStatusCache, c
     if (!newest) {
         param.start_id = cache.latestID;
     }
-    const resp = await PostToSrvByJson("/votedTweetIds", param);
-    if (!resp) {
-        return;
-    }
-    // console.log(resp);
-    let status = JSON.parse(resp);
-    if (status.length === 0) {
+    const status = await PostToSrvByJson("/votedTweetIds", param);
+    if (!status || status.length === 0) {
         if (!newest) {
             cache.moreOldTweets = false;
         }
@@ -160,7 +157,7 @@ async function fillUserVotedTweetsList(clear) {
         cachedUserVotedTweets.CachedItem,
         'tweetTemplateForVoted',
         "tweet-card-for-vote-",
-        true,  TweetDetailSource.MyVoted,
+        true, TweetDetailSource.MyVoted,
         function (tweetCard, tweetHeader, tweet) {
 
             tweetCard.querySelector('.total-vote-number').textContent = tweet.vote_count;
@@ -202,10 +199,12 @@ async function showUserProfile(njUser) {
 }
 
 const cachedNinjaUserPostedTweets = new MemCachedTweets();
+
 async function olderNinjaUsrPostedTweets() {
     await __loadTweetAtUserPost(false, currentNinjaUsrLoading.eth_addr,
         cachedNinjaUserPostedTweets, fillNinjaUserPostedTweetsList)
 }
+
 async function loadPostedTweetsOfNjUsr() {
     curScrollContentID = 51;
 

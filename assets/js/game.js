@@ -47,6 +47,7 @@ async function initGamePage() {
     await checkMetaMaskEnvironment(initGameContract);
     const address = __globalContractConf.get(__globalTargetChainNetworkID).gameLottery;
     document.querySelector('.contract-address-value').textContent = address;
+    syncWinnerHistoryData().then(r=>{});
 }
 
 function showContractUrl() {
@@ -209,7 +210,7 @@ function showPersonalTicket() {
 
         const teamID = personalData.tickMap.get(tid)
         if (teamID === __noTeamID) {
-            cell.title = "独立购买";
+            cell.title = __noTeamTxt;
             cell.style.background = 'rgba(222, 64, 51, 0.3)';
         } else {
             cell.title = "团队: " + teamID;
@@ -242,7 +243,7 @@ function showTeamDetail() {
         let cell = row.insertCell();
         const teamHash = personalData.teams[i];
         if (teamHash === __noTeamID) {
-            cell.innerHTML = "独立购买"
+            cell.innerHTML = __noTeamTxt;
             cell = row.insertCell();
             continue;
         }
@@ -436,14 +437,55 @@ async function procTicketPayment(no, ifShare) {
     }
 }
 
+let cachedWinnerHistoryData = []
+
+async function syncWinnerHistoryData() {
+    const data = await GetToSrvByJson('/queryWinHistory');
+    if (!data){
+        return;
+    }
+    cachedWinnerHistoryData = data;
+    document.querySelector('.winning-count').textContent = "" + cachedWinnerHistoryData.length;
+}
+
 function showUserWinHistory() {
-    showDialog(DLevel.Tips, "not ok now");
-    // const historyDiv = document.querySelector('.winning-history');
-    // const isShowing = historyDiv.style.display === 'block';
-    // historyDiv.style.display = isShowing ? 'none' : 'block';
-    // if (isShowing){
-    //     return;
-    // }
+    if (cachedWinnerHistoryData.length === 0) {
+        return;
+    }
+    const historyDiv = document.querySelector('.winner-history-list');
+    const isShowing = historyDiv.style.display === 'block';
+    historyDiv.style.display = isShowing ? 'none' : 'block';
+    historyDiv.innerHTML = '';
+    if (isShowing) {
+        return;
+    }
+
+    try {
+        for (const obj of cachedWinnerHistoryData) {
+            const winnerCard = document.getElementById("winning-history-template").cloneNode(true);
+            winnerCard.style.display = 'block';
+            winnerCard.id = null;
+
+            winnerCard.querySelector('.one-round-bonus-val').textContent = obj.bonus + ' ETH';
+            winnerCard.querySelector('.one-round-discover-val').textContent = formatTime(obj.discover_time);
+
+
+            if (obj.win_team === __noTeamID) {
+                winnerCard.querySelector('.team-id-txt.type').textContent = __noTeamTxt;
+                winnerCard.querySelector('.team-id-txt.id').textContent = '';
+            } else {
+                winnerCard.querySelector('.team-id-txt.id').textContent = obj.win_team;
+                winnerCard.querySelector('.team-id-txt.type').textContent = '团队';
+            }
+
+            historyDiv.appendChild(winnerCard);
+        }
+    } catch (err) {
+        showDialog(DLevel.Warning, "load err:" + err.toString())
+    }
+    syncWinnerHistoryData().then(r => {
+
+    })
 }
 
 async function withdrawBonus() {

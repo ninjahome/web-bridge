@@ -63,7 +63,7 @@ async function procPaymentForPostedTweet(tweet, callback) {
     }
 
     try {
-        showWaiting("paying for tweet post");
+        showWaiting("paying for tweet");
 
         const txResponse = await tweetVoteContract.publishTweet(
             tweet.prefixed_hash,
@@ -90,15 +90,15 @@ async function procPaymentForPostedTweet(tweet, callback) {
 }
 
 async function procTweetVotePayment(voteCount, tweet, callback) {
-    if (!tweetVoteContract|| !voteContractMeta) {
+    if (!tweetVoteContract|| !voteContractMeta ||!voteContractMeta.votePrice ) {
         showDialog(DLevel.Tips, "please wait for metamask syncing data")
         return;
     }
 
     try {
         showWaiting("prepare to pay");
-
-        const amount = voteContractMeta.postPrice.mul(voteCount);
+        console.log(voteContractMeta.votePrice.mul);
+        const amount = voteContractMeta.votePrice.mul(voteCount);
 
         const txResponse = await tweetVoteContract.voteToTweets(
             tweet.prefixed_hash,
@@ -127,7 +127,7 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
 
 async function reloadGameBalance() {
     const b = await lotteryGameContract.balance(ninjaUserObj.eth_addr);
-    console.log(b);
+    // console.log(b);
     document.getElementById('lottery-game-income').innerText = ethers.utils.formatUnits(b, 'ether');
 }
 
@@ -136,35 +136,28 @@ async function reloadTweetBalance() {
     document.getElementById("tweet-income-amount").innerText = ethers.utils.formatUnits(b, 'ether');
 }
 
-
 async function withdrawLotteryGameIncome() {
-    showWaiting("prepare withdraw transaction");
     const valStr = document.getElementById('lottery-game-income').innerText;
     const balance = Number(valStr);
 
     if (!balance || balance <= 0) {
         showDialog(DLevel.Tips, "balance invalid");
-        hideLoading();
         return;
     }
 
     await withdrawAction(lotteryGameContract);
     await reloadGameBalance();
-    hideLoading();
 }
 
 async function withdrawFromUserTweetIncome() {
-    showWaiting("prepare withdraw transaction");
     const valStr = document.getElementById('lottery-game-income').innerText;
     const balance = Number(valStr);
     if (balance <= 0) {
         showDialog(DLevel.Tips, "balance too low");
-        hideLoading();
         return;
     }
 
     await withdrawAction(tweetVoteContract);
     await reloadTweetBalance();
-    hideLoading();
 }
 

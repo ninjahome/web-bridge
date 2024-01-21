@@ -79,7 +79,6 @@ func NewMainService() *MainService {
 
 			var token = validateUsrRights(request)
 			if token == nil {
-
 				http.Redirect(writer, request, "/signIn", http.StatusFound)
 				return
 			}

@@ -1,4 +1,4 @@
-const __defaultLogo = '/assets/file/logo';
+const __defaultLogo = '/assets/file/logo.png';
 
 function formatTime(createTime) {
     const date = new Date(createTime);
@@ -51,18 +51,32 @@ function PostToSrvByJson(url, data) {
     return new Promise((resolve, reject) => {
         fetch(url, requestOptions)
             .then(response => {
+                if (response.redirected){
+                    window.location = response.url;
+                    return;
+                }
                 if (!response.ok) {
+
+                    if (response.status === 302 || response.status === 301) {
+                        window.location = response.url;
+                        return;
+                    }
+
                     return response.text().then(text => {
                         console.log(text)
                         throw new Error('\tserver responded with an error:' + response.status);
                     });
                 }
-                return response.text();
+                if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
+                    return {};
+                }
+                return response.json();
             })
             .then(data => {
                 resolve(data);
             })
             .catch(error => {
+                console.log(error);
                 reject(error);
             });
     });
@@ -75,7 +89,32 @@ async function GetToSrvByJson(url) {
             'Content-Type': 'application/json'
         },
     };
-    return await fetch(url, requestOptions)
+
+    try {
+        const response = await fetch(url, requestOptions);
+        if (response.redirected){
+            window.location = response.url;
+            return;
+        }
+        if (!response.ok) {
+            if ([301, 302, 303, 307, 308].includes(response.status)) {
+                // 如果是重定向响应，获取重定向的 URL 并导航到那里
+                window.location = response.url;
+                return;
+            }
+            const text = await response.text();
+            console.log(text);
+            throw new Error('Server responded with an error: ' + response.status);
+        }
+        if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
+            return {};
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error during fetch:', error);
+        throw error;
+    }
 }
 
 const __globalTargetChainNetworkID = toHex(421614);
@@ -290,12 +329,11 @@ class TwitterBasicInfo {
             twObj.profile_image_url, twObj.description);
     }
 
-    static cacheTwBasicInfo(objStr) {
-        const obj = JSON.parse(objStr)
+    static cacheTwBasicInfo(obj) {
         if (!obj.id) {
             throw new Error("invalid twitter basic info")
         }
-        localStorage.setItem(lclDbKeyForTwitterUserData(obj.id), objStr);
+        localStorage.setItem(lclDbKeyForTwitterUserData(obj.id), JSON.stringify(obj));
         return obj;
     }
 }
@@ -489,7 +527,6 @@ async function addChain(chainId) {
     }
 }
 
-
 let confirmCallback = null;
 
 function openVoteModal(callback) {
@@ -526,11 +563,10 @@ function decreaseVote() {
 }
 
 async function __shareVoteToTweet(create_time, vote_count) {
-    const resp = await PostToSrvByJson("/shareVoteAction", {
+    await PostToSrvByJson("/shareVoteAction", {
         create_time: create_time,
         vote_count: Number(vote_count),
     });
-    console.log(resp);
 }
 
 function checkMetamaskErr(err) {
@@ -550,8 +586,14 @@ function checkMetamaskErr(err) {
     if (code.includes("duplicate post")) {
         return code;
     }
+    if (code.includes("insufficient funds")){
+        showDialog(DLevel.Warning, "insufficient funds");
+        return
+    }
     showDialog(DLevel.Warning, code);
     return code;
 }
 
 const __noTeamID = '0x0000000000000000000000000000000000000000000000000000000000000000';
+const __noTeamID2 = '0000000000000000000000000000000000000000000000000000000000000000';
+const __noTeamTxt = '独立购买';
