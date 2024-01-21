@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style about="user profile detail vid">
+        .name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .username {
+            color: #555;
+            margin-left: 5px;
+        }
+
+        .hover-card-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #F7F8F9;
+
+        }
+
+        .hover-card-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #7E7F82;
+            margin-top: 8px;
+        }
+
+        .buy-key-button {
+            padding: 2px 0;
+            color: #7E7F82;
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid #D3D5D6;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .buy-key-button:hover {
+            color: #4848D8 ;
+            border-bottom: 1px solid #4848D8;
+        }
+
+        .twitterAvatar {
+            width: 48px;
+            margin-right: 8px;
+            border-radius: 50%;
+        }
+
+        .hover-card {
+            display: block; /* 默认不显示 */
+            /*position: absolute;*/
+            z-index: 5;
+            width: 340px;
+            padding: 16px;
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            top: 100%; /* 定位到 tweet-header 下方 */
+            left: 0;
+        }
+    </style>
+
+</head>
+<body>
+<div class="hover-card" id="hover-card" onmouseleave="hideHoverCard(this)">
+    <div class="hover-card-info">
+        <div style=" display: flex; align-items: center;">
+            <img src="/assets/file/logo.png" alt="Avatar" id="hover-avatar" class="twitterAvatar">
+            <span id="hover-name" class="name twitterName">wesley</span>
+            <span id="hover-user-name" class="username twitterUserName">@wsliss</span>
+        </div>
+        <button id="buy-key-button" class="buy-key-button">查看详情 >></button>
+    </div>
+    <div class="hover-card-content">
+        <div>推文总数: <span id="hover-tweet-count" style="font-size: 16px; font-weight: bold; color: #4848D8">2</span></div>
+        <div>被打赏数: <span id="hover-vote-count" style="font-size: 16px; font-weight: bold; color: #DE4033">3</span></div>
+        <div>打赏数: <span id="hover-voted-count"></span>4</div>
+    </div>
+
+</div>
+
+</body>
+</html>
