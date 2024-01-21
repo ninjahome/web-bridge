@@ -177,7 +177,8 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     const twitterObj = await __setOnlyHeader(tweetHeader, tweet.twitter_id);
 
     const contentArea = tweetHeader.querySelector('.tweet-content');
-    contentArea.textContent = tweet.text;
+    // const cleanHtml = DOMPurify.sanitize(tweet.text);
+    contentArea.innerHTML =  DOMPurify.sanitize(tweet.text.replace(/\n/g, "<br>"));
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
 
     if (overlap) {

@@ -113,13 +113,18 @@ async function fillTweetParkAtHomePage(clear) {
 }
 
 async function preparePostMsg() {
-    const content = document.getElementById("tweets-content-txt-area").textContent.trim();
-    if (!content) {
+    const contentHtml = document.getElementById("tweets-content-txt-area").innerHTML.trim();
+    const formattedContent = contentHtml
+        .replace(/<br\s*[\/]?>/gi, "\n") // 将 <br> 标签转换为换行符
+        .replace(/<\/?p>/gi, "\n") // 将 <p> 标签转换为换行符
+        .replace(/<[^>]+>/g, ''); // 移除所有其他HTML标签
+    // const content = document.getElementById("tweets-content-txt-area").textContent.trim();
+    if (!formattedContent) {
         showDialog(DLevel.Warning, "content can't be empty")
         return null;
     }
 
-    const tweet = new TweetContentToPost(content,
+    const tweet = new TweetContentToPost(formattedContent,
         (new Date()).getTime(), ninjaUserObj.eth_addr, ninjaUserObj.tw_id);
     const message = JSON.stringify(tweet);
 
@@ -159,17 +164,13 @@ async function postTweetWithPayment() {
 
         showWaiting("updating tweet status")
         await updatePaymentStatusToSrv(basicTweet)
+        clearDraftTweetContent();
 
         if (curScrollContentID === 0) {
-            __loadTweetsAtHomePage(true).then(r => {
-                clearDraftTweetContent();
-            });
+            __loadTweetsAtHomePage(true).then(() => { });
         } else if (curScrollContentID === 2) {
-            __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(r => {
-                clearDraftTweetContent();
-            });
+            __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(() => { });
         }
-
     } catch (err) {
         checkMetamaskErr(err);
     } finally {
@@ -205,7 +206,7 @@ function closePostTweetDiv() {
 }
 
 function clearDraftTweetContent() {
-    document.getElementById("tweets-content-txt-area").value = '';
+    document.getElementById("tweets-content-txt-area").innerHTML = '';
 }
 
 function showFullTweetContent() {
