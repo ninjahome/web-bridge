@@ -52,29 +52,30 @@ async function fulfillTopTeam(cachedTopTeam) {
         team_card.id = "team-header=" + teamDetails.tweetHash;
 
         team_card.querySelector('.team-id-txt').innerText = teamDetails.tweetHash;
-        let tweet = __globalTweetMemCacheByHash.get(teamDetails.tweetHash);
-        if (!tweet) {
-            tweet = await __queryTweetFoTeam(tweetHeader, teamDetails.tweetHash);
-            if (!tweet) {
-                continue;
-            }
-            await __setOnlyHeader(tweetHeader, tweet.twitter_id);
-            team_card.dataset.createTime = tweet.create_time;
 
-        } else {
-            await __setOnlyHeader(tweetHeader, tweet.twitter_id);
-            team_card.dataset.createTime = tweet.create_time;
-
-        }
-
-        team_card.querySelector('.team-id-txt').onclick = () =>
-            showTweetDetail('top-hot-tweet-team', tweet);
 
         team_card.querySelector('.team-voted-count').innerText = teamDetails.voteCount;
         team_card.querySelector('.team-members-count').innerText = teamDetails.memCount;
 
         team_card.querySelector('.join-team').onclick = () => joinTeam(tweet, teamDetails.tweetHash, team_card);
         team_card.querySelector('.show-team-mates').onclick = () => showTeammates(teamDetails.tweetHash, team_card);
+
+        let tweet = __globalTweetMemCacheByHash.get(teamDetails.tweetHash);
+        if (!tweet) {
+            tweet = await __queryTweetFoTeam(tweetHeader, teamDetails.tweetHash);
+        }
+
+        if (!tweet) {
+            tweetHeader.querySelector('.team-id').style.cursor = 'default';
+            tweetHeader.querySelector('.twitterAvatar').src = __defaultLogo;
+            tweetHeader.querySelector('.twitterName').textContent = "非本系统推文";
+        }else{
+            await __setOnlyHeader(tweetHeader, tweet.twitter_id);
+            team_card.dataset.createTime = tweet.create_time;
+            team_card.querySelector('.team-id-txt').onclick = () =>
+                showTweetDetail('top-hot-tweet-team', tweet);
+        }
+
         parent_node.appendChild(team_card);
     }
 }
@@ -147,7 +148,7 @@ async function __queryTweetFoTeam(tweetHeader, tweetHash) {
         __globalTweetMemCache.set(obj.create_time, obj);
         return obj;
     } catch (err) {
-        showDialog("error", "query tweet failed:" + err.toString());
+        console.log(err);
         return null;
     }
 }
