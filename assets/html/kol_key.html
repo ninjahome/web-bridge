@@ -230,16 +230,14 @@
 </div>
 
 <script>
+    const ninjaUserObjWeb3ID = {{.eth_addr}};
 
     function showDiv(divId) {
-        // 隐藏所有内容区域
         document.querySelectorAll('.content-area > div').forEach(div => {
             div.style.display = 'none';
         });
-        // 显示选定的内容区域
         document.getElementById(divId).style.display = 'block';
 
-        // 更新按钮的激活状态
         document.querySelectorAll('.menu-area button').forEach(button => {
             button.classList.remove('active');
         });
@@ -251,6 +249,7 @@
 
     async function initMainPage() {
         showDiv('user-kol-key-holder');
+        await checkMetaMaskEnvironment(initBlockChainContract);
     }
 </script>
 </body>

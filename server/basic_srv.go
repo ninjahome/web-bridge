@@ -134,6 +134,9 @@ func showKolKeyPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUs
 		http.Redirect(w, r, "/signIn", http.StatusFound)
 		return
 	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(nu.RawData())
 }
 
 type OuterLinkParam struct {
