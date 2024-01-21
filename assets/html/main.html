@@ -507,7 +507,7 @@
         }
 
         .hover-card {
-            display: block; /* 默认不显示 */
+            display: none; /* 默认不显示 */
             position: absolute;
             z-index: 5;
             width: 340px;
@@ -1075,11 +1075,20 @@
                     </div>
                 </div>
             </div>
+            <div class="tweets-park top-div" id="top-most-voted-tweet"></div>
 
-            <div class="tweets-park" id="top-most-voted-tweet"></div>
-
+            <li id="team-member-card-template" style="display: none">
+                <div>
+                    <div class="team-members-number">1</div>
+                    <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
+                    <div class="team-membersName"><span class="name twitterName ">nan</span>
+                        <span class="username twitterUserName" style="font-weight: lighter"></span>
+                    </div>
+                </div>
+                <div class="user-voted-count user-voted-count-top">123</div>
+            </li>
             <div class="team-card" id="team-card-in-top-template" style="display: none">
-                <div class="team-leader-info"> <!-- 新加 div 和 class -->
+                <div class="team-leader-info">
                     <div class="team-leader">
                         <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar">
                         <div>
@@ -1089,10 +1098,8 @@
                             <div class="team-info">
                                 <span>票数<span class="team-voted-count"
                                                 style="padding: 0 4px 0 0; font-weight: bold; color: #DE4033">120</span></span>
-                                <!-- 加了span -->
                                 <span>人数<span class="team-members-count"
                                                 style="padding: 0 4px 0 0; font-weight: bold; color: #4848D8">20</span></span>
-                                <!-- 加了span -->
                             </div>
                             <div class="team-id" onclick="showTweetDetail.call(this, '.team-card')"
                                  style="cursor: pointer">
@@ -1106,22 +1113,12 @@
                         <button class="show-team-mates">队伍信息</button>
                     </div>
                 </div>
-                <li class="team-member-card-template" style="display: none">
-                    <div>
-                        <div class="team-members-number">1</div>
-                        <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
-                        <div class="team-membersName"><span class="name twitterName ">nan</span>
-                            <span class="username twitterUserName" style="font-weight: lighter">@123nan</span>
-                        </div>
-                    </div>
-                    <div class="user-voted-count user-voted-count-top">123</div> <!-- span 改 div -->
-                </li>
+
                 <ul class="team-members" style="display: none"> </ul>
             </div>
-
-            <div id="top-hot-tweet-team"></div>
-            <div class="tweets-park" id="top-hot-Kol"></div>
-            <div class="tweets-park" id="top-hot-voter"></div>
+            <div id="top-hot-tweet-team" class="top-div"></div>
+            <ul class="team-members  top-div" style="display: none" id="top-hot-Kol"></ul>
+            <ul class="team-members  top-div" style="display: none" id="top-hot-voter"></ul>
         </div>
 
         <div id="middle-div-user-tweets" class="content-in-middle-area">

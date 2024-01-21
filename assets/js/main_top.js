@@ -1,6 +1,6 @@
 function initTopDivStatus(showID) {
     const parent = document.getElementById("middle-div-leaderboard");
-    parent.querySelectorAll(".tweets-park").forEach(r => r.style.display = 'none')
+    parent.querySelectorAll(".top-div").forEach(r => r.style.display = 'none')
     document.getElementById(showID).style.display = 'block';
 }
 
@@ -114,7 +114,7 @@ async function showTeammates(tweetHash, team_card) {
         }
 
         for (let i = 0; i < allMates.members.length; i++) {
-            const memberCard = team_card.querySelector('.team-member-card-template').cloneNode(true);
+            const memberCard = document.getElementById('team-member-card-template').cloneNode(true);
             memberCard.style.display = '';
             memberCard.querySelector('.user-voted-count').innerText = allMates.voteNos[i];
             memberCard.querySelector(".team-members-number").innerText = ""+i;
@@ -258,21 +258,32 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
     for (const usr of data) {
         NJUserBasicInfo.cacheNJUsrObj(usr).then(r => {
         });
-        const njUsrCard = document.getElementById("ninjaUserCardTemplate").cloneNode(true);
+        const njUsrCard = document.getElementById("team-member-card-template").cloneNode(true);
         njUsrCard.style.display = '';
 
         if (!usr.tw_id) {
             njUsrCard.querySelector(".twitterAvatar").src = __defaultLogo;
-            njUsrCard.querySelector(".twitterName").innerText = '未绑定@' + usr.eth_addr;
+            njUsrCard.querySelector(".twitterName").innerText = usr.eth_addr;
         } else {
             await __setOnlyHeader(njUsrCard, usr.tw_id);
         }
 
-        njUsrCard.querySelector(".voteOrVotedRangeNo").innerText = userRankStartNo;
+        const rankNo = njUsrCard.querySelector(".team-members-number");
+        rankNo.innerText = userRankStartNo;
+        if (userRankStartNo === 1){
+            rankNo.classList.add('team-members-topOne');
+        }else if  (userRankStartNo === 2){
+            rankNo.classList.add('team-members-topTwo');
+        }else if  (userRankStartNo === 3){
+            rankNo.classList.add('team-members-topThree');
+        }else{
+            rankNo.classList.add('team-members-topOther');
+        }
+
         if (voter) {
-            njUsrCard.querySelector(".voteOrVotedNos").innerText = usr.vote_count;
+            njUsrCard.querySelector(".user-voted-count").innerText = usr.vote_count;
         } else {
-            njUsrCard.querySelector(".voteOrVotedNos").innerText = usr.be_voted_count;
+            njUsrCard.querySelector(".user-voted-count").innerText = usr.be_voted_count;
         }
         ninjaUserPark.appendChild(njUsrCard);
 
