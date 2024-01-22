@@ -169,7 +169,6 @@ async function fillUserVotedTweetsList(clear) {
 }
 
 async function showUserProfile(njUser) {
-    console.log(njUser);
     if (njUser.eth_addr === ninjaUserObj.eth_addr) {
         showDialog(DLevel.Tips, "This is yourself");
         return;
@@ -193,7 +192,7 @@ async function showUserProfile(njUser) {
     }
 
     detail.querySelector(".web3id").textContent = njUser.eth_addr;
-    const header = detail.querySelector(".tweet-header")
+    const header = detail.querySelector(".tweet-header-in-profile")
     await __setOnlyHeader(header, njUser.tw_id);
     await loadPostedTweetsOfNjUsr();
 }
