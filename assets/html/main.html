@@ -153,8 +153,6 @@
         }
 
         .tweet-header img {
-            width: 40px;
-            height: 40px;
             border-radius: 50%;
             margin-right: 10px;
         }
@@ -194,10 +192,12 @@
         }
 
 
-        .vote-count {
+        .vote-count,
+        .tweet-info {
             white-space: nowrap;
             font-size: 14px;
             color: #898989;
+            margin-right: 6px;
         }
 
         .vote-number {
@@ -210,17 +210,12 @@
 
         .tweet-card {
             display: block;
-            min-height: 100px;
             max-height: 400px;
             overflow: hidden;
             background-color: #fff;
             border-bottom: 1px solid #F7F8F9;
             padding: 16px;
             transition: max-height 0.3s ease;
-        }
-
-        .tweet-footer .tweet-info {
-            font-style: italic;
         }
 
         .twitterAvatar {
@@ -519,6 +514,45 @@
             border-radius: 5px;
             top: 100%; /* 定位到 tweet-header 下方 */
             left: 0;
+            width: 340px;
+        }
+
+        .tweet-header {
+            position: relative;
+            height: 236px;
+        }
+
+        .tweet-header-img {
+            width: 768px;
+            height: 132px;
+            background-image: url("/assets/file/tweet-bgimg.png") ;
+            margin: 16px;
+        }
+
+        .tweet-nameID-info {
+            position: absolute;
+            top: 116px;
+            left: 32px;
+            display: inline-block;
+        }
+
+        .tweet-nameID-info div {
+            padding-left: 16px;
+        }
+
+        .web3id {
+            font-size: 14px;
+            color: #7E7F82;
+            margin-top: 6px;
+        }
+
+        .tweet-twitterAvatar {
+           width: 64px;
+            height: auto;
+        }
+
+        .tweet-topic-switch {
+            justify-content: space-evenly;
         }
     </style>
     <style about="tweet vote div">
@@ -1058,10 +1092,6 @@
     </style>
     <style about="ninja user profile">
 
-        .nj-user-profile {
-            display: none;
-        }
-
     </style>
     <style about="tweet details">
 
@@ -1072,10 +1102,6 @@
             padding: 16px;
             border-top: 1px solid #F7F8F9;
             border-bottom: 1px solid #F7F8F9;
-        }
-
-        .tweet-info {
-            margin-bottom: 8px; /* 添加一些底部间距，使行与行之间有些距离 */
         }
 
         .back-button {
@@ -1388,20 +1414,25 @@
             <button id="back-button" class="back-button">返回</button>
             <div class="nj-user-summary">
                 <div class="tweet-header">
-                    <img src="" alt="Avatar" class="twitterAvatar">
-                    <span class="name twitterName">ws</span>
-                    <span class="username twitterUserName">@wsliss</span>
-                    <span class="web3id">0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2</span>
+                    <div class="tweet-header-img"></div>
+                    <div class="tweet-nameID-info">
+                        <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar tweet-twitterAvatar ">
+                        <div class="name twitterName">ws</div>
+                        <div class="username twitterUserName" style="margin-left: 0; margin-top: 4px">@wsliss</div>
+                        <div class="web3id">0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2</div>
+                    </div>
                 </div>
+            </div>
+            <div class="topic-switch tweet-topic-switch">
+                <button class="tweetsPostedByNjUser top-topic-btn" onclick="loadPostedTweetsOfNjUsr()">他发布推文</button>
+                <button class="tweetsVotedNjUser top-topic-btn" onclick="loadVotedTweetsOfNjUsr()">他投票推文</button>
             </div>
 
             <div class="nj-user-tweet-area">
-                <div id="tweetTemplateForNjUsrProfile" class="tweet-card" style="display: none;">
+                <div id="tweetTemplateForNjUsrProfile" class="tweet-card" style="display: block;">
                     <div class="tweet-footer">
                         <div class="tweet-info"> 投票数: <span class="total-vote-count">0</span></div>
-
                         <div class="vote-count"> 他的投票数: <span class="nj-user-vote-count">0</span></div>
-
                         <div class="tweet-action">
                             <button class="tweet-action-vote">
                                 <img src="/assets/file/tweet-action-vote-eth.png"
@@ -1412,8 +1443,6 @@
                         </div>
                     </div>
                 </div>
-                <button class="tweetsPostedByNjUser" onclick="loadPostedTweetsOfNjUsr()">他发布推文</button>
-                <button class="tweetsVotedNjUser" onclick="loadVotedTweetsOfNjUsr()">他投票推文</button>
                 <div id="nj-user-posted-tweets" class="tweets-park"></div>
                 <div id="nj-user-vote-tweets" class="tweets-park"></div>
             </div>
@@ -1489,10 +1518,11 @@
 </div>
 
 <div class="hover-card" id="hover-card" onmouseleave="hideHoverCard(this)">
-
-    <img src="" alt="Avatar" id="hover-avatar" class="twitterAvatar">
-    <div id="hover-name" class="name twitterName"></div>
-    <span id="hover-user-name" class="username twitterUserName"> @wsliss </span>
+    <div style=" display: flex; align-items: center;">
+        <img src="/assets/file/logo.png" alt="Avatar" id="hover-avatar" class="twitterAvatar">
+        <span id="hover-name" class="name twitterName">wesley</span>
+        <span id="hover-user-name" class="username twitterUserName">@wsliss</span>
+    </div>
     <button id="buy-key-button" class="buy-key-button">查看详情 >></button>
     <div class="hover-card-content">
         <div>推文总数: <span id="hover-tweet-count" style="font-size: 16px; font-weight: bold; color: #4848D8">2</span>
