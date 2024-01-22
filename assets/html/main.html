@@ -210,6 +210,7 @@
 
         .tweet-card {
             display: block;
+            min-height: 100px;
             max-height: 400px;
             overflow: hidden;
             background-color: #fff;
@@ -517,7 +518,7 @@
             width: 340px;
         }
 
-        .tweet-header {
+        .tweet-header-in-profile {
             position: relative;
             height: 236px;
         }
@@ -1413,7 +1414,7 @@
         <div id="nj-user-profile" class="nj-user-profile">
             <button id="back-button" class="back-button">返回</button>
             <div class="nj-user-summary">
-                <div class="tweet-header">
+                <div class="tweet-header-in-profile">
                     <div class="tweet-header-img"></div>
                     <div class="tweet-nameID-info">
                         <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar tweet-twitterAvatar ">
@@ -1429,7 +1430,7 @@
             </div>
 
             <div class="nj-user-tweet-area">
-                <div id="tweetTemplateForNjUsrProfile" class="tweet-card" style="display: block;">
+                <div id="tweetTemplateForNjUsrProfile" class="tweet-card" style="display: none;">
                     <div class="tweet-footer">
                         <div class="tweet-info"> 投票数: <span class="total-vote-count">0</span></div>
                         <div class="vote-count"> 他的投票数: <span class="nj-user-vote-count">0</span></div>
