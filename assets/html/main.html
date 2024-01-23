@@ -1244,8 +1244,17 @@
                 </div>
             </div>
             <div class="tweets-park top-div" id="top-most-voted-tweet"></div>
-
-            <div class="team-card" id="team-card-in-top-template" style="display: block">
+            <li id="team-member-card-template" style="display: none" >
+                <div>
+                    <div class="team-members-number">1</div>
+                    <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
+                    <div class="team-membersName"><span class="name twitterName ">nan</span>
+                        <span class="username twitterUserName" style="font-weight: lighter"></span>
+                    </div>
+                </div>
+                <div class="user-voted-count user-voted-count-top">123</div>
+            </li>
+            <div class="team-card" id="team-card-in-top-template" style="display: none">
                 <div class="team-leader-info">
                     <div class="team-leader">
                         <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar">
@@ -1270,20 +1279,8 @@
                         <button class="show-team-mates">队伍信息</button>
                     </div>
                 </div>
-                <ul class="team-members" style="display: block; background-color: #F1F2F3; border-bottom: 1px solid #e7e8e9">
-                    <li id="team-member-card-template" >
-                        <div>
-                            <div class="team-members-number">1</div>
-                            <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
-                            <div class="team-membersName"><span class="name twitterName ">nan</span>
-                                <span class="username twitterUserName" style="font-weight: lighter"></span>
-                            </div>
-                        </div>
-                        <div class="user-voted-count user-voted-count-top">123</div>
-                    </li>
+                <ul class="team-members" style=" background-color: #F1F2F3; border-bottom: 1px solid #e7e8e9">
                 </ul>
-
-                <ul class="team-members" style="display: none"></ul>
             </div>
             <div id="top-hot-tweet-team" class="top-div"></div>
             <ul class="team-members  top-div" style="display: none" id="top-hot-Kol"></ul>
