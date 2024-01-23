@@ -132,7 +132,6 @@
             font-weight: bold;
         }
 
-
     </style>
     <style about="tweet park">
         .tweets-park {
@@ -285,12 +284,11 @@
 
         .tweetPaymentDelete {
             display: none;
-            background-color: #d51515; /* 例如，红色背景 */
-            color: white;
+            background-color: transparent; /* 例如，红色背景 */
+            color: #7E7F82;
             padding: 6px 12px;
             margin: 4px 2px;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
         }
 
@@ -385,6 +383,7 @@
         .team-members {
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
 
         .team-membersName,
@@ -909,8 +908,7 @@
         }
 
     </style>
-    <style about="team-card-in-top">
-    </style>
+
     <style about="about-user-div">
 
         .income-tweet-area,
@@ -926,7 +924,9 @@
             position: relative;
             display: inline-block;
             cursor: pointer; /* 添加鼠标指针样式 */
-            width: 800px;
+            width: 768px;
+            height: 42px;
+            border-bottom: 1px solid #F7F8F9;
         }
 
         .user-settings-icon .user-tooltip {
@@ -934,17 +934,17 @@
             width: 180px;
             background-color: #f9f9f9;
             color: #000;
-            text-align: center;
+            text-align: right;
             border-radius: 6px;
             padding: 5px 0;
             position: absolute;
             z-index: 1;
-            top: 100%;
-            left: 50%;
-            margin-left: 212px;
+            top: 52px;
+            left: 588px;
             box-shadow: 0 12px 18px 0 rgba(0, 0, 0, 0.3);
             opacity: 0;
             transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+
         }
 
         .user-settings-icon:hover .user-tooltip {
@@ -953,12 +953,18 @@
             transition: opacity 0.5s ease;
         }
 
-        .user-settings-icon img {
-            position: absolute;
-            top: -32px;
-            left: 735px;
+        .user-settings-icon button {
+            float: right;
+            height: 28px;
             width: 28px;
-            margin: auto;
+            background-image: url("/assets/file/settings-icon.png");
+            background-repeat: no-repeat; /* 防止背景图重复 */
+            background-position: center; /* 背景图居中 */
+            border: none;
+            background-color: transparent;
+        }
+        .user-settings-icon button:hover{
+            background-image: url("/assets/file/setting-hover-8.png");
         }
 
         .user-tooltip ul {
@@ -1058,8 +1064,6 @@
             padding: 8px; /* 添加一些内边距，使内容不紧贴边框 */
             display: inline-block; /* 使背景色和边框只包裹内容 */
             word-wrap: break-word; /* 在超出宽度时自动换行 */
-            margin-bottom: 16px;
-
         }
 
         .about-ninja span {
@@ -1216,7 +1220,7 @@
             <div class="tweets-park" id="tweets-park"></div>
         </div>
 
-        <div id="middle-div-leaderboard" class="content-in-middle-area">
+        <div id="middle-div-leaderboard" class="content-in-middle-area active">
 
             <div class="topic-switch">
                 <button class="top-topic-btn" onclick="initTopPage()">推文排行榜</button>
@@ -1239,22 +1243,10 @@
                     </div>
                 </div>
             </div>
-
             <div class="tweets-park top-div" id="top-most-voted-tweet"></div>
 
-            <li id="team-member-card-template" style="display: none">
-                <div>
-                    <div class="team-members-number">1</div>
-                    <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
-                    <div class="team-membersName"><span class="name twitterName ">nan</span>
-                        <span class="username twitterUserName" style="font-weight: lighter"></span>
-                    </div>
-                </div>
-                <div class="user-voted-count user-voted-count-top">123</div>
-            </li>
-            <div class="team-card" id="team-card-in-top-template" style="display: none">
+            <div class="team-card" id="team-card-in-top-template" style="display: block">
                 <div class="team-leader-info">
-
                     <div class="team-leader">
                         <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar">
                         <div>
@@ -1278,7 +1270,18 @@
                         <button class="show-team-mates">队伍信息</button>
                     </div>
                 </div>
-
+                <ul class="team-members" style="display: block; background-color: #F1F2F3; border-bottom: 1px solid #e7e8e9">
+                    <li id="team-member-card-template" >
+                        <div>
+                            <div class="team-members-number">1</div>
+                            <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
+                            <div class="team-membersName"><span class="name twitterName ">nan</span>
+                                <span class="username twitterUserName" style="font-weight: lighter"></span>
+                            </div>
+                        </div>
+                        <div class="user-voted-count user-voted-count-top">123</div>
+                    </li>
+                </ul>
 
                 <ul class="team-members" style="display: none"></ul>
             </div>
@@ -1290,8 +1293,8 @@
 
         <div id="middle-div-user-tweets" class="content-in-middle-area">
             <div class="user-tweet-top-button-area topic-switch">
-                <button onclick="loadTweetsUserPosted()">我的推文</button>
-                <button onclick="loadTweetsUserVoted()">我的投票</button>
+                <button class="top-topic-btn" onclick="loadTweetsUserPosted()">我的推文</button>
+                <button class="top-topic-btn" onclick="loadTweetsUserVoted()">我的投票</button>
             </div>
             <div id="tweetTemplateForUserSelf" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
@@ -1326,7 +1329,7 @@
         <div id="middle-div-about-user" class="content-in-middle-area">
             <div class="user-settings">
                 <div class="user-settings-icon" >
-                    <img src="/assets/file/settings-icon.png" alt="设置">
+                    <button></button>
                     <div class="user-setting-action user-tooltip">
                         <ul>
                             <li><a onclick="quitFromService()">退出</a></li>
@@ -1519,12 +1522,14 @@
 </div>
 
 <div class="hover-card" id="hover-card" onmouseleave="hideHoverCard(this)">
+    <div class="hover-card-info">
     <div style=" display: flex; align-items: center;">
         <img src="/assets/file/logo.png" alt="Avatar" id="hover-avatar" class="twitterAvatar">
         <span id="hover-name" class="name twitterName">wesley</span>
         <span id="hover-user-name" class="username twitterUserName">@wsliss</span>
     </div>
     <button id="buy-key-button" class="buy-key-button">查看详情 >></button>
+    </div>
     <div class="hover-card-content">
         <div>推文总数: <span id="hover-tweet-count" style="font-size: 16px; font-weight: bold; color: #4848D8">2</span>
         </div>
