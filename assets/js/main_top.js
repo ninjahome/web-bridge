@@ -123,6 +123,7 @@ async function showTeammates(tweetHash, team_card) {
         for (let i = 0; i < allMates.members.length; i++) {
             const memberCard = document.getElementById('team-member-card-template').cloneNode(true);
             memberCard.style.display = '';
+            memberCard.id='';
             memberCard.querySelector('.user-voted-count').innerText = allMates.voteNos[i];
             memberCard.querySelector(".team-members-number").innerText = "" + i;
 
