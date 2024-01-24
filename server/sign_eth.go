@@ -17,12 +17,6 @@ func (so *SignInObj) String() string {
 	return string(bts)
 }
 
-func MustSignInData(str string) *SignInObj {
-	so := &SignInObj{}
-	_ = json.Unmarshal([]byte(str), so)
-	return so
-}
-
 func signInByEth(w http.ResponseWriter, r *http.Request, _ *database2.NinjaUsrInfo) {
 	param := &SignDataByEth{}
 	err := util.ReadRequest(r, param)

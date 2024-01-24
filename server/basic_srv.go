@@ -297,7 +297,7 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request, origNu *database.Ninj
 		return
 	}
 
-	_ = updateTwitterBio(r, twUsrData.Description, data.EthAddr)
+	//_ = updateTwitterBio(r, twUsrData.Description, data.EthAddr)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(newNu.RawData())
