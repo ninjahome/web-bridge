@@ -265,8 +265,7 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
     }
 
     for (const usr of data) {
-        NJUserBasicInfo.cacheNJUsrObj(usr).then(r => {
-        });
+        NJUserBasicInfo.cacheNJUsrObj(usr);
         const njUsrCard = document.getElementById("team-member-card-template").cloneNode(true);
         njUsrCard.style.display = '';
 

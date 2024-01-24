@@ -178,7 +178,7 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
 
     const contentArea = tweetHeader.querySelector('.tweet-content');
     // const cleanHtml = DOMPurify.sanitize(tweet.text);
-    contentArea.innerHTML =  DOMPurify.sanitize(tweet.text.replace(/\n/g, "<br>"));
+    contentArea.innerHTML = DOMPurify.sanitize(tweet.text.replace(/\n/g, "<br>"));
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
 
     if (overlap) {
@@ -300,21 +300,29 @@ async function updateVoteStatusToSrv(create_time, vote_count) {
 
 async function loadNJUserInfoFromSrv(ethAddr, useCache) {
     try {
-
-        if (useCache) {
-            let nj_data = NJUserBasicInfo.loadNjBasic(ethAddr);
-            if (nj_data) {
-                return nj_data;
+        if (!useCache) {
+            const response = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
+            if (!response) {
+                return null;
             }
+            NJUserBasicInfo.cacheNJUsrObj(response);
+            return response;
         }
-        const response = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
-        if (!response) {
+
+        let nj_data = NJUserBasicInfo.loadNjBasic(ethAddr);
+        if (!nj_data) {
             return null;
         }
-        NJUserBasicInfo.cacheNJUsrObj(response).then(() => {
+
+        GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase()).then(response => {
+            if (!response) {
+                return null;
+            }
+            NJUserBasicInfo.cacheNJUsrObj(response);
         })
 
-        return response;
+        return nj_data;
+
     } catch (err) {
         console.log("queryTwBasicById err:", err)
         return null;
