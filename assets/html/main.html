@@ -1294,9 +1294,9 @@
         </div>
 
         <div id="middle-div-user-tweets" class="content-in-middle-area">
-            <div class="user-tweet-top-button-area topic-switch">
-                <button class="top-topic-btn" onclick="loadTweetsUserPosted()">我的推文</button>
-                <button class="top-topic-btn" onclick="loadTweetsUserVoted()">我的投票</button>
+            <div class="user-tweet-top-button-area topic-switch" id="my-vote-or-post-tweet-switch-area">
+                <button class="my-posted-tweets top-topic-btn"  onclick="loadTweetsUserPosted()">我的推文</button>
+                <button class="my-voted-tweets top-topic-btn" onclick="loadTweetsUserVoted()">我的投票</button>
             </div>
             <div id="tweetTemplateForUserSelf" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
@@ -1429,7 +1429,7 @@
                     </div>
                 </div>
             </div>
-            <div class="topic-switch tweet-topic-switch">
+            <div class="topic-switch tweet-topic-switch" id="twee-switch-area-for-nj-user">
                 <button class="tweetsPostedByNjUser top-topic-btn" onclick="loadPostedTweetsOfNjUsr()">他发布推文</button>
                 <button class="tweetsVotedNjUser top-topic-btn" onclick="loadVotedTweetsOfNjUsr()">他投票推文</button>
             </div>
@@ -1479,17 +1479,17 @@
             </div>
             <div class="lottery-stats">
                 <div class="lottery-stats-label">
-                    累计奖金:
+                    历史累计奖金:
                     <span class="lottery-stats-no" id="lottery-total-amount" style="font-weight: bold">0.00</span>
                     <span class="lottery-stats-unit">eth</span>
                 </div>
                 <div class="lottery-stats-label">
-                    队伍数:
+                    本期队伍总数:
                     <span class="lottery-stats-no" id="lottery-current-team-amount" style="font-weight: bold">0</span>
                     <span class="lottery-stats-unit"> 队</span>
                 </div>
                 <div class="lottery-stats-label">
-                    总票数:
+                    本期总票数:
                     <span class="lottery-stats-no" id="lottery-current-ticket-amount" style="font-weight: bold">0</span>
                     <span class="lottery-stats-unit">张</span>
                 </div>

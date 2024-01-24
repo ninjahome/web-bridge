@@ -1,15 +1,29 @@
 const cachedUserTweets = new MemCachedTweets();
 
+function __myPostOrVotedTweetsStatus(isPosted){
+    const tweetsDiv = document.getElementById('tweets-post-by-user');
+    tweetsDiv.style.display = isPosted?'block':'none';
+    const votedDiv = document.getElementById('tweets-voted-by-user');
+    votedDiv.style.display = isPosted?'none':'block';
+    const detail = document.querySelector('#tweet-detail');
+    detail.style.display = 'none';
+
+    const switchArea = document.getElementById("my-vote-or-post-tweet-switch-area")
+    switchArea.querySelectorAll(".top-topic-btn").forEach(c=>{
+        c.classList.remove('active');
+    })
+    if (isPosted){
+        switchArea.querySelector('.my-posted-tweets').classList.add('active')
+    }else{
+        switchArea.querySelector('.my-voted-tweets').classList.add('active')
+    }
+}
+
 async function loadTweetsUserPosted() {
     try {
         curScrollContentID = 2;
         showWaiting("loading...");
-        const tweetsDiv = document.getElementById('tweets-post-by-user');
-        tweetsDiv.style.display = 'block';
-        const votedDiv = document.getElementById('tweets-voted-by-user');
-        votedDiv.style.display = 'none';
-        const detail = document.querySelector('#tweet-detail');
-        detail.style.display = 'none';
+        __myPostOrVotedTweetsStatus(true);
         await __loadTweetAtUserPost(true, ninjaUserObj.eth_addr, cachedUserTweets, fillUserPostedTweetsList);
 
     } catch (err) {
@@ -97,15 +111,8 @@ async function fillUserPostedTweetsList(clear) {
 }
 
 async function loadTweetsUserVoted() {
-
     curScrollContentID = 22;
-    const tweetsDiv = document.getElementById('tweets-post-by-user');
-    tweetsDiv.style.display = 'none';
-    const votedDiv = document.getElementById('tweets-voted-by-user');
-    votedDiv.style.display = 'block';
-    const detail = document.querySelector('#tweet-detail');
-    detail.style.display = 'none';
-
+    __myPostOrVotedTweetsStatus(false);
     await __loadTweetIDsUserVoted(true, ninjaUserObj.eth_addr, cachedUserVotedTweets, cachedVoteStatusForUser, fillUserVotedTweetsList);
 }
 
@@ -204,15 +211,28 @@ async function olderNinjaUsrPostedTweets() {
         cachedNinjaUserPostedTweets, fillNinjaUserPostedTweetsList)
 }
 
-async function loadPostedTweetsOfNjUsr() {
-    curScrollContentID = 51;
-
+function __njUserVoteOrPostedTweetsStatus(isPosted) {
     const postedDiv = document.getElementById('nj-user-posted-tweets');
-    postedDiv.style.display = 'block';
+    postedDiv.style.display = isPosted ? 'block' : 'none';
 
     const votedDiv = document.getElementById('nj-user-vote-tweets');
-    votedDiv.style.display = 'none';
+    votedDiv.style.display = isPosted ? 'none' : 'block';
 
+    const switchArea = document.getElementById('twee-switch-area-for-nj-user')
+    switchArea.querySelectorAll('.top-topic-btn').forEach(btn=>{
+        btn.classList.remove('active');
+    })
+
+    if (isPosted){
+        switchArea.querySelector('.tweetsPostedByNjUser').classList.add('active')
+    }else{
+        switchArea.querySelector('.tweetsVotedNjUser').classList.add('active')
+    }
+}
+
+async function loadPostedTweetsOfNjUsr() {
+    curScrollContentID = 51;
+    __njUserVoteOrPostedTweetsStatus(true);
     await __loadTweetAtUserPost(true, currentNinjaUsrLoading.eth_addr, cachedNinjaUserPostedTweets, fillNinjaUserPostedTweetsList)
 }
 
@@ -242,12 +262,7 @@ async function olderNinjaUsrVotedTweets() {
 
 async function loadVotedTweetsOfNjUsr() {
     curScrollContentID = 52;
-    const postedDiv = document.getElementById('nj-user-posted-tweets');
-    postedDiv.style.display = 'none';
-
-    const votedDiv = document.getElementById('nj-user-vote-tweets');
-    votedDiv.style.display = 'block';
-
+    __njUserVoteOrPostedTweetsStatus(false);
     await __loadTweetIDsUserVoted(true, currentNinjaUsrLoading.eth_addr,
         cachedNinjaUserVotedTweets, cachedNinjaVoteStatusForUser, fillNinjaUserVotedTweetsList);
 }
