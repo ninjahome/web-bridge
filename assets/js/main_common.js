@@ -310,17 +310,11 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
         }
 
         let nj_data = NJUserBasicInfo.loadNjBasic(ethAddr);
-        if (!nj_data) {
-            return null;
+
+        nj_data = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
+        if (nj_data){
+            NJUserBasicInfo.cacheNJUsrObj(nj_data);
         }
-
-        GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase()).then(response => {
-            if (!response) {
-                return null;
-            }
-            NJUserBasicInfo.cacheNJUsrObj(response);
-        })
-
         return nj_data;
 
     } catch (err) {
