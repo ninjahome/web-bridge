@@ -228,6 +228,10 @@ async function showTweetDetail(parentEleID, tweet) {
     detail.querySelector('.tweet-signature').textContent = tweet.signature;
     detail.querySelector('.tweet-payment_status').textContent = TXStatus.Str(tweet.payment_status);
     detail.querySelector('.tweet-vote-number').textContent = tweet.vote_count;
+
+    await __showVoteButton(detail,tweet,function (newVote){
+        detail.querySelector('.tweet-vote-number').textContent = newVote.vote_count;
+    });
 }
 
 async function __showVoteButton(tweetCard, tweet, callback) {
