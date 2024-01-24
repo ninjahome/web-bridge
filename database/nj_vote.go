@@ -225,7 +225,7 @@ func (dm *DbManager) QueryMostVotedTweets(pageSize int, startID int64) ([]*Ninja
 	defer cancel()
 
 	voteRef := dm.fileCli.Collection(DBTableTweetsPosted)
-	var query = voteRef.Limit(pageSize)
+	var query = voteRef.Limit(pageSize).Where("payment_status", "==", TxStSuccess)
 	if startID == 0 {
 		query = query.OrderBy("vote_count", firestore.Desc)
 	} else {
