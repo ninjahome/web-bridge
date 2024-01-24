@@ -180,9 +180,9 @@ func NewGame(key *keystore.Key, cf *server.SysConf) *GameService {
 	var err error
 	if cf.LocalRun {
 		_ = os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080")
-		client, err = firestore.NewClient(ctx, cf.ProjectID)
+		client, err = firestore.NewClientWithDatabase(ctx, cf.ProjectID, cf.DatabaseID)
 	} else {
-		client, err = firestore.NewClient(ctx, cf.ProjectID, option.WithCredentialsFile(cf.KeyFilePath))
+		client, err = firestore.NewClientWithDatabase(ctx, cf.ProjectID, cf.DatabaseID, option.WithCredentialsFile(cf.KeyFilePath))
 	}
 	if err != nil {
 		panic(err)
