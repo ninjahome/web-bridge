@@ -323,17 +323,19 @@ async function showOneRoundGameInfo() {
 
 function fullFillGameCard(obj, cardDiv) {
     cardDiv.style.display = 'block';
-
-    cardDiv.querySelector('.one-round-bonus-val').textContent = ethers.utils.formatUnits(obj.bonus, 'ether');
+    // console.log(obj);
+    const val = ethers.utils.formatUnits(obj.bonus, 'ether');
+    console.log(val, obj.winTicketID.toString());
+    cardDiv.querySelector('.one-round-bonus-val').textContent = val;
 
     const dTime = new Date(obj.discoverTime * 1000);
     cardDiv.querySelector('.one-round-discover-val').textContent = dTime.toString();
 
-    document.getElementById('history-game-random').textContent = obj.randomVal;
-    document.getElementById('history-game-random-hash').textContent = obj.randomHash;
-    document.getElementById('history-game-winner-address').textContent = obj.winner;
-    document.getElementById('history-game-winner-team').textContent = obj.winTeam;
-    document.getElementById('history-game-winner-ticket').textContent = obj.winTicketID;
+    cardDiv.querySelector('.history-game-random').textContent = obj.randomVal;
+    cardDiv.querySelector('.history-game-random-hash').textContent = obj.randomHash;
+    cardDiv.querySelector('.history-game-winner-address').textContent = obj.winner;
+    cardDiv.querySelector('.history-game-winner-team').textContent = obj.winTeam;
+    cardDiv.querySelector('.history-game-winner-ticket').textContent = obj.winTicketID;
 }
 
 let __toRoundNo = 0;
