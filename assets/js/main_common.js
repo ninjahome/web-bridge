@@ -101,7 +101,7 @@ async function showHoverCard(event, twitterObj, web3ID) {
     }
     document.getElementById('buy-key-button').onclick = () => {
         hoverCard.style.display = 'none';
-        showUserProfile(njUsrInfo)
+        showUserProfile(njUsrInfo);
     };
     document.getElementById('hover-tweet-count').textContent = njUsrInfo.tweet_count;
     document.getElementById('hover-vote-count').textContent = njUsrInfo.vote_count;
