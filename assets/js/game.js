@@ -445,7 +445,7 @@ async function syncWinnerHistoryData() {
         return;
     }
     cachedWinnerHistoryData = data;
-    document.querySelector('.winning-count').textContent = "" + cachedWinnerHistoryData.length;
+    document.querySelector('.personal-winning-count').textContent = "" + cachedWinnerHistoryData.length;
 }
 
 function showUserWinHistory() {
@@ -468,7 +468,6 @@ function showUserWinHistory() {
 
             winnerCard.querySelector('.one-round-bonus-val').textContent = obj.bonus + ' ETH';
             winnerCard.querySelector('.one-round-discover-val').textContent = formatTime(obj.discover_time);
-
 
             if (obj.win_team === __noTeamID) {
                 winnerCard.querySelector('.team-id-txt.type').textContent = __noTeamTxt;
