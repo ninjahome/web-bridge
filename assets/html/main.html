@@ -534,7 +534,7 @@
         .tweet-header-img {
             width: 768px;
             height: 132px;
-            background-image: url("/assets/file/tweet-bgimg.png") ;
+            background-image: url("/assets/file/tweet-bgimg.png");
             margin: 16px;
         }
 
@@ -556,7 +556,7 @@
         }
 
         .tweet-twitterAvatar {
-           width: 64px;
+            width: 64px;
             height: auto;
         }
 
@@ -972,7 +972,8 @@
             border: none;
             background-color: transparent;
         }
-        .user-settings-icon button:hover{
+
+        .user-settings-icon button:hover {
             background-image: url("/assets/file/setting-hover-8.png");
         }
 
@@ -1069,6 +1070,7 @@
             color: #4848D8;
             background-color: transparent;
         }
+
         .user-area-tittle {
             color: #333; /* 深色文本 */
             font-weight: bold;
@@ -1198,24 +1200,29 @@
              style="width: 40px;height: 40px;border-radius: 50%;cursor: pointer" alt="avatar">
         <ul class="menu-list-left-area">
             <li onclick="menuOnClicked.call(this,0)" data-icon-active="/assets/file/path-to-home-active-icon.png"
-                data-icon-inactive="/assets/file/path-to-home-icon.png" class="menu-item-left-area active" data-content="middle-div-home">
+                data-icon-inactive="/assets/file/path-to-home-icon.png" class="menu-item-left-area active"
+                data-content="middle-div-home">
                 <img src="/assets/file/path-to-home-active-icon.png" alt="Home" class="menu-icon"/> 主页
             </li>
             <li onclick="menuOnClicked.call(this,1)" data-icon-active="/assets/file/path-to-leaderboard-active-icon.png"
-                data-icon-inactive="/assets/file/path-to-leaderboard-icon.png"  class="menu-item-left-area" data-content="middle-div-leaderboard">
+                data-icon-inactive="/assets/file/path-to-leaderboard-icon.png" class="menu-item-left-area"
+                data-content="middle-div-leaderboard">
                 <img src="/assets/file/path-to-leaderboard-icon.png" alt="Home" class="menu-icon"/> 排行榜
             </li>
 
-            <li onclick="menuOnClicked.call(this,2)"  data-icon-active="/assets/file/path-to-twitter-active-icon.png"
-                data-icon-inactive="/assets/file/path-to-twitter-icon.png" class="menu-item-left-area" data-content="middle-div-user-tweets">
+            <li onclick="menuOnClicked.call(this,2)" data-icon-active="/assets/file/path-to-twitter-active-icon.png"
+                data-icon-inactive="/assets/file/path-to-twitter-icon.png" class="menu-item-left-area"
+                data-content="middle-div-user-tweets">
                 <img src="/assets/file/path-to-twitter-icon.png" alt="Home" class="menu-icon"/> 推文
             </li>
-            <li onclick="menuOnClicked.call(this,3)"  data-icon-active="/assets/file/path-to-user-active-icon.png"
-                data-icon-inactive="/assets/file/path-to-user-icon.png" class="menu-item-left-area" data-content="middle-div-about-user">
+            <li onclick="menuOnClicked.call(this,3)" data-icon-active="/assets/file/path-to-user-active-icon.png"
+                data-icon-inactive="/assets/file/path-to-user-icon.png" class="menu-item-left-area"
+                data-content="middle-div-about-user">
                 <img src="/assets/file/path-to-user-icon.png" alt="Home" class="menu-icon"/> 我的
             </li>
             <li onclick="openKolKeyMainPage()" data-icon-active="/assets/file/path-to-keys-active-icon.png"
-                data-icon-inactive="/assets/file/path-to-keys-icon.png" class="menu-item-left-area" data-content="middle-div-userKolKey">
+                data-icon-inactive="/assets/file/path-to-keys-icon.png" class="menu-item-left-area"
+                data-content="middle-div-userKolKey">
                 <img src="/assets/file/path-to-keys-icon.png" alt="Home" class="menu-icon"/> Keys
             </li>
         </ul>
@@ -1284,7 +1291,7 @@
                 </div>
             </div>
             <div class="tweets-park top-div" id="top-most-voted-tweet"></div>
-            <li id="team-member-card-template" style="display: none" >
+            <li id="team-member-card-template" style="display: none">
                 <div>
                     <div class="team-members-number">1</div>
                     <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
@@ -1330,7 +1337,7 @@
 
         <div id="middle-div-user-tweets" class="content-in-middle-area">
             <div class="user-tweet-top-button-area topic-switch" id="my-vote-or-post-tweet-switch-area">
-                <button class="my-posted-tweets top-topic-btn"  onclick="loadTweetsUserPosted()">我的推文</button>
+                <button class="my-posted-tweets top-topic-btn" onclick="loadTweetsUserPosted()">我的推文</button>
                 <button class="my-voted-tweets top-topic-btn" onclick="loadTweetsUserVoted()">我的投票</button>
             </div>
             <div id="tweetTemplateForUserSelf" class="tweet-card" style="display: none;">
@@ -1365,7 +1372,7 @@
         </div>
         <div id="middle-div-about-user" class="content-in-middle-area active">
             <div class="user-settings">
-                <div class="user-settings-icon" >
+                <div class="user-settings-icon">
                     <button></button>
                     <div class="user-setting-action user-tooltip">
                         <ul>
@@ -1410,7 +1417,8 @@
                                                   style="color: #4848D8;font-size: 22px; font-weight: bold">0.000</span> eth</span>
                         </div>
                         <div>
-                            <button class="ticket-count-btn rule-info-btn"  onclick="incomeWithdrawHistory()">提现记录</button>
+                            <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()">提现记录
+                            </button>
                             <button onclick="withdrawFromUserTweetIncome()" class="withdraw-btn">提现</button>
                         </div>
 
@@ -1422,7 +1430,8 @@
                         <span>彩票收入: <span class="income-val" id="lottery-game-income"
                                               style="color: #DE4033;font-size: 22px; font-weight: bold">0.000</span> eth</span>
                         <div>
-                            <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()">提现记录</button>
+                            <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()">提现记录
+                            </button>
                             <button onclick="withdrawLotteryGameIncome()" class="withdraw-btn">提现</button>
                         </div>
                     </div>
@@ -1465,7 +1474,8 @@
             </div>
         </div>
         <div id="nj-user-profile" class="nj-user-profile" style="display: none">
-            <button id="back-button" class="back-button"><img src="/assets/file/header-back-icon.png" alt=" ">返回</button>
+            <button id="back-button" class="back-button"><img src="/assets/file/header-back-icon.png" alt=" ">返回
+            </button>
             <div class="nj-user-summary">
                 <div class="tweet-header-in-profile">
                     <div class="tweet-header-img"></div>
@@ -1478,7 +1488,8 @@
                 </div>
             </div>
             <div class="topic-switch tweet-topic-switch" id="twee-switch-area-for-nj-user">
-                <button class="tweetsPostedByNjUser top-topic-btn" onclick="loadPostedTweetsOfNjUsr()">他发布推文</button>
+                <button class="tweetsPostedByNjUser top-topic-btn" onclick="loadPostedTweetsOfNjUsr()">他发布推文
+                </button>
                 <button class="tweetsVotedNjUser top-topic-btn" onclick="loadVotedTweetsOfNjUsr()">他投票推文</button>
             </div>
 
@@ -1573,12 +1584,12 @@
 
 <div class="hover-card" id="hover-card" onmouseleave="hideHoverCard(this)">
     <div class="hover-card-info">
-    <div style=" display: flex; align-items: center;">
-        <img src="/assets/file/logo.png" alt="Avatar" id="hover-avatar" class="twitterAvatar">
-        <span id="hover-name" class="name twitterName">wesley</span>
-        <span id="hover-user-name" class="username twitterUserName">@wsliss</span>
-    </div>
-    <button id="buy-key-button" class="buy-key-button">查看详情 >></button>
+        <div style=" display: flex; align-items: center;">
+            <img src="/assets/file/logo.png" alt="Avatar" id="hover-avatar" class="twitterAvatar">
+            <span id="hover-name" class="name twitterName">wesley</span>
+            <span id="hover-user-name" class="username twitterUserName">@wsliss</span>
+        </div>
+        <button id="buy-key-button" class="buy-key-button">查看详情 >></button>
     </div>
     <div class="hover-card-content">
         <div>推文总数: <span id="hover-tweet-count" style="font-size: 16px; font-weight: bold; color: #4848D8">2</span>

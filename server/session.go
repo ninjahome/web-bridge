@@ -29,7 +29,7 @@ func newSM() *SessionManager {
 	var store = sessions.NewCookieStore([]byte(_globalCfg.SessionKey))
 	store.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   3600,
+		MaxAge:   0,
 		HttpOnly: true,
 		Secure:   true,
 	}

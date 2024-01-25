@@ -35,11 +35,12 @@ class GameRoundInfo {
 }
 
 class PersonalData {
-    constructor(balance, tickets, teams, map) {
+    constructor(balance, tickets, teams, map, hasIndividual) {
         this.balance = balance;
         this.tickets = tickets;
         this.teams = teams;
         this.tickMap = map;
+        this.hasIndividual = hasIndividual;
     }
 }
 
@@ -47,7 +48,8 @@ async function initGamePage() {
     await checkMetaMaskEnvironment(initGameContract);
     const address = __globalContractConf.get(__globalTargetChainNetworkID).gameLottery;
     document.querySelector('.contract-address-value').textContent = address;
-    syncWinnerHistoryData().then(r=>{});
+    syncWinnerHistoryData().then(r => {
+    });
 }
 
 function showContractUrl() {
@@ -129,7 +131,7 @@ async function loadPersonalMeta() {
 
         const obj = await lotteryGameContract.tickList(gameSettings.roundNo, ninjaUserObj.eth_addr);
         if (obj[0].length === 0) {
-            personalData = new PersonalData(balanceInEth, [], [], null);
+            personalData = new PersonalData(balanceInEth, [], [], null, false);
             return;
         }
 
@@ -143,9 +145,7 @@ async function loadPersonalMeta() {
         }
 
         personalData = new PersonalData(balanceInEth, Array.from(mapTickets.keys()),
-            Array.from(mapTeams.keys()), mapTickets);
-
-        console.log(personalData);
+            Array.from(mapTeams.keys()), mapTickets, mapTeams.has(__noTeamID));
     } catch (err) {
         console.log(err);
         showDialog(DLevel.Warning, "load personal data from block chain failed")
@@ -179,7 +179,11 @@ function setupCurrentRoundData() {
 function setupPersonalData() {
     document.getElementById("personal-balance-val").textContent = personalData.balance;
     document.getElementById("personal-ticket-no-val").textContent = personalData.tickets.length;
-    document.getElementById("personal-team-no-val").textContent = personalData.teams.length;
+    let teamNo = personalData.teams.length;
+    if (personalData.hasIndividual) {
+        teamNo -= 1;
+    }
+    document.getElementById("personal-team-no-val").textContent = teamNo;
 }
 
 function showPersonalTicket() {
@@ -238,16 +242,12 @@ function showTeamDetail() {
     const tableBody = document.getElementById("team-detail-body");
     tableBody.innerHTML = '';
     for (let i = 0; i < personalData.teams.length; i++) {
-        let row = tableBody.insertRow();
-
-        let cell = row.insertCell();
         const teamHash = personalData.teams[i];
         if (teamHash === __noTeamID) {
-            cell.innerHTML = __noTeamTxt;
-            cell = row.insertCell();
             continue;
         }
-
+        let row = tableBody.insertRow();
+        let cell = row.insertCell();
         cell.innerHTML = teamHash
         cell = row.insertCell();
         cell.innerHTML = `<button class="team-detail-in-one-team" onclick="showOneTeamDetails('${teamHash}')">详情</button>`;
@@ -440,7 +440,7 @@ let cachedWinnerHistoryData = []
 
 async function syncWinnerHistoryData() {
     const data = await GetToSrvByJson('/queryWinHistory');
-    if (!data){
+    if (!data) {
         return;
     }
     cachedWinnerHistoryData = data;
@@ -513,6 +513,6 @@ async function withdrawBonus() {
     }
 }
 
-function incomeWithdrawHistory(){
+function incomeWithdrawHistory() {
     __incomeWithdrawHistory(ninjaUserObj.eth_addr);
 }
