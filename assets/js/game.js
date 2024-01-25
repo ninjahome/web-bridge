@@ -323,10 +323,7 @@ async function showOneRoundGameInfo() {
 
 function fullFillGameCard(obj, cardDiv) {
     cardDiv.style.display = 'block';
-    // console.log(obj);
-    const val = ethers.utils.formatUnits(obj.bonus, 'ether');
-    console.log(val, obj.winTicketID.toString());
-    cardDiv.querySelector('.one-round-bonus-val').textContent = val;
+    cardDiv.querySelector('.one-round-bonus-val').textContent = ethers.utils.formatUnits(obj.bonus, 'ether');
 
     const dTime = new Date(obj.discoverTime * 1000);
     cardDiv.querySelector('.one-round-discover-val').textContent = dTime.toString();
@@ -514,4 +511,8 @@ async function withdrawBonus() {
     } finally {
         hideLoading();
     }
+}
+
+function incomeWithdrawHistory(){
+    __incomeWithdrawHistory(ninjaUserObj.eth_addr);
 }

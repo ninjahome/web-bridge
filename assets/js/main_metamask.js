@@ -160,3 +160,7 @@ async function withdrawFromUserTweetIncome() {
     await reloadTweetBalance();
 }
 
+function incomeWithdrawHistory(){
+    __incomeWithdrawHistory(ninjaUserObj.eth_addr);
+}
+

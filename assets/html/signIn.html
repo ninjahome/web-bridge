@@ -376,9 +376,7 @@
     }
 
     function showSignBtn(web3ID) {
-        document.querySelectorAll(".logo-container").forEach(item=>{
-            item.classList.remove("active");
-        })
+        document.querySelectorAll(".logo-container").forEach(item=> item.classList.remove("active"));
         const web3IdTips = document.getElementById("web3-id-tips");
         const signInDiv = document.getElementById("sign-in-div");
         const metamaskDiv = document.getElementById("metamask-div");

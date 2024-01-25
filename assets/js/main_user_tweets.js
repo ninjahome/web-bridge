@@ -9,9 +9,8 @@ function __myPostOrVotedTweetsStatus(isPosted){
     detail.style.display = 'none';
 
     const switchArea = document.getElementById("my-vote-or-post-tweet-switch-area")
-    switchArea.querySelectorAll(".top-topic-btn").forEach(c=>{
-        c.classList.remove('active');
-    })
+    switchArea.querySelectorAll(".top-topic-btn").forEach(c=> c.classList.remove('active'));
+
     if (isPosted){
         switchArea.querySelector('.my-posted-tweets').classList.add('active')
     }else{
@@ -219,9 +218,7 @@ function __njUserVoteOrPostedTweetsStatus(isPosted) {
     votedDiv.style.display = isPosted ? 'none' : 'block';
 
     const switchArea = document.getElementById('twee-switch-area-for-nj-user')
-    switchArea.querySelectorAll('.top-topic-btn').forEach(btn=>{
-        btn.classList.remove('active');
-    })
+    switchArea.querySelectorAll('.top-topic-btn').forEach(btn=>btn.classList.remove('active'));
 
     if (isPosted){
         switchArea.querySelector('.tweetsPostedByNjUser').classList.add('active')

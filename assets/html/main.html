@@ -1197,20 +1197,25 @@
              onclick="menuOnClicked.call(document.getElementById('settings-menu-item'), 4)"
              style="width: 40px;height: 40px;border-radius: 50%;cursor: pointer" alt="avatar">
         <ul class="menu-list-left-area">
-            <li onclick="menuOnClicked.call(this,0)" class="menu-item-left-area active" data-content="middle-div-home">
-                <img src="/assets/file/path-to-home-icon.png" alt="Home" class="menu-icon"/> 主页
+            <li onclick="menuOnClicked.call(this,0)" data-icon-active="/assets/file/path-to-home-active-icon.png"
+                data-icon-inactive="/assets/file/path-to-home-icon.png" class="menu-item-left-area active" data-content="middle-div-home">
+                <img src="/assets/file/path-to-home-active-icon.png" alt="Home" class="menu-icon"/> 主页
             </li>
-            <li onclick="menuOnClicked.call(this,1)" class="menu-item-left-area" data-content="middle-div-leaderboard">
+            <li onclick="menuOnClicked.call(this,1)" data-icon-active="/assets/file/path-to-leaderboard-active-icon.png"
+                data-icon-inactive="/assets/file/path-to-leaderboard-icon.png"  class="menu-item-left-area" data-content="middle-div-leaderboard">
                 <img src="/assets/file/path-to-leaderboard-icon.png" alt="Home" class="menu-icon"/> 排行榜
             </li>
 
-            <li onclick="menuOnClicked.call(this,2)" class="menu-item-left-area" data-content="middle-div-user-tweets">
+            <li onclick="menuOnClicked.call(this,2)"  data-icon-active="/assets/file/path-to-twitter-active-icon.png"
+                data-icon-inactive="/assets/file/path-to-twitter-icon.png" class="menu-item-left-area" data-content="middle-div-user-tweets">
                 <img src="/assets/file/path-to-twitter-icon.png" alt="Home" class="menu-icon"/> 推文
             </li>
-            <li onclick="menuOnClicked.call(this,3)" class="menu-item-left-area" data-content="middle-div-about-user">
+            <li onclick="menuOnClicked.call(this,3)"  data-icon-active="/assets/file/path-to-user-active-icon.png"
+                data-icon-inactive="/assets/file/path-to-user-icon.png" class="menu-item-left-area" data-content="middle-div-about-user">
                 <img src="/assets/file/path-to-user-icon.png" alt="Home" class="menu-icon"/> 我的
             </li>
-            <li onclick="openKolKeyMainPage()" class="menu-item-left-area" data-content="middle-div-userKolKey">
+            <li onclick="openKolKeyMainPage()" data-icon-active="/assets/file/path-to-keys-active-icon.png"
+                data-icon-inactive="/assets/file/path-to-keys-icon.png" class="menu-item-left-area" data-content="middle-div-userKolKey">
                 <img src="/assets/file/path-to-keys-icon.png" alt="Home" class="menu-icon"/> Keys
             </li>
         </ul>
@@ -1405,7 +1410,7 @@
                                                   style="color: #4848D8;font-size: 22px; font-weight: bold">0.000</span> eth</span>
                         </div>
                         <div>
-                            <button class="ticket-count-btn rule-info-btn">提现记录</button>
+                            <button class="ticket-count-btn rule-info-btn"  onclick="incomeWithdrawHistory()">提现记录</button>
                             <button onclick="withdrawFromUserTweetIncome()" class="withdraw-btn">提现</button>
                         </div>
 
@@ -1417,7 +1422,7 @@
                         <span>彩票收入: <span class="income-val" id="lottery-game-income"
                                               style="color: #DE4033;font-size: 22px; font-weight: bold">0.000</span> eth</span>
                         <div>
-                            <button class="ticket-count-btn rule-info-btn">提现记录</button>
+                            <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()">提现记录</button>
                             <button onclick="withdrawLotteryGameIncome()" class="withdraw-btn">提现</button>
                         </div>
                     </div>
@@ -1663,8 +1668,15 @@
 
     function menuOnClicked(curMenuId) {
         curScrollContentID = curMenuId;
-        document.querySelectorAll('.menu-item-left-area').forEach(i => i.classList.remove('active'));
+        document.getElementById('hover-card').style.display = 'none';
+        document.querySelectorAll('.menu-item-left-area').forEach(i => {
+            i.classList.remove('active');
+            const icon = i.querySelector('.menu-icon');
+            icon.src = i.getAttribute('data-icon-inactive');
+        });
         this.classList.add('active');
+        const activeIcon = this.querySelector('.menu-icon');
+        activeIcon.src = this.getAttribute('data-icon-active');
 
         const contentId = this.getAttribute('data-content');
         document.querySelectorAll('.content-in-middle-area').forEach(c => c.classList.remove('active'));

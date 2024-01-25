@@ -330,8 +330,9 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
 
 async function withdrawAction(contract) {
     try {
+        showWaiting('prepare transaction')
         const txResponse = await contract.withdraw("0x00", true);
-        showWaiting("prepare to withdraw:" + txResponse.hash);
+        changeLoadingTips("transaction packaging:" + txResponse.hash);
 
         const txReceipt = await txResponse.wait();
         showDialog(DLevel.Success, "Transaction: " + txReceipt.status ? "success" : "failed");

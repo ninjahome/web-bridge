@@ -273,17 +273,12 @@
     const ninjaUserObjWeb3ID = "{{.EthAddr}}";
 
     function showDiv(divId) {
-        document.querySelectorAll('.content-area > div').forEach(div => {
-            div.style.display = 'none';
-        });
+        document.querySelectorAll('.content-area > div').forEach(div => div.style.display = 'none');
         document.getElementById(divId).style.display = 'block';
 
-        document.querySelectorAll('.menu-area button').forEach(button => {
-            button.classList.remove('active');
-        });
+        document.querySelectorAll('.menu-area button').forEach(button => button.classList.remove('active'));
         this.classList.add('active');
     }
-
 
     document.addEventListener("DOMContentLoaded", initMainPage);
 
