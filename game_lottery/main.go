@@ -35,10 +35,6 @@ const (
 	TxStatusFailed
 )
 
-func gameResultTableName(contractAddr string) string {
-	return fmt.Sprintf(server.DBTableGameResult, contractAddr)
-}
-
 func initConfig(filePath string) *server.SysConf {
 	cf := new(server.SysConf)
 
@@ -492,11 +488,10 @@ func (gs *GameService) saveGameHistoryData(no string) {
 		return
 	}
 
-	var tableName = gameResultTableName(gs.conf.GameContract)
 	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
 	defer cancel()
 
-	randomDoc := gs.fileCli.Collection(tableName).Doc(roundNo.String())
+	randomDoc := gs.fileCli.Collection(server.DBTableGameResult).Doc(roundNo.String())
 	_, err = randomDoc.Set(opCtx, result)
 	if err != nil {
 		util.LogInst().Err(err).Str("round-no", roundNo.String()).Msg("failed to save game info to database")
@@ -531,10 +526,9 @@ func (gs *GameService) batchSaveGameHistoryData(start, end *big.Int) {
 
 	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
 	defer cancel()
-	var tableName = gameResultTableName(gs.conf.GameContract)
 	for i, chain := range result {
 		var roundNo = start.Int64() + int64(i)
-		randomDoc := gs.fileCli.Collection(tableName).Doc(fmt.Sprintf("%d", roundNo))
+		randomDoc := gs.fileCli.Collection(server.DBTableGameResult).Doc(fmt.Sprintf("%d", roundNo))
 		_, err = randomDoc.Set(opCtx, chain)
 		if err != nil {
 			util.LogInst().Err(err).Int64("round-no", roundNo).Msg("failed to save game info to database")
