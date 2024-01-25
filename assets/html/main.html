@@ -1031,6 +1031,17 @@
             margin: 2px;
         }
 
+        .rule-info-btn {
+            border: none;
+            background-color: transparent;
+            color: #898989;
+            padding: 0;
+        }
+
+        .rule-info-btn:hover {
+            color: #4848D8;
+        }
+
         .withdraw-btn {
             border-radius: 999px;
             border: none;
@@ -1047,6 +1058,17 @@
             background-color: #3333BE; /* 深一点的推特蓝 */
         }
 
+        .rule-info-btn {
+            border: none;
+            background-color: transparent;
+            color: #898989;
+            padding: 0;
+        }
+
+        .middle-div-income-inner .rule-info-btn:hover {
+            color: #4848D8;
+            background-color: transparent;
+        }
         .user-area-tittle {
             color: #333; /* 深色文本 */
             font-weight: bold;
@@ -1336,7 +1358,7 @@
             </div>
             <div id="tweets-voted-by-user" class="tweets-park"></div>
         </div>
-        <div id="middle-div-about-user" class="content-in-middle-area">
+        <div id="middle-div-about-user" class="content-in-middle-area active">
             <div class="user-settings">
                 <div class="user-settings-icon" >
                     <button></button>
@@ -1391,7 +1413,7 @@
                 </div>
                 <div class="income-game-area">
                     <div class="income-header">游戏收入</div>
-                    <div class="income-body ">
+                    <div class="income-body">
                         <span>彩票收入: <span class="income-val" id="lottery-game-income"
                                               style="color: #DE4033;font-size: 22px; font-weight: bold">0.000</span> eth</span>
                         <div>
