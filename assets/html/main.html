@@ -106,6 +106,8 @@
             justify-content: space-around;
             align-items: center;
             height: 64px;
+            width: 800px;
+            margin-top: 16px;
             border-bottom: 1px solid #F7F8F9;
         }
 
@@ -134,10 +136,12 @@
 
     </style>
     <style about="tweet park">
+
         .tweets-park {
             flex-grow: 1.618;
             background-color: #e6e6e6;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
+            width: 800px;
         }
 
         .tweet-first-half {
@@ -275,9 +279,9 @@
             display: -webkit-box;
             -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
-            font-size: 16px;
+            font-size: 15px;
             line-height: 1.5;
-            font-weight: normal;
+            font-weight: 400;
             color: #1B1B1D;
             position: relative;
         }
@@ -1124,7 +1128,7 @@
             color: #1B1B1D;
             display: flex;
             align-items: center;
-            margin-left: 16px;
+            margin-bottom: 16px;
         }
 
         .back-button img {
@@ -1134,6 +1138,10 @@
         .tweet-detail-info {
             font-size: 14px;
             color: #7E7F82;
+        }
+
+        .tweet-detail {
+            padding: 16px;
         }
 
         .tweet-payment_status {
@@ -1423,7 +1431,7 @@
             </div>
         </div>
         <div id="nj-user-profile" class="nj-user-profile" style="display: none">
-            <button id="back-button" class="back-button">返回</button>
+            <button id="back-button" class="back-button"><img src="/assets/file/header-back-icon.png" alt=" ">返回</button>
             <div class="nj-user-summary">
                 <div class="tweet-header-in-profile">
                     <div class="tweet-header-img"></div>
