@@ -52,7 +52,8 @@ var (
 )
 
 const (
-	DBTableGameResult = " lottery_history"
+	DBTableGameResult       = "lottery_game_round_info"
+	DBTableWinTeamForMember = "win_team_info_for_member"
 )
 
 type LogicAction struct {

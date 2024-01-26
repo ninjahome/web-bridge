@@ -11,14 +11,14 @@ import (
 )
 
 type GamInfoOnChain struct {
-	RoundNo      *big.Int `json:"-"  firestore:"-"`
-	RandomHash   string   `json:"random_hash"  firestore:"random_hash"`
-	DiscoverTime int64    `json:"discover_time"  firestore:"discover_time"`
-	Winner       string   `json:"winner"  firestore:"winner"`
-	WinTeam      string   `json:"win_team"  firestore:"win_team"`
-	WinTicketID  int64    `json:"win_ticket_id"  firestore:"win_ticket_id"`
-	Bonus        float64  `json:"bonus"  firestore:"bonus"`
-	RandomVal    string   `json:"random_val"  firestore:"random_val"`
+	RoundNo      int64   `json:"round_no"  firestore:"round_no"`
+	RandomHash   string  `json:"random_hash"  firestore:"random_hash"`
+	DiscoverTime int64   `json:"discover_time"  firestore:"discover_time"`
+	Winner       string  `json:"winner"  firestore:"winner"`
+	WinTeam      string  `json:"win_team"  firestore:"win_team"`
+	WinTicketID  int64   `json:"win_ticket_id"  firestore:"win_ticket_id"`
+	Bonus        float64 `json:"bonus"  firestore:"bonus"`
+	RandomVal    string  `json:"random_val"  firestore:"random_val"`
 }
 
 func (c *GamInfoOnChain) String() string {
@@ -84,4 +84,35 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) HistoryRoundInfoEx(opts *bind.C
 	}
 
 	return result, nil
+}
+
+type TeamInfos struct {
+	VoteNo  int64
+	MemNo   int64
+	VoteNos []*big.Int
+	Members []common.Address
+}
+
+func (_TweetLotteryGame *TweetLotteryGameCaller) MemberInfoOfWinTeam(opts *bind.CallOpts, roundNo int64, teamId string) (*TeamInfos, error) {
+
+	bts, err := hexutil.Decode(teamId)
+	if err != nil {
+		return nil, err
+	}
+
+	var tweet [32]byte
+	copy(tweet[:], bts)
+	var out []interface{}
+	err = _TweetLotteryGame.contract.Call(opts, &out, "teamMembers", big.NewInt(roundNo), tweet)
+	if err != nil {
+		return nil, err
+	}
+
+	var ti TeamInfos
+	ti.VoteNo = (*abi.ConvertType(out[0], new(*big.Int)).(**big.Int)).Int64()
+	ti.MemNo = (*abi.ConvertType(out[1], new(*big.Int)).(**big.Int)).Int64()
+	ti.VoteNos = *abi.ConvertType(out[2], new([]*big.Int)).(*[]*big.Int)
+	ti.Members = *abi.ConvertType(out[3], new([]common.Address)).(*[]common.Address)
+
+	return &ti, err
 }

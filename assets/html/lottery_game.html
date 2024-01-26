@@ -480,14 +480,14 @@
                 <button class="team-count-btn rule-info-btn" onclick="showTeamDetail()">查看详情</button>
             </li>
             <li>
-                <p>个人中奖记录: <span class="personal-winning-count"
+                <p>我的中奖彩票: <span class="personal-winning-count"
                                    style="font-size: 20px; font-weight:bold; color: #DE8633">0</span></p>
                 <button class="personal-winning-btn rule-info-btn" onclick="showUserWinHistory()">查看详情</button>
             </li>
             <li>
-                <p>团队中奖记录: <span class="team-winning-count"
+                <p>我的中奖团队: <span class="team-winning-count"
                                    style="font-size: 20px; font-weight:bold; color: #DE8633">0</span></p>
-                <button class="team-winning-btn rule-info-btn" onclick="showUserWinHistory()">查看详情</button>
+                <button class="team-winning-btn rule-info-btn" onclick="showTeamWinHistory()">查看详情</button>
             </li>
         </ul>
         <div class="user-tickets" style="display: none;">
@@ -549,9 +549,16 @@
 
         <div class="winning-history" id="winning-history-template" style="display: none">
             <ul style="color: #7E7F82">
-                <li>金额: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00 ETH</span>
+                <li>总金额: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
                 </li>
-                <li>期数: <span class="one-round-discover-val"
+                <li>归我所得: <span class="one-round-bonus-for-me" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
+                </li>
+                <li>中奖彩票编号: <span class="one-round-ticket-id"
+                                  style="color: #1B1B1D; font-size: 16px; font-weight: bold">0</span>
+
+                <li>期数: 第 <span class="one-round-round-val"
+                                     style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span> 期
+                <li>日期: <span class="one-round-discover-val"
                                 style="color: #1B1B1D; font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
                 </li>
                 <li>类型: <span class="team-id-txt type"

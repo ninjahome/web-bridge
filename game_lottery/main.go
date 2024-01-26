@@ -22,6 +22,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -192,25 +193,25 @@ func NewGame(key *keystore.Key, cf *server.SysConf) *GameService {
 		txResult: make(chan *GameResult, 1)}
 }
 
-func (gs *GameService) performGameCheck() (*big.Int, bool) {
+func (gs *GameService) performGameCheck() (int64, bool) {
 	util.LogInst().Info().Msg("time to check game status")
 	if gs.isWaitingTx {
 		util.LogInst().Info().Msg("game checking:waiting for transaction packaging")
-		return nil, false
+		return -1, false
 	}
 	gameInfo, err := gs.gameTimeOn()
 	if err != nil {
 		util.LogInst().Err(err).Msg("check game status failed")
-		return nil, false
+		return -1, false
 	}
 
 	ti := time.Now().Add(time.Duration(gs.conf.GameTimeInMinute) * time.Minute).Unix()
 	if ti < gameInfo.DiscoverTime {
-		util.LogInst().Debug().Str("current-round", gameInfo.RoundNo.String()).
+		util.LogInst().Debug().Int64("current-round", gameInfo.RoundNo).
 			Int64("next-time", gameInfo.DiscoverTime).Msg("time is not on")
 		return gameInfo.RoundNo, false
 	}
-	util.LogInst().Info().Str("round-no", gameInfo.RoundNo.String()).Msg("start to find winner")
+	util.LogInst().Info().Int64("round-no", gameInfo.RoundNo).Msg("start to find winner")
 	return gameInfo.RoundNo, true
 }
 
@@ -227,7 +228,7 @@ func (gs *GameService) Server() {
 
 			curRandomNumber, err := gs.loadCurrentEncryptedRandom(curNo)
 			if err != nil {
-				util.LogInst().Err(err).Str("current-round", curNo.String()).Msg("failed to load random raw data")
+				util.LogInst().Err(err).Int64("current-round", curNo).Msg("failed to load random raw data")
 				continue
 			}
 			privateBytes := gs.key.PrivateKey.D.Bytes()
@@ -305,7 +306,7 @@ func (gs *GameService) gameTimeOn() (*ethapi.GamInfoOnChain, error) {
 		util.LogInst().Err(err).Msg("query current game info failed")
 		return nil, err
 	}
-	info.RoundNo = roundNo
+	info.RoundNo = roundNo.Int64()
 	util.LogInst().Debug().Msg(info.String())
 	return info, nil
 }
@@ -326,8 +327,8 @@ func (gs *GameService) getTxClient() (*ethclient.Client, *bind.TransactOpts, err
 	return client, auth, nil
 }
 
-func (gs *GameService) discoverWinner(random *big.Int, nextRoundRandomHash []byte, curNo *big.Int) (string, error) {
-	util.LogInst().Info().Str("current-no", curNo.String()).Msg("start to discover winner")
+func (gs *GameService) discoverWinner(random *big.Int, nextRoundRandomHash []byte, curNo int64) (string, error) {
+	util.LogInst().Info().Int64("current-no", curNo).Msg("start to discover winner")
 	client, auth, err := gs.getTxClient()
 	if err != nil {
 		util.LogInst().Err(err).Msg("get transaction client failed")
@@ -358,40 +359,40 @@ func (gs *GameService) discoverWinner(random *big.Int, nextRoundRandomHash []byt
 	return tx.Hash().String(), nil
 }
 
-func (gs *GameService) waitTransactionResult(tx *types.Transaction, client *ethclient.Client, random, curNo *big.Int) {
+func (gs *GameService) waitTransactionResult(tx *types.Transaction, client *ethclient.Client, random *big.Int, curNo int64) {
 	queryTicker := time.NewTicker(time.Second * time.Duration(gs.conf.TxCheckerInSeconds))
 	defer func() {
 		gs.isWaitingTx = false
 		queryTicker.Stop()
 	}()
 	var result = GameResult{
-		RoundNo: curNo.String(),
+		RoundNo: fmt.Sprintf("%d", curNo),
 		Random:  random.String(),
 	}
 
 	for {
-		util.LogInst().Debug().Str("current-no", curNo.String()).
+		util.LogInst().Debug().Int64("current-no", curNo).
 			Str("tx-hash", tx.Hash().String()).
 			Msg("check receipt status")
 		select {
 		case <-queryTicker.C:
 			receipt, err := client.TransactionReceipt(context.Background(), tx.Hash())
 			if err != nil {
-				util.LogInst().Err(err).Str("current-no", curNo.String()).
+				util.LogInst().Err(err).Int64("current-no", curNo).
 					Str("tx-hash", tx.Hash().String()).
 					Msg("Error checking transaction receipt:")
 				continue
 			}
 
 			if receipt == nil {
-				util.LogInst().Info().Str("current-no", curNo.String()).
+				util.LogInst().Info().Int64("current-no", curNo).
 					Str("tx-hash", tx.Hash().String()).Msg("transaction is in process")
 				continue
 			}
 
 			result.Success = receipt.Status == types.ReceiptStatusSuccessful
 
-			util.LogInst().Warn().Str("current-no", curNo.String()).
+			util.LogInst().Warn().Int64("current-no", curNo).
 				Str("tx-hash", tx.Hash().String()).Bool("tx-status", result.Success).
 				Msg("winner discover transaction finished")
 			gs.txResult <- &result
@@ -400,10 +401,10 @@ func (gs *GameService) waitTransactionResult(tx *types.Transaction, client *ethc
 	}
 }
 
-func (gs *GameService) loadCurrentEncryptedRandom(no *big.Int) (*big.Int, error) {
+func (gs *GameService) loadCurrentEncryptedRandom(no int64) (*big.Int, error) {
 	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
 	defer cancel()
-	randomDoc := gs.fileCli.Collection(DBTableGameRandom).Doc(no.String())
+	randomDoc := gs.fileCli.Collection(DBTableGameRandom).Doc(fmt.Sprintf("%d", no))
 	doc, err := randomDoc.Get(opCtx)
 	if err != nil {
 		util.LogInst().Err(err).Msg("get random of lottery game failed")
@@ -422,15 +423,15 @@ func (gs *GameService) loadCurrentEncryptedRandom(no *big.Int) (*big.Int, error)
 		util.LogInst().Err(err).Msg("decrypt random of current round from encrypted data failed")
 		return nil, err
 	}
-	util.LogInst().Debug().Str("current-round", no.String()).Msg("random raw data load success")
+	util.LogInst().Debug().Int64("current-round", no).Msg("random raw data load success")
 	return curRandomNumber, nil
 }
 
-func (gs *GameService) saveDiscoverInfo(no *big.Int, nextRandom GameRandomMeta) error {
+func (gs *GameService) saveDiscoverInfo(no int64, nextRandom GameRandomMeta) error {
 	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
 	defer cancel()
-	var docId = big.NewInt(0).Add(no, big.NewInt(1)).String()
-	randomDoc := gs.fileCli.Collection(DBTableGameRandom).Doc(docId)
+	var docId = no + 1
+	randomDoc := gs.fileCli.Collection(DBTableGameRandom).Doc(fmt.Sprintf("%d", docId))
 	_, err := randomDoc.Set(opCtx, nextRandom)
 	return err
 }
@@ -462,6 +463,62 @@ func (gs *GameService) updateDiscoverInfo(result *GameResult) error {
 	return err
 }
 
+type WinInfoForTeamMember struct {
+	RoundNo      int64   `json:"round_no"  firestore:"round_no"`
+	WinTeam      string  `json:"win_team"  firestore:"win_team"`
+	Bonus        float64 `json:"bonus"  firestore:"bonus"`
+	MemberAddr   string  `json:"member_addr"  firestore:"member_addr"`
+	MemberVoteNo int64   `json:"member_vote_no"  firestore:"member_vote_no"`
+	TotalVoteNo  int64   `json:"total_vote_no"  firestore:"total_vote_no"`
+	TotalMemNo   int64   `json:"total_mem_no"  firestore:"total_mem_no"`
+}
+
+func (c *WinInfoForTeamMember) String() string {
+	bts, _ := json.Marshal(c)
+	return string(bts)
+}
+
+func (gs *GameService) saveWinTeamInfo(game *ethapi.TweetLotteryGame, gi *ethapi.GamInfoOnChain) {
+	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
+	defer cancel()
+	ti, err := game.MemberInfoOfWinTeam(nil, gi.RoundNo, gi.WinTeam)
+	if err != nil {
+		util.LogInst().Err(err).Int64("round-no", gi.RoundNo).Msg("failed to load winner team info")
+		return
+	}
+	if ti.MemNo <= 1 {
+		util.LogInst().Debug().Int64("round-no", gi.RoundNo).
+			Str("team", gi.WinTeam).Msg("only one winner in this team")
+		return
+	}
+
+	for i, member := range ti.Members {
+		vote := ti.VoteNos[i]
+		if strings.ToLower(member.String()) == strings.ToLower(gi.Winner) {
+			util.LogInst().Debug().Str("winner", gi.Winner).Msg("exclude winner")
+			continue
+		}
+
+		key := fmt.Sprintf("%s-%d", member.String(), gi.RoundNo)
+		winTeamDoc := gs.fileCli.Collection(server.DBTableWinTeamForMember).Doc(key)
+		var item = &WinInfoForTeamMember{
+			RoundNo:      gi.RoundNo,
+			WinTeam:      gi.WinTeam,
+			Bonus:        gi.Bonus,
+			MemberAddr:   member.String(),
+			MemberVoteNo: vote.Int64(),
+			TotalVoteNo:  ti.VoteNo,
+			TotalMemNo:   ti.MemNo,
+		}
+
+		_, err = winTeamDoc.Set(opCtx, item)
+		if err != nil {
+			util.LogInst().Err(err).Str("eth-addr", member.String()).Msg("save user's win team info failed")
+		}
+	}
+	util.LogInst().Info().Int64("round-no", gi.RoundNo).Msg("save winner team for user success")
+}
+
 func (gs *GameService) saveGameHistoryData(no string) {
 
 	roundNo, success := big.NewInt(0).SetString(no, 10)
@@ -487,6 +544,7 @@ func (gs *GameService) saveGameHistoryData(no string) {
 			Msg("failed to fetch game info of current round")
 		return
 	}
+	result.RoundNo = roundNo.Int64()
 
 	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
 	defer cancel()
@@ -497,6 +555,9 @@ func (gs *GameService) saveGameHistoryData(no string) {
 		util.LogInst().Err(err).Str("round-no", roundNo.String()).Msg("failed to save game info to database")
 		return
 	}
+
+	go gs.saveWinTeamInfo(game, result)
+
 	util.LogInst().Info().Str("round-no", roundNo.String()).Msg("save game history data success")
 }
 
@@ -504,8 +565,7 @@ func (gs *GameService) batchSaveGameHistoryData(start, end *big.Int) {
 
 	cli, err := ethclient.Dial(gs.conf.InfuraUrl)
 	if err != nil {
-		util.LogInst().Err(err).Msg("dial eth failed")
-		return
+		panic(err)
 	}
 
 	util.LogInst().Info().Int64("round-no-start", start.Int64()).
@@ -513,14 +573,11 @@ func (gs *GameService) batchSaveGameHistoryData(start, end *big.Int) {
 	contractAddress := common.HexToAddress(gs.conf.GameContract)
 	game, err := ethapi.NewTweetLotteryGame(contractAddress, cli)
 	if err != nil {
-		util.LogInst().Err(err).Str("contract-address", gs.conf.GameContract).Msg("failed create game obj")
 		panic(err)
 	}
 
 	result, err := game.HistoryRoundInfoEx(nil, start, end)
 	if err != nil {
-		util.LogInst().Err(err).Str("start-round", start.String()).Str("end-round", end.String()).
-			Msg("failed to fetch game info of current round")
 		panic(err)
 	}
 
@@ -529,11 +586,18 @@ func (gs *GameService) batchSaveGameHistoryData(start, end *big.Int) {
 	for i, chain := range result {
 		var roundNo = start.Int64() + int64(i)
 		randomDoc := gs.fileCli.Collection(server.DBTableGameResult).Doc(fmt.Sprintf("%d", roundNo))
-		_, err = randomDoc.Set(opCtx, chain)
-		if err != nil {
-			util.LogInst().Err(err).Int64("round-no", roundNo).Msg("failed to save game info to database")
+		chain.RoundNo = roundNo
+		if chain.Bonus <= 0 {
+			util.LogInst().Info().Int64("round-no", roundNo).Msg("no winner in this round")
 			continue
 		}
+
+		_, err = randomDoc.Set(opCtx, chain)
+		if err != nil {
+			panic(err)
+		}
+		go gs.saveWinTeamInfo(game, chain)
+
 		util.LogInst().Info().Int64("round-no", roundNo).Msg("save game history data success")
 	}
 }

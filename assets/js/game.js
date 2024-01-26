@@ -437,6 +437,7 @@ async function procTicketPayment(no, ifShare) {
 }
 
 let cachedWinnerHistoryData = []
+let cachedWinTeamHistoryData = []
 
 async function syncWinnerHistoryData() {
     const data = await GetToSrvByJson('/queryWinHistory');
@@ -445,6 +446,10 @@ async function syncWinnerHistoryData() {
     }
     cachedWinnerHistoryData = data;
     document.querySelector('.personal-winning-count').textContent = "" + cachedWinnerHistoryData.length;
+}
+
+function showTeamWinHistory(){
+
 }
 
 function showUserWinHistory() {
@@ -465,15 +470,20 @@ function showUserWinHistory() {
             winnerCard.style.display = 'block';
             winnerCard.id = null;
 
-            winnerCard.querySelector('.one-round-bonus-val').textContent = obj.bonus + ' ETH';
+            winnerCard.querySelector('.one-round-bonus-val').textContent = obj.bonus;
+            winnerCard.querySelector('.one-round-ticket-id').textContent = obj.win_ticket_id ;
+            winnerCard.querySelector('.one-round-round-val').textContent = obj.round_no ;
             winnerCard.querySelector('.one-round-discover-val').textContent = formatTime(obj.discover_time);
 
             if (obj.win_team === __noTeamID) {
                 winnerCard.querySelector('.team-id-txt.type').textContent = __noTeamTxt;
                 winnerCard.querySelector('.team-id-txt.id').textContent = '';
+                winnerCard.querySelector('.one-round-bonus-for-me').textContent = obj.bonus;
+
             } else {
                 winnerCard.querySelector('.team-id-txt.id').textContent = obj.win_team;
                 winnerCard.querySelector('.team-id-txt.type').textContent = '团队';
+                winnerCard.querySelector('.one-round-bonus-for-me').textContent = obj.bonus/2;
             }
 
             historyDiv.appendChild(winnerCard);
