@@ -463,21 +463,6 @@ func (gs *GameService) updateDiscoverInfo(result *GameResult) error {
 	return err
 }
 
-type WinInfoForTeamMember struct {
-	RoundNo      int64   `json:"round_no"  firestore:"round_no"`
-	WinTeam      string  `json:"win_team"  firestore:"win_team"`
-	Bonus        float64 `json:"bonus"  firestore:"bonus"`
-	MemberAddr   string  `json:"member_addr"  firestore:"member_addr"`
-	MemberVoteNo int64   `json:"member_vote_no"  firestore:"member_vote_no"`
-	TotalVoteNo  int64   `json:"total_vote_no"  firestore:"total_vote_no"`
-	TotalMemNo   int64   `json:"total_mem_no"  firestore:"total_mem_no"`
-}
-
-func (c *WinInfoForTeamMember) String() string {
-	bts, _ := json.Marshal(c)
-	return string(bts)
-}
-
 func (gs *GameService) saveWinTeamInfo(game *ethapi.TweetLotteryGame, gi *ethapi.GamInfoOnChain) {
 	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
 	defer cancel()
@@ -500,8 +485,8 @@ func (gs *GameService) saveWinTeamInfo(game *ethapi.TweetLotteryGame, gi *ethapi
 		}
 
 		key := fmt.Sprintf("%s-%d", member.String(), gi.RoundNo)
-		winTeamDoc := gs.fileCli.Collection(server.DBTableWinTeamForMember).Doc(key)
-		var item = &WinInfoForTeamMember{
+		winTeamDoc := gs.fileCli.Collection(database.DBTableWinTeamForMember).Doc(key)
+		var item = &ethapi.WinInfoForTeamMember{
 			RoundNo:      gi.RoundNo,
 			WinTeam:      gi.WinTeam,
 			Bonus:        gi.Bonus,
@@ -549,7 +534,7 @@ func (gs *GameService) saveGameHistoryData(no string) {
 	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
 	defer cancel()
 
-	randomDoc := gs.fileCli.Collection(server.DBTableGameResult).Doc(roundNo.String())
+	randomDoc := gs.fileCli.Collection(database.DBTableGameResult).Doc(roundNo.String())
 	_, err = randomDoc.Set(opCtx, result)
 	if err != nil {
 		util.LogInst().Err(err).Str("round-no", roundNo.String()).Msg("failed to save game info to database")
@@ -585,7 +570,7 @@ func (gs *GameService) batchSaveGameHistoryData(start, end *big.Int) {
 	defer cancel()
 	for i, chain := range result {
 		var roundNo = start.Int64() + int64(i)
-		randomDoc := gs.fileCli.Collection(server.DBTableGameResult).Doc(fmt.Sprintf("%d", roundNo))
+		randomDoc := gs.fileCli.Collection(database.DBTableGameResult).Doc(fmt.Sprintf("%d", roundNo))
 		chain.RoundNo = roundNo
 		if chain.Bonus <= 0 {
 			util.LogInst().Info().Int64("round-no", roundNo).Msg("no winner in this round")
