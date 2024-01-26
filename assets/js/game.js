@@ -34,6 +34,18 @@ class GameRoundInfo {
     }
 }
 
+class WinTeamInfo {
+    constructor(round_no, win_team, bonus, member_addr, member_vote_no, total_vote_no, total_mem_no) {
+        this.round_no = round_no;
+        this.win_team = win_team;
+        this.bonus = bonus;
+        this.member_addr = member_addr;
+        this.member_vote_no = member_vote_no;
+        this.total_vote_no = total_vote_no;
+        this.total_mem_no = total_mem_no;
+    }
+}
+
 class PersonalData {
     constructor(balance, tickets, teams, map, hasIndividual) {
         this.balance = balance;
@@ -50,6 +62,7 @@ async function initGamePage() {
     document.querySelector('.contract-address-value').textContent = address;
     syncWinnerHistoryData().then(r => {
     });
+    syncWinTeamHistoryData().then(r=>{})
 }
 
 function showContractUrl() {
@@ -260,7 +273,7 @@ function hideOneTeamDetails() {
 }
 
 async function showOneTeamDetails(team) {
-    console.log(team);
+    // console.log(team);
     const teamDetailDiv = document.querySelector('.team-detail-for-one');
     teamDetailDiv.style.display = 'block';
 
@@ -448,15 +461,61 @@ async function syncWinnerHistoryData() {
     document.querySelector('.personal-winning-count').textContent = "" + cachedWinnerHistoryData.length;
 }
 
-function showTeamWinHistory(){
+async function syncWinTeamHistoryData() {
+    const data = await GetToSrvByJson('/queryWinTeamHistory');
+    if (!data) {
+        return;
+    }
+    cachedWinTeamHistoryData = data;
+    document.querySelector('.team-winning-count').textContent = "" + cachedWinTeamHistoryData.length;
+}
 
+function showTeamWinHistory() {
+    if (cachedWinTeamHistoryData.length === 0) {
+        return;
+    }
+    const historyDiv = document.querySelector('.winner-history-list');
+    const isShowing = historyDiv.style.display === 'block';
+    historyDiv.style.display = isShowing ? 'none' : 'block';
+    historyDiv.innerHTML = '';
+    if (isShowing) {
+        return;
+    }
+
+    try {
+
+        for (const obj of cachedWinTeamHistoryData) {
+
+            const winTeamCard = document.getElementById("winTeam-history-template").cloneNode(true);
+            winTeamCard.style.display = 'block';
+            winTeamCard.id = null;
+
+            winTeamCard.querySelector('.one-round-bonus-val').textContent = obj.bonus;
+            winTeamCard.querySelector('.one-round-round-val').textContent = obj.round_no;
+            winTeamCard.querySelector('.team-id-txt.id').textContent = obj.win_team;
+            winTeamCard.querySelector('.one-round-my-vote-no').textContent = obj.member_vote_no;
+            winTeamCard.querySelector('.one-round-vote-no').textContent = obj.total_vote_no;
+            winTeamCard.querySelector('.one-round-mem-no').textContent = obj.total_mem_no;
+
+            const myBonus = obj.bonus / obj.total_vote_no * obj.member_vote_no;
+            winTeamCard.querySelector('.one-round-bonus-for-me').textContent = myBonus;
+
+            historyDiv.appendChild(winTeamCard);
+        }
+
+    } catch (err) {
+        showDialog(DLevel.Warning, "load err:" + err.toString())
+    }
+
+    syncWinTeamHistoryData().then(r => {
+    })
 }
 
 function showUserWinHistory() {
     if (cachedWinnerHistoryData.length === 0) {
         return;
     }
-    const historyDiv = document.querySelector('.winner-history-list');
+    const historyDiv = document.querySelector('.winTeam-history-list');
     const isShowing = historyDiv.style.display === 'block';
     historyDiv.style.display = isShowing ? 'none' : 'block';
     historyDiv.innerHTML = '';
@@ -471,8 +530,8 @@ function showUserWinHistory() {
             winnerCard.id = null;
 
             winnerCard.querySelector('.one-round-bonus-val').textContent = obj.bonus;
-            winnerCard.querySelector('.one-round-ticket-id').textContent = obj.win_ticket_id ;
-            winnerCard.querySelector('.one-round-round-val').textContent = obj.round_no ;
+            winnerCard.querySelector('.one-round-ticket-id').textContent = obj.win_ticket_id;
+            winnerCard.querySelector('.one-round-round-val').textContent = obj.round_no;
             winnerCard.querySelector('.one-round-discover-val').textContent = formatTime(obj.discover_time);
 
             if (obj.win_team === __noTeamID) {
@@ -483,7 +542,7 @@ function showUserWinHistory() {
             } else {
                 winnerCard.querySelector('.team-id-txt.id').textContent = obj.win_team;
                 winnerCard.querySelector('.team-id-txt.type').textContent = '团队';
-                winnerCard.querySelector('.one-round-bonus-for-me').textContent = obj.bonus/2;
+                winnerCard.querySelector('.one-round-bonus-for-me').textContent = obj.bonus / 2;
             }
 
             historyDiv.appendChild(winnerCard);

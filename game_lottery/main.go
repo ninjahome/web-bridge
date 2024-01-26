@@ -478,10 +478,14 @@ func (gs *GameService) saveWinTeamInfo(game *ethapi.TweetLotteryGame, gi *ethapi
 	}
 
 	for i, member := range ti.Members {
-		vote := ti.VoteNos[i]
+
+		vote := ti.VoteNos[i].Int64()
 		if strings.ToLower(member.String()) == strings.ToLower(gi.Winner) {
-			util.LogInst().Debug().Str("winner", gi.Winner).Msg("exclude winner")
-			continue
+			if vote <= 1 {
+				util.LogInst().Debug().Str("winner", gi.Winner).Msg("exclude winner")
+				continue
+			}
+			vote -= 1
 		}
 
 		key := fmt.Sprintf("%s-%d", member.String(), gi.RoundNo)
@@ -490,8 +494,8 @@ func (gs *GameService) saveWinTeamInfo(game *ethapi.TweetLotteryGame, gi *ethapi
 			RoundNo:      gi.RoundNo,
 			WinTeam:      gi.WinTeam,
 			Bonus:        gi.Bonus,
-			MemberAddr:   member.String(),
-			MemberVoteNo: vote.Int64(),
+			MemberAddr:   strings.ToLower(member.String()),
+			MemberVoteNo: vote,
 			TotalVoteNo:  ti.VoteNo,
 			TotalMemNo:   ti.MemNo,
 		}
@@ -585,4 +589,5 @@ func (gs *GameService) batchSaveGameHistoryData(start, end *big.Int) {
 
 		util.LogInst().Info().Int64("round-no", roundNo).Msg("save game history data success")
 	}
+	time.Sleep(time.Second * 15)
 }
