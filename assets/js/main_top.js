@@ -268,12 +268,14 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
         NJUserBasicInfo.cacheNJUsrObj(usr);
         const njUsrCard = document.getElementById("team-member-card-template").cloneNode(true);
         njUsrCard.style.display = '';
-
+        const avatarImg = njUsrCard.querySelector(".twitterAvatar");
         if (!usr.tw_id) {
-            njUsrCard.querySelector(".twitterAvatar").src = __defaultLogo;
+            avatarImg.src = __defaultLogo;
             njUsrCard.querySelector(".twitterName").innerText = usr.eth_addr;
         } else {
-            await __setOnlyHeader(njUsrCard, usr.tw_id);
+            const twitterObj = await __setOnlyHeader(njUsrCard, usr.tw_id);
+            avatarImg.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, usr.eth_addr));
+            avatarImg.addEventListener('mouseleave', () => hideHoverCard(avatarImg));
         }
 
         const rankNo = njUsrCard.querySelector(".team-members-number");
@@ -293,6 +295,7 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
         } else {
             njUsrCard.querySelector(".user-voted-count").innerText = usr.be_voted_count;
         }
+
         ninjaUserPark.appendChild(njUsrCard);
 
         userRankStartNo++;

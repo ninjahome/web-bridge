@@ -87,9 +87,14 @@ async function showHoverCard(event, twitterObj, web3ID) {
 
     const njUsrInfo = await loadNJUserInfoFromSrv(web3ID, true);
 
-    document.getElementById('hover-avatar').src = twitterObj.profile_image_url;
-    document.getElementById('hover-name').textContent = twitterObj.name;
-    document.getElementById('hover-user-name').textContent = '@' + twitterObj.username;
+    if (twitterObj){
+        document.getElementById('hover-avatar').src = twitterObj.profile_image_url;
+        document.getElementById('hover-name').textContent = twitterObj.name;
+        document.getElementById('hover-user-name').textContent = '@' + twitterObj.username;
+    }else{
+        document.getElementById('hover-name').textContent = web3ID;
+    }
+
 
     hoverCard.style.display = 'block';
     hoverCard.style.left = `${rect.left}px`;
@@ -163,7 +168,7 @@ async function __setOnlyHeader(tweetHeader, twitter_id) {
     const newObj = await loadTwitterUserInfoFromSrv(twitter_id, true)
     if (!newObj) {
         console.log("failed load twitter user info");
-        return;
+        return null;
     }
     tweetHeader.querySelector('.twitterAvatar').src = newObj.profile_image_url;
     tweetHeader.querySelector('.twitterName').textContent = newObj.name;
