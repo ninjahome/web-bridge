@@ -149,7 +149,7 @@ async function withdrawLotteryGameIncome() {
 }
 
 async function withdrawFromUserTweetIncome() {
-    const valStr = document.getElementById('lottery-game-income').innerText;
+    const valStr = document.getElementById('tweet-income-amount').innerText;
     const balance = Number(valStr);
     if (balance <= 0) {
         showDialog(DLevel.Tips, "balance too low");
