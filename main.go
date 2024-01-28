@@ -66,7 +66,7 @@ func mainRun(_ *cobra.Command, _ []string) {
 		panic(err)
 	}
 
-	initConfig()
+	initConfig(param.config)
 	var basisSrv = server.NewMainService()
 	go func() {
 		basisSrv.Start()
@@ -80,10 +80,10 @@ func mainRun(_ *cobra.Command, _ []string) {
 	waitShutdownSignal()
 }
 
-func initConfig() {
+func initConfig(filName string) {
 	cf := new(server.SysConf)
 
-	bts, err := os.ReadFile(ConfigFIleName)
+	bts, err := os.ReadFile(filName)
 	if err != nil {
 		panic(err)
 	}

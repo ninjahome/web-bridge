@@ -1,0 +1,1 @@
+scp -i ~/Documents/conf/dessage_release dessage-twitter.lnx assets.tar.gz config.sample.json wesley@35.220.156.3:~/

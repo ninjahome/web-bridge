@@ -117,7 +117,6 @@ async function GetToSrvByJson(url) {
     }
 }
 
-const __globalTargetChainNetworkID = toHex(421614);
 const __globalMetaMaskNetworkParam = new Map([
     [toHex(42161), {
         chainId: toHex(42161),
@@ -172,27 +171,6 @@ class SignDataForPost {
         this.pay_load = payload;
     }
 }
-
-const DefaultAvatarSrc = "/assets/file/logo.png"
-
-const __globalContractConf = new Map([
-    [toHex(421614), {
-        tweetVote: "0xfA23234FA1e93fC34072233e5fd5219A08c19Af1",
-        gameLottery: "0x46b3313A1E133d49e943F1691ebc6B93f650d34E",
-        kolKey: "0x9242B147f3B257ADd47e916c15c4ecE8B7a911C2",
-        kolKeyAbi: "",
-        postPrice: "0.005",
-        votePrice: "0.005"
-    }],
-    [toHex(42161), {
-        tweetVote: "",
-        gameLottery: "",
-        kolKey: "",
-        kolKeyAbi: "",
-        postPrice: "0.005",
-        votePrice: "0.005"
-    }]]);
-
 
 function createModalElement() {
     const modal = document.createElement('div');
