@@ -222,8 +222,7 @@ async function showTweetDetail(parentEleID, tweet) {
 
     detail.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
     await __setOnlyHeader(detail, tweet.twitter_id);
-
-    detail.querySelector('.tweet-text').textContent = tweet.text;
+    detail.querySelector('.tweet-text').innerHTML = DOMPurify.sanitize(tweet.text.replace(/\n/g, "<br>"));
     detail.querySelector('.back-button').onclick = () => {
         parentNode.style.display = 'block';
         detail.style.display = 'none';
