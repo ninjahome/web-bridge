@@ -1,3 +1,8 @@
+
+function toHex(number) {
+    return '0x' + number.toString(16);
+}
+
 const __globalContractConf = new Map([
     [toHex(421614), {
         tweetVote: "0xbC086f9cF06Bc186a1a6eB619b50302dD347518C",

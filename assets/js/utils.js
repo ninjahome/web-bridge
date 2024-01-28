@@ -36,9 +36,6 @@ function startCountdown(targetTime, callback) {
     }, 1000);
 }
 
-function toHex(number) {
-    return '0x' + number.toString(16);
-}
 
 function PostToSrvByJson(url, data) {
     const requestOptions = {
