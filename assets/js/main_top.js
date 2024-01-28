@@ -274,8 +274,9 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
             njUsrCard.querySelector(".twitterName").innerText = usr.eth_addr;
         } else {
             const twitterObj = await __setOnlyHeader(njUsrCard, usr.tw_id);
-            avatarImg.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, usr.eth_addr));
-            avatarImg.addEventListener('mouseleave', () => hideHoverCard(avatarImg));
+            const hoverDiv = njUsrCard.querySelector(".team-member-card-header");
+            hoverDiv.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, usr.eth_addr));
+            hoverDiv.addEventListener('mouseleave', () => hideHoverCard(hoverDiv));
         }
 
         const rankNo = njUsrCard.querySelector(".team-members-number");
