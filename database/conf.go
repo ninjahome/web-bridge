@@ -14,7 +14,9 @@ type FileStoreConf struct {
 
 func (c *FileStoreConf) String() string {
 	s := "\n------file store config------"
+	s += "\nlocal run:" + fmt.Sprintf("%t", c.LocalRun)
 	s += "\nproject id:" + c.ProjectID
+	s += "\ndatabase id:" + c.DatabaseID
 	s += "\nkey path :" + c.KeyFilePath
 	s += "\ntweet page size :" + fmt.Sprintf("%d", c.TweetsPageSize)
 	s += "\n--------------------------"

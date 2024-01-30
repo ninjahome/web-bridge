@@ -154,6 +154,7 @@ async function postTweetWithPayment() {
         if (!tweetObj) {
             return;
         }
+        closePostTweetDiv();
         showWaiting("posting to twitter");
         const basicTweet = await PostToSrvByJson("/postTweet", tweetObj);
         if (!basicTweet) {
@@ -175,7 +176,6 @@ async function postTweetWithPayment() {
         checkMetamaskErr(err);
     } finally {
         hideLoading();
-        closePostTweetDiv();
     }
 }
 
