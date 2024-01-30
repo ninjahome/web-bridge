@@ -226,6 +226,7 @@ async function showTweetDetail(parentEleID, tweet) {
     detail.querySelector('.back-button').onclick = () => {
         parentNode.style.display = 'block';
         detail.style.display = 'none';
+        detail.querySelector('.team-members').innerHTML = '';
     }
     detail.querySelector('.tweet-web3_id').textContent = tweet.web3_id;
     detail.querySelector('.tweet-prefixed-hash').textContent = tweet.prefixed_hash;
