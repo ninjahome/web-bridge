@@ -62,7 +62,8 @@ async function initGamePage() {
     document.querySelector('.contract-address-value').textContent = address;
     syncWinnerHistoryData().then(r => {
     });
-    syncWinTeamHistoryData().then(r=>{})
+    syncWinTeamHistoryData().then(r => {
+    })
 }
 
 function showContractUrl() {
@@ -334,6 +335,11 @@ async function showOneRoundGameInfo() {
     }
 }
 
+function hideInfoOfThisRound() {
+    const cardDiv = document.querySelector('.round-history');
+    cardDiv.style.display = 'none';
+}
+
 function fullFillGameCard(obj, cardDiv) {
     cardDiv.style.display = 'block';
     cardDiv.querySelector('.one-round-bonus-val').textContent = ethers.utils.formatUnits(obj.bonus, 'ether');
@@ -358,6 +364,8 @@ async function loadHistoryData() {
     const parentDiv = document.querySelector('.history-data-list');
     parentDiv.style.display = 'block';
     parentDiv.innerHTML = '';
+
+    document.getElementById('hide-history-data-btn').style.display = 'block'
 
     await __loadHistoryData(parentDiv);
 }
@@ -399,6 +407,14 @@ async function __loadHistoryData(parentDiv) {
     } finally {
         hideLoading();
     }
+}
+
+function hideHistoryData() {
+    const parentDiv = document.querySelector('.history-data-list');
+    parentDiv.style.display = 'none';
+    parentDiv.innerHTML = '';
+    document.getElementById('hide-history-data-btn').style.display = 'none';
+    document.querySelector('.history-data-list-more-btn').style.display = 'none';
 }
 
 async function buyTicket() {

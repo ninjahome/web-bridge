@@ -706,6 +706,7 @@
         <div class="history-query">
             <input id="round-input" class="round-query-input" placeholder="请输入序期号">
             <button class="query-btn" onclick="showOneRoundGameInfo()">查询</button>
+            <button class="load-history-btn" onclick="hideInfoOfThisRound()">隐藏</button>
         </div>
         <div class="round-history" style="display: none" id="history-data-one-round-template">
             <ul style="color: #7E7F82">
@@ -733,6 +734,7 @@
             <button class="load-history-btn" onclick="loadHistoryData()">加载历史数据</button>
             <div class="history-data-list"></div>
             <button class="history-data-list-more-btn" style="display: none" onclick="moreHistoryData()">更多</button>
+            <button class="load-history-btn" style="display: none" id="hide-history-data-btn" onclick="hideHistoryData()">隐藏历史数据</button>
         </div>
     </div>
 </div>
