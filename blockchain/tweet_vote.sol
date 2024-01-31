@@ -34,7 +34,7 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
         emit Received(msg.sender, msg.value);
     }
 
-    function exchangeBalance() public view returns (uint256) {
+    function contractBalance() public view returns (uint256) {
         return address(this).balance;
     }
 
@@ -128,7 +128,7 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
 
     function adminChangeKolKeyRate(uint8 newRate) public isOwner {
         require(newRate <= 100, "invalid kol key rate");
-        kolIncomePerTweetVoteRate = newRate;
+        kolKeyIncomeRate = newRate;
         emit SystemRateChanged(newRate, "kol_key_income_rate");
     }
 }
@@ -207,7 +207,7 @@ contract TweetVote is TweetVoteAmin {
     noReentrant
     inRun
     {
-        require(voteNo > 0 && voteNo < maxVotePerTweet, "vote no. invalid");
+        require(voteNo > 0 && voteNo <= maxVotePerTweet, "vote no. invalid");
         uint256 amount = voteNo * tweetVotePrice;
         require(amount > __minValCheck, "amount invalid");
         require(msg.value == amount, "vote price has changed");

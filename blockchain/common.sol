@@ -73,7 +73,7 @@ abstract contract ServiceFeeForWithdraw is Owner {
         __admins[msg.sender] = true;
     }
 
-    function adminServiceFeeWithdraw() public isOwner noReentrant {
+    function adminServiceFeeWithdraw() public isOwner {
         require(__serviceFeeReceived > 0, "insufficient service fee");
         payable(this.getOwner()).transfer(__serviceFeeReceived);
         __serviceFeeReceived = 0;
