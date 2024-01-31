@@ -353,7 +353,7 @@ let __toRoundNo = 0;
 async function loadHistoryData() {
     const moreBtn = document.querySelector('.history-data-list-more-btn');
     moreBtn.style.display = 'block';
-    __toRoundNo = gameSettings.roundNo;
+    __toRoundNo = gameSettings.roundNo - 1;
 
     const parentDiv = document.querySelector('.history-data-list');
     parentDiv.style.display = 'block';
