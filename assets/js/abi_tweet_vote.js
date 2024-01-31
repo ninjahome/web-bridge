@@ -511,7 +511,7 @@ const tweetVoteContractABI =`
     },
     {
         "inputs": [],
-        "name": "exchangeBalance",
+        "name": "contractBalance",
         "outputs": [
             {
                 "internalType": "uint256",
