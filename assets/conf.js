@@ -12,8 +12,8 @@ const __globalContractConf = new Map([
         votePrice: "0.005"
     }],
     [toHex(42161), {
-        tweetVote: "",
-        gameLottery: "",
+        tweetVote: "0x6212246b6bE9D814DF4DC348370D590B41EDBB54",
+        gameLottery: "0xbeC347D7A0914A1BB669e24204b98CeBa90DD456",
         kolKey: "",
         postPrice: "0.005",
         votePrice: "0.005"

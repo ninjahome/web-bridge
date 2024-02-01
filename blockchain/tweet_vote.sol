@@ -254,7 +254,7 @@ contract TweetVote is TweetVoteAmin {
 
         if (kolKeyAddress != address(0) && kolKeyStop == false) {
             if (KolIncomeToPoolI(kolKeyAddress).kolOpenKeyPool(msg.sender)) {
-                uint256 kolKeyPool = (amount / 100) * kolKeyIncomeRate;
+                uint256 kolKeyPool = (reminders / 100) * kolKeyIncomeRate;
                 reminders -= kolKeyPool;
                 KolIncomeToPoolI(kolKeyAddress).kolGotIncome{value: kolKeyPool}(
                     kolKeyIncomeSourceID,
