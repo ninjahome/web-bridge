@@ -123,7 +123,7 @@ const __globalMetaMaskNetworkParam = new Map([
             symbol: 'ETH',
             decimals: 18
         },
-        rpcUrls: ['https://arbitrum.llamarpc.com'],
+        rpcUrls: ['https://arb-pokt.nodies.app'],
         blockExplorerUrls: ['https://arbiscan.io'],
     }],
     [toHex(421613), {
