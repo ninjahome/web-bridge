@@ -117,7 +117,7 @@ async function GetToSrvByJson(url) {
 const __globalMetaMaskNetworkParam = new Map([
     [toHex(42161), {
         chainId: toHex(42161),
-        chainName: 'Arbitrum LlamaNodes',
+        chainName: 'Arbitrum One',
         nativeCurrency: {
             name: 'ETH',
             symbol: 'ETH',
