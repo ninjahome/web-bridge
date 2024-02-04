@@ -379,7 +379,7 @@ async function moreHistoryData() {
 async function __loadHistoryData(parentDiv) {
 
     try {
-        if (__toRoundNo <= 0) {
+        if (__toRoundNo < 0) {
             showDialog(DLevel.Tips, "no more data");
             return;
         }
@@ -397,7 +397,7 @@ async function __loadHistoryData(parentDiv) {
         }
 
         __toRoundNo = from - 1;
-        if (__toRoundNo <= 0) {
+        if (__toRoundNo < 0) {
             const moreBtn = document.querySelector('.history-data-list-more-btn');
             moreBtn.style.display = 'none';
         }
