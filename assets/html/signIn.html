@@ -338,7 +338,7 @@
         <div class="blockchain-binding">
             <div class="title-container">
                 <span class="dashed-line"></span>
-                <p>区块链</p>
+                <p id="bridge-list-sub-tittle">区块链</p>
                 <span class="dashed-line"></span>
             </div>
             <div class="services">
@@ -559,6 +559,7 @@
                         "road-map-step4":"Routing Layer Protocol",
                         "road-map-step5":"Launching The Trustless Distributed Routing Network",
                         "road-map-step6":"Toolset Compatible with Web2.0 Clients and Servers",
+                        "bridge-list-sub-tittle":"Blockchain",
                     }
                 },
                 zh: {
@@ -572,6 +573,7 @@
                         "road-map-step4":"路由层协议",
                         "road-map-step5":"启动无需信任的分布式路由网络",
                         "road-map-step6":"兼容Web2.0客户端和服务器的工具集合",
+                        "bridge-list-sub-tittle":"区块链",
                     }
                 }
             }
@@ -582,6 +584,7 @@
     function updateContent() {
         document.title = i18next.t('title');
         document.getElementById('title-of-bridge-list').textContent = i18next.t('bridge-title');
+        document.getElementById('bridge-list-sub-tittle').textContent = i18next.t('bridge-list-sub-tittle');
         document.getElementById('road-map-tittle').textContent = i18next.t('road-map-title');
         document.getElementById('road-map-step1').textContent = i18next.t('road-map-step1');
         document.getElementById('road-map-step2').textContent = i18next.t('road-map-step2');
