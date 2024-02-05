@@ -7,6 +7,9 @@
     <link rel="icon" href="/assets/file/favicon.ico" type="image/x-icon">
     <script src="/assets/conf.js"></script>
     <script src="/assets/js/utils.js"></script>
+    <script src="https://unpkg.com/i18next@latest/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector@latest/dist/umd/i18nextBrowserLanguageDetector.min.js"></script>
+
 </head>
 <style>
     * {
@@ -254,16 +257,16 @@
         <div class="product-description">A dapp powered by Ninja Protocol and Blockchain.</div>
     </div>
     <div class="route">
-        <div style="background-color: #4848D8; font-size: 14px; color: white; padding: 4px 12px; width: 112px; margin-bottom: 14px">
+        <div style="background-color: #4848D8; font-size: 14px; color: white; padding: 4px 12px; width: 112px; margin-bottom: 14px" id="road-map-tittle">
             研发规划路线
         </div>
         <ul class="route-list">
-            <li><span class="sequence-number">1.</span>客户端桥接Web2.0</li>
-            <li><span class="sequence-number">2.</span>Ninja身份跨Web2.0 Web3.0 区块链</li>
-            <li><span class="sequence-number">3.</span>接入层协议</li>
-            <li><span class="sequence-number">4.</span>路由层协议</li>
-            <li><span class="sequence-number">5.</span>启动无需信任的分布式路由网络</li>
-            <li><span class="sequence-number">6.</span>兼容Web2.0客户端和服务器的工具集合</li>
+            <li><span class="sequence-number">1.</span><div id="road-map-step1">客户端桥接Web2.0</div></li>
+            <li><span class="sequence-number">2.</span><div id="road-map-step2">Ninja身份跨Web2.0 Web3.0 区块链</div></li>
+            <li><span class="sequence-number">3.</span><div id="road-map-step3">接入层协议</div></li>
+            <li><span class="sequence-number">4.</span><div id="road-map-step4">路由层协议</div></li>
+            <li><span class="sequence-number">5.</span><div id="road-map-step5">启动无需信任的分布式路由网络</div></li>
+            <li><span class="sequence-number">6.</span><div id="road-map-step6">兼容Web2.0客户端和服务器的工具集合</div></li>
         </ul>
     </div>
 </div>
@@ -289,7 +292,7 @@
         <div id="error-div" style="display: flex; flex-direction: column; align-items: center;"><span id="error-txt" style="color: #DD324A"></span></div>
     </div>
     <div class="binding-section">
-        <p style="color: #1B1B1D">社交元身份桥接表</p>
+        <p style="color: #1B1B1D" id="title-of-bridge-list">社交元身份桥接表</p>
         <!-- Web2 绑定 -->
         <div class="web2-binding">
             <div class="title-container">
@@ -536,6 +539,57 @@
         }
     });
 
+</script>
+
+<script about="zh-en">
+    i18next
+        .use(i18nextBrowserLanguageDetector)
+        .init({
+            fallbackLng: 'zh',
+            debug: true,
+            resources: {
+                en: {
+                    translation: {
+                        "title": "SignIn Page",
+                        "bridge-title": "Social Meta-Identity Mapping Table",
+                        "road-map-title": "Road Map",
+                        "road-map-step1":"Client-Side Bridging to Web2.0",
+                        "road-map-step2":"Ninja Identity Linking Web2.0, Web3.0, and Blockchain",
+                        "road-map-step3":"Access Layer Protocol",
+                        "road-map-step4":"Routing Layer Protocol",
+                        "road-map-step5":"Launching The Trustless Distributed Routing Network",
+                        "road-map-step6":"Toolset Compatible with Web2.0 Clients and Servers",
+                    }
+                },
+                zh: {
+                    translation: {
+                        "title": "登录页面",
+                        "bridge-title": "社交元身份桥接表",
+                        "road-map-title": "研发规划路线",
+                        "road-map-step1":"客户端桥接Web2.0",
+                        "road-map-step2":"Ninja身份跨Web2.0 Web3.0 区块链",
+                        "road-map-step3":"接入层协议",
+                        "road-map-step4":"路由层协议",
+                        "road-map-step5":"启动无需信任的分布式路由网络",
+                        "road-map-step6":"兼容Web2.0客户端和服务器的工具集合",
+                    }
+                }
+            }
+        }, function(err, t) {
+            updateContent();
+        });
+
+    function updateContent() {
+        document.title = i18next.t('title');
+        document.getElementById('title-of-bridge-list').textContent = i18next.t('bridge-title');
+        document.getElementById('road-map-tittle').textContent = i18next.t('road-map-title');
+        document.getElementById('road-map-step1').textContent = i18next.t('road-map-step1');
+        document.getElementById('road-map-step2').textContent = i18next.t('road-map-step2');
+        document.getElementById('road-map-step3').textContent = i18next.t('road-map-step3');
+        document.getElementById('road-map-step4').textContent = i18next.t('road-map-step4');
+        document.getElementById('road-map-step5').textContent = i18next.t('road-map-step5');
+        document.getElementById('road-map-step6').textContent = i18next.t('road-map-step6');
+    }
 </script>
 </body>
 </html>

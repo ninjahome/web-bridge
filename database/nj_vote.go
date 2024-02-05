@@ -12,9 +12,10 @@ import (
 )
 
 type TweetVoteAction struct {
-	CreateTime      int64 `json:"create_time"`
-	VoteCount       int   `json:"vote_count"`
-	VoteForTheTweet int   `json:"user_vote_count"`
+	CreateTime      int64  `json:"create_time"`
+	VoteCount       int    `json:"vote_count"`
+	VoteForTheTweet int    `json:"user_vote_count"`
+	Slogan          string `json:"slogan"`
 }
 
 type TweetVotePersonalRecord struct {

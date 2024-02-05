@@ -2,13 +2,17 @@ package server
 
 import (
 	"fmt"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
 	"github.com/ninjahome/web-bridge/blockchain"
+	"github.com/ninjahome/web-bridge/blockchain/ethapi"
 	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/oauth2"
 	"html/template"
+	"math/big"
 	"net/http"
 	"os"
 )
@@ -99,10 +103,6 @@ func (c *TwitterConf) String() string {
 type SysConf struct {
 	LogLevel string `json:"log_level"`
 	UrlHome  string `json:"url_home"`
-
-	Slogan     string `json:"slogan"`
-	VoteSlogan string `json:"vote_slogan"`
-
 	HttpPort string `json:"http_port"`
 	*HttpConf
 	*TwitterConf
@@ -174,10 +174,48 @@ const (
 	SharedUsr = "shareUsr"
 )
 
-func (c *SysConf) GetNjProtocolAd(NjTwID int64) string {
-	return fmt.Sprintf("\n%s:%s/buyRights?"+NjTweetID+"=%d", c.Slogan, c.UrlHome, NjTwID)
+func (c *SysConf) GetNjProtocolAd(NjTwID int64, slogan string) string {
+	return fmt.Sprintf("\n"+slogan+c.UrlHome+"/buyRights?"+NjTweetID+"=%d", NjTwID)
 }
 
-func (c *SysConf) GetNjVoteAd(NjTwID int64, voteCount int, web3Id string) string {
-	return fmt.Sprintf("\n%s [%d] bets:%s/buyFromShare?"+SharedID+"=%d&&"+SharedUsr+"=%s", c.VoteSlogan, voteCount, c.UrlHome, NjTwID, web3Id)
+func (c *SysConf) getContractObj() (*ethapi.TweetLotteryGame, error) {
+	cli, err := ethclient.Dial(c.InfuraUrl)
+	if err != nil {
+		util.LogInst().Err(err).Msg("dial eth failed")
+		return nil, err
+	}
+
+	defer cli.Close()
+
+	contractAddress := common.HexToAddress(c.GameContract)
+	game, err := ethapi.NewTweetLotteryGame(contractAddress, cli)
+	if err != nil {
+		util.LogInst().Err(err).Str("contract-address", c.GameContract).Msg("failed create game obj")
+		return nil, err
+	}
+	return game, nil
+}
+
+func (c *SysConf) getHistoryBonus() (*big.Float, error) {
+	game, err := c.getContractObj()
+	if err != nil {
+		util.LogInst().Err(err).Msg("dial up to  block chain failed")
+		return nil, err
+	}
+
+	_, totalBonus, _, _, err := game.SystemSettings(nil)
+
+	if err != nil {
+		util.LogInst().Err(err).Msg("query game system setting failed")
+		return nil, err
+	}
+
+	weiToEth := new(big.Float).SetInt(big.NewInt(1e18))
+	bonusEth := new(big.Float).Quo(new(big.Float).SetInt(totalBonus), weiToEth)
+
+	return bonusEth, nil
+}
+
+func (c *SysConf) GetNjVoteAd(NjTwID int64, web3Id, slogan string) string {
+	return fmt.Sprintf("\n%"+slogan+c.UrlHome+"/buyFromShare?"+SharedID+"=%d&&"+SharedUsr+"=%s", NjTwID, web3Id)
 }

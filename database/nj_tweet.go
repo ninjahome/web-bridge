@@ -38,6 +38,7 @@ func (ts TxStatus) String() string {
 type NinjaTweet struct {
 	Txt           string   `json:"text" firestore:"text"`
 	CreateAt      int64    `json:"create_time" firestore:"create_time"`
+	Slogan        string   `json:"slogan"  firestore:"-"`
 	Web3ID        string   `json:"web3_id" firestore:"web3_id"`
 	TweetUsrId    string   `json:"twitter_id" firestore:"twitter_id"`
 	TweetId       string   `json:"tweet_id,omitempty" firestore:"tweet_id"`
