@@ -104,10 +104,13 @@ async function showHoverCard(event, twitterObj, web3ID) {
         console.log("failed to load web3 user:", web3ID);
         return;
     }
-    document.getElementById('buy-key-button').onclick = () => {
+    const detailBtn = document.getElementById('show-details-button');
+    detailBtn.onclick = () => {
         hoverCard.style.display = 'none';
         showUserProfile(njUsrInfo);
     };
+
+    detailBtn.textContent = i18next.t("show-details-button");
     document.getElementById('hover-tweet-count').textContent = njUsrInfo.tweet_count;
     document.getElementById('hover-vote-count').textContent = njUsrInfo.vote_count;
     document.getElementById('hover-voted-count').textContent = njUsrInfo.be_voted_count;
@@ -322,13 +325,15 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
         }
 
         let nj_data = NJUserBasicInfo.loadNjBasic(ethAddr);
+        if (nj_data){
+            return nj_data;
+        }
 
         nj_data = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
         if (nj_data){
             NJUserBasicInfo.cacheNJUsrObj(nj_data);
         }
         return nj_data;
-
     } catch (err) {
         console.log("queryTwBasicById err:", err)
         return null;

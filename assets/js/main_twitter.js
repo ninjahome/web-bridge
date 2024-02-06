@@ -95,6 +95,7 @@ async function __fillNormalTweet(clear, parkID, data, templateId, cardID, overla
             showMoreBtn.style.display = 'none';
             sibling.style.marginTop = '8px';
         } else {
+            showMoreBtn.textContent = i18next.t('tweet-show-more');
             showMoreBtn.style.display = 'block';
             sibling.style.marginTop = '-12px';
         }
@@ -196,7 +197,7 @@ async function showPostTweetDiv() {
 
 
     const postBtn = document.getElementById("tweet-post-with-eth-btn-txt");
-    postBtn.innerText = "发布推文(" + voteContractMeta.votePriceInEth + " eth)"
+    postBtn.innerText = i18next.t('btn-tittle-post-tweet')+"(" + voteContractMeta.votePriceInEth + " eth)"
 }
 
 function closePostTweetDiv() {
@@ -219,13 +220,13 @@ function showFullTweetContent() {
         tweetContent.style.display = 'block';
         tweetContent.classList.remove('tweet-content-collapsed');
         tweetCard.style.maxHeight = 'none';
-        this.innerText = "更少";
+        this.innerText = i18next.t('tweet-show-less');
         this.setAttribute('data-more', 'false');
     } else {
         tweetContent.style.display = '-webkit-box';
         tweetContent.classList.add('tweet-content-collapsed');
         tweetCard.style.maxHeight = '400px';
         this.setAttribute('data-more', 'true');
-        this.innerText = "更多";
+        this.innerText = i18next.t('tweet-show-more');
     }
 }
