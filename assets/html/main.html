@@ -1263,9 +1263,9 @@
 
                     <div class="tweet-action">
                         <button class="tweet-action-vote">
-                            (<img src="/assets/file/tweet-action-vote-eth.png"
+                            <img src="/assets/file/tweet-action-vote-eth.png"
                                  style="width: 22px;height: auto" alt=""/>
-                            <span style="font-weight: lighter"> <span
+                            <span style="font-weight: lighter"> (<span
                                         class="tweet-action-vote-val">0.005</span>eth)</span><span id="btn-tittle-vote-no-home"> 投票</span>
                         </button>
                     </div>
@@ -1290,9 +1290,9 @@
                     </div>
                     <div class="tweet-action">
                         <button class="tweet-action-vote">
-                            (<img src="/assets/file/tweet-action-vote-eth.png"
+                            <img src="/assets/file/tweet-action-vote-eth.png"
                                                                style="width: 22px;height: auto" alt=""/>
-                            <span style="font-weight: lighter"> <span
+                            <span style="font-weight: lighter"> (<span
                                         class="tweet-action-vote-val">0.01</span> eth)</span> <span id="btn-tittle-vote-no-top"> 投票</span>
                         </button>
                     </div>
@@ -1408,48 +1408,48 @@
                     <div class="about-ninja">
                         <span>Web3 ID:<span id="basic-web3-id" class="user-web3-id">0x123...</span></span>
                         <br>
-                        <span><span id="user-setting-points">积分</span>:<span id="dessage-web3-token" class="user-ninja-noun">0.00 </span>dsg</span>
+                        <span><span id="user-setting-points">积分</span>:<span id="dessage-web3-token" class="user-ninja-noun">0.00 </span> dsg</span>
                     </div>
                 </div>
 
             </div>
             <div class="middle-div-income-inner">
                 <div class="income-tweet-area">
-                    <div class="income-header">推文收入</div>
+                    <div class="income-header" id="user-setting-tweet-income">推文收入</div>
                     <div class="income-body">
                         <div>
-                            <span>推文总数: <span class="tweet-no-has-income" id="tweet-no-has-income"
-                                                  style="font-size: 18px; font-weight: bold">0</span> 篇</span>
+                            <span><span id="user-setting-tweet-no">推文总数</span>: <span class="tweet-no-has-income" id="tweet-no-has-income"
+                                                                                          style="font-size: 18px; font-weight: bold">0</span> <span id="user-setting-tweet-no-suffix">篇</span></span>
                             <br>
-                            <span>推文收入: <span class="income-val" id="tweet-income-amount"
+                            <span><span id="user-setting-tweet-income-tittle">推文收入</span>: <span class="income-val" id="tweet-income-amount"
                                                   style="color: #4848D8;font-size: 22px; font-weight: bold">0.000</span> eth</span>
                         </div>
                         <div>
-                            <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()">提现记录
+                            <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()" id="user-setting-withdraw-history">提现记录
                             </button>
-                            <button onclick="withdrawFromUserTweetIncome()" class="withdraw-btn">提现</button>
+                            <button onclick="withdrawFromUserTweetIncome()" class="withdraw-btn" id="user-setting-withdraw">提现</button>
                         </div>
 
                     </div>
                 </div>
                 <div class="income-game-area">
-                    <div class="income-header">游戏收入</div>
+                    <div class="income-header" id="user-setting-game-income">游戏收入</div>
                     <div class="income-body">
-                        <span>彩票收入: <span class="income-val" id="lottery-game-income"
+                        <span><span id="user-setting-lottery-income-tittle">彩票收入</span>: <span class="income-val" id="lottery-game-income"
                                               style="color: #DE4033;font-size: 22px; font-weight: bold">0.000</span> eth</span>
                         <div>
-                            <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()">提现记录
+                            <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()"  id="user-setting-withdraw-history2">提现记录
                             </button>
-                            <button onclick="withdrawLotteryGameIncome()" class="withdraw-btn">提现</button>
+                            <button onclick="withdrawLotteryGameIncome()" class="withdraw-btn" id="user-setting-withdraw2">提现</button>
                         </div>
                     </div>
                 </div>
-                <div class="income-kol-area">
-                    <div class="income-header">Key收入</div>
-                    <div class="income-body">
-                        <button onclick="openKolKeyMainPage()" class="withdraw-btn">key主页查看</button>
-                    </div>
-                </div>
+{{/*                <div class="income-kol-area">*/}}
+{{/*                    <div class="income-header">Key收入</div>*/}}
+{{/*                    <div class="income-body">*/}}
+{{/*                        <button onclick="openKolKeyMainPage()" class="withdraw-btn">key主页查看</button>*/}}
+{{/*                    </div>*/}}
+{{/*                </div>*/}}
             </div>
 
         </div>
@@ -1474,9 +1474,9 @@
                     <span class="tweet-info"><span id="tweet-detail-payment">支付状态</span>: <span class="tweet-payment_status">success</span></span>
                     <span class="tweet-info"><span id="tweet-detail-vote-no">投票数</span>: <span class="tweet-vote-number">0</span></span>
                     <button class="tweet-action-vote">
-                        (<img src="/assets/file/tweet-action-vote-eth.png"
+                        <img src="/assets/file/tweet-action-vote-eth.png"
                              style="width: 22px;height: auto" alt=""/>
-                        <span style="font-weight: lighter"> <span
+                        <span style="font-weight: lighter"> (<span
                                     class="tweet-action-vote-val">0.01</span> eth)</span> <span id="tweet-detail-vote">投票</span>
                     </button>
                 </div>
@@ -1834,6 +1834,13 @@
                         "user-setting-quit":"Sign Out",
                         "user-setting-sync-twitter":"Sync Twitter",
                         "user-setting-points":"Points",
+                        "user-setting-tweet-income":"Tweet Revenue",
+                        "user-setting-tweet-no":"Total Tweets",
+                        "withdraw-history":"Withdrawal Records",
+                        "withdraw":"Withdraw",
+                        "user-setting-game-income":"Game Revenue",
+                        "user-setting-lottery-income-tittle":"Lottery Revenue",
+                        "user-setting-tweet-no-suffix":"Tweet(s)",
                     }
                 },
                 zh: {
@@ -1877,6 +1884,13 @@
                         "user-setting-quit":"退出",
                         "user-setting-sync-twitter":"同步推特",
                         "user-setting-points":"积分",
+                        "user-setting-tweet-income":"推文收入",
+                        "user-setting-tweet-no":"推文总数",
+                        "withdraw-history":"提现记录",
+                        "withdraw":"提现",
+                        "user-setting-game-income":"游戏收入",
+                        "user-setting-lottery-income-tittle":"彩票收入",
+                        "user-setting-tweet-no-suffix":"篇",
                     }
                 }
             }
@@ -1935,7 +1949,17 @@
         document.getElementById('user-setting-clear').textContent = i18next.t('user-setting-clear');
         document.getElementById('user-setting-sync-twitter').textContent = i18next.t('user-setting-sync-twitter');
         document.getElementById('user-setting-points').textContent = i18next.t('user-setting-points');
-    }
+        document.getElementById('user-setting-tweet-income').textContent = i18next.t('user-setting-tweet-income');
+        document.getElementById('user-setting-tweet-no').textContent = i18next.t('user-setting-tweet-no');
+        document.getElementById('user-setting-tweet-income-tittle').textContent = i18next.t('user-setting-tweet-income');
+        document.getElementById('user-setting-withdraw-history').textContent = i18next.t('withdraw-history');
+        document.getElementById('user-setting-withdraw').textContent = i18next.t('withdraw');
+        document.getElementById('user-setting-game-income').textContent = i18next.t('user-setting-game-income');
+        document.getElementById('user-setting-lottery-income-tittle').textContent = i18next.t('user-setting-lottery-income-tittle');
+        document.getElementById('user-setting-withdraw-history2').textContent = i18next.t('withdraw-history');
+        document.getElementById('user-setting-withdraw2').textContent = i18next.t('withdraw');
+        document.getElementById('user-setting-tweet-no-suffix').textContent = i18next.t('user-setting-tweet-no-suffix');
+        }
 
 </script>
 </body>
