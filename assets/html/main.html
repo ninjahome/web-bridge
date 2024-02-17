@@ -1194,7 +1194,7 @@
             overflow: hidden; /* 隐藏超出部分 */
         }
 
-        .team-member-card-header{
+        .team-member-card-header {
             cursor: pointer;
         }
     </style>
@@ -1209,31 +1209,37 @@
             <li onclick="menuOnClicked.call(this,0)" data-icon-active="/assets/file/path-to-home-active-icon.png"
                 data-icon-inactive="/assets/file/path-to-home-icon.png" class="menu-item-left-area active"
                 data-content="middle-div-home">
-                <img src="/assets/file/path-to-home-active-icon.png" alt="Home" class="menu-icon"/> <span id="left-menu-item-home">主页</span>
+                <img src="/assets/file/path-to-home-active-icon.png" alt="Home" class="menu-icon"/> <span
+                        id="left-menu-item-home">主页</span>
             </li>
             <li onclick="menuOnClicked.call(this,1)" data-icon-active="/assets/file/path-to-leaderboard-active-icon.png"
                 data-icon-inactive="/assets/file/path-to-leaderboard-icon.png" class="menu-item-left-area"
                 data-content="middle-div-leaderboard">
-                <img src="/assets/file/path-to-leaderboard-icon.png" alt="Home" class="menu-icon"/> <span id="left-menu-item-top">排行榜</span>
+                <img src="/assets/file/path-to-leaderboard-icon.png" alt="Home" class="menu-icon"/> <span
+                        id="left-menu-item-top">排行榜</span>
             </li>
 
             <li onclick="menuOnClicked.call(this,2)" data-icon-active="/assets/file/path-to-twitter-active-icon.png"
                 data-icon-inactive="/assets/file/path-to-twitter-icon.png" class="menu-item-left-area"
                 data-content="middle-div-user-tweets">
-                <img src="/assets/file/path-to-twitter-icon.png" alt="Home" class="menu-icon"/> <span id="left-menu-item-my-tweet">推文</span>
+                <img src="/assets/file/path-to-twitter-icon.png" alt="Home" class="menu-icon"/> <span
+                        id="left-menu-item-my-tweet">推文</span>
             </li>
             <li onclick="menuOnClicked.call(this,3)" data-icon-active="/assets/file/path-to-user-active-icon.png"
                 data-icon-inactive="/assets/file/path-to-user-icon.png" class="menu-item-left-area"
                 data-content="middle-div-about-user">
-                <img src="/assets/file/path-to-user-icon.png" alt="Home" class="menu-icon"/> <span id="left-menu-item-my-setting">我的</span>
+                <img src="/assets/file/path-to-user-icon.png" alt="Home" class="menu-icon"/> <span
+                        id="left-menu-item-my-setting">我的</span>
             </li>
-{{/*            <li onclick="openKolKeyMainPage()" data-icon-active="/assets/file/path-to-keys-active-icon.png"*/}}
-{{/*                data-icon-inactive="/assets/file/path-to-keys-icon.png" class="menu-item-left-area"*/}}
-{{/*                data-content="middle-div-userKolKey">*/}}
-{{/*                <img src="/assets/file/path-to-keys-icon.png" alt="Home" class="menu-icon"/> Keys*/}}
-{{/*            </li>*/}}
+            {{/*            <li onclick="openKolKeyMainPage()" data-icon-active="/assets/file/path-to-keys-active-icon.png"*/}}
+            {{/*                data-icon-inactive="/assets/file/path-to-keys-icon.png" class="menu-item-left-area"*/}}
+            {{/*                data-content="middle-div-userKolKey">*/}}
+            {{/*                <img src="/assets/file/path-to-keys-icon.png" alt="Home" class="menu-icon"/> Keys*/}}
+            {{/*            </li>*/}}
         </ul>
-        <button class="show-post-tweet-div d-radius" onclick="showPostTweetDiv()" id="btn-post-tweet-on-left-menu">发推</button>
+        <button class="show-post-tweet-div d-radius" onclick="showPostTweetDiv()" id="btn-post-tweet-on-left-menu">
+            发推
+        </button>
     </div>
     <div id="tweet-header-template" style="display: none">
         <div class="tweet-first-half">
@@ -1266,7 +1272,8 @@
                             <img src="/assets/file/tweet-action-vote-eth.png"
                                  style="width: 22px;height: auto" alt=""/>
                             <span style="font-weight: lighter"> (<span
-                                        class="tweet-action-vote-val">0.005</span>eth)</span><span id="btn-tittle-vote-no-home"> 投票</span>
+                                        class="tweet-action-vote-val">0.005</span>eth)</span><span
+                                    id="btn-tittle-vote-no-home"> 投票</span>
                         </button>
                     </div>
                 </div>
@@ -1279,21 +1286,25 @@
             <div class="topic-switch">
                 <button class="top-topic-btn" onclick="initTopPage()" id="tittle-top-vote">总得票排行榜</button>
                 <button class="top-topic-btn" onclick="switchToTopTeam()" id="tittle-top-team">本期得票排行榜</button>
-                <button class="top-topic-btn" onclick="switchToTopKol()" id="tittle-top-best-writer">最佳创作者排行榜</button>
-                <button class="top-topic-btn" onclick="switchToTopVoter()" id="tittle-top-best-voter">大户荣誉榜</button>
+                <button class="top-topic-btn" onclick="switchToTopKol()" id="tittle-top-best-writer">最佳创作者排行榜
+                </button>
+                <button class="top-topic-btn" onclick="switchToTopVoter()" id="tittle-top-best-voter">大户荣誉榜
+                </button>
             </div>
 
             <div id="tweetTemplateForTop" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
                     <div class="tweet-info">
-                        <span class="vote-count"><span id="label-vote-no-top">投票数</span>: <span class="vote-number">0</span></span>
+                        <span class="vote-count"><span id="label-vote-no-top">投票数</span>: <span
+                                    class="vote-number">0</span></span>
                     </div>
                     <div class="tweet-action">
                         <button class="tweet-action-vote">
                             <img src="/assets/file/tweet-action-vote-eth.png"
-                                                               style="width: 22px;height: auto" alt=""/>
+                                 style="width: 22px;height: auto" alt=""/>
                             <span style="font-weight: lighter"> (<span
-                                        class="tweet-action-vote-val">0.01</span> eth)</span> <span id="btn-tittle-vote-no-top"> 投票</span>
+                                        class="tweet-action-vote-val">0.01</span> eth)</span> <span
+                                    id="btn-tittle-vote-no-top"> 投票</span>
                         </button>
                     </div>
                 </div>
@@ -1345,13 +1356,18 @@
 
         <div id="middle-div-user-tweets" class="content-in-middle-area">
             <div class="user-tweet-top-button-area topic-switch" id="my-vote-or-post-tweet-switch-area">
-                <button class="my-posted-tweets top-topic-btn" onclick="loadTweetsUserPosted()" id="user-tweet-btn-my-tweet">我的推文</button>
-                <button class="my-voted-tweets top-topic-btn" onclick="loadTweetsUserVoted()" id="user-tweet-btn-my-vote">我的投票</button>
+                <button class="my-posted-tweets top-topic-btn" onclick="loadTweetsUserPosted()"
+                        id="user-tweet-btn-my-tweet">我的推文
+                </button>
+                <button class="my-voted-tweets top-topic-btn" onclick="loadTweetsUserVoted()"
+                        id="user-tweet-btn-my-vote">我的投票
+                </button>
             </div>
             <div id="tweetTemplateForUserSelf" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
                     <div class="tweet-info">
-                        <span class="vote-count"><span id="user-tweet-label-vote-no">投票数</span>: <span class="vote-number">0</span></span>
+                        <span class="vote-count"><span id="user-tweet-label-vote-no">投票数</span>: <span
+                                    class="vote-number">0</span></span>
                     </div>
                     <div class="tweet-action-with-status">
                         <span id="user-tweet-label-payment">支付状态</span>: <span class="tweetPaymentStatus"></span>
@@ -1364,14 +1380,17 @@
             <div id="tweetTemplateForVoted" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
                     <div class="tweet-info">
-                        <span class="vote-count"><span id="user-tweet-label-total-vote">总票数</span>: <span class="total-vote-number">0</span></span>
-                        <span class="vote-count"><span id="user-tweet-label-my-vote">我的票数</span>: <span class="user-vote-number">0</span></span>
+                        <span class="vote-count"><span id="user-tweet-label-total-vote">总票数</span>: <span
+                                    class="total-vote-number">0</span></span>
+                        <span class="vote-count"><span id="user-tweet-label-my-vote">我的票数</span>: <span
+                                    class="user-vote-number">0</span></span>
                     </div>
                     <div class="tweet-action">
                         <button class="tweet-action-vote"><img src="/assets/file/tweet-action-vote-eth.png"
                                                                style="width: 22px;height: auto" alt=""/>
                             <span style="font-weight: lighter"> <span
-                                        class="tweet-action-vote-val">0.01</span> eth</span> <span id="user-tweet-btn-vote">投票</span>
+                                        class="tweet-action-vote-val">0.01</span> eth</span> <span
+                                    id="user-tweet-btn-vote">投票</span>
                         </button>
                     </div>
                 </div>
@@ -1403,12 +1422,15 @@
                             </div>
 
                         </div>
-                        <button onclick="refreshTwitterInfo()" class="withdraw-btn" id="user-setting-sync-twitter">同步推特</button>
+                        <button onclick="refreshTwitterInfo()" class="withdraw-btn" id="user-setting-sync-twitter">
+                            同步推特
+                        </button>
                     </div>
                     <div class="about-ninja">
                         <span>Web3 ID:<span id="basic-web3-id" class="user-web3-id">0x123...</span></span>
                         <br>
-                        <span><span id="user-setting-points">积分</span>:<span id="dessage-web3-token" class="user-ninja-noun">0.00 </span> dsg</span>
+                        <span><span id="user-setting-points">积分</span>:<span id="dessage-web3-token"
+                                                                               class="user-ninja-noun">0.00 </span> dsg</span>
                     </div>
                 </div>
 
@@ -1418,16 +1440,22 @@
                     <div class="income-header" id="user-setting-tweet-income">推文收入</div>
                     <div class="income-body">
                         <div>
-                            <span><span id="user-setting-tweet-no">推文总数</span>: <span class="tweet-no-has-income" id="tweet-no-has-income"
-                                                                                          style="font-size: 18px; font-weight: bold">0</span> <span id="user-setting-tweet-no-suffix">篇</span></span>
+                            <span><span id="user-setting-tweet-no">推文总数</span>: <span class="tweet-no-has-income"
+                                                                                          id="tweet-no-has-income"
+                                                                                          style="font-size: 18px; font-weight: bold">0</span> <span
+                                        id="user-setting-tweet-no-suffix">篇</span></span>
                             <br>
-                            <span><span id="user-setting-tweet-income-tittle">推文收入</span>: <span class="income-val" id="tweet-income-amount"
-                                                  style="color: #4848D8;font-size: 22px; font-weight: bold">0.000</span> eth</span>
+                            <span><span id="user-setting-tweet-income-tittle">推文收入</span>: <span class="income-val"
+                                                                                                     id="tweet-income-amount"
+                                                                                                     style="color: #4848D8;font-size: 22px; font-weight: bold">0.000</span> eth</span>
                         </div>
                         <div>
-                            <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()" id="user-setting-withdraw-history">提现记录
+                            <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()"
+                                    id="user-setting-withdraw-history">提现记录
                             </button>
-                            <button onclick="withdrawFromUserTweetIncome()" class="withdraw-btn" id="user-setting-withdraw">提现</button>
+                            <button onclick="withdrawFromUserTweetIncome()" class="withdraw-btn"
+                                    id="user-setting-withdraw">提现
+                            </button>
                         </div>
 
                     </div>
@@ -1435,26 +1463,31 @@
                 <div class="income-game-area">
                     <div class="income-header" id="user-setting-game-income">游戏收入</div>
                     <div class="income-body">
-                        <span><span id="user-setting-lottery-income-tittle">彩票收入</span>: <span class="income-val" id="lottery-game-income"
-                                              style="color: #DE4033;font-size: 22px; font-weight: bold">0.000</span> eth</span>
+                        <span><span id="user-setting-lottery-income-tittle">彩票收入</span>: <span class="income-val"
+                                                                                                   id="lottery-game-income"
+                                                                                                   style="color: #DE4033;font-size: 22px; font-weight: bold">0.000</span> eth</span>
                         <div>
-                            <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()"  id="user-setting-withdraw-history2">提现记录
+                            <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()"
+                                    id="user-setting-withdraw-history2">提现记录
                             </button>
-                            <button onclick="withdrawLotteryGameIncome()" class="withdraw-btn" id="user-setting-withdraw2">提现</button>
+                            <button onclick="withdrawLotteryGameIncome()" class="withdraw-btn"
+                                    id="user-setting-withdraw2">提现
+                            </button>
                         </div>
                     </div>
                 </div>
-{{/*                <div class="income-kol-area">*/}}
-{{/*                    <div class="income-header">Key收入</div>*/}}
-{{/*                    <div class="income-body">*/}}
-{{/*                        <button onclick="openKolKeyMainPage()" class="withdraw-btn">key主页查看</button>*/}}
-{{/*                    </div>*/}}
-{{/*                </div>*/}}
+                {{/*                <div class="income-kol-area">*/}}
+                {{/*                    <div class="income-header">Key收入</div>*/}}
+                {{/*                    <div class="income-body">*/}}
+                {{/*                        <button onclick="openKolKeyMainPage()" class="withdraw-btn">key主页查看</button>*/}}
+                {{/*                    </div>*/}}
+                {{/*                </div>*/}}
             </div>
 
         </div>
         <div id="tweet-detail" class="tweet-detail" style="display: none;">
-            <button id="back-button-tweet-detail" class="back-button"><img src="/assets/file/header-back-icon.png" alt=" ">
+            <button id="back-button-tweet-detail" class="back-button"><img src="/assets/file/header-back-icon.png"
+                                                                           alt=" ">
                 <span id="back-button-tweet-tittle">返回</span>
             </button>
             <div class="tweet-header">
@@ -1469,10 +1502,13 @@
             <div class="tweet-detail-info">
                 <span class="tweet-info"><span id="tweet-detail-creator">作者Web3 ID</span>:<span class="tweet-web3_id">0x00a7539cc7cc54f08a761175aa678005ef91f4dc</span></span>
                 <span class="tweet-info"><span id="tweet-detail-hash">推文Hash</span>:<span class="tweet-prefixed-hash">0xad5fa0cd63cd872bfa31f9a61085aa36193f57fdfe31bfb601efdee51821af3f</span></span>
-                <span class="tweet-info"><span id="tweet-detail-signature">推文数字签名</span>:<span class="tweet-signature">0x08abe2bcddad20cf2bf5a929cfb81e1dce20ba29c4d6d65d343b105c6abe3cc57f995519620298c93f060eb65080e74996c239f74524ccd0b40693e8f6c03c261b</span></span>
+                <span class="tweet-info"><span id="tweet-detail-signature">推文数字签名</span>:<span
+                            class="tweet-signature">0x08abe2bcddad20cf2bf5a929cfb81e1dce20ba29c4d6d65d343b105c6abe3cc57f995519620298c93f060eb65080e74996c239f74524ccd0b40693e8f6c03c261b</span></span>
                 <div style="text-align: right; border-top: 1px solid #F7F8F9;padding-top: 8px;margin-top: 8px">
-                    <span class="tweet-info"><span id="tweet-detail-payment">支付状态</span>: <span class="tweet-payment_status">success</span></span>
-                    <span class="tweet-info"><span id="tweet-detail-vote-no">投票数</span>: <span class="tweet-vote-number">0</span></span>
+                    <span class="tweet-info"><span id="tweet-detail-payment">支付状态</span>: <span
+                                class="tweet-payment_status">success</span></span>
+                    <span class="tweet-info"><span id="tweet-detail-vote-no">投票数</span>: <span
+                                class="tweet-vote-number">0</span></span>
                     <button class="tweet-action-vote">
                         <img src="/assets/file/tweet-action-vote-eth.png"
                              style="width: 22px;height: auto" alt=""/>
@@ -1488,7 +1524,8 @@
             </div>
         </div>
         <div id="nj-user-profile" class="nj-user-profile" style="display: none">
-            <button id="back-button-user-profile" class="back-button"><img src="/assets/file/header-back-icon.png" alt=" ">返回
+            <button id="back-button-user-profile" class="back-button"><img src="/assets/file/header-back-icon.png"
+                                                                           alt=" ">返回
             </button>
             <div class="nj-user-summary">
                 <div class="tweet-header-in-profile">
@@ -1530,64 +1567,64 @@
     <div class="right-operation-area">
         <div class="lottery-game-info" id="lottery-game-info">
             <div class="lottery-round-info">
-                <div class="lottery-round">第<span class="lottery-game-round-no">0</span>期</div>
+                <div class="lottery-round"><span id="lottery-round-tittle-1">第</span><span class="lottery-game-round-no"> 0 </span><span id="lottery-round-tittle-2">期</span></div>
                 <div class="lottery-amount-div">
                     <span class="lottery-amount">0.0</span>
                     <span class="eth-symbol">eth</span>
                 </div>
-                <div class="lottery-amount-tips" style="color: rgba(255,255,255,0.5)">本期奖池</div>
+                <div class="lottery-amount-tips" id="lottery-tittle-tips" style="color: rgba(255,255,255,0.5)">本期奖池</div>
             </div>
             <div class="lottery-timer">
                 <div class="countdown-result" id="countdown-result">开奖中</div>
                 <div class="countdown" id="lottery-count-down">
                     <div class="number days" style="padding: 0 ;margin: 0 6px">02</div>
-                    天
+                    <span id="countdown-tips-days">天</span>
                     <div class="number hours">00</div>
                     :
                     <div class="number minutes">00</div>
                     :
                     <div class="number seconds">00</div>
                 </div>
-                <span style="color: #A0A0A5; font-size: 12px">开奖时间</span>
+                <span style="color: #A0A0A5; font-size: 12px" id="countdown-tips-sub-tittle">开奖时间</span>
             </div>
             <div class="lottery-stats">
                 <div class="lottery-stats-label">
-                    历史累计奖金:
+                    <span id="lottery-info-history-bonus">历史累计奖金</span>:
                     <span class="lottery-stats-no" id="lottery-total-amount" style="font-weight: bold">0.00</span>
                     <span class="lottery-stats-unit">eth</span>
                 </div>
                 <div class="lottery-stats-label">
-                    本期队伍总数:
+                    <span id="lottery-info-current-team-no">本期队伍总数</span>:
                     <span class="lottery-stats-no" id="lottery-current-team-amount" style="font-weight: bold">0</span>
-                    <span class="lottery-stats-unit"> 队</span>
+                    <span class="lottery-stats-unit" id="lottery-stats-unit-1"> 队</span>
                 </div>
                 <div class="lottery-stats-label">
-                    本期总票数:
+                    <span id="lottery-info-current-tickets-no">本期总票数</span>:
                     <span class="lottery-stats-no" id="lottery-current-ticket-amount" style="font-weight: bold">0</span>
-                    <span class="lottery-stats-unit">张</span>
+                    <span class="lottery-stats-unit" id="lottery-stats-unit-2">张</span>
                 </div>
-                <button class="lottery-participate-btn" onclick="openLotteryMainPage()">我的彩票</button>
+                <button class="lottery-participate-btn" onclick="openLotteryMainPage()" id="lottery-info-btn-mine">我的彩票</button>
                 <div class="rule-info">
-                    <h4 style="margin-top: 6px;margin-bottom: 4px">
+                    <h4 style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-tittle">
                         本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与</h4>
                     <ul>
-                        购买彩票的方式为:
+                        <span id="lottery-info-content-1">购买彩票的方式为</span>:
                         <li>
-                            <h4 style="margin-top: 6px;margin-bottom: 4px">1.推文下打赏</h4>
-                            在参与游戏的推文下打赏，你的任何打赏都会有60%进入彩票奖池，30%归属推文作者，10%归属Dessage协议收入
+                            <h4 style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content-2">1.推文下打赏</h4>
+                            <span id="lottery-info-content-3">在参与游戏的推文下打赏，你的任何打赏都会有60%进入彩票奖池，30%归属推文作者，10%归属Dessage协议收入</span>
                         </li>
                         <li>
-                            <h4 style="margin-top: 6px; margin-bottom: 4px">2.单独投注</h4>
-                            你也可以在“我的彩票”页面进行单独投注，单独投注的投注额的90%进入奖池，10%归属Dessage协议收入
+                            <h4 style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-4">2.单独投注</h4>
+                           <span id="lottery-info-content-5">你也可以在“我的彩票”页面进行单独投注，单独投注的投注额的90%进入奖池，10%归属Dessage协议收入</span>
                         </li>
                         <li>
-                            <h4 style="margin-top: 6px; margin-bottom: 4px">3.中奖规则</h4>
-                            <strong>同一篇推文下同期打赏的用户为一个抽奖队伍，</strong>若最终大奖归属队伍中的任何一人，则该中奖者独得一半奖池，剩余一半奖池按照投票打赏比例归属该队伍所有参与者，所以请尽量打赏你认为更优质更有可能获得更多打赏的推文，这样你的中奖概率会更高。
-                            <br><strong>单独投注的用户不归属任何队伍,</strong>单独投注的用户不归属任何队伍，若单独投注的用户中奖，则该用户独得所有奖池
+                            <h4 style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-6">3.中奖规则</h4>
+                            <strong id="lottery-info-content-7">同一篇推文下同期打赏的用户为一个抽奖队伍，</strong><span id="lottery-info-content-8">若最终大奖归属队伍中的任何一人，则该中奖者独得一半奖池，剩余一半奖池按照投票打赏比例归属该队伍所有参与者，所以请尽量打赏你认为更优质更有可能获得更多打赏的推文，这样你的中奖概率会更高。
+                            </span><br><strong id="lottery-info-content-9">单独投注的用户不归属任何队伍,</strong><span id="lottery-info-content-10">单独投注的用户不归属任何队伍，若单独投注的用户中奖，则该用户独得所有奖池</span>
                         </li>
                         <li>
-                            <h4 style="margin-top: 6px; margin-bottom: 4px">4.发布推文,赚取收益</h4>
-                            需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益
+                            <h4 style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-11">4.发布推文,赚取收益</h4>
+                            <span id="lottery-info-content-12">需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益</span>
                         </li>
                     </ul>
                 </div>
@@ -1606,9 +1643,11 @@
         <button id="show-details-button" class="buy-key-button">查看详情 >></button>
     </div>
     <div class="hover-card-content">
-        <div><span id="hover-tittle-tweet-no">推文总数</span>: <span id="hover-tweet-count" style="font-size: 16px; font-weight: bold; color: #4848D8">2</span>
+        <div><span id="hover-tittle-tweet-no">推文总数</span>: <span id="hover-tweet-count"
+                                                                     style="font-size: 16px; font-weight: bold; color: #4848D8">2</span>
         </div>
-        <div><span id="hover-tittle-vote-no">被打赏数</span>: <span id="hover-vote-count" style="font-size: 16px; font-weight: bold; color: #DE4033">3</span>
+        <div><span id="hover-tittle-vote-no">被打赏数</span>: <span id="hover-vote-count"
+                                                                    style="font-size: 16px; font-weight: bold; color: #DE4033">3</span>
         </div>
         <div><span id="hover-tittle-voted-no">打赏数</span>: <span id="hover-voted-count"></span></div>
     </div>
@@ -1794,107 +1833,157 @@
                 en: {
                     translation: {
                         "title": "Dessage",
-                        "left-menu-item-home":"Home",
-                        "left-menu-item-top":"Leaderboard",
-                        "left-menu-item-my-tweet":"MyTweet",
-                        "left-menu-item-my-setting":"Setting",
-                        "btn-tittle-post-tweet":"Post Tweet",
-                        "btn-post-tweet-on-left-menu":"Post",
-                        "cancelButton":"Cancel",
-                        "confirmButton":"Confirm",
-                        "btn-tittle-share-when-vote":"Share to Twitter",
-                        "vote-dialog-vote-no":"Votes",
-                        "vote-to-tweet-dialog-tittle":"Vote On Tweet",
-                        "tweet-show-less":"Less",
-                        "tweet-show-more":"More",
-                        "tittle-top-vote":"Most Voted",
-                        "tittle-top-team":"Most Voted In This Round",
-                        "tittle-top-best-writer":"Top Creators Leaderboard",
-                        "tittle-top-best-voter":"Whale Honor Roll",
-                        "show-details-button":"Show More >>",
-                        "hover-tittle-tweet-no":"Tweet No",
-                        "hover-tittle-vote-no":"Voted No",
-                        "hover-tittle-voted-no":"Vote No",
-                        "label-vote-no":"Vote No",
-                        "btn-tittle-vote-no":"Vote",
-                        "tweet-detail-creator":"Creator Web3 ID",
-                        "tweet-detail-hash":"Tweet Hash",
-                        "tweet-detail-signature":"Tweet Signature",
-                        "tweet-detail-payment":"Payment Status",
-                        "tweet-detail-vote-no":"Vote No",
-                        "tweet-detail-vote":"Vote",
-                        "back":"Back",
-                        "user-tweet-btn-my-tweet":"My Tweet",
-                        "user-tweet-btn-my-vote":"My Vote",
-                        "user-tweet-btn-goon-pay":"Pay It",
-                        "user-tweet-btn-delete":"Delete",
-                        "user-tweet-label-total-vote":"Total Vote",
-                        "user-tweet-label-my-vote":"My Vote",
-                        "user-setting-clear":"Clean Cache",
-                        "user-setting-quit":"Sign Out",
-                        "user-setting-sync-twitter":"Sync Twitter",
-                        "user-setting-points":"Points",
-                        "user-setting-tweet-income":"Tweet Revenue",
-                        "user-setting-tweet-no":"Total Tweets",
-                        "withdraw-history":"Withdrawal Records",
-                        "withdraw":"Withdraw",
-                        "user-setting-game-income":"Game Revenue",
-                        "user-setting-lottery-income-tittle":"Lottery Revenue",
-                        "user-setting-tweet-no-suffix":"Tweet(s)",
+                        "left-menu-item-home": "Home",
+                        "left-menu-item-top": "Leaderboard",
+                        "left-menu-item-my-tweet": "MyTweet",
+                        "left-menu-item-my-setting": "Setting",
+                        "btn-tittle-post-tweet": "Post Tweet",
+                        "btn-post-tweet-on-left-menu": "Post",
+                        "cancelButton": "Cancel",
+                        "confirmButton": "Confirm",
+                        "btn-tittle-share-when-vote": "Share to Twitter",
+                        "vote-dialog-vote-no": "Votes",
+                        "vote-to-tweet-dialog-tittle": "Vote On Tweet",
+                        "tweet-show-less": "Less",
+                        "tweet-show-more": "More",
+                        "tittle-top-vote": "Most Voted",
+                        "tittle-top-team": "Most Voted In This Round",
+                        "tittle-top-best-writer": "Top Creators Leaderboard",
+                        "tittle-top-best-voter": "Whale Honor Roll",
+                        "show-details-button": "Show More >>",
+                        "hover-tittle-tweet-no": "Tweet No",
+                        "hover-tittle-vote-no": "Voted No",
+                        "hover-tittle-voted-no": "Vote No",
+                        "label-vote-no": "Vote No",
+                        "btn-tittle-vote-no": "Vote",
+                        "tweet-detail-creator": "Creator Web3 ID",
+                        "tweet-detail-hash": "Tweet Hash",
+                        "tweet-detail-signature": "Tweet Signature",
+                        "tweet-detail-payment": "Payment Status",
+                        "tweet-detail-vote-no": "Vote No",
+                        "tweet-detail-vote": "Vote",
+                        "back": "Back",
+                        "user-tweet-btn-my-tweet": "My Tweet",
+                        "user-tweet-btn-my-vote": "My Vote",
+                        "user-tweet-btn-goon-pay": "Pay It",
+                        "user-tweet-btn-delete": "Delete",
+                        "user-tweet-label-total-vote": "Total Vote",
+                        "user-tweet-label-my-vote": "My Vote",
+                        "user-setting-clear": "Clean Cache",
+                        "user-setting-quit": "Sign Out",
+                        "user-setting-sync-twitter": "Sync Twitter",
+                        "user-setting-points": "Points",
+                        "user-setting-tweet-income": "Tweet Revenue",
+                        "user-setting-tweet-no": "Total Tweets",
+                        "withdraw-history": "Withdrawal Records",
+                        "withdraw": "Withdraw",
+                        "user-setting-game-income": "Game Revenue",
+                        "user-setting-lottery-income-tittle": "Lottery Revenue",
+                        "user-setting-tweet-no-suffix": "Tweet(s)",
+                        "lottery-round-tittle-1": "Phase ",
+                        "lottery-round-tittle-2": "",
+                        "lottery-tittle-tips": "Current Prize Pool",
+                        "countdown-result": "Drawing in Progress",
+                        "countdown-tips-days": "Day(s)",
+                        "countdown-tips-sub-tittle": "Next Draw Time",
+                        "lottery-info-history-bonus": "Total Historical Prize",
+                        "lottery-info-current-team-no": "Current Period's Total Teams",
+                        "lottery-stats-unit-1": " ",
+                        "lottery-info-current-tickets-no": "Total Votes This Period",
+                        "lottery-stats-unit-2": " ",
+                        "lottery-info-btn-mine": "My Tickets",
+                        "lottery-info-tittle": "This game is a lottery game, with draws every 48 hours that anyone can participate in.",
+                        "lottery-info-content-1": "The method of purchasing lottery tickets is as follows",
+                        "lottery-info-content-2": "1.Reward The Tweet",
+                        "lottery-info-content-3": "Tipping under the tweet participating in the game, any of your tips will have 60% go into the lottery prize pool, 30% belong to the tweet author, and 10% belong to Dessage protocol income.",
+                        "lottery-info-content-4": "2. Place a separate bet.",
+                        "lottery-info-content-5": "You can also place individual bets on the 'My Lottery Tickets' page, with 90% of the bet amount going into the prize pool and 10% belonging to Dessage protocol income.",
+                        "lottery-info-content-6": "3.Winning Rules",
+                        "lottery-info-content-7": "Users who tip under the same tweet during the same period form a lottery team.",
+                        "lottery-info-content-8": "If the final grand prize belongs to any member of the team, that winner will receive half of the prize pool, while the remaining half of the prize pool will be distributed to all participants of that team according to the proportion of their tipping contributions. Therefore, please try to tip tweets that you think are of higher quality and more likely to receive more tips, as this will increase your chances of winning.",
+                        "lottery-info-content-9": "Users who place individual bets do not belong to any team,",
+                        "lottery-info-content-10": "If a user who placed an individual bet wins, that user will receive the entire prize pool.",
+                        "lottery-info-content-11": "4. Post tweets to earn income.",
+                        "lottery-info-content-12": "You need to bind your Arbitrum address and Twitter account, then click to tweet on this platform, and the tweet will be forwarded to your Twitter account synchronously. Other users can then vote and tip under your tweet, and you can earn creator income.",
                     }
                 },
                 zh: {
                     translation: {
                         "title": "Dessage",
-                        "left-menu-item-home":"主页",
-                        "left-menu-item-top":"排行榜",
-                        "left-menu-item-my-tweet":"推文",
-                        "left-menu-item-my-setting":"我的",
-                        "btn-tittle-post-tweet":"发布推文",
-                        "btn-post-tweet-on-left-menu":"发推",
-                        "cancelButton":"取消",
-                        "confirmButton":"确定",
-                        "btn-tittle-share-when-vote":"转发到推特",
-                        "vote-dialog-vote-no":"票数",
-                        "vote-to-tweet-dialog-tittle":"推文投票",
-                        "tweet-show-less":"更少",
-                        "tweet-show-more":"更多",
-                        "tittle-top-vote":"总得票排行榜",
-                        "tittle-top-team":"本期得票排行榜",
-                        "tittle-top-best-writer":"最佳创作者排行榜",
-                        "tittle-top-best-voter":"大户荣誉榜",
-                        "show-details-button":"查看详情 >>",
-                        "hover-tittle-tweet-no":"推文总数",
-                        "hover-tittle-vote-no":"被打赏数",
-                        "hover-tittle-voted-no":"打赏数",
-                        "label-vote-no":"投票数",
-                        "btn-tittle-vote-no":"投票",
-                        "tweet-detail-creator":"作者Web3 ID",
-                        "tweet-detail-hash":"推文哈希",
-                        "tweet-detail-signature":"推文数字签名",
-                        "tweet-detail-payment":"支付状态",
-                        "back":"返回",
-                        "user-tweet-btn-my-tweet":"我的推文",
-                        "user-tweet-btn-my-vote":"我的投票",
-                        "user-tweet-btn-goon-pay":"继续支付",
-                        "user-tweet-btn-delete":"删除",
-                        "user-tweet-label-total-vote":"总票数",
-                        "user-tweet-label-my-vote":"我的票数",
-                        "user-setting-clear":"清除缓存",
-                        "user-setting-quit":"退出",
-                        "user-setting-sync-twitter":"同步推特",
-                        "user-setting-points":"积分",
-                        "user-setting-tweet-income":"推文收入",
-                        "user-setting-tweet-no":"推文总数",
-                        "withdraw-history":"提现记录",
-                        "withdraw":"提现",
-                        "user-setting-game-income":"游戏收入",
-                        "user-setting-lottery-income-tittle":"彩票收入",
-                        "user-setting-tweet-no-suffix":"篇",
+                        "left-menu-item-home": "主页",
+                        "left-menu-item-top": "排行榜",
+                        "left-menu-item-my-tweet": "推文",
+                        "left-menu-item-my-setting": "我的",
+                        "btn-tittle-post-tweet": "发布推文",
+                        "btn-post-tweet-on-left-menu": "发推",
+                        "cancelButton": "取消",
+                        "confirmButton": "确定",
+                        "btn-tittle-share-when-vote": "转发到推特",
+                        "vote-dialog-vote-no": "票数",
+                        "vote-to-tweet-dialog-tittle": "推文投票",
+                        "tweet-show-less": "更少",
+                        "tweet-show-more": "更多",
+                        "tittle-top-vote": "总得票排行榜",
+                        "tittle-top-team": "本期得票排行榜",
+                        "tittle-top-best-writer": "最佳创作者排行榜",
+                        "tittle-top-best-voter": "大户荣誉榜",
+                        "show-details-button": "查看详情 >>",
+                        "hover-tittle-tweet-no": "推文总数",
+                        "hover-tittle-vote-no": "被打赏数",
+                        "hover-tittle-voted-no": "打赏数",
+                        "label-vote-no": "投票数",
+                        "btn-tittle-vote-no": "投票",
+                        "tweet-detail-creator": "作者Web3 ID",
+                        "tweet-detail-hash": "推文哈希",
+                        "tweet-detail-signature": "推文数字签名",
+                        "tweet-detail-payment": "支付状态",
+                        "back": "返回",
+                        "user-tweet-btn-my-tweet": "我的推文",
+                        "user-tweet-btn-my-vote": "我的投票",
+                        "user-tweet-btn-goon-pay": "继续支付",
+                        "user-tweet-btn-delete": "删除",
+                        "user-tweet-label-total-vote": "总票数",
+                        "user-tweet-label-my-vote": "我的票数",
+                        "user-setting-clear": "清除缓存",
+                        "user-setting-quit": "退出",
+                        "user-setting-sync-twitter": "同步推特",
+                        "user-setting-points": "积分",
+                        "user-setting-tweet-income": "推文收入",
+                        "user-setting-tweet-no": "推文总数",
+                        "withdraw-history": "提现记录",
+                        "withdraw": "提现",
+                        "user-setting-game-income": "游戏收入",
+                        "user-setting-lottery-income-tittle": "彩票收入",
+                        "user-setting-tweet-no-suffix": "篇",
+                        "lottery-round-tittle-1": "第 ",
+                        "lottery-round-tittle-2": "期",
+                        "lottery-tittle-tips": "本期奖池",
+                        "countdown-result": "开奖中",
+                        "countdown-tips-days": "天",
+                        "countdown-tips-sub-tittle": "开奖时间",
+                        "lottery-info-history-bonus": "历史累计奖金",
+                        "lottery-info-current-team-no": "本期队伍总数",
+                        "lottery-stats-unit-1": "队",
+                        "lottery-info-current-tickets-no": "本期总票数",
+                        "lottery-stats-unit-2": "张",
+                        "lottery-info-btn-mine": "我的彩票",
+                        "lottery-info-tittle": "本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与",
+                        "lottery-info-content-1": "购买彩票的方式为",
+                        "lottery-info-content-2": "1.推文下打赏",
+                        "lottery-info-content-3": "在参与游戏的推文下打赏，你的任何打赏都会有60%进入彩票奖池，30%归属推文作者，10%归属Dessage协议收入",
+                        "lottery-info-content-4": "2.单独投注",
+                        "lottery-info-content-5": "你也可以在“我的彩票”页面进行单独投注，单独投注的投注额的90%进入奖池，10%归属Dessage协议收入",
+                        "lottery-info-content-6": "3.中奖规则",
+                        "lottery-info-content-7": "同一篇推文下同期打赏的用户为一个抽奖队伍，",
+                        "lottery-info-content-8": "若最终大奖归属队伍中的任何一人，则该中奖者独得一半奖池，剩余一半奖池按照投票打赏比例归属该队伍所有参与者，所以请尽量打赏你认为更优质更有可能获得更多打赏的推文，这样你的中奖概率会更高。",
+                        "lottery-info-content-9": "单独投注的用户不归属任何队伍,",
+                        "lottery-info-content-10": "若单独投注的用户中奖，则该用户独得所有奖池",
+                        "lottery-info-content-11": "4.发布推文,赚取收益",
+                        "lottery-info-content-12": "需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益",
                     }
                 }
             }
-        }, function(err, t) {
+        }, function (err, t) {
             updateContent();
         });
 
@@ -1959,7 +2048,37 @@
         document.getElementById('user-setting-withdraw-history2').textContent = i18next.t('withdraw-history');
         document.getElementById('user-setting-withdraw2').textContent = i18next.t('withdraw');
         document.getElementById('user-setting-tweet-no-suffix').textContent = i18next.t('user-setting-tweet-no-suffix');
-        }
+        document.getElementById('user-setting-tweet-no-suffix').textContent = i18next.t('user-setting-tweet-no-suffix');
+
+
+        document.getElementById('lottery-round-tittle-1').textContent = i18next.t('lottery-round-tittle-1');
+        document.getElementById('lottery-round-tittle-2').textContent = i18next.t('lottery-round-tittle-2');
+        document.getElementById('lottery-tittle-tips').textContent = i18next.t('lottery-tittle-tips');
+        document.getElementById("countdown-result").textContent = i18next.t('countdown-result');
+        document.getElementById("countdown-tips-days").textContent = i18next.t('countdown-tips-days');
+        document.getElementById("countdown-tips-sub-tittle").textContent = i18next.t('countdown-tips-sub-tittle');
+        document.getElementById("lottery-info-history-bonus").textContent = i18next.t('lottery-info-history-bonus');
+        document.getElementById("lottery-info-current-team-no").textContent = i18next.t('lottery-info-current-team-no');
+        document.getElementById("lottery-stats-unit-1").textContent = i18next.t('lottery-stats-unit-1');
+        document.getElementById("lottery-info-current-tickets-no").textContent = i18next.t('lottery-info-current-tickets-no');
+        document.getElementById("lottery-stats-unit-2").textContent = i18next.t('lottery-stats-unit-2');
+        document.getElementById("lottery-info-btn-mine").textContent = i18next.t('lottery-info-btn-mine');
+
+        document.getElementById("lottery-info-tittle").textContent = i18next.t('lottery-info-tittle');
+        document.getElementById("lottery-info-content-1").textContent = i18next.t('lottery-info-content-1');
+        document.getElementById("lottery-info-content-2").textContent = i18next.t('lottery-info-content-2');
+        document.getElementById("lottery-info-content-3").textContent = i18next.t('lottery-info-content-3');
+        document.getElementById("lottery-info-content-4").textContent = i18next.t('lottery-info-content-4');
+        document.getElementById("lottery-info-content-5").textContent = i18next.t('lottery-info-content-5');
+        document.getElementById("lottery-info-content-6").textContent = i18next.t('lottery-info-content-6');
+        document.getElementById("lottery-info-content-7").textContent = i18next.t('lottery-info-content-7');
+        document.getElementById("lottery-info-content-8").textContent = i18next.t('lottery-info-content-8');
+        document.getElementById("lottery-info-content-9").textContent = i18next.t('lottery-info-content-9');
+        document.getElementById("lottery-info-content-10").textContent = i18next.t('lottery-info-content-10');
+        document.getElementById("lottery-info-content-11").textContent = i18next.t('lottery-info-content-11');
+        document.getElementById("lottery-info-content-12").textContent = i18next.t('lottery-info-content-12');
+
+    }
 
 </script>
 </body>
