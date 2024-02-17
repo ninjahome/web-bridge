@@ -182,11 +182,12 @@ function setupCurrentRoundData() {
     const elem = document.getElementById("prize-pool-discover-time");
     startCountdown(currentRoundData.dTime, function (days, hours, minutes, seconds, finished) {
         if (finished) {
-            elem.innerText = "开奖中";
+            elem.innerText = i18next.t('game-status-with-draw');
             return;
         }
 
-        elem.innerText = days + " 天" + hours + " 时" + minutes + " 分" + seconds + " 秒";
+        elem.innerText = days + i18next.t('game-status-day') + hours + i18next.t('game-status-hour') + minutes
+            + i18next.t('game-status-minute') + seconds + i18next.t('game-status-second');
     });
 }
 
@@ -264,7 +265,7 @@ function showTeamDetail() {
         let cell = row.insertCell();
         cell.innerHTML = teamHash
         cell = row.insertCell();
-        cell.innerHTML = `<button class="team-detail-in-one-team" onclick="showOneTeamDetails('${teamHash}')">详情</button>`;
+        cell.innerHTML = `<button class="team-detail-in-one-team" onclick="showOneTeamDetails('${teamHash}')">`+i18next.t('detail-btn')+`</button>`;
     }
 }
 
@@ -557,7 +558,7 @@ function showUserWinHistory() {
 
             } else {
                 winnerCard.querySelector('.team-id-txt.id').textContent = obj.win_team;
-                winnerCard.querySelector('.team-id-txt.type').textContent = '团队';
+                winnerCard.querySelector('.team-id-txt.type').textContent =  i18next.t('winning-history-type-team');
                 winnerCard.querySelector('.one-round-bonus-for-me').textContent = obj.bonus / 2;
             }
 

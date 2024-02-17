@@ -571,7 +571,6 @@ function checkMetamaskErr(err) {
 
 const __noTeamID = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const __noTeamID2 = '0000000000000000000000000000000000000000000000000000000000000000';
-const __noTeamTxt = '独立购买';
 
 function __incomeWithdrawHistory(address){
     let targetUrl = __globalMetaMaskNetworkParam.get(__globalTargetChainNetworkID).blockExplorerUrls[0];

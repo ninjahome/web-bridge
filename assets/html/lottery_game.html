@@ -10,6 +10,9 @@
     <script src="/assets/js/abi_game_lottery.js"></script>
     <script src="/assets/js/utils.js"></script>
     <script src="/assets/js/game.js"></script>
+    <script src="https://unpkg.com/i18next@latest/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector@latest/dist/umd/i18nextBrowserLanguageDetector.min.js"></script>
+
     <style about="basic">
 
         html, body {
@@ -456,46 +459,46 @@
 <div class="main-container">
     <div class="back-to-main-btn">
         <button onclick="window.location.href='/main'" class="return-main-btn"><img src="/assets/file/back-icon.png">
-            返回首页
+            <span id="back-to-main-btn-txt"> 返回首页</span>
         </button>
     </div>
     <div class="user-section">
         <div class="user-info"></div>
-        <h3 class="user-title">我的彩票</h3>
+        <h3 class="user-title" id="user-title-txt">我的彩票</h3>
         <div class="user-balance">
-            <p style="margin: 0">奖金: <span class="balance-value" id="personal-balance-val">0.00</span> ETH</p>
+            <p style="margin: 0"><span id="user-info-bonus">奖金</span>: <span class="balance-value" id="personal-balance-val">0.00</span> ETH</p>
             <div>
-                <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()">提现记录 >></button>
-                <button class="withdraw-btn" onclick="withdrawBonus()">提现</button>
+                <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()" id="user-info-withdraw-history">提现记录 >></button>
+                <button class="withdraw-btn" onclick="withdrawBonus()" id="user-info-withdraw">提现</button>
             </div>
         </div>
         <ul class="ticket-action">
             <li>
-                <p>彩票数: <span class="ticket-count" style="font-size: 20px;font-weight:bold; color: #DE4033"
+                <p><span id="user-info-ticket-no">彩票数</span>: <span class="ticket-count" style="font-size: 20px;font-weight:bold; color: #DE4033"
                                  id="personal-ticket-no-val">0</span></p>
-                <button class="ticket-count-btn rule-info-btn" onclick="showPersonalTicket()">查看详情</button>
+                <button class="ticket-count-btn rule-info-btn" onclick="showPersonalTicket()" id="ticket-count-btn-txt-1">查看详情</button>
             </li>
             <li>
-                <p>团队数: <span class="team-count" style="font-size: 20px; font-weight:bold; color: #4848D8"
+                <p><span id="user-info-team-no">团队数</span>: <span class="team-count" style="font-size: 20px; font-weight:bold; color: #4848D8"
                                  id="personal-team-no-val">0</span></p>
-                <button class="team-count-btn rule-info-btn" onclick="showTeamDetail()">查看详情</button>
+                <button class="team-count-btn rule-info-btn" onclick="showTeamDetail()" id="ticket-count-btn-txt-2">查看详情</button>
             </li>
             <li>
-                <p>我的中奖彩票: <span class="personal-winning-count"
+                <p><span id="user-info-my-win-ticket">我的中奖彩票</span>: <span class="personal-winning-count"
                                    style="font-size: 20px; font-weight:bold; color: #DE8633">0</span></p>
-                <button class="personal-winning-btn rule-info-btn" onclick="showUserWinHistory()">查看详情</button>
+                <button class="personal-winning-btn rule-info-btn" onclick="showUserWinHistory()" id="ticket-count-btn-txt-3">查看详情</button>
             </li>
             <li>
-                <p>我的中奖团队: <span class="team-winning-count"
+                <p><span id="user-info-my-win-team">我的中奖团队</span>: <span class="team-winning-count"
                                    style="font-size: 20px; font-weight:bold; color: #DE8633">0</span></p>
-                <button class="team-winning-btn rule-info-btn" onclick="showTeamWinHistory()">查看详情</button>
+                <button class="team-winning-btn rule-info-btn" onclick="showTeamWinHistory()" id="ticket-count-btn-txt-4">查看详情</button>
             </li>
         </ul>
         <div class="user-tickets" style="display: none;">
             <table class="tickets-detail">
                 <thead>
                 <tr>
-                    <th>彩票ID</th>
+                    <th id="tickets-detail-tittle">彩票ID</th>
                 </tr>
                 </thead>
                 <tbody class="tickets-num">
@@ -509,32 +512,32 @@
             <table class="team-detail">
                 <thead>
                 <tr>
-                    <th>团队ID</th>
-                    <th>团队详情</th>
+                    <th id="tickets-detail-team-id">团队ID</th>
+                    <th id="tickets-detail-team-detail">团队详情</th>
                 </tr>
                 </thead>
                 <tbody id="team-detail-body">
                 <tr>
                     <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
                     <td>
-                        <button class="team-detail-in-one-team rule-info-btn">详情 >> </button>
+                        <button class="team-detail-in-one-team rule-info-btn"><span id="tickets-detail-team-detail-btn">详情</span> >> </button>
                     </td>
                 </tr>
                 </tbody>
             </table>
             <div class="team-detail-for-one" style="display: none">
                 <div class="team-detail-for-one-header">
-                    人数:<span id="team-detail-for-one-memNo"
+                    <span id="team-detail-header-tittle">人数</span>:<span id="team-detail-for-one-memNo"
                                style="font-size: 20px;font-weight: bolder;color: #4848D8; margin: 0 6px"></span>
-                    票数:<span id="team-detail-for-one-tickNo"
+                    <span id="team-detail-header-vote-no">票数</span>:<span id="team-detail-for-one-tickNo"
                                style="font-size: 20px;font-weight: bolder;color: #DE4033; margin: 0 6px"></span>
-                    <button class="rule-info-btn" onclick="hideOneTeamDetails()">隐藏</button>
+                    <button class="rule-info-btn" onclick="hideOneTeamDetails()" id="team-detail-hide-btn">隐藏</button>
                 </div>
                 <table class="team-detail">
                     <thead>
                     <tr>
-                        <th>队员</th>
-                        <th>票数</th>
+                        <th id="team-detail-header-member">队员</th>
+                        <th id="team-detail-item-vote-no">票数</th>
                     </tr>
                     </thead>
                     <tbody id="team-detail-for-one-body">
@@ -550,21 +553,21 @@
 
         <div class="winning-history" id="winning-history-template" style="display: none">
             <ul style="color: #7E7F82">
-                <li>总金额: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
+                <li><span id="winning-history-total-bonus">总金额</span>: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
                 </li>
-                <li>归我所得: <span class="one-round-bonus-for-me" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
+                <li><span id="winning-history-my-bonus">归我所得</span>: <span class="one-round-bonus-for-me" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
                 </li>
-                <li>中奖彩票编号: <span class="one-round-ticket-id"
+                <li><span id="winning-history-winner-ticket-id">中奖彩票编号</span>: <span class="one-round-ticket-id"
                                   style="color: #1B1B1D; font-size: 16px; font-weight: bold">0</span>
 
-                <li>期数: 第 <span class="one-round-round-val"
-                                     style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span> 期</li>
-                <li>日期: <span class="one-round-discover-val"
+                <li><span id="winning-history-phase-no-1">期数: 第 </span><span class="one-round-round-val"
+                                     style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span> <span id="winning-history-phase-no-2">期</span></li>
+                <li><span id="winning-history-discover-day">日期</span>: <span class="one-round-discover-val"
                                 style="color: #1B1B1D; font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
                 </li>
-                <li>类型: <span class="team-id-txt type"
+                <li><span id="winning-history-win-type">类型</span>: <span class="team-id-txt type"
                                 style="color: #1B1B1D; font-size: 16px; font-weight: bold">个人</span></li>
-                <li>独立彩票/团队ID: <span class="team-id-txt id" style="color: #1B1B1D; font-size: 16px">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
+                <li><span id="winning-history-win-id">独立彩票/团队ID</span>: <span class="team-id-txt id" style="color: #1B1B1D; font-size: 16px">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
                 </li>
             </ul>
         </div>
@@ -572,15 +575,15 @@
 
         <div class="winning-history" id="winTeam-history-template" style="display: none">
             <ul style="color: #7E7F82">
-                <li>总金额: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
+                <li><span id="winning-history-total-bonus-2">总金额</span>: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
                 </li>
-                <li>归我所得: <span class="one-round-bonus-for-me" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
+                <li><span id="winning-history-my-bonus-2">归我所得</span>: <span class="one-round-bonus-for-me" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
                 </li>
-                <li>期数: 第 <span class="one-round-round-val" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span> 期 </li>
-                <li>我在本队票数: <span class="one-round-my-vote-no" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>  </li>
-                <li>团队总票数: <span class="one-round-vote-no" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>  </li>
-                <li>团队人数: <span class="one-round-mem-no" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>  </li>
-                <li>团队ID: <span class="team-id-txt id" style="color: #1B1B1D; font-size: 16px"></span> </li>
+                <li><span id="winning-history-phase-no-3">期数: 第 </span><span class="one-round-round-val" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span> <span id="winning-history-phase-no-4">期</span> </li>
+                <li><span id="winning-history-my-vote-in-team">我在本队票数</span>: <span class="one-round-my-vote-no" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>  </li>
+                <li><span id="winning-history-team-total-no">团队总票数</span>: <span class="one-round-vote-no" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>  </li>
+                <li><span id="winning-history-team-member-no">团队人数</span>: <span class="one-round-mem-no" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>  </li>
+                <li><span id="winning-history-team-id">团队ID</span>: <span class="team-id-txt id" style="color: #1B1B1D; font-size: 16px"></span> </li>
             </ul>
         </div>
         <div class="winTeam-history-list"></div>
@@ -589,69 +592,69 @@
     <div class="game-section">
         <div class="round-title-betting">
             <div class="round-title-number">
-                <h3 class="round-title">当前彩票信息</h3>
+                <h3 class="round-title" id="round-title-info">当前彩票信息</h3>
                 <p style="background-color:rgba(216,216,216,0.1); border: 1px solid rgba(151,151,151,0.2);padding: 2px 12px; margin-left: 4px; color: #DE4033; font-size: 14px">
-                    第<span class="round-number">0</span>期</p>
+                    <span id="round-info-phase-no-1">第</span><span class="round-number">0</span><span id="round-info-phase-no-2">期</span></p>
             </div>
             <div class="round-time-betting">
-                <p style="font-size: 14px">开奖时间:
+                <p style="font-size: 14px"><span id="round-info-withdraw-time">开奖时间</span>:
                     <span class="round-discover-time-val" id="prize-pool-discover-time"
                           style="font-size: 14px; font-weight: bolder;color: #DE4033; margin-right: 6px">2天2小时24分</span>
                 </p>
                 <div style="display: flex;flex-direction: column; align-items: flex-start; margin-top: 14px">
-                    <button class="betting-btn" onclick="buyTicket()">投注</button>
+                    <button class="betting-btn" onclick="buyTicket()" id="round-info-vote-btn-txt">投注</button>
                     <span style="font-size: 14px; font-weight: lighter; color: #898989">(<span
-                                class="ticket-price-for-outer-user"> 0.00 </span> eth/票)</span>
+                                class="ticket-price-for-outer-user"> 0.00 </span> eth)</span>
                 </div>
             </div>
         </div>
         <div class="round-summary">
             <div style="border:1px dashed #D3D5D6; border-radius:18px; background-color: #F1F2F3; height: 48px;padding: 20px 12px">
-                <h4>开奖hash:</h4>
+                <h4 id="round-summary-withdraw-hash">开奖hash:</h4>
                 <p class="team-id-txt" id="prize-pool-random-hash">
                     0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46 </p>
             </div>
             <div style="margin-left: 16px; margin-right: 12px">
                 <div class="prize-pool-value"><span id="prize-pool-bonus-val">0</span><span
                             style="font-weight: lighter;font-size: 14px"> ETH</span></div>
-                <p style="color: rgba(29,29,31,0.5);font-size: 14px">奖池</p>
+                <p style="color: rgba(29,29,31,0.5);font-size: 14px" id="round-summary-pool-tittle">奖池</p>
             </div>
             <div style="margin-left: 16px; margin-right: 12px">
                 <div class="prize-pool-value" id="prize-pool-team-no">0</div>
-                <p style="color: rgba(29,29,31,0.5);font-size: 14px">团队数</p>
+                <p style="color: rgba(29,29,31,0.5);font-size: 14px" id="round-summary-team-no">团队数</p>
             </div>
             <div style="margin-left: 16px; margin-right: 12px">
                 <div class="prize-pool-value" id="prize-pool-tick-no">0</div>
-                <p style="color: rgba(29,29,31,0.5);font-size: 14px">彩票数</p>
+                <p style="color: rgba(29,29,31,0.5);font-size: 14px" id="round-summary-vote-no">彩票数</p>
             </div>
         </div>
         <div class="game-rules" style="border-bottom: 1px solid #E8E8E8">
             <div class="game-rules-open"
                  style="display: flex; justify-content: space-between; align-items: center;cursor: pointer"
                  onclick="showGameRule('.rule-info')">
-                <p>游戏规则</p>
+                <p id="game-rules-tittle">游戏规则</p>
                 <button class="game-rule-btn"><img src="/assets/file/rules-info-icon.png"></button>
             </div>
             <div class="rule-info" style="display: none">
-                <h4>本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与</h4>
+                <h4 id="lottery-info-tittle">本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与</h4>
                 <ul>
-                    购买彩票的方式为:
+                    <span id="lottery-info-content-1">购买彩票的方式为</span>:
                     <li>
-                        <h4 style="margin-top: 6px;margin-bottom: 4px">1.推文下打赏</h4>
-                        在参与游戏的推文下打赏，你的任何打赏都会有60%进入彩票奖池，30%归属推文作者，10%归属Dessage协议收入
+                        <h4 style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content-2">1.推文下打赏</h4>
+                        <span id="lottery-info-content-3">在参与游戏的推文下打赏，你的任何打赏都会有60%进入彩票奖池，30%归属推文作者，10%归属Dessage协议收入</span>
                     </li>
                     <li>
-                        <h4 style="margin-top: 6px">2.单独投注</h4>
-                        你也可以在“我的彩票”页面进行单独投注，单独投注的投注额的90%进入奖池，10%归属Dessage协议收入
+                        <h4 style="margin-top: 6px" id="lottery-info-content-4">2.单独投注</h4>
+                        <span id="lottery-info-content-5">你也可以在“我的彩票”页面进行单独投注，单独投注的投注额的90%进入奖池，10%归属Dessage协议收入</span>
                     </li>
                     <li>
-                        <h4 style="margin-top: 6px">3.中奖规则</h4>
-                        <strong>同一篇推文下同期打赏的用户为一个抽奖队伍，</strong>若最终大奖归属队伍中的任何一人，则该中奖者独得一半奖池，剩余一半奖池按照投票打赏比例归属该队伍所有参与者，所以请尽量打赏你认为更优质更有可能获得更多打赏的推文，这样你的中奖概率会更高。
-                        <br><strong>单独投注的用户不归属任何队伍,</strong>单独投注的用户不归属任何队伍，若单独投注的用户中奖，则该用户独得所有奖池
+                        <h4 style="margin-top: 6px" id="lottery-info-content-6">3.中奖规则</h4>
+                        <strong id="lottery-info-content-7">同一篇推文下同期打赏的用户为一个抽奖队伍，</strong><span id="lottery-info-content-8">若最终大奖归属队伍中的任何一人，则该中奖者独得一半奖池，剩余一半奖池按照投票打赏比例归属该队伍所有参与者，所以请尽量打赏你认为更优质更有可能获得更多打赏的推文，这样你的中奖概率会更高。</span>
+                        <br><strong id="lottery-info-content-9">单独投注的用户不归属任何队伍,</strong><span id="lottery-info-content-10">若单独投注的用户中奖，则该用户独得所有奖池</span>
                     </li>
                     <li>
-                        <h4 style="margin-top: 6px">4.发布推文,赚取收益</h4>
-                        需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益
+                        <h4 style="margin-top: 6px"  id="lottery-info-content-11">4.发布推文,赚取收益</h4>
+                        <span id="lottery-info-content-12">需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益</span>
                     </li>
                 </ul>
             </div>
@@ -661,27 +664,27 @@
             <div class="game-algorithm-open"
                  style="display: flex; justify-content: space-between; align-items: center;cursor: pointer"
                  onclick="showGameRule('.game-algorithm-info')">
-                <p>彩票算法</p>
+                <p id="game-algorithm-tittle">彩票算法</p>
                 <button class="game-algorithm-btn"><img src="/assets/file/rules-info-icon.png" alt=" "></button>
             </div>
             <div class="game-algorithm-info" style="display: none">
-                <h4>彩票算法</h4>
+                <h4 id="game-algorithm-tittle-2">彩票算法</h4>
                 <ul>
-                    <li>1.随机数链下生成.</li>
-                    <li>2.每期开奖结束后，将下期开奖随机数的hash值写入区块链.</li>
-                    <li>3.开奖日期截止是，智能合约接受随机数.</li>
-                    <li>4.智能合约计算随机数hash值与区块链随机数hash比对.</li>
-                    <li>5.比对成功后随机选择中奖者web3ID</li>
+                    <li id="game-algorithm-content-1">1.随机数链下生成.</li>
+                    <li id="game-algorithm-content-2">2.每期开奖结束后，将下期开奖随机数的hash值写入区块链.</li>
+                    <li id="game-algorithm-content-3">3.开奖日期截止是，智能合约接受随机数.</li>
+                    <li id="game-algorithm-content-4">4.智能合约计算随机数hash值与区块链随机数hash比对.</li>
+                    <li id="game-algorithm-content-5">5.比对成功后随机选择中奖者web3ID</li>
                 </ul>
                 <ul class="algorithm-detail" style="color: #7E7F82">
-                    <li>算法:
+                    <li><span id="game-algorithm-core-tittle">算法</span>:
                         <span class="algorithm-title"
-                              style="color: #DE4033; font-size: 16px; font-weight: bold ;background-color: #F1F2F3; border: 1px dashed #D3D5D6;padding: 6px;margin: 6px 0; border-radius: 12px">(中奖者地址)</span>
+                              style="color: #DE4033; font-size: 16px; font-weight: bold ;background-color: #F1F2F3; border: 1px dashed #D3D5D6;padding: 6px;margin: 6px 0; border-radius: 12px"  id="game-algorithm-core-address">(中奖者地址)</span>
                     </li>
                     <li style="background-color: #F1F2F3; border: 1px dashed #D3D5D6;padding: 6px;margin: 6px 0; border-radius: 12px">
-                        <span class="algorithm-description" style="color: #4848D8; font-size: 16px; font-weight: bold">购买地址列表[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数].</span>
+                        <span class="algorithm-description"  id="game-algorithm-core-algorithm" style="color: #4848D8; font-size: 16px; font-weight: bold">购买地址列表[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数].</span>
                     </li>
-                    <li>合约地址: <span class="contract-address-value"
+                    <li><span id="game-algorithm-core-contract">合约地址</span>: <span class="contract-address-value"
                                         style="color: #1B1B1D; font-size: 16px;cursor: pointer"
                                         onclick="showContractUrl()">0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</span>
                     </li>
@@ -770,6 +773,251 @@
 <script>
     const ninjaUserObj = {{ .NinjaUsrInfoJson }};
     document.addEventListener("DOMContentLoaded", initGamePage);
+</script>
+
+<script about="zh-en">
+    let __noTeamTxt = '';
+
+    i18next
+        .use(i18nextBrowserLanguageDetector)
+        .init({
+            fallbackLng: 'zh',
+            debug: true,
+            resources: {
+                en: {
+                    translation: {
+                        "title": "Dessage",
+                        "back-to-main-btn-txt": "Back To Main",
+                        "user-title-txt": "My Tickets",
+                        "user-info-bonus": "Bonus",
+                        "user-info-withdraw": "Withdraw",
+                        "user-info-withdraw-history": "Withdraw History >>",
+                        "ticket-count-btn-txt": "View Details",
+                        "user-info-ticket-no": "Tickets No",
+                        "user-info-team-no": "Team No",
+                        "user-info-my-win-ticket": "My Winning Lottery Tickets",
+                        "user-info-my-win-team": "My Winning Team",
+                        "game-status-with-draw": "Drawing in Progress",
+                        "game-status-day": " D ",
+                        "game-status-hour": " H ",
+                        "game-status-minute": " M ",
+                        "game-status-second": " S",
+                        "tickets-detail-tittle": "Tickets ID",
+                        "tickets-detail-team-id": "Team ID",
+                        "tickets-detail-team-detail": "Team Detail",
+                        "detail-btn": "Detail",
+                        "team-detail-header-tittle": "Member No",
+                        "team-detail-header-vote-no": "Ticket No",
+                        "hide-btn": "Hide",
+                        "team-detail-header-member": "Member",
+                        "team-detail-item-vote-no": "Ticket No",
+                        "total-bonus": "Total Bonus",
+                        "my-bonus": "My Bonus",
+                        "winner-ticket-id": "Winning Ticket ID",
+                        "winning-history-phase-no-1": "Phase No:",
+                        "winning-history-phase-no-2": "",
+                        "winning-history-discover-day": "Time",
+                        "winning-history-win-type": "Type",
+                        "winning-history-win-id": "Ticket(Team) ID",
+                        "winning-history-type-team": "Team",
+                        "winning-history-type-personal": "Personal",
+                        "winning-history-my-vote-in-team": "My Tickets In Team",
+                        "winning-history-team-total-no": "Total Tickets Of Team",
+                        "winning-history-team-member-no": "Total Members Of Team",
+                        "round-title-info": "Current Lottery",
+                        "round-info-withdraw-time": "Draw Time",
+                        "round-info-vote-btn-txt": "Betting",
+                        "round-summary-withdraw-hash": "Random Hash:",
+                        "round-summary-pool-tittle": "Prize Pool",
+                        "game-rules-tittle": "Game Rules",
+                        "lottery-info-tittle": "This game is a lottery game, with draws every 48 hours that anyone can participate in.",
+                        "lottery-info-content-1": "The method of purchasing lottery tickets is as follows",
+                        "lottery-info-content-2": "1.Reward The Tweet",
+                        "lottery-info-content-3": "Tipping under the tweet participating in the game, any of your tips will have 60% go into the lottery prize pool, 30% belong to the tweet author, and 10% belong to Dessage protocol income.",
+                        "lottery-info-content-4": "2. Place a separate bet.",
+                        "lottery-info-content-5": "You can also place individual bets on the 'My Lottery Tickets' page, with 90% of the bet amount going into the prize pool and 10% belonging to Dessage protocol income.",
+                        "lottery-info-content-6": "3.Winning Rules",
+                        "lottery-info-content-7": "Users who tip under the same tweet during the same period form a lottery team.",
+                        "lottery-info-content-8": "If the final grand prize belongs to any member of the team, that winner will receive half of the prize pool, while the remaining half of the prize pool will be distributed to all participants of that team according to the proportion of their tipping contributions. Therefore, please try to tip tweets that you think are of higher quality and more likely to receive more tips, as this will increase your chances of winning.",
+                        "lottery-info-content-9": "Users who place individual bets do not belong to any team,",
+                        "lottery-info-content-10": "If a user who placed an individual bet wins, that user will receive the entire prize pool.",
+                        "lottery-info-content-11": "4. Post tweets to earn income.",
+                        "lottery-info-content-12": "You need to bind your Arbitrum address and Twitter account, then click to tweet on this platform, and the tweet will be forwarded to your Twitter account synchronously. Other users can then vote and tip under your tweet, and you can earn creator income.",
+                        "game-algorithm-tittle": "Lottery Algorithm",
+                        "game-algorithm-content-1": "1.The random number is generated on the blockchain.",
+                        "game-algorithm-content-2": "2. After each draw is concluded, the hash value of the random number for the next draw is written into the blockchain.",
+                        "game-algorithm-content-3": "3. On the draw date deadline, the smart contract accepts the random number.",
+                        "game-algorithm-content-4": "4. The smart contract calculates the hash value of the random number and compares it with the hash of the random number on the blockchain.",
+                        "game-algorithm-content-5": "5. After a successful comparison, a winner's web3ID is randomly selected.",
+                        "game-algorithm-core-tittle": "Algorithm",
+                        "game-algorithm-core-address": "(Winner Address)",
+                        "game-algorithm-core-algorithm": "Voter Address List[Hash(block.hash,block.timestamp,block.difficulty,Random)%Total Voter No].",
+                        "game-algorithm-core-contract": "Contract Address",
+                    }
+                },
+                zh: {
+                    translation: {
+                        "title": "Dessage",
+                        "user-title-txt": "我的彩票",
+                        "back-to-main-btn-txt": "返回首页",
+                        "user-info-bonus": "奖金",
+                        "user-info-withdraw": "提现",
+                        "user-info-withdraw-history": "提现记录 >>",
+                        "ticket-count-btn-txt": "查看详情",
+                        "user-info-ticket-no": "彩票数",
+                        "user-info-team-no": "团队数",
+                        "user-info-my-win-ticket": "我的中奖彩票",
+                        "user-info-my-win-team": "我的中奖团队",
+                        "game-status-with-draw": "开奖中",
+                        "game-status-day": " 天 ",
+                        "game-status-hour": " 时 ",
+                        "game-status-minute": " 分 ",
+                        "game-status-second": " 秒 ",
+                        "tickets-detail-tittle": "彩票ID",
+                        "tickets-detail-team-id": "团队ID",
+                        "tickets-detail-team-detail": "团队详情",
+                        "detail-btn": "详情",
+                        "team-detail-header-tittle": "人数",
+                        "team-detail-header-vote-no": "票数",
+                        "hide-btn": "隐藏",
+                        "team-detail-header-member": "队员",
+                        "team-detail-item-vote-no": "票数",
+                        "total-bonus": "总金额",
+                        "my-bonus": "归我所得",
+                        "winner-ticket-id": "中奖彩票编号",
+                        "winning-history-phase-no-1": "期数: 第",
+                        "winning-history-phase-no-2": "期",
+                        "winning-history-discover-day": "日期",
+                        "winning-history-win-type": "类型",
+                        "winning-history-win-id": "独立彩票/团队ID",
+                        "winning-history-type-team": "团队",
+                        "winning-history-type-personal": "独立购买",
+                        "winning-history-my-vote-in-team": "我在本队票数",
+                        "winning-history-team-total-no": "团队总票数",
+                        "winning-history-team-member-no": "团队人数",
+                        "round-title-info": "当前彩票信息",
+                        "round-info-withdraw-time": "开奖时间",
+                        "round-info-vote-btn-txt": "投注",
+                        "round-summary-withdraw-hash": "开奖hash:",
+                        "round-summary-pool-tittle": "奖池",
+                        "game-rules-tittle": "游戏规则",
+                        "lottery-info-tittle": "本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与",
+                        "lottery-info-content-1": "购买彩票的方式为",
+                        "lottery-info-content-2": "1.推文下打赏",
+                        "lottery-info-content-3": "在参与游戏的推文下打赏，你的任何打赏都会有60%进入彩票奖池，30%归属推文作者，10%归属Dessage协议收入",
+                        "lottery-info-content-4": "2.单独投注",
+                        "lottery-info-content-5": "你也可以在“我的彩票”页面进行单独投注，单独投注的投注额的90%进入奖池，10%归属Dessage协议收入",
+                        "lottery-info-content-6": "3.中奖规则",
+                        "lottery-info-content-7": "同一篇推文下同期打赏的用户为一个抽奖队伍，",
+                        "lottery-info-content-8": "若最终大奖归属队伍中的任何一人，则该中奖者独得一半奖池，剩余一半奖池按照投票打赏比例归属该队伍所有参与者，所以请尽量打赏你认为更优质更有可能获得更多打赏的推文，这样你的中奖概率会更高。",
+                        "lottery-info-content-9": "单独投注的用户不归属任何队伍,",
+                        "lottery-info-content-10": "若单独投注的用户中奖，则该用户独得所有奖池",
+                        "lottery-info-content-11": "4.发布推文,赚取收益",
+                        "lottery-info-content-12": "需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益",
+                        "game-algorithm-tittle": "彩票算法",
+                        "game-algorithm-content-1": "1.随机数链下生成",
+                        "game-algorithm-content-2": "2.每期开奖结束后，将下期开奖随机数的hash值写入区块链.",
+                        "game-algorithm-content-3": "3.开奖日期截止是，智能合约接受随机数.",
+                        "game-algorithm-content-4": "4.智能合约计算随机数hash值与区块链随机数hash比对.",
+                        "game-algorithm-content-5": "5.比对成功后随机选择中奖者web3ID",
+                        "game-algorithm-core-tittle": "算法",
+                        "game-algorithm-core-address": "(中奖者地址)",
+                        "game-algorithm-core-algorithm": "购买地址列表[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数].",
+                        "game-algorithm-core-contract": "合约地址",
+                    }
+                }
+            }
+        }, function (err, t) {
+            updateContent();
+        });
+
+    function updateContent() {
+        document.title = i18next.t('title');
+        __noTeamTxt = i18next.t('winning-history-type-personal');
+        document.getElementById('back-to-main-btn-txt').textContent = i18next.t('back-to-main-btn-txt');
+
+        document.getElementById('user-title-txt').textContent = i18next.t('user-title-txt');
+        document.getElementById('user-info-bonus').textContent = i18next.t('user-info-bonus');
+        document.getElementById('user-info-withdraw-history').textContent = i18next.t('user-info-withdraw-history');
+        document.getElementById('user-info-withdraw').textContent = i18next.t('user-info-withdraw');
+        document.getElementById('ticket-count-btn-txt-1').textContent = i18next.t('ticket-count-btn-txt');
+        document.getElementById('ticket-count-btn-txt-2').textContent = i18next.t('ticket-count-btn-txt');
+        document.getElementById('ticket-count-btn-txt-3').textContent = i18next.t('ticket-count-btn-txt');
+        document.getElementById('ticket-count-btn-txt-4').textContent = i18next.t('ticket-count-btn-txt');
+        document.getElementById('user-info-ticket-no').textContent = i18next.t('user-info-ticket-no');
+        document.getElementById('user-info-team-no').textContent = i18next.t('user-info-team-no');
+        document.getElementById('user-info-my-win-ticket').textContent = i18next.t('user-info-my-win-ticket');
+        document.getElementById('user-info-my-win-team').textContent = i18next.t('user-info-my-win-team');
+
+        document.getElementById('tickets-detail-tittle').textContent = i18next.t('tickets-detail-tittle');
+        document.getElementById('tickets-detail-team-id').textContent = i18next.t('tickets-detail-team-id');
+        document.getElementById('tickets-detail-team-detail').textContent = i18next.t('tickets-detail-team-detail');
+        document.getElementById('tickets-detail-team-detail-btn').textContent = i18next.t('detail-btn');
+        document.getElementById('team-detail-header-tittle').textContent = i18next.t('team-detail-header-tittle');
+        document.getElementById('team-detail-header-vote-no').textContent = i18next.t('team-detail-header-vote-no');
+        document.getElementById('team-detail-hide-btn').textContent = i18next.t('hide-btn');
+        document.getElementById('team-detail-header-member').textContent = i18next.t('team-detail-header-member');
+        document.getElementById('team-detail-item-vote-no').textContent = i18next.t('team-detail-item-vote-no');
+
+        document.getElementById('winning-history-total-bonus').textContent = i18next.t('total-bonus');
+        document.getElementById('winning-history-my-bonus').textContent = i18next.t('my-bonus');
+        document.getElementById('winning-history-winner-ticket-id').textContent = i18next.t('winner-ticket-id');
+        document.getElementById('winning-history-phase-no-1').textContent = i18next.t('winning-history-phase-no-1');
+        document.getElementById('winning-history-phase-no-2').textContent = i18next.t('winning-history-phase-no-2');
+        document.getElementById('winning-history-discover-day').textContent = i18next.t('winning-history-discover-day');
+        document.getElementById('winning-history-win-type').textContent = i18next.t('winning-history-win-type');
+        document.getElementById('winning-history-win-id').textContent = i18next.t('winning-history-win-id');
+
+        document.getElementById('winning-history-total-bonus-2').textContent = i18next.t('total-bonus');
+        document.getElementById('winning-history-my-bonus-2').textContent = i18next.t('my-bonus');
+        document.getElementById('winning-history-phase-no-3').textContent = i18next.t('winning-history-phase-no-1');
+        document.getElementById('winning-history-phase-no-4').textContent = i18next.t('winning-history-phase-no-2');
+        document.getElementById('winning-history-my-vote-in-team').textContent = i18next.t('winning-history-my-vote-in-team');
+        document.getElementById('winning-history-team-total-no').textContent = i18next.t('winning-history-team-total-no');
+        document.getElementById('winning-history-team-member-no').textContent = i18next.t('winning-history-team-member-no');
+        document.getElementById('winning-history-team-id').textContent = i18next.t('tickets-detail-team-id');
+
+
+        document.getElementById('round-title-info').textContent = i18next.t('round-title-info');
+        document.getElementById('round-info-phase-no-1').textContent = i18next.t('winning-history-phase-no-1');
+        document.getElementById('round-info-phase-no-2').textContent = i18next.t('winning-history-phase-no-2');
+        document.getElementById('round-info-withdraw-time').textContent = i18next.t('round-info-withdraw-time');
+        document.getElementById('round-info-vote-btn-txt').textContent = i18next.t('round-info-vote-btn-txt');
+
+        document.getElementById('round-summary-withdraw-hash').textContent = i18next.t('round-summary-withdraw-hash');
+        document.getElementById('round-summary-pool-tittle').textContent = i18next.t('round-summary-pool-tittle');
+        document.getElementById('round-summary-team-no').textContent = i18next.t('user-info-team-no');
+        document.getElementById('round-summary-vote-no').textContent = i18next.t('user-info-ticket-no');
+
+        document.getElementById('game-rules-tittle').textContent = i18next.t('game-rules-tittle');
+        document.getElementById('lottery-info-tittle').textContent = i18next.t('lottery-info-tittle');
+        document.getElementById('lottery-info-content-1').textContent = i18next.t('lottery-info-content-1');
+        document.getElementById('lottery-info-content-2').textContent = i18next.t('lottery-info-content-2');
+        document.getElementById('lottery-info-content-3').textContent = i18next.t('lottery-info-content-3');
+        document.getElementById('lottery-info-content-4').textContent = i18next.t('lottery-info-content-4');
+        document.getElementById('lottery-info-content-5').textContent = i18next.t('lottery-info-content-5');
+        document.getElementById('lottery-info-content-6').textContent = i18next.t('lottery-info-content-6');
+        document.getElementById('lottery-info-content-7').textContent = i18next.t('lottery-info-content-7');
+        document.getElementById('lottery-info-content-8').textContent = i18next.t('lottery-info-content-8');
+        document.getElementById('lottery-info-content-9').textContent = i18next.t('lottery-info-content-9');
+        document.getElementById('lottery-info-content-10').textContent = i18next.t('lottery-info-content-10');
+        document.getElementById('lottery-info-content-11').textContent = i18next.t('lottery-info-content-11');
+        document.getElementById('lottery-info-content-12').textContent = i18next.t('lottery-info-content-12');
+
+        document.getElementById('game-algorithm-tittle').textContent = i18next.t('game-algorithm-tittle');
+        document.getElementById('game-algorithm-tittle-2').textContent = i18next.t('game-algorithm-tittle');
+        document.getElementById('game-algorithm-content-1').textContent = i18next.t('game-algorithm-content-1');
+        document.getElementById('game-algorithm-content-2').textContent = i18next.t('game-algorithm-content-2');
+        document.getElementById('game-algorithm-content-3').textContent = i18next.t('game-algorithm-content-3');
+        document.getElementById('game-algorithm-content-4').textContent = i18next.t('game-algorithm-content-4');
+        document.getElementById('game-algorithm-content-5').textContent = i18next.t('game-algorithm-content-5');
+
+        document.getElementById('game-algorithm-core-tittle').textContent = i18next.t('game-algorithm-core-tittle');
+        document.getElementById('game-algorithm-core-address').textContent = i18next.t('game-algorithm-core-address');
+        document.getElementById('game-algorithm-core-algorithm').textContent = i18next.t('game-algorithm-core-algorithm');
+        document.getElementById('game-algorithm-core-contract').textContent = i18next.t('game-algorithm-core-contract');
+
+    }
 </script>
 
 </body>
