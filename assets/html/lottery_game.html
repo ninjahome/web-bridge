@@ -698,9 +698,9 @@
     </div>
     <div class="history-section">
         <div style="display: flex;align-items: center">
-            <h3 class="history-title">历史记录</h3>
+            <h3 class="history-title" id="history-section-tittle">历史记录</h3>
             <p style="background-color:rgba(216,216,216,0.1); border: 1px solid rgba(151,151,151,0.2);padding: 2px 12px; margin-left: 4px; color: #898989; font-size: 14px">
-                累计奖金:
+                <span id="history-section-bonus-sum">累计奖金</span>:
                 <span class="history-total-bonus" style="font-size: 14px;font-weight: bolder;color: #4848D8">0</span>
                 eth
             </p>
@@ -708,35 +708,35 @@
 
         <div class="history-query">
             <input id="round-input" class="round-query-input" placeholder="请输入序期号">
-            <button class="query-btn" onclick="showOneRoundGameInfo()">查询</button>
-            <button class="load-history-btn" onclick="hideInfoOfThisRound()">隐藏</button>
+            <button class="query-btn" onclick="showOneRoundGameInfo()" id="history-section-query-btn">查询</button>
+            <button class="load-history-btn" onclick="hideInfoOfThisRound()" id="history-section-hide-btn">隐藏</button>
         </div>
         <div class="round-history" style="display: none" id="history-data-one-round-template">
             <ul style="color: #7E7F82">
-                <li>奖金: <span class="one-round-bonus-val"
+                <li><span id="history-section-item-bonus">奖金</span>: <span class="one-round-bonus-val"
                                 style="color: #DE4033; font-size: 16px; font-weight: bold">0.02 </span> ETH
                 </li>
-                <li>开奖时间: <span class="one-round-discover-val" style="font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
+                <li><span id="history-section-draw-time">开奖时间</span>: <span class="one-round-discover-val" style="font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
                 </li>
-                <li>随机数: <span class="team-id-txt history-game-random" >37482194388201444118418062240926890660227596936268075126588913967857445000838</span>
+                <li><span id="history-section-random-no">随机数</span>: <span class="team-id-txt history-game-random" >37482194388201444118418062240926890660227596936268075126588913967857445000838</span>
                 </li>
-                <li>随机数 Hash: <span class="team-id-txt history-game-random-hash" >0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
+                <li><span id="history-section-random-hash">随机数 Hash</span>: <span class="team-id-txt history-game-random-hash" >0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
                 </li>
-                <li>获奖者: <span class="one-round-winner-val history-game-winner-address"
+                <li><span id="history-section-winner">获奖者</span>: <span class="one-round-winner-val history-game-winner-address"
                                   style=" font-size: 16px; font-weight: bold">0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB</span>
                 </li>
-                <li>获奖团队: <span class="team-id-txt history-game-winner-team"
+                <li><span id="history-section-team">获奖团队</span>: <span class="team-id-txt history-game-winner-team"
                                     style=" font-size: 16px; font-weight: bold">0x182bd38d6f81c8d77e4cc49dab221109e03fdea8978cab7e04f928435368562a</span>
                 </li>
-                <li>获奖彩票ID: <span class="one-round-win-ticket-val history-game-winner-ticket"
+                <li><span id="history-section-ticket">获奖彩票ID</span>: <span class="one-round-win-ticket-val history-game-winner-ticket"
                                       style="font-size: 16px; font-weight: bold">0</span>
                 </li>
             </ul>
         </div>
         <div class="all-history" style="margin-top: 8px">
-            <button class="load-history-btn" onclick="loadHistoryData()">加载历史数据</button>
+            <button class="load-history-btn" onclick="loadHistoryData()" id="all-history-query-btn">加载历史数据</button>
             <div class="history-data-list"></div>
-            <button class="history-data-list-more-btn" style="display: none" onclick="moreHistoryData()">更多</button>
+            <button class="history-data-list-more-btn" style="display: none" onclick="moreHistoryData()" id="all-history-btn-more">更多</button>
             <button class="load-history-btn" style="display: none" id="hide-history-data-btn" onclick="hideHistoryData()">隐藏历史数据</button>
         </div>
     </div>
@@ -745,11 +745,11 @@
     <div class="vote-no-modal-content">
         <div class="vote-no-modal-header">
             <span class="vote-no-close" onclick="closeVoteModal()">&times;</span>
-            <h2 style="margin: 0">推文投票</h2>
+            <h2 style="margin: 0" id="vote-modal-tittle">彩票投注</h2>
         </div>
         <div class="vote-no-modal-body">
             <div class="quantity-selector">
-                <p style="padding: 0; margin: 0;">票数：</p>
+                <p style="padding: 0; margin: 0;" id="vote-modal-bet-no">票数：</p>
                 <button id="decreaseVote" onclick="decreaseVote()"
                         style="border-bottom-left-radius: 12px;border-top-left-radius: 12px">-
                 </button>
@@ -759,8 +759,8 @@
                 </button>
             </div>
             <label style="color: #898989; font-size: 14px; margin-left: 54px">
-                <input type="checkbox" id="shareOnTwitter" checked>
-                转发到推特
+                <input type="checkbox" id="shareOnTwitter" checked >
+                <span id="shareOnTwitter-2">转发到推特</span>
             </label>
         </div>
         <div class="vote-no-modal-footer">
@@ -853,6 +853,23 @@
                         "game-algorithm-core-address": "(Winner Address)",
                         "game-algorithm-core-algorithm": "Voter Address List[Hash(block.hash,block.timestamp,block.difficulty,Random)%Total Voter No].",
                         "game-algorithm-core-contract": "Contract Address",
+                        "history-section-tittle": "History Record",
+                        "round-input": "Please enter the phase number.",
+                        "history-section-bonus-sum": "Cumulative Prize",
+                        "history-section-query-btn": "Query",
+                        "history-section-random-no": "Random Number",
+                        "history-section-random-hash": "Random Hash",
+                        "history-section-winner": "Winner",
+                        "history-section-team": "Winning Team",
+                        "history-section-ticket": "Winning Ticket ID",
+                        "all-history-query-btn": "Load Historical Data",
+                        "all-history-btn-more": "More",
+                        "hide-history-data-btn": "Hide Historical Data",
+                        "vote-modal-tittle": "Lottery Betting",
+                        "vote-modal-bet-no": "Tickets No",
+                        "shareOnTwitter": "Share to Twitter",
+                        "cancelButton": "Cancel",
+                        "confirmButton": "Confirm",
                     }
                 },
                 zh: {
@@ -924,6 +941,23 @@
                         "game-algorithm-core-address": "(中奖者地址)",
                         "game-algorithm-core-algorithm": "购买地址列表[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数].",
                         "game-algorithm-core-contract": "合约地址",
+                        "history-section-tittle": "历史记录",
+                        "round-input": "请输入序期号",
+                        "history-section-bonus-sum": "累计奖金",
+                        "history-section-query-btn": "查询",
+                        "history-section-random-no": "随机数",
+                        "history-section-random-hash": "随机数 Hash",
+                        "history-section-winner": "获奖者",
+                        "history-section-team": "获奖团队",
+                        "history-section-ticket": "获奖彩票ID",
+                        "all-history-query-btn": "加载历史数据",
+                        "all-history-btn-more": "更多",
+                        "hide-history-data-btn": "隐藏历史数据",
+                        "vote-modal-tittle": "彩票投注",
+                        "vote-modal-bet-no": "票数",
+                        "shareOnTwitter": "转发到推特",
+                        "cancelButton": "取消",
+                        "confirmButton": "确定",
                     }
                 }
             }
@@ -1016,6 +1050,29 @@
         document.getElementById('game-algorithm-core-address').textContent = i18next.t('game-algorithm-core-address');
         document.getElementById('game-algorithm-core-algorithm').textContent = i18next.t('game-algorithm-core-algorithm');
         document.getElementById('game-algorithm-core-contract').textContent = i18next.t('game-algorithm-core-contract');
+
+
+        document.getElementById('history-section-tittle').textContent = i18next.t('history-section-tittle');
+        document.getElementById('round-input').placeholder = i18next.t('round-input');
+        document.getElementById('history-section-bonus-sum').textContent = i18next.t('history-section-bonus-sum');
+        document.getElementById('history-section-query-btn').textContent = i18next.t('history-section-query-btn');
+        document.getElementById('history-section-hide-btn').textContent = i18next.t('hide-btn');
+        document.getElementById('history-section-item-bonus').textContent = i18next.t('user-info-bonus');
+        document.getElementById('history-section-draw-time').textContent = i18next.t('round-info-withdraw-time');
+        document.getElementById('history-section-random-no').textContent = i18next.t('history-section-random-no');
+        document.getElementById('history-section-random-hash').textContent = i18next.t('history-section-random-hash');
+        document.getElementById('history-section-winner').textContent = i18next.t('history-section-winner');
+        document.getElementById('history-section-team').textContent = i18next.t('history-section-team');
+        document.getElementById('history-section-ticket').textContent = i18next.t('history-section-ticket');
+
+        document.getElementById('all-history-query-btn').textContent = i18next.t('all-history-query-btn');
+        document.getElementById('all-history-btn-more').textContent = i18next.t('all-history-btn-more');
+        document.getElementById('hide-history-data-btn').textContent = i18next.t('hide-history-data-btn');
+        document.getElementById('vote-modal-tittle').textContent = i18next.t('vote-modal-tittle');
+        document.getElementById('vote-modal-bet-no').textContent = i18next.t('vote-modal-bet-no');
+        document.getElementById('shareOnTwitter-2').textContent = i18next.t('shareOnTwitter');
+        document.getElementById('cancelButton').textContent = i18next.t('cancelButton');
+        document.getElementById('confirmButton').textContent = i18next.t('confirmButton');
 
     }
 </script>
