@@ -5,7 +5,6 @@ async function setupGameInfo(startCounter) {
     gameArea.querySelector('.lottery-game-round-no').textContent = gameContractMeta.curRound;
     gameArea.querySelector('.lottery-amount').textContent = gameContractMeta.curBonus;
     document.getElementById('lottery-total-amount').textContent = gameContractMeta.totalBonus;
-    document.getElementById('lottery-current-team-amount').textContent = gameContractMeta.teamNo;
     document.getElementById('lottery-current-ticket-amount').textContent = gameContractMeta.ticketNo;
 
     if (!startCounter) {

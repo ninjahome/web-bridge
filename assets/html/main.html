@@ -1285,7 +1285,6 @@
 
             <div class="topic-switch">
                 <button class="top-topic-btn" onclick="initTopPage()" id="tittle-top-vote">总得票排行榜</button>
-                <button class="top-topic-btn" onclick="switchToTopTeam()" id="tittle-top-team">本期得票排行榜</button>
                 <button class="top-topic-btn" onclick="switchToTopKol()" id="tittle-top-best-writer">最佳创作者排行榜
                 </button>
                 <button class="top-topic-btn" onclick="switchToTopVoter()" id="tittle-top-best-voter">大户荣誉榜
@@ -1476,12 +1475,6 @@
                         </div>
                     </div>
                 </div>
-                {{/*                <div class="income-kol-area">*/}}
-                {{/*                    <div class="income-header">Key收入</div>*/}}
-                {{/*                    <div class="income-body">*/}}
-                {{/*                        <button onclick="openKolKeyMainPage()" class="withdraw-btn">key主页查看</button>*/}}
-                {{/*                    </div>*/}}
-                {{/*                </div>*/}}
             </div>
 
         </div>
@@ -1593,11 +1586,7 @@
                     <span class="lottery-stats-no" id="lottery-total-amount" style="font-weight: bold">0.00</span>
                     <span class="lottery-stats-unit">eth</span>
                 </div>
-                <div class="lottery-stats-label">
-                    <span id="lottery-info-current-team-no">本期队伍总数</span>:
-                    <span class="lottery-stats-no" id="lottery-current-team-amount" style="font-weight: bold">0</span>
-                    <span class="lottery-stats-unit" id="lottery-stats-unit-1"> 队</span>
-                </div>
+
                 <div class="lottery-stats-label">
                     <span id="lottery-info-current-tickets-no">本期总票数</span>:
                     <span class="lottery-stats-no" id="lottery-current-ticket-amount" style="font-weight: bold">0</span>
@@ -1847,7 +1836,6 @@
                         "tweet-show-less": "Less",
                         "tweet-show-more": "More",
                         "tittle-top-vote": "Most Voted",
-                        "tittle-top-team": "Most Voted In This Round",
                         "tittle-top-best-writer": "Top Creators Leaderboard",
                         "tittle-top-best-voter": "Whale Honor Roll",
                         "show-details-button": "Show More >>",
@@ -1887,9 +1875,7 @@
                         "countdown-tips-days": "Day(s)",
                         "countdown-tips-sub-tittle": "Next Draw Time",
                         "lottery-info-history-bonus": "Total Historical Prize",
-                        "lottery-info-current-team-no": "Current Period's Total Teams",
-                        "lottery-stats-unit-1": " ",
-                        "lottery-info-current-tickets-no": "Total Votes This Period",
+                        "lottery-info-current-tickets-no": "Total Votes This Phase",
                         "lottery-stats-unit-2": " ",
                         "lottery-info-btn-mine": "My Tickets",
                         "lottery-info-tittle": "This game is a lottery game, with draws every 48 hours that anyone can participate in.",
@@ -1924,7 +1910,6 @@
                         "tweet-show-less": "更少",
                         "tweet-show-more": "更多",
                         "tittle-top-vote": "总得票排行榜",
-                        "tittle-top-team": "本期得票排行榜",
                         "tittle-top-best-writer": "最佳创作者排行榜",
                         "tittle-top-best-voter": "大户荣誉榜",
                         "show-details-button": "查看详情 >>",
@@ -1962,8 +1947,6 @@
                         "countdown-tips-days": "天",
                         "countdown-tips-sub-tittle": "开奖时间",
                         "lottery-info-history-bonus": "历史累计奖金",
-                        "lottery-info-current-team-no": "本期队伍总数",
-                        "lottery-stats-unit-1": "队",
                         "lottery-info-current-tickets-no": "本期总票数",
                         "lottery-stats-unit-2": "张",
                         "lottery-info-btn-mine": "我的彩票",
@@ -2002,7 +1985,6 @@
         document.getElementById('vote-to-tweet-dialog-tittle').textContent = i18next.t('vote-to-tweet-dialog-tittle');
 
         document.getElementById('tittle-top-vote').textContent = i18next.t('tittle-top-vote');
-        document.getElementById('tittle-top-team').textContent = i18next.t('tittle-top-team');
         document.getElementById('tittle-top-best-writer').textContent = i18next.t('tittle-top-best-writer');
         document.getElementById('tittle-top-best-voter').textContent = i18next.t('tittle-top-best-voter');
 
@@ -2058,8 +2040,6 @@
         document.getElementById("countdown-tips-days").textContent = i18next.t('countdown-tips-days');
         document.getElementById("countdown-tips-sub-tittle").textContent = i18next.t('countdown-tips-sub-tittle');
         document.getElementById("lottery-info-history-bonus").textContent = i18next.t('lottery-info-history-bonus');
-        document.getElementById("lottery-info-current-team-no").textContent = i18next.t('lottery-info-current-team-no');
-        document.getElementById("lottery-stats-unit-1").textContent = i18next.t('lottery-stats-unit-1');
         document.getElementById("lottery-info-current-tickets-no").textContent = i18next.t('lottery-info-current-tickets-no');
         document.getElementById("lottery-stats-unit-2").textContent = i18next.t('lottery-stats-unit-2');
         document.getElementById("lottery-info-btn-mine").textContent = i18next.t('lottery-info-btn-mine');
