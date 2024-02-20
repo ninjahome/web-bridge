@@ -48,7 +48,7 @@ function PostToSrvByJson(url, data) {
     return new Promise((resolve, reject) => {
         fetch(url, requestOptions)
             .then(response => {
-                if (response.redirected){
+                if (response.redirected) {
                     window.location = response.url;
                     return;
                 }
@@ -89,7 +89,7 @@ async function GetToSrvByJson(url) {
 
     try {
         const response = await fetch(url, requestOptions);
-        if (response.redirected){
+        if (response.redirected) {
             window.location = response.url;
             return;
         }
@@ -338,7 +338,7 @@ class NJUserBasicInfo {
             nuObj.update_at, nuObj.tweet_count, nuObj.vote_count, nuObj.be_voted_count);
     }
 
-    static  cacheNJUsrObj(obj) {
+    static cacheNJUsrObj(obj) {
         if (!obj.eth_addr) {
             throw new Error("invalid twitter basic info")
         }
@@ -561,7 +561,7 @@ function checkMetamaskErr(err) {
     if (code.includes("duplicate post")) {
         return code;
     }
-    if (code.includes("insufficient funds")){
+    if (code.includes("insufficient funds")) {
         showDialog(DLevel.Warning, "insufficient funds");
         return
     }
@@ -572,9 +572,9 @@ function checkMetamaskErr(err) {
 const __noTeamID = '0x0000000000000000000000000000000000000000000000000000000000000000';
 const __noTeamID2 = '0000000000000000000000000000000000000000000000000000000000000000';
 
-function __incomeWithdrawHistory(address){
+function __incomeWithdrawHistory(address) {
     let targetUrl = __globalMetaMaskNetworkParam.get(__globalTargetChainNetworkID).blockExplorerUrls[0];
-    targetUrl+='/address/'+address;
-    targetUrl+='#internaltx';
+    targetUrl += '/address/' + address;
+    targetUrl += '#internaltx';
     window.open(targetUrl);
 }

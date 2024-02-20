@@ -12,11 +12,11 @@ async function setupGameInfo(startCounter) {
     }
 
     let apiCounter = 0;
-    startCountdown(gameContractMeta.dTime, function (days,hours,minutes,seconds, finished) {
+    startCountdown(gameContractMeta.dTime, function (days, hours, minutes, seconds, finished) {
         const countDown = document.getElementById("lottery-count-down");
         const countDownResult = document.getElementById("countdown-result");
         if (finished) {
-            countDownResult.style.display ='block';
+            countDownResult.style.display = 'block';
             countDown.style.display = 'none';
             initGameContractMeta().then(r => {
                 setupGameInfo(true);
@@ -26,7 +26,7 @@ async function setupGameInfo(startCounter) {
 
         apiCounter += 1;
         countDown.style.display = '';
-        countDownResult.style.display ='none';
+        countDownResult.style.display = 'none';
         countDown.querySelector(".days").textContent = days;
         countDown.querySelector(".hours").textContent = hours;
         countDown.querySelector(".minutes").textContent = minutes;

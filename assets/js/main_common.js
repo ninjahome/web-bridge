@@ -87,11 +87,11 @@ async function showHoverCard(event, twitterObj, web3ID) {
 
     const njUsrInfo = await loadNJUserInfoFromSrv(web3ID, true);
 
-    if (twitterObj){
+    if (twitterObj) {
         document.getElementById('hover-avatar').src = twitterObj.profile_image_url;
         document.getElementById('hover-name').textContent = twitterObj.name;
         document.getElementById('hover-user-name').textContent = '@' + twitterObj.username;
-    }else{
+    } else {
         document.getElementById('hover-name').textContent = web3ID;
     }
 
@@ -240,7 +240,7 @@ async function showTweetDetail(parentEleID, tweet) {
 
     // detail.querySelector('.show-team-mates').onclick = () => showTeammates(tweet.prefixed_hash, detail);
 
-    await __showVoteButton(detail,tweet,function (newVote){
+    await __showVoteButton(detail, tweet, function (newVote) {
         detail.querySelector('.tweet-vote-number').textContent = newVote.vote_count;
     });
 }
@@ -325,12 +325,12 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
         }
 
         let nj_data = NJUserBasicInfo.loadNjBasic(ethAddr);
-        if (nj_data){
+        if (nj_data) {
             return nj_data;
         }
 
         nj_data = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
-        if (nj_data){
+        if (nj_data) {
             NJUserBasicInfo.cacheNJUsrObj(nj_data);
         }
         return nj_data;

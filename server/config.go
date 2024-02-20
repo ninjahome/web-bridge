@@ -203,7 +203,7 @@ func (c *SysConf) getHistoryBonus() (*big.Float, error) {
 		return nil, err
 	}
 
-	_, totalBonus, _, _, err := game.SystemSettings(nil)
+	_, totalBonus, _, _, _, err := game.SystemSettings(nil)
 
 	if err != nil {
 		util.LogInst().Err(err).Msg("query game system setting failed")

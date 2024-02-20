@@ -4,33 +4,30 @@ let currentRoundData = null;
 let personalData = null
 
 class GameSettings {
-    constructor(roundNo, bonus, tickPrice, tickPriceInEth, isOpen) {
+    constructor(roundNo, bonus, voteNo, tickPrice, tickPriceInEth, isOpen) {
         this.roundNo = roundNo;
         this.bonus = bonus;
         this.tickPrice = tickPrice;
         this.tickPriceInEth = tickPriceInEth;
         this.isOpen = isOpen;
+        this.voteNo = voteNo;
     }
 }
 
 class GameRoundInfo {
-    constructor(hash, dTime, winner, winTeam, winTicketID, curBonus, random) {
+    constructor(hash, dTime, winner, winTicketID, curBonus, random) {
         this.hash = hash;
         this.dTime = dTime;
         this.winner = winner;
-        this.winTeam = winTeam;
         this.winTicketID = winTicketID;
         this.curBonus = curBonus;
         this.random = random;
-        this.TeamCount = 0;
-        this.TickCount = 0;
     }
 
     static fromBlockChainObj(obj) {
         const curBonusInEth = ethers.utils.formatUnits(obj.bonus, 'ether');
         const dTime = obj.discoverTime.toNumber() * 1000;
-        return new GameRoundInfo(obj.randomHash, dTime, obj.winner,
-            obj.winTeam, obj.winTicketID, curBonusInEth, obj.randomVal);
+        return new GameRoundInfo(obj.randomHash, dTime, obj.winner, obj.winTicketID, curBonusInEth, obj.randomVal);
     }
 }
 
@@ -47,12 +44,10 @@ class WinTeamInfo {
 }
 
 class PersonalData {
-    constructor(balance, tickets, teams, map, hasIndividual) {
+    constructor(balance, tickets, map) {
         this.balance = balance;
         this.tickets = tickets;
-        this.teams = teams;
         this.tickMap = map;
-        this.hasIndividual = hasIndividual;
     }
 }
 
@@ -62,8 +57,6 @@ async function initGamePage() {
     document.querySelector('.contract-address-value').textContent = address;
     syncWinnerHistoryData().then(r => {
     });
-    syncWinTeamHistoryData().then(r => {
-    })
 }
 
 function showContractUrl() {
@@ -86,6 +79,7 @@ async function initGameContract(provider) {
 }
 
 function __loadPageData() {
+
     loadGameSettings().then(async r => {
         setupSystemData();
 
@@ -103,13 +97,13 @@ async function loadGameSettings() {
 
     showWaiting("syncing system data from block chain")
     try {
-        const [currentRoundNo, totalBonus, tickPriceForOuter, isOpenToOuter] =
+        const [currentRoundNo, totalBonus, voteNo, tickPriceForOuter, isOpenToOuter] =
             await lotteryGameContract.systemSettings();
 
         const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
         const tickPriceInEth = ethers.utils.formatUnits(tickPriceForOuter, 'ether');
 
-        gameSettings = new GameSettings(currentRoundNo, totalBonusInEth,
+        gameSettings = new GameSettings(currentRoundNo, totalBonusInEth, voteNo,
             tickPriceForOuter, tickPriceInEth, isOpenToOuter);
 
     } catch (err) {
@@ -127,11 +121,6 @@ async function loadCurrentRoundMeta() {
 
         currentRoundData = GameRoundInfo.fromBlockChainObj(gameInfo);
 
-        const [teamNo, voteNo] = await lotteryGameContract.allTeamInfoNo(gameSettings.roundNo);
-
-        currentRoundData.TeamCount = teamNo;
-        currentRoundData.TickCount = voteNo;
-
     } catch (err) {
         console.log(err);
         showDialog(DLevel.Warning, "load game data from block chain failed");
@@ -143,23 +132,19 @@ async function loadPersonalMeta() {
         const balance = await lotteryGameContract.balance(ninjaUserObj.eth_addr);
         const balanceInEth = ethers.utils.formatUnits(balance, 'ether');
 
-        const obj = await lotteryGameContract.tickList(gameSettings.roundNo, ninjaUserObj.eth_addr);
-        if (obj[0].length === 0) {
-            personalData = new PersonalData(balanceInEth, [], [], null, false);
+        const tickets = await lotteryGameContract.tickList(gameSettings.roundNo, ninjaUserObj.eth_addr);
+        if (tickets.length === 0) {
+            personalData = new PersonalData(balanceInEth, [], []);
             return;
         }
 
         const mapTickets = new Map();
-        const mapTeams = new Map();
-        for (let i = 0; i < obj[0].length; i++) {
-            const tickId = obj[0][i];
-            const teamHash = obj[1][i];
-            mapTickets.set(tickId, teamHash);
-            mapTeams.set(teamHash, true);
+        for (let i = 0; i < tickets.length; i++) {
+            const tickId = tickets[i];
+            mapTickets.set(tickId, true);
         }
 
-        personalData = new PersonalData(balanceInEth, Array.from(mapTickets.keys()),
-            Array.from(mapTeams.keys()), mapTickets, mapTeams.has(__noTeamID));
+        personalData = new PersonalData(balanceInEth, tickets, mapTickets);
     } catch (err) {
         console.log(err);
         showDialog(DLevel.Warning, "load personal data from block chain failed")
@@ -176,8 +161,7 @@ function setupCurrentRoundData() {
 
     document.getElementById("prize-pool-bonus-val").textContent = currentRoundData.curBonus;
     document.getElementById("prize-pool-random-hash").textContent = currentRoundData.hash;
-    document.getElementById("prize-pool-team-no").textContent = currentRoundData.TeamCount;
-    document.getElementById("prize-pool-tick-no").textContent = currentRoundData.TickCount;
+    document.getElementById("prize-pool-tick-no").textContent = gameSettings.voteNo;
 
     const elem = document.getElementById("prize-pool-discover-time");
     startCountdown(currentRoundData.dTime, function (days, hours, minutes, seconds, finished) {
@@ -194,11 +178,6 @@ function setupCurrentRoundData() {
 function setupPersonalData() {
     document.getElementById("personal-balance-val").textContent = personalData.balance;
     document.getElementById("personal-ticket-no-val").textContent = personalData.tickets.length;
-    let teamNo = personalData.teams.length;
-    if (personalData.hasIndividual) {
-        teamNo -= 1;
-    }
-    document.getElementById("personal-team-no-val").textContent = teamNo;
 }
 
 function showPersonalTicket() {
@@ -265,7 +244,7 @@ function showTeamDetail() {
         let cell = row.insertCell();
         cell.innerHTML = teamHash
         cell = row.insertCell();
-        cell.innerHTML = `<button class="team-detail-in-one-team" onclick="showOneTeamDetails('${teamHash}')">`+i18next.t('detail-btn')+`</button>`;
+        cell.innerHTML = `<button class="team-detail-in-one-team" onclick="showOneTeamDetails('${teamHash}')">` + i18next.t('detail-btn') + `</button>`;
     }
 }
 
@@ -487,47 +466,6 @@ async function syncWinTeamHistoryData() {
     document.querySelector('.team-winning-count').textContent = "" + cachedWinTeamHistoryData.length;
 }
 
-function showTeamWinHistory() {
-    if (cachedWinTeamHistoryData.length === 0) {
-        return;
-    }
-    const historyDiv = document.querySelector('.winner-history-list');
-    const isShowing = historyDiv.style.display === 'block';
-    historyDiv.style.display = isShowing ? 'none' : 'block';
-    historyDiv.innerHTML = '';
-    if (isShowing) {
-        return;
-    }
-
-    try {
-
-        for (const obj of cachedWinTeamHistoryData) {
-
-            const winTeamCard = document.getElementById("winTeam-history-template").cloneNode(true);
-            winTeamCard.style.display = 'block';
-            winTeamCard.id = null;
-
-            winTeamCard.querySelector('.one-round-bonus-val').textContent = obj.bonus;
-            winTeamCard.querySelector('.one-round-round-val').textContent = obj.round_no;
-            winTeamCard.querySelector('.team-id-txt.id').textContent = obj.win_team;
-            winTeamCard.querySelector('.one-round-my-vote-no').textContent = obj.member_vote_no;
-            winTeamCard.querySelector('.one-round-vote-no').textContent = obj.total_vote_no;
-            winTeamCard.querySelector('.one-round-mem-no').textContent = obj.total_mem_no;
-
-            const myBonus = obj.bonus / obj.total_vote_no * obj.member_vote_no;
-            winTeamCard.querySelector('.one-round-bonus-for-me').textContent = myBonus;
-
-            historyDiv.appendChild(winTeamCard);
-        }
-
-    } catch (err) {
-        showDialog(DLevel.Warning, "load err:" + err.toString())
-    }
-
-    syncWinTeamHistoryData().then(r => {
-    })
-}
-
 function showUserWinHistory() {
     if (cachedWinnerHistoryData.length === 0) {
         return;
@@ -558,7 +496,7 @@ function showUserWinHistory() {
 
             } else {
                 winnerCard.querySelector('.team-id-txt.id').textContent = obj.win_team;
-                winnerCard.querySelector('.team-id-txt.type').textContent =  i18next.t('winning-history-type-team');
+                winnerCard.querySelector('.team-id-txt.type').textContent = i18next.t('winning-history-type-team');
                 winnerCard.querySelector('.one-round-bonus-for-me').textContent = obj.bonus / 2;
             }
 

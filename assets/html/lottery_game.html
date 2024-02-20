@@ -466,33 +466,34 @@
         <div class="user-info"></div>
         <h3 class="user-title" id="user-title-txt">我的彩票</h3>
         <div class="user-balance">
-            <p style="margin: 0"><span id="user-info-bonus">奖金</span>: <span class="balance-value" id="personal-balance-val">0.00</span> ETH</p>
+            <p style="margin: 0"><span id="user-info-bonus">奖金</span>: <span class="balance-value"
+                                                                               id="personal-balance-val">0.00</span> ETH
+            </p>
             <div>
-                <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()" id="user-info-withdraw-history">提现记录 >></button>
+                <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()"
+                        id="user-info-withdraw-history">提现记录 >>
+                </button>
                 <button class="withdraw-btn" onclick="withdrawBonus()" id="user-info-withdraw">提现</button>
             </div>
         </div>
         <ul class="ticket-action">
             <li>
-                <p><span id="user-info-ticket-no">彩票数</span>: <span class="ticket-count" style="font-size: 20px;font-weight:bold; color: #DE4033"
-                                 id="personal-ticket-no-val">0</span></p>
-                <button class="ticket-count-btn rule-info-btn" onclick="showPersonalTicket()" id="ticket-count-btn-txt-1">查看详情</button>
-            </li>
-            <li>
-                <p><span id="user-info-team-no">团队数</span>: <span class="team-count" style="font-size: 20px; font-weight:bold; color: #4848D8"
-                                 id="personal-team-no-val">0</span></p>
-                <button class="team-count-btn rule-info-btn" onclick="showTeamDetail()" id="ticket-count-btn-txt-2">查看详情</button>
+                <p><span id="user-info-ticket-no">彩票数</span>: <span class="ticket-count"
+                                                                       style="font-size: 20px;font-weight:bold; color: #DE4033"
+                                                                       id="personal-ticket-no-val">0</span></p>
+                <button class="ticket-count-btn rule-info-btn" onclick="showPersonalTicket()"
+                        id="ticket-count-btn-txt-1">查看详情
+                </button>
             </li>
             <li>
                 <p><span id="user-info-my-win-ticket">我的中奖彩票</span>: <span class="personal-winning-count"
-                                   style="font-size: 20px; font-weight:bold; color: #DE8633">0</span></p>
-                <button class="personal-winning-btn rule-info-btn" onclick="showUserWinHistory()" id="ticket-count-btn-txt-3">查看详情</button>
+                                                                                 style="font-size: 20px; font-weight:bold; color: #DE8633">0</span>
+                </p>
+                <button class="personal-winning-btn rule-info-btn" onclick="showUserWinHistory()"
+                        id="ticket-count-btn-txt-3">查看详情
+                </button>
             </li>
-            <li>
-                <p><span id="user-info-my-win-team">我的中奖团队</span>: <span class="team-winning-count"
-                                   style="font-size: 20px; font-weight:bold; color: #DE8633">0</span></p>
-                <button class="team-winning-btn rule-info-btn" onclick="showTeamWinHistory()" id="ticket-count-btn-txt-4">查看详情</button>
-            </li>
+
         </ul>
         <div class="user-tickets" style="display: none;">
             <table class="tickets-detail">
@@ -520,7 +521,9 @@
                 <tr>
                     <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
                     <td>
-                        <button class="team-detail-in-one-team rule-info-btn"><span id="tickets-detail-team-detail-btn">详情</span> >> </button>
+                        <button class="team-detail-in-one-team rule-info-btn"><span id="tickets-detail-team-detail-btn">详情</span>
+                            >>
+                        </button>
                     </td>
                 </tr>
                 </tbody>
@@ -528,9 +531,9 @@
             <div class="team-detail-for-one" style="display: none">
                 <div class="team-detail-for-one-header">
                     <span id="team-detail-header-tittle">人数</span>:<span id="team-detail-for-one-memNo"
-                               style="font-size: 20px;font-weight: bolder;color: #4848D8; margin: 0 6px"></span>
+                                                                           style="font-size: 20px;font-weight: bolder;color: #4848D8; margin: 0 6px"></span>
                     <span id="team-detail-header-vote-no">票数</span>:<span id="team-detail-for-one-tickNo"
-                               style="font-size: 20px;font-weight: bolder;color: #DE4033; margin: 0 6px"></span>
+                                                                            style="font-size: 20px;font-weight: bolder;color: #DE4033; margin: 0 6px"></span>
                     <button class="rule-info-btn" onclick="hideOneTeamDetails()" id="team-detail-hide-btn">隐藏</button>
                 </div>
                 <table class="team-detail">
@@ -553,21 +556,28 @@
 
         <div class="winning-history" id="winning-history-template" style="display: none">
             <ul style="color: #7E7F82">
-                <li><span id="winning-history-total-bonus">总金额</span>: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
+                <li><span id="winning-history-total-bonus">总金额</span>: <span class="one-round-bonus-val"
+                                                                                style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span>
+                    ETH
                 </li>
-                <li><span id="winning-history-my-bonus">归我所得</span>: <span class="one-round-bonus-for-me" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
+                <li><span id="winning-history-my-bonus">归我所得</span>: <span class="one-round-bonus-for-me"
+                                                                               style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span>
+                    ETH
                 </li>
                 <li><span id="winning-history-winner-ticket-id">中奖彩票编号</span>: <span class="one-round-ticket-id"
-                                  style="color: #1B1B1D; font-size: 16px; font-weight: bold">0</span>
+                                                                                           style="color: #1B1B1D; font-size: 16px; font-weight: bold">0</span>
 
                 <li><span id="winning-history-phase-no-1">期数: 第 </span><span class="one-round-round-val"
-                                     style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span> <span id="winning-history-phase-no-2">期</span></li>
+                                                                                style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>
+                    <span id="winning-history-phase-no-2">期</span></li>
                 <li><span id="winning-history-discover-day">日期</span>: <span class="one-round-discover-val"
-                                style="color: #1B1B1D; font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
+                                                                               style="color: #1B1B1D; font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
                 </li>
                 <li><span id="winning-history-win-type">类型</span>: <span class="team-id-txt type"
-                                style="color: #1B1B1D; font-size: 16px; font-weight: bold">个人</span></li>
-                <li><span id="winning-history-win-id">独立彩票/团队ID</span>: <span class="team-id-txt id" style="color: #1B1B1D; font-size: 16px">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
+                                                                           style="color: #1B1B1D; font-size: 16px; font-weight: bold">个人</span>
+                </li>
+                <li><span id="winning-history-win-id">独立彩票/团队ID</span>: <span class="team-id-txt id"
+                                                                                    style="color: #1B1B1D; font-size: 16px">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
                 </li>
             </ul>
         </div>
@@ -575,15 +585,29 @@
 
         <div class="winning-history" id="winTeam-history-template" style="display: none">
             <ul style="color: #7E7F82">
-                <li><span id="winning-history-total-bonus-2">总金额</span>: <span class="one-round-bonus-val" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
+                <li><span id="winning-history-total-bonus-2">总金额</span>: <span class="one-round-bonus-val"
+                                                                                  style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span>
+                    ETH
                 </li>
-                <li><span id="winning-history-my-bonus-2">归我所得</span>: <span class="one-round-bonus-for-me" style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span> ETH
+                <li><span id="winning-history-my-bonus-2">归我所得</span>: <span class="one-round-bonus-for-me"
+                                                                                 style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span>
+                    ETH
                 </li>
-                <li><span id="winning-history-phase-no-3">期数: 第 </span><span class="one-round-round-val" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span> <span id="winning-history-phase-no-4">期</span> </li>
-                <li><span id="winning-history-my-vote-in-team">我在本队票数</span>: <span class="one-round-my-vote-no" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>  </li>
-                <li><span id="winning-history-team-total-no">团队总票数</span>: <span class="one-round-vote-no" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>  </li>
-                <li><span id="winning-history-team-member-no">团队人数</span>: <span class="one-round-mem-no" style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>  </li>
-                <li><span id="winning-history-team-id">团队ID</span>: <span class="team-id-txt id" style="color: #1B1B1D; font-size: 16px"></span> </li>
+                <li><span id="winning-history-phase-no-3">期数: 第 </span><span class="one-round-round-val"
+                                                                                style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>
+                    <span id="winning-history-phase-no-4">期</span></li>
+                <li><span id="winning-history-my-vote-in-team">我在本队票数</span>: <span class="one-round-my-vote-no"
+                                                                                          style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>
+                </li>
+                <li><span id="winning-history-team-total-no">团队总票数</span>: <span class="one-round-vote-no"
+                                                                                      style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>
+                </li>
+                <li><span id="winning-history-team-member-no">团队人数</span>: <span class="one-round-mem-no"
+                                                                                     style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>
+                </li>
+                <li><span id="winning-history-team-id">团队ID</span>: <span class="team-id-txt id"
+                                                                            style="color: #1B1B1D; font-size: 16px"></span>
+                </li>
             </ul>
         </div>
         <div class="winTeam-history-list"></div>
@@ -594,7 +618,8 @@
             <div class="round-title-number">
                 <h3 class="round-title" id="round-title-info">当前彩票信息</h3>
                 <p style="background-color:rgba(216,216,216,0.1); border: 1px solid rgba(151,151,151,0.2);padding: 2px 12px; margin-left: 4px; color: #DE4033; font-size: 14px">
-                    <span id="round-info-phase-no-1">第</span><span class="round-number">0</span><span id="round-info-phase-no-2">期</span></p>
+                    <span id="round-info-phase-no-1">第</span><span class="round-number">0</span><span
+                            id="round-info-phase-no-2">期</span></p>
             </div>
             <div class="round-time-betting">
                 <p style="font-size: 14px"><span id="round-info-withdraw-time">开奖时间</span>:
@@ -618,10 +643,6 @@
                 <div class="prize-pool-value"><span id="prize-pool-bonus-val">0</span><span
                             style="font-weight: lighter;font-size: 14px"> ETH</span></div>
                 <p style="color: rgba(29,29,31,0.5);font-size: 14px" id="round-summary-pool-tittle">奖池</p>
-            </div>
-            <div style="margin-left: 16px; margin-right: 12px">
-                <div class="prize-pool-value" id="prize-pool-team-no">0</div>
-                <p style="color: rgba(29,29,31,0.5);font-size: 14px" id="round-summary-team-no">团队数</p>
             </div>
             <div style="margin-left: 16px; margin-right: 12px">
                 <div class="prize-pool-value" id="prize-pool-tick-no">0</div>
@@ -649,11 +670,13 @@
                     </li>
                     <li>
                         <h4 style="margin-top: 6px" id="lottery-info-content-6">3.中奖规则</h4>
-                        <strong id="lottery-info-content-7">同一篇推文下同期打赏的用户为一个抽奖队伍，</strong><span id="lottery-info-content-8">若最终大奖归属队伍中的任何一人，则该中奖者独得一半奖池，剩余一半奖池按照投票打赏比例归属该队伍所有参与者，所以请尽量打赏你认为更优质更有可能获得更多打赏的推文，这样你的中奖概率会更高。</span>
-                        <br><strong id="lottery-info-content-9">单独投注的用户不归属任何队伍,</strong><span id="lottery-info-content-10">若单独投注的用户中奖，则该用户独得所有奖池</span>
+                        <strong id="lottery-info-content-7">同一篇推文下同期打赏的用户为一个抽奖队伍，</strong><span
+                                id="lottery-info-content-8">若最终大奖归属队伍中的任何一人，则该中奖者独得一半奖池，剩余一半奖池按照投票打赏比例归属该队伍所有参与者，所以请尽量打赏你认为更优质更有可能获得更多打赏的推文，这样你的中奖概率会更高。</span>
+                        <br><strong id="lottery-info-content-9">单独投注的用户不归属任何队伍,</strong><span
+                                id="lottery-info-content-10">若单独投注的用户中奖，则该用户独得所有奖池</span>
                     </li>
                     <li>
-                        <h4 style="margin-top: 6px"  id="lottery-info-content-11">4.发布推文,赚取收益</h4>
+                        <h4 style="margin-top: 6px" id="lottery-info-content-11">4.发布推文,赚取收益</h4>
                         <span id="lottery-info-content-12">需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益</span>
                     </li>
                 </ul>
@@ -679,14 +702,16 @@
                 <ul class="algorithm-detail" style="color: #7E7F82">
                     <li><span id="game-algorithm-core-tittle">算法</span>:
                         <span class="algorithm-title"
-                              style="color: #DE4033; font-size: 16px; font-weight: bold ;background-color: #F1F2F3; border: 1px dashed #D3D5D6;padding: 6px;margin: 6px 0; border-radius: 12px"  id="game-algorithm-core-address">(中奖者地址)</span>
+                              style="color: #DE4033; font-size: 16px; font-weight: bold ;background-color: #F1F2F3; border: 1px dashed #D3D5D6;padding: 6px;margin: 6px 0; border-radius: 12px"
+                              id="game-algorithm-core-address">(中奖者地址)</span>
                     </li>
                     <li style="background-color: #F1F2F3; border: 1px dashed #D3D5D6;padding: 6px;margin: 6px 0; border-radius: 12px">
-                        <span class="algorithm-description"  id="game-algorithm-core-algorithm" style="color: #4848D8; font-size: 16px; font-weight: bold">购买地址列表[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数].</span>
+                        <span class="algorithm-description" id="game-algorithm-core-algorithm"
+                              style="color: #4848D8; font-size: 16px; font-weight: bold">购买地址列表[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数].</span>
                     </li>
                     <li><span id="game-algorithm-core-contract">合约地址</span>: <span class="contract-address-value"
-                                        style="color: #1B1B1D; font-size: 16px;cursor: pointer"
-                                        onclick="showContractUrl()">0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</span>
+                                                                                       style="color: #1B1B1D; font-size: 16px;cursor: pointer"
+                                                                                       onclick="showContractUrl()">0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</span>
                     </li>
                 </ul>
                 <button class="contract-code-btn"><img src="/assets/file/GitHub-logo.png" alt="GitHub"
@@ -714,30 +739,40 @@
         <div class="round-history" style="display: none" id="history-data-one-round-template">
             <ul style="color: #7E7F82">
                 <li><span id="history-section-item-bonus">奖金</span>: <span class="one-round-bonus-val"
-                                style="color: #DE4033; font-size: 16px; font-weight: bold">0.02 </span> ETH
+                                                                             style="color: #DE4033; font-size: 16px; font-weight: bold">0.02 </span>
+                    ETH
                 </li>
-                <li><span id="history-section-draw-time">开奖时间</span>: <span class="one-round-discover-val" style="font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
+                <li><span id="history-section-draw-time">开奖时间</span>: <span class="one-round-discover-val"
+                                                                                style="font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
                 </li>
-                <li><span id="history-section-random-no">随机数</span>: <span class="team-id-txt history-game-random" >37482194388201444118418062240926890660227596936268075126588913967857445000838</span>
+                <li><span id="history-section-random-no">随机数</span>: <span class="team-id-txt history-game-random">37482194388201444118418062240926890660227596936268075126588913967857445000838</span>
                 </li>
-                <li><span id="history-section-random-hash">随机数 Hash</span>: <span class="team-id-txt history-game-random-hash" >0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
+                <li><span id="history-section-random-hash">随机数 Hash</span>: <span
+                            class="team-id-txt history-game-random-hash">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
                 </li>
-                <li><span id="history-section-winner">获奖者</span>: <span class="one-round-winner-val history-game-winner-address"
-                                  style=" font-size: 16px; font-weight: bold">0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB</span>
+                <li><span id="history-section-winner">获奖者</span>: <span
+                            class="one-round-winner-val history-game-winner-address"
+                            style=" font-size: 16px; font-weight: bold">0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB</span>
                 </li>
                 <li><span id="history-section-team">获奖团队</span>: <span class="team-id-txt history-game-winner-team"
-                                    style=" font-size: 16px; font-weight: bold">0x182bd38d6f81c8d77e4cc49dab221109e03fdea8978cab7e04f928435368562a</span>
+                                                                           style=" font-size: 16px; font-weight: bold">0x182bd38d6f81c8d77e4cc49dab221109e03fdea8978cab7e04f928435368562a</span>
                 </li>
-                <li><span id="history-section-ticket">获奖彩票ID</span>: <span class="one-round-win-ticket-val history-game-winner-ticket"
-                                      style="font-size: 16px; font-weight: bold">0</span>
+                <li><span id="history-section-ticket">获奖彩票ID</span>: <span
+                            class="one-round-win-ticket-val history-game-winner-ticket"
+                            style="font-size: 16px; font-weight: bold">0</span>
                 </li>
             </ul>
         </div>
         <div class="all-history" style="margin-top: 8px">
-            <button class="load-history-btn" onclick="loadHistoryData()" id="all-history-query-btn">加载历史数据</button>
+            <button class="load-history-btn" onclick="loadHistoryData()" id="all-history-query-btn">加载历史数据
+            </button>
             <div class="history-data-list"></div>
-            <button class="history-data-list-more-btn" style="display: none" onclick="moreHistoryData()" id="all-history-btn-more">更多</button>
-            <button class="load-history-btn" style="display: none" id="hide-history-data-btn" onclick="hideHistoryData()">隐藏历史数据</button>
+            <button class="history-data-list-more-btn" style="display: none" onclick="moreHistoryData()"
+                    id="all-history-btn-more">更多
+            </button>
+            <button class="load-history-btn" style="display: none" id="hide-history-data-btn"
+                    onclick="hideHistoryData()">隐藏历史数据
+            </button>
         </div>
     </div>
 </div>
@@ -759,7 +794,7 @@
                 </button>
             </div>
             <label style="color: #898989; font-size: 14px; margin-left: 54px">
-                <input type="checkbox" id="shareOnTwitter" checked >
+                <input type="checkbox" id="shareOnTwitter" checked>
                 <span id="shareOnTwitter-2">转发到推特</span>
             </label>
         </div>
@@ -975,13 +1010,9 @@
         document.getElementById('user-info-withdraw-history').textContent = i18next.t('user-info-withdraw-history');
         document.getElementById('user-info-withdraw').textContent = i18next.t('user-info-withdraw');
         document.getElementById('ticket-count-btn-txt-1').textContent = i18next.t('ticket-count-btn-txt');
-        document.getElementById('ticket-count-btn-txt-2').textContent = i18next.t('ticket-count-btn-txt');
         document.getElementById('ticket-count-btn-txt-3').textContent = i18next.t('ticket-count-btn-txt');
-        document.getElementById('ticket-count-btn-txt-4').textContent = i18next.t('ticket-count-btn-txt');
         document.getElementById('user-info-ticket-no').textContent = i18next.t('user-info-ticket-no');
-        document.getElementById('user-info-team-no').textContent = i18next.t('user-info-team-no');
         document.getElementById('user-info-my-win-ticket').textContent = i18next.t('user-info-my-win-ticket');
-        document.getElementById('user-info-my-win-team').textContent = i18next.t('user-info-my-win-team');
 
         document.getElementById('tickets-detail-tittle').textContent = i18next.t('tickets-detail-tittle');
         document.getElementById('tickets-detail-team-id').textContent = i18next.t('tickets-detail-team-id');
@@ -1020,7 +1051,6 @@
 
         document.getElementById('round-summary-withdraw-hash').textContent = i18next.t('round-summary-withdraw-hash');
         document.getElementById('round-summary-pool-tittle').textContent = i18next.t('round-summary-pool-tittle');
-        document.getElementById('round-summary-team-no').textContent = i18next.t('user-info-team-no');
         document.getElementById('round-summary-vote-no').textContent = i18next.t('user-info-ticket-no');
 
         document.getElementById('game-rules-tittle').textContent = i18next.t('game-rules-tittle');
@@ -1073,8 +1103,8 @@
         document.getElementById('shareOnTwitter-2').textContent = i18next.t('shareOnTwitter');
         document.getElementById('cancelButton').textContent = i18next.t('cancelButton');
         document.getElementById('confirmButton').textContent = i18next.t('confirmButton');
-
     }
+
 </script>
 
 </body>

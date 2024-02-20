@@ -169,9 +169,11 @@ async function postTweetWithPayment() {
         clearDraftTweetContent();
 
         if (curScrollContentID === 0) {
-            __loadTweetsAtHomePage(true).then(() => { });
+            __loadTweetsAtHomePage(true).then(() => {
+            });
         } else if (curScrollContentID === 2) {
-            __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(() => { });
+            __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(() => {
+            });
         }
     } catch (err) {
         checkMetamaskErr(err);
@@ -197,7 +199,7 @@ async function showPostTweetDiv() {
 
 
     const postBtn = document.getElementById("tweet-post-with-eth-btn-txt");
-    postBtn.innerText = i18next.t('btn-tittle-post-tweet')+"(" + voteContractMeta.votePriceInEth + " eth)"
+    postBtn.innerText = i18next.t('btn-tittle-post-tweet') + "(" + voteContractMeta.votePriceInEth + " eth)"
 }
 
 function closePostTweetDiv() {

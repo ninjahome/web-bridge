@@ -1,4 +1,3 @@
-
 let tweetVoteContract;
 let lotteryGameContract = null;
 let voteContractMeta = TweetVoteContractSetting.load();
@@ -18,7 +17,7 @@ async function initVoteContractMeta() {
 
 async function initGameContractMeta() {
 
-    const [currentRoundNo, totalBonus,voteNo] = await lotteryGameContract.systemSettings();
+    const [currentRoundNo, totalBonus, voteNo] = await lotteryGameContract.systemSettings();
     const gameInfo = await lotteryGameContract.gameInfoRecord(currentRoundNo);
 
     const curBonusInEth = ethers.utils.formatUnits(gameInfo.bonus, 'ether');
@@ -31,7 +30,7 @@ async function initGameContractMeta() {
 
 async function initBlockChainContract(provider) {
     try {
-        if (!provider){
+        if (!provider) {
             tweetVoteContract = null;
             lotteryGameContract = null
             return
@@ -88,7 +87,7 @@ async function procPaymentForPostedTweet(tweet, callback) {
 }
 
 async function procTweetVotePayment(voteCount, tweet, callback) {
-    if (!tweetVoteContract|| !voteContractMeta ||!voteContractMeta.votePrice || !voteContractMeta.votePrice.mul) {
+    if (!tweetVoteContract || !voteContractMeta || !voteContractMeta.votePrice || !voteContractMeta.votePrice.mul) {
         showDialog(DLevel.Tips, "please wait for metamask syncing data")
         return;
     }
@@ -106,18 +105,18 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
 
         const txReceipt = await txResponse.wait();
 
-        if(!txReceipt.status){
-            showDialog(DLevel.Error,"transaction failed");
+        if (!txReceipt.status) {
+            showDialog(DLevel.Error, "transaction failed");
             return;
         }
-        showDialog(DLevel.Success,"transaction success");
+        showDialog(DLevel.Success, "transaction success");
 
         if (callback) {
             callback(tweet.create_time, voteCount);
         }
     } catch (err) {
         checkMetamaskErr(err);
-    }finally {
+    } finally {
         hideLoading();
     }
 }
@@ -158,7 +157,7 @@ async function withdrawFromUserTweetIncome() {
     await reloadTweetBalance();
 }
 
-function incomeWithdrawHistory(){
+function incomeWithdrawHistory() {
     __incomeWithdrawHistory(ninjaUserObj.eth_addr);
 }
 

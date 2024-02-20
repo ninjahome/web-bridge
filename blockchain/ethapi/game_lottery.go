@@ -34,7 +34,6 @@ type TweetLotteryGameGameInfoOneRound struct {
 	RandomHash   [32]byte
 	DiscoverTime *big.Int
 	Winner       common.Address
-	WinTeam      [32]byte
 	WinTicketID  *big.Int
 	Bonus        *big.Int
 	RandomVal    *big.Int
@@ -42,7 +41,7 @@ type TweetLotteryGameGameInfoOneRound struct {
 
 // TweetLotteryGameMetaData contains all meta data concerning the TweetLotteryGame contract.
 var TweetLotteryGameMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"admins\",\"type\":\"address[]\"},{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"}],\"stateMutability\":\"payable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newTimeInMinutes\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"opName\",\"type\":\"string\"}],\"name\":\"AdminOperated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"opType\",\"type\":\"bool\"}],\"name\":\"AdminOperation\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"winnerTeam\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"ticketID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"bonus\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"bonusToTeam\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"random\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nextRandomHash\",\"type\":\"bytes32\"}],\"name\":\"DiscoverWinner\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnerSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newSerficeFeeRate\",\"type\":\"uint256\"}],\"name\":\"ServiceFeeChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"round\",\"type\":\"uint256\"}],\"name\":\"SkipToNewRound\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"no\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"serviceFee\",\"type\":\"uint256\"}],\"name\":\"TicketSold\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"thash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"val\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"no\",\"type\":\"uint256\"}],\"name\":\"TweetBought\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newContract\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"name\":\"UpgradeToNewRule\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"name\":\"WithdrawService\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"__admins\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__bonusRateToWinner\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__currentLotteryTicketID\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__lotteryGameRoundTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__minValCheck\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__openToOuterPlayer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__serviceFeeRateForTicketBuy\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__ticketPriceForOuter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminChangeBonusRateToWinner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newTimeInMinutes\",\"type\":\"uint256\"}],\"name\":\"adminChangeRoundTime\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"isOpen\",\"type\":\"bool\"}],\"name\":\"adminOpenToOuterPlayer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"isDelete\",\"type\":\"bool\"}],\"name\":\"adminOperation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"adminServiceFeeWithdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetServiceFeeRateForTicketBuy\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"priceInFinney\",\"type\":\"uint256\"}],\"name\":\"adminSetTicketPriceForOuter\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetWithdrawFeeRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"adminUpgradeToNewRule\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roundNo\",\"type\":\"uint256\"}],\"name\":\"allTeamInfo\",\"outputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"tweets\",\"type\":\"bytes32[]\"},{\"internalType\":\"uint256[]\",\"name\":\"memCounts\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256[]\",\"name\":\"voteCounts\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roundNo\",\"type\":\"uint256\"}],\"name\":\"allTeamInfoNo\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"tweetNo\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"voteCountNo\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ticketNo\",\"type\":\"uint256\"}],\"name\":\"buyTicketFromOuter\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"buyerInfoIdxForTickets\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"buyerInfoRecords\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"team\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"changeOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"stop\",\"type\":\"bool\"}],\"name\":\"changeStatus\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"checkPluginInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"currentRoundNo\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"random\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"nextRoundRandomHash\",\"type\":\"bytes32\"}],\"name\":\"discoverWinner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gameInfoRecord\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"randomHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"discoverTime\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"winTeam\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"winTicketID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"bonus\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"randomVal\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getOwner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"from\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"to\",\"type\":\"uint256\"}],\"name\":\"historyRoundInfo\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"randomHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"discoverTime\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"winTeam\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"winTicketID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"bonus\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"randomVal\",\"type\":\"uint256\"}],\"internalType\":\"structTweetLotteryGame.GameInfoOneRound[]\",\"name\":\"infos\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"serviceFeeReceived\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"}],\"name\":\"skipToNextRound\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"systemSettings\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"teamList\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roundNo\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tweet\",\"type\":\"bytes32\"}],\"name\":\"teamMembers\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"voteNo\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"memNo\",\"type\":\"uint256\"},{\"internalType\":\"uint256[]\",\"name\":\"voteNos\",\"type\":\"uint256[]\"},{\"internalType\":\"address[]\",\"name\":\"members\",\"type\":\"address[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"round\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"tickList\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"},{\"internalType\":\"bytes32[]\",\"name\":\"\",\"type\":\"bytes32[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"ticketsOfBuyer\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"ticketsRecords\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalBonus\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"tweetHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"tweetOwner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"voteNo\",\"type\":\"uint256\"}],\"name\":\"tweetBought\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roundNo\",\"type\":\"uint256\"}],\"name\":\"tweetList\",\"outputs\":[{\"internalType\":\"bytes32[]\",\"name\":\"tweets\",\"type\":\"bytes32[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roundNo\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"tweet\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"memAddr\",\"type\":\"address\"}],\"name\":\"voteNoOfTeammate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"all\",\"type\":\"bool\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawFeeRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}]",
+	ABI: "[{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"admins\",\"type\":\"address[]\"},{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"}],\"stateMutability\":\"payable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newTimeInMinutes\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"opName\",\"type\":\"string\"}],\"name\":\"AdminOperated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"opType\",\"type\":\"bool\"}],\"name\":\"AdminOperation\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"ticketID\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"bonus\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"bonusToPoints\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"random\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"nextRandomHash\",\"type\":\"bytes32\"}],\"name\":\"DiscoverWinner\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnerSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newSerficeFeeRate\",\"type\":\"uint256\"}],\"name\":\"ServiceFeeChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"round\",\"type\":\"uint256\"}],\"name\":\"SkipToNewRound\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"no\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"serviceFee\",\"type\":\"uint256\"}],\"name\":\"TicketSold\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"thash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"val\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"no\",\"type\":\"uint256\"}],\"name\":\"TweetBought\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newContract\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"name\":\"UpgradeToNewRule\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"name\":\"WithdrawService\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"__admins\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__bonusRateToWinner\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__currentLotteryTicketID\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__lotteryGameRoundTime\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__minValCheck\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__openToOuterPlayer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__serviceFeeRateForTicketBuy\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__ticketPriceForOuter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminChangeBonusRateToWinner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newTimeInMinutes\",\"type\":\"uint256\"}],\"name\":\"adminChangeRoundTime\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"isOpen\",\"type\":\"bool\"}],\"name\":\"adminOpenToOuterPlayer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"isDelete\",\"type\":\"bool\"}],\"name\":\"adminOperation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"adminServiceFeeWithdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetServiceFeeRateForTicketBuy\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"priceInFinney\",\"type\":\"uint256\"}],\"name\":\"adminSetTicketPriceForOuter\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetWithdrawFeeRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"adminUpgradeToNewRule\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"bonusForPoints\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"ticketNo\",\"type\":\"uint256\"}],\"name\":\"buyTicketFromOuter\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"buyerInfoIdxForTickets\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"changeOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"stop\",\"type\":\"bool\"}],\"name\":\"changeStatus\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"checkPluginInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"currentRoundNo\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"random\",\"type\":\"uint256\"},{\"internalType\":\"bytes32\",\"name\":\"nextRoundRandomHash\",\"type\":\"bytes32\"}],\"name\":\"discoverWinner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"tokenContract\",\"type\":\"address\"}],\"name\":\"finishPoint\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"gameInfoRecord\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"randomHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"discoverTime\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"winTicketID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"bonus\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"randomVal\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getOwner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"from\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"to\",\"type\":\"uint256\"}],\"name\":\"historyRoundInfo\",\"outputs\":[{\"components\":[{\"internalType\":\"bytes32\",\"name\":\"randomHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"discoverTime\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"winner\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"winTicketID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"bonus\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"randomVal\",\"type\":\"uint256\"}],\"internalType\":\"structTweetLotteryGame.GameInfoOneRound[]\",\"name\":\"infos\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"serviceFeeReceived\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"}],\"name\":\"skipToNextRound\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"systemSettings\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"round\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"tickList\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"ticketsOfBuyer\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"ticketsRecords\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"totalBonus\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"tweetHash\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"tweetOwner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"voteNo\",\"type\":\"uint256\"}],\"name\":\"tweetBought\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"all\",\"type\":\"bool\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawFeeRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}]",
 }
 
 // TweetLotteryGameABI is the input ABI used to generate the binding from.
@@ -439,101 +438,6 @@ func (_TweetLotteryGame *TweetLotteryGameCallerSession) TicketPriceForOuter() (*
 	return _TweetLotteryGame.Contract.TicketPriceForOuter(&_TweetLotteryGame.CallOpts)
 }
 
-// AllTeamInfo is a free data retrieval call binding the contract method 0xf6ffdc0e.
-//
-// Solidity: function allTeamInfo(uint256 roundNo) view returns(bytes32[] tweets, uint256[] memCounts, uint256[] voteCounts)
-func (_TweetLotteryGame *TweetLotteryGameCaller) AllTeamInfo(opts *bind.CallOpts, roundNo *big.Int) (struct {
-	Tweets     [][32]byte
-	MemCounts  []*big.Int
-	VoteCounts []*big.Int
-}, error) {
-	var out []interface{}
-	err := _TweetLotteryGame.contract.Call(opts, &out, "allTeamInfo", roundNo)
-
-	outstruct := new(struct {
-		Tweets     [][32]byte
-		MemCounts  []*big.Int
-		VoteCounts []*big.Int
-	})
-	if err != nil {
-		return *outstruct, err
-	}
-
-	outstruct.Tweets = *abi.ConvertType(out[0], new([][32]byte)).(*[][32]byte)
-	outstruct.MemCounts = *abi.ConvertType(out[1], new([]*big.Int)).(*[]*big.Int)
-	outstruct.VoteCounts = *abi.ConvertType(out[2], new([]*big.Int)).(*[]*big.Int)
-
-	return *outstruct, err
-
-}
-
-// AllTeamInfo is a free data retrieval call binding the contract method 0xf6ffdc0e.
-//
-// Solidity: function allTeamInfo(uint256 roundNo) view returns(bytes32[] tweets, uint256[] memCounts, uint256[] voteCounts)
-func (_TweetLotteryGame *TweetLotteryGameSession) AllTeamInfo(roundNo *big.Int) (struct {
-	Tweets     [][32]byte
-	MemCounts  []*big.Int
-	VoteCounts []*big.Int
-}, error) {
-	return _TweetLotteryGame.Contract.AllTeamInfo(&_TweetLotteryGame.CallOpts, roundNo)
-}
-
-// AllTeamInfo is a free data retrieval call binding the contract method 0xf6ffdc0e.
-//
-// Solidity: function allTeamInfo(uint256 roundNo) view returns(bytes32[] tweets, uint256[] memCounts, uint256[] voteCounts)
-func (_TweetLotteryGame *TweetLotteryGameCallerSession) AllTeamInfo(roundNo *big.Int) (struct {
-	Tweets     [][32]byte
-	MemCounts  []*big.Int
-	VoteCounts []*big.Int
-}, error) {
-	return _TweetLotteryGame.Contract.AllTeamInfo(&_TweetLotteryGame.CallOpts, roundNo)
-}
-
-// AllTeamInfoNo is a free data retrieval call binding the contract method 0x8beb82e7.
-//
-// Solidity: function allTeamInfoNo(uint256 roundNo) view returns(uint256 tweetNo, uint256 voteCountNo)
-func (_TweetLotteryGame *TweetLotteryGameCaller) AllTeamInfoNo(opts *bind.CallOpts, roundNo *big.Int) (struct {
-	TweetNo     *big.Int
-	VoteCountNo *big.Int
-}, error) {
-	var out []interface{}
-	err := _TweetLotteryGame.contract.Call(opts, &out, "allTeamInfoNo", roundNo)
-
-	outstruct := new(struct {
-		TweetNo     *big.Int
-		VoteCountNo *big.Int
-	})
-	if err != nil {
-		return *outstruct, err
-	}
-
-	outstruct.TweetNo = *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-	outstruct.VoteCountNo = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
-
-	return *outstruct, err
-
-}
-
-// AllTeamInfoNo is a free data retrieval call binding the contract method 0x8beb82e7.
-//
-// Solidity: function allTeamInfoNo(uint256 roundNo) view returns(uint256 tweetNo, uint256 voteCountNo)
-func (_TweetLotteryGame *TweetLotteryGameSession) AllTeamInfoNo(roundNo *big.Int) (struct {
-	TweetNo     *big.Int
-	VoteCountNo *big.Int
-}, error) {
-	return _TweetLotteryGame.Contract.AllTeamInfoNo(&_TweetLotteryGame.CallOpts, roundNo)
-}
-
-// AllTeamInfoNo is a free data retrieval call binding the contract method 0x8beb82e7.
-//
-// Solidity: function allTeamInfoNo(uint256 roundNo) view returns(uint256 tweetNo, uint256 voteCountNo)
-func (_TweetLotteryGame *TweetLotteryGameCallerSession) AllTeamInfoNo(roundNo *big.Int) (struct {
-	TweetNo     *big.Int
-	VoteCountNo *big.Int
-}, error) {
-	return _TweetLotteryGame.Contract.AllTeamInfoNo(&_TweetLotteryGame.CallOpts, roundNo)
-}
-
 // Balance is a free data retrieval call binding the contract method 0xe3d670d7.
 //
 // Solidity: function balance(address ) view returns(uint256)
@@ -565,18 +469,49 @@ func (_TweetLotteryGame *TweetLotteryGameCallerSession) Balance(arg0 common.Addr
 	return _TweetLotteryGame.Contract.Balance(&_TweetLotteryGame.CallOpts, arg0)
 }
 
+// BonusForPoints is a free data retrieval call binding the contract method 0xb2987568.
+//
+// Solidity: function bonusForPoints() view returns(uint256)
+func (_TweetLotteryGame *TweetLotteryGameCaller) BonusForPoints(opts *bind.CallOpts) (*big.Int, error) {
+	var out []interface{}
+	err := _TweetLotteryGame.contract.Call(opts, &out, "bonusForPoints")
+
+	if err != nil {
+		return *new(*big.Int), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
+
+	return out0, err
+
+}
+
+// BonusForPoints is a free data retrieval call binding the contract method 0xb2987568.
+//
+// Solidity: function bonusForPoints() view returns(uint256)
+func (_TweetLotteryGame *TweetLotteryGameSession) BonusForPoints() (*big.Int, error) {
+	return _TweetLotteryGame.Contract.BonusForPoints(&_TweetLotteryGame.CallOpts)
+}
+
+// BonusForPoints is a free data retrieval call binding the contract method 0xb2987568.
+//
+// Solidity: function bonusForPoints() view returns(uint256)
+func (_TweetLotteryGame *TweetLotteryGameCallerSession) BonusForPoints() (*big.Int, error) {
+	return _TweetLotteryGame.Contract.BonusForPoints(&_TweetLotteryGame.CallOpts)
+}
+
 // BuyerInfoIdxForTickets is a free data retrieval call binding the contract method 0x88df3b19.
 //
-// Solidity: function buyerInfoIdxForTickets(uint256 ) view returns(bytes32)
-func (_TweetLotteryGame *TweetLotteryGameCaller) BuyerInfoIdxForTickets(opts *bind.CallOpts, arg0 *big.Int) ([32]byte, error) {
+// Solidity: function buyerInfoIdxForTickets(uint256 ) view returns(address)
+func (_TweetLotteryGame *TweetLotteryGameCaller) BuyerInfoIdxForTickets(opts *bind.CallOpts, arg0 *big.Int) (common.Address, error) {
 	var out []interface{}
 	err := _TweetLotteryGame.contract.Call(opts, &out, "buyerInfoIdxForTickets", arg0)
 
 	if err != nil {
-		return *new([32]byte), err
+		return *new(common.Address), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
 
 	return out0, err
 
@@ -584,61 +519,16 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) BuyerInfoIdxForTickets(opts *bi
 
 // BuyerInfoIdxForTickets is a free data retrieval call binding the contract method 0x88df3b19.
 //
-// Solidity: function buyerInfoIdxForTickets(uint256 ) view returns(bytes32)
-func (_TweetLotteryGame *TweetLotteryGameSession) BuyerInfoIdxForTickets(arg0 *big.Int) ([32]byte, error) {
+// Solidity: function buyerInfoIdxForTickets(uint256 ) view returns(address)
+func (_TweetLotteryGame *TweetLotteryGameSession) BuyerInfoIdxForTickets(arg0 *big.Int) (common.Address, error) {
 	return _TweetLotteryGame.Contract.BuyerInfoIdxForTickets(&_TweetLotteryGame.CallOpts, arg0)
 }
 
 // BuyerInfoIdxForTickets is a free data retrieval call binding the contract method 0x88df3b19.
 //
-// Solidity: function buyerInfoIdxForTickets(uint256 ) view returns(bytes32)
-func (_TweetLotteryGame *TweetLotteryGameCallerSession) BuyerInfoIdxForTickets(arg0 *big.Int) ([32]byte, error) {
+// Solidity: function buyerInfoIdxForTickets(uint256 ) view returns(address)
+func (_TweetLotteryGame *TweetLotteryGameCallerSession) BuyerInfoIdxForTickets(arg0 *big.Int) (common.Address, error) {
 	return _TweetLotteryGame.Contract.BuyerInfoIdxForTickets(&_TweetLotteryGame.CallOpts, arg0)
-}
-
-// BuyerInfoRecords is a free data retrieval call binding the contract method 0xa90b6c22.
-//
-// Solidity: function buyerInfoRecords(bytes32 ) view returns(address addr, bytes32 team)
-func (_TweetLotteryGame *TweetLotteryGameCaller) BuyerInfoRecords(opts *bind.CallOpts, arg0 [32]byte) (struct {
-	Addr common.Address
-	Team [32]byte
-}, error) {
-	var out []interface{}
-	err := _TweetLotteryGame.contract.Call(opts, &out, "buyerInfoRecords", arg0)
-
-	outstruct := new(struct {
-		Addr common.Address
-		Team [32]byte
-	})
-	if err != nil {
-		return *outstruct, err
-	}
-
-	outstruct.Addr = *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-	outstruct.Team = *abi.ConvertType(out[1], new([32]byte)).(*[32]byte)
-
-	return *outstruct, err
-
-}
-
-// BuyerInfoRecords is a free data retrieval call binding the contract method 0xa90b6c22.
-//
-// Solidity: function buyerInfoRecords(bytes32 ) view returns(address addr, bytes32 team)
-func (_TweetLotteryGame *TweetLotteryGameSession) BuyerInfoRecords(arg0 [32]byte) (struct {
-	Addr common.Address
-	Team [32]byte
-}, error) {
-	return _TweetLotteryGame.Contract.BuyerInfoRecords(&_TweetLotteryGame.CallOpts, arg0)
-}
-
-// BuyerInfoRecords is a free data retrieval call binding the contract method 0xa90b6c22.
-//
-// Solidity: function buyerInfoRecords(bytes32 ) view returns(address addr, bytes32 team)
-func (_TweetLotteryGame *TweetLotteryGameCallerSession) BuyerInfoRecords(arg0 [32]byte) (struct {
-	Addr common.Address
-	Team [32]byte
-}, error) {
-	return _TweetLotteryGame.Contract.BuyerInfoRecords(&_TweetLotteryGame.CallOpts, arg0)
 }
 
 // CheckPluginInterface is a free data retrieval call binding the contract method 0x807c758d.
@@ -705,12 +595,11 @@ func (_TweetLotteryGame *TweetLotteryGameCallerSession) CurrentRoundNo() (*big.I
 
 // GameInfoRecord is a free data retrieval call binding the contract method 0x61373c31.
 //
-// Solidity: function gameInfoRecord(uint256 ) view returns(bytes32 randomHash, uint256 discoverTime, address winner, bytes32 winTeam, uint256 winTicketID, uint256 bonus, uint256 randomVal)
+// Solidity: function gameInfoRecord(uint256 ) view returns(bytes32 randomHash, uint256 discoverTime, address winner, uint256 winTicketID, uint256 bonus, uint256 randomVal)
 func (_TweetLotteryGame *TweetLotteryGameCaller) GameInfoRecord(opts *bind.CallOpts, arg0 *big.Int) (struct {
 	RandomHash   [32]byte
 	DiscoverTime *big.Int
 	Winner       common.Address
-	WinTeam      [32]byte
 	WinTicketID  *big.Int
 	Bonus        *big.Int
 	RandomVal    *big.Int
@@ -722,7 +611,6 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) GameInfoRecord(opts *bind.CallO
 		RandomHash   [32]byte
 		DiscoverTime *big.Int
 		Winner       common.Address
-		WinTeam      [32]byte
 		WinTicketID  *big.Int
 		Bonus        *big.Int
 		RandomVal    *big.Int
@@ -734,10 +622,9 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) GameInfoRecord(opts *bind.CallO
 	outstruct.RandomHash = *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
 	outstruct.DiscoverTime = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
 	outstruct.Winner = *abi.ConvertType(out[2], new(common.Address)).(*common.Address)
-	outstruct.WinTeam = *abi.ConvertType(out[3], new([32]byte)).(*[32]byte)
-	outstruct.WinTicketID = *abi.ConvertType(out[4], new(*big.Int)).(**big.Int)
-	outstruct.Bonus = *abi.ConvertType(out[5], new(*big.Int)).(**big.Int)
-	outstruct.RandomVal = *abi.ConvertType(out[6], new(*big.Int)).(**big.Int)
+	outstruct.WinTicketID = *abi.ConvertType(out[3], new(*big.Int)).(**big.Int)
+	outstruct.Bonus = *abi.ConvertType(out[4], new(*big.Int)).(**big.Int)
+	outstruct.RandomVal = *abi.ConvertType(out[5], new(*big.Int)).(**big.Int)
 
 	return *outstruct, err
 
@@ -745,12 +632,11 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) GameInfoRecord(opts *bind.CallO
 
 // GameInfoRecord is a free data retrieval call binding the contract method 0x61373c31.
 //
-// Solidity: function gameInfoRecord(uint256 ) view returns(bytes32 randomHash, uint256 discoverTime, address winner, bytes32 winTeam, uint256 winTicketID, uint256 bonus, uint256 randomVal)
+// Solidity: function gameInfoRecord(uint256 ) view returns(bytes32 randomHash, uint256 discoverTime, address winner, uint256 winTicketID, uint256 bonus, uint256 randomVal)
 func (_TweetLotteryGame *TweetLotteryGameSession) GameInfoRecord(arg0 *big.Int) (struct {
 	RandomHash   [32]byte
 	DiscoverTime *big.Int
 	Winner       common.Address
-	WinTeam      [32]byte
 	WinTicketID  *big.Int
 	Bonus        *big.Int
 	RandomVal    *big.Int
@@ -760,12 +646,11 @@ func (_TweetLotteryGame *TweetLotteryGameSession) GameInfoRecord(arg0 *big.Int) 
 
 // GameInfoRecord is a free data retrieval call binding the contract method 0x61373c31.
 //
-// Solidity: function gameInfoRecord(uint256 ) view returns(bytes32 randomHash, uint256 discoverTime, address winner, bytes32 winTeam, uint256 winTicketID, uint256 bonus, uint256 randomVal)
+// Solidity: function gameInfoRecord(uint256 ) view returns(bytes32 randomHash, uint256 discoverTime, address winner, uint256 winTicketID, uint256 bonus, uint256 randomVal)
 func (_TweetLotteryGame *TweetLotteryGameCallerSession) GameInfoRecord(arg0 *big.Int) (struct {
 	RandomHash   [32]byte
 	DiscoverTime *big.Int
 	Winner       common.Address
-	WinTeam      [32]byte
 	WinTicketID  *big.Int
 	Bonus        *big.Int
 	RandomVal    *big.Int
@@ -806,7 +691,7 @@ func (_TweetLotteryGame *TweetLotteryGameCallerSession) GetOwner() (common.Addre
 
 // HistoryRoundInfo is a free data retrieval call binding the contract method 0x355b6ec4.
 //
-// Solidity: function historyRoundInfo(uint256 from, uint256 to) view returns((bytes32,uint256,address,bytes32,uint256,uint256,uint256)[] infos)
+// Solidity: function historyRoundInfo(uint256 from, uint256 to) view returns((bytes32,uint256,address,uint256,uint256,uint256)[] infos)
 func (_TweetLotteryGame *TweetLotteryGameCaller) HistoryRoundInfo(opts *bind.CallOpts, from *big.Int, to *big.Int) ([]TweetLotteryGameGameInfoOneRound, error) {
 	var out []interface{}
 	err := _TweetLotteryGame.contract.Call(opts, &out, "historyRoundInfo", from, to)
@@ -823,14 +708,14 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) HistoryRoundInfo(opts *bind.Cal
 
 // HistoryRoundInfo is a free data retrieval call binding the contract method 0x355b6ec4.
 //
-// Solidity: function historyRoundInfo(uint256 from, uint256 to) view returns((bytes32,uint256,address,bytes32,uint256,uint256,uint256)[] infos)
+// Solidity: function historyRoundInfo(uint256 from, uint256 to) view returns((bytes32,uint256,address,uint256,uint256,uint256)[] infos)
 func (_TweetLotteryGame *TweetLotteryGameSession) HistoryRoundInfo(from *big.Int, to *big.Int) ([]TweetLotteryGameGameInfoOneRound, error) {
 	return _TweetLotteryGame.Contract.HistoryRoundInfo(&_TweetLotteryGame.CallOpts, from, to)
 }
 
 // HistoryRoundInfo is a free data retrieval call binding the contract method 0x355b6ec4.
 //
-// Solidity: function historyRoundInfo(uint256 from, uint256 to) view returns((bytes32,uint256,address,bytes32,uint256,uint256,uint256)[] infos)
+// Solidity: function historyRoundInfo(uint256 from, uint256 to) view returns((bytes32,uint256,address,uint256,uint256,uint256)[] infos)
 func (_TweetLotteryGame *TweetLotteryGameCallerSession) HistoryRoundInfo(from *big.Int, to *big.Int) ([]TweetLotteryGameGameInfoOneRound, error) {
 	return _TweetLotteryGame.Contract.HistoryRoundInfo(&_TweetLotteryGame.CallOpts, from, to)
 }
@@ -868,153 +753,67 @@ func (_TweetLotteryGame *TweetLotteryGameCallerSession) ServiceFeeReceived() (*b
 
 // SystemSettings is a free data retrieval call binding the contract method 0x60b42f12.
 //
-// Solidity: function systemSettings() view returns(uint256, uint256, uint256, bool)
-func (_TweetLotteryGame *TweetLotteryGameCaller) SystemSettings(opts *bind.CallOpts) (*big.Int, *big.Int, *big.Int, bool, error) {
+// Solidity: function systemSettings() view returns(uint256, uint256, uint256, uint256, bool)
+func (_TweetLotteryGame *TweetLotteryGameCaller) SystemSettings(opts *bind.CallOpts) (*big.Int, *big.Int, *big.Int, *big.Int, bool, error) {
 	var out []interface{}
 	err := _TweetLotteryGame.contract.Call(opts, &out, "systemSettings")
 
 	if err != nil {
-		return *new(*big.Int), *new(*big.Int), *new(*big.Int), *new(bool), err
+		return *new(*big.Int), *new(*big.Int), *new(*big.Int), *new(*big.Int), *new(bool), err
 	}
 
 	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
 	out1 := *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
 	out2 := *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
-	out3 := *abi.ConvertType(out[3], new(bool)).(*bool)
+	out3 := *abi.ConvertType(out[3], new(*big.Int)).(**big.Int)
+	out4 := *abi.ConvertType(out[4], new(bool)).(*bool)
 
-	return out0, out1, out2, out3, err
+	return out0, out1, out2, out3, out4, err
 
 }
 
 // SystemSettings is a free data retrieval call binding the contract method 0x60b42f12.
 //
-// Solidity: function systemSettings() view returns(uint256, uint256, uint256, bool)
-func (_TweetLotteryGame *TweetLotteryGameSession) SystemSettings() (*big.Int, *big.Int, *big.Int, bool, error) {
+// Solidity: function systemSettings() view returns(uint256, uint256, uint256, uint256, bool)
+func (_TweetLotteryGame *TweetLotteryGameSession) SystemSettings() (*big.Int, *big.Int, *big.Int, *big.Int, bool, error) {
 	return _TweetLotteryGame.Contract.SystemSettings(&_TweetLotteryGame.CallOpts)
 }
 
 // SystemSettings is a free data retrieval call binding the contract method 0x60b42f12.
 //
-// Solidity: function systemSettings() view returns(uint256, uint256, uint256, bool)
-func (_TweetLotteryGame *TweetLotteryGameCallerSession) SystemSettings() (*big.Int, *big.Int, *big.Int, bool, error) {
+// Solidity: function systemSettings() view returns(uint256, uint256, uint256, uint256, bool)
+func (_TweetLotteryGame *TweetLotteryGameCallerSession) SystemSettings() (*big.Int, *big.Int, *big.Int, *big.Int, bool, error) {
 	return _TweetLotteryGame.Contract.SystemSettings(&_TweetLotteryGame.CallOpts)
 }
 
-// TeamList is a free data retrieval call binding the contract method 0x9030d81e.
+// TickList is a free data retrieval call binding the contract method 0xdd57903b.
 //
-// Solidity: function teamList(uint256 , uint256 ) view returns(bytes32)
-func (_TweetLotteryGame *TweetLotteryGameCaller) TeamList(opts *bind.CallOpts, arg0 *big.Int, arg1 *big.Int) ([32]byte, error) {
+// Solidity: function tickList(uint256 round, address owner) view returns(uint256[])
+func (_TweetLotteryGame *TweetLotteryGameCaller) TickList(opts *bind.CallOpts, round *big.Int, owner common.Address) ([]*big.Int, error) {
 	var out []interface{}
-	err := _TweetLotteryGame.contract.Call(opts, &out, "teamList", arg0, arg1)
+	err := _TweetLotteryGame.contract.Call(opts, &out, "tickList", round, owner)
 
 	if err != nil {
-		return *new([32]byte), err
+		return *new([]*big.Int), err
 	}
 
-	out0 := *abi.ConvertType(out[0], new([32]byte)).(*[32]byte)
+	out0 := *abi.ConvertType(out[0], new([]*big.Int)).(*[]*big.Int)
 
 	return out0, err
 
 }
 
-// TeamList is a free data retrieval call binding the contract method 0x9030d81e.
-//
-// Solidity: function teamList(uint256 , uint256 ) view returns(bytes32)
-func (_TweetLotteryGame *TweetLotteryGameSession) TeamList(arg0 *big.Int, arg1 *big.Int) ([32]byte, error) {
-	return _TweetLotteryGame.Contract.TeamList(&_TweetLotteryGame.CallOpts, arg0, arg1)
-}
-
-// TeamList is a free data retrieval call binding the contract method 0x9030d81e.
-//
-// Solidity: function teamList(uint256 , uint256 ) view returns(bytes32)
-func (_TweetLotteryGame *TweetLotteryGameCallerSession) TeamList(arg0 *big.Int, arg1 *big.Int) ([32]byte, error) {
-	return _TweetLotteryGame.Contract.TeamList(&_TweetLotteryGame.CallOpts, arg0, arg1)
-}
-
-// TeamMembers is a free data retrieval call binding the contract method 0xd157740f.
-//
-// Solidity: function teamMembers(uint256 roundNo, bytes32 tweet) view returns(uint256 voteNo, uint256 memNo, uint256[] voteNos, address[] members)
-func (_TweetLotteryGame *TweetLotteryGameCaller) TeamMembers(opts *bind.CallOpts, roundNo *big.Int, tweet [32]byte) (struct {
-	VoteNo  *big.Int
-	MemNo   *big.Int
-	VoteNos []*big.Int
-	Members []common.Address
-}, error) {
-	var out []interface{}
-	err := _TweetLotteryGame.contract.Call(opts, &out, "teamMembers", roundNo, tweet)
-
-	outstruct := new(struct {
-		VoteNo  *big.Int
-		MemNo   *big.Int
-		VoteNos []*big.Int
-		Members []common.Address
-	})
-	if err != nil {
-		return *outstruct, err
-	}
-
-	outstruct.VoteNo = *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-	outstruct.MemNo = *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
-	outstruct.VoteNos = *abi.ConvertType(out[2], new([]*big.Int)).(*[]*big.Int)
-	outstruct.Members = *abi.ConvertType(out[3], new([]common.Address)).(*[]common.Address)
-
-	return *outstruct, err
-
-}
-
-// TeamMembers is a free data retrieval call binding the contract method 0xd157740f.
-//
-// Solidity: function teamMembers(uint256 roundNo, bytes32 tweet) view returns(uint256 voteNo, uint256 memNo, uint256[] voteNos, address[] members)
-func (_TweetLotteryGame *TweetLotteryGameSession) TeamMembers(roundNo *big.Int, tweet [32]byte) (struct {
-	VoteNo  *big.Int
-	MemNo   *big.Int
-	VoteNos []*big.Int
-	Members []common.Address
-}, error) {
-	return _TweetLotteryGame.Contract.TeamMembers(&_TweetLotteryGame.CallOpts, roundNo, tweet)
-}
-
-// TeamMembers is a free data retrieval call binding the contract method 0xd157740f.
-//
-// Solidity: function teamMembers(uint256 roundNo, bytes32 tweet) view returns(uint256 voteNo, uint256 memNo, uint256[] voteNos, address[] members)
-func (_TweetLotteryGame *TweetLotteryGameCallerSession) TeamMembers(roundNo *big.Int, tweet [32]byte) (struct {
-	VoteNo  *big.Int
-	MemNo   *big.Int
-	VoteNos []*big.Int
-	Members []common.Address
-}, error) {
-	return _TweetLotteryGame.Contract.TeamMembers(&_TweetLotteryGame.CallOpts, roundNo, tweet)
-}
-
 // TickList is a free data retrieval call binding the contract method 0xdd57903b.
 //
-// Solidity: function tickList(uint256 round, address owner) view returns(uint256[], bytes32[])
-func (_TweetLotteryGame *TweetLotteryGameCaller) TickList(opts *bind.CallOpts, round *big.Int, owner common.Address) ([]*big.Int, [][32]byte, error) {
-	var out []interface{}
-	err := _TweetLotteryGame.contract.Call(opts, &out, "tickList", round, owner)
-
-	if err != nil {
-		return *new([]*big.Int), *new([][32]byte), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new([]*big.Int)).(*[]*big.Int)
-	out1 := *abi.ConvertType(out[1], new([][32]byte)).(*[][32]byte)
-
-	return out0, out1, err
-
-}
-
-// TickList is a free data retrieval call binding the contract method 0xdd57903b.
-//
-// Solidity: function tickList(uint256 round, address owner) view returns(uint256[], bytes32[])
-func (_TweetLotteryGame *TweetLotteryGameSession) TickList(round *big.Int, owner common.Address) ([]*big.Int, [][32]byte, error) {
+// Solidity: function tickList(uint256 round, address owner) view returns(uint256[])
+func (_TweetLotteryGame *TweetLotteryGameSession) TickList(round *big.Int, owner common.Address) ([]*big.Int, error) {
 	return _TweetLotteryGame.Contract.TickList(&_TweetLotteryGame.CallOpts, round, owner)
 }
 
 // TickList is a free data retrieval call binding the contract method 0xdd57903b.
 //
-// Solidity: function tickList(uint256 round, address owner) view returns(uint256[], bytes32[])
-func (_TweetLotteryGame *TweetLotteryGameCallerSession) TickList(round *big.Int, owner common.Address) ([]*big.Int, [][32]byte, error) {
+// Solidity: function tickList(uint256 round, address owner) view returns(uint256[])
+func (_TweetLotteryGame *TweetLotteryGameCallerSession) TickList(round *big.Int, owner common.Address) ([]*big.Int, error) {
 	return _TweetLotteryGame.Contract.TickList(&_TweetLotteryGame.CallOpts, round, owner)
 }
 
@@ -1109,70 +908,6 @@ func (_TweetLotteryGame *TweetLotteryGameSession) TotalBonus() (*big.Int, error)
 // Solidity: function totalBonus() view returns(uint256)
 func (_TweetLotteryGame *TweetLotteryGameCallerSession) TotalBonus() (*big.Int, error) {
 	return _TweetLotteryGame.Contract.TotalBonus(&_TweetLotteryGame.CallOpts)
-}
-
-// TweetList is a free data retrieval call binding the contract method 0x532a9051.
-//
-// Solidity: function tweetList(uint256 roundNo) view returns(bytes32[] tweets)
-func (_TweetLotteryGame *TweetLotteryGameCaller) TweetList(opts *bind.CallOpts, roundNo *big.Int) ([][32]byte, error) {
-	var out []interface{}
-	err := _TweetLotteryGame.contract.Call(opts, &out, "tweetList", roundNo)
-
-	if err != nil {
-		return *new([][32]byte), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new([][32]byte)).(*[][32]byte)
-
-	return out0, err
-
-}
-
-// TweetList is a free data retrieval call binding the contract method 0x532a9051.
-//
-// Solidity: function tweetList(uint256 roundNo) view returns(bytes32[] tweets)
-func (_TweetLotteryGame *TweetLotteryGameSession) TweetList(roundNo *big.Int) ([][32]byte, error) {
-	return _TweetLotteryGame.Contract.TweetList(&_TweetLotteryGame.CallOpts, roundNo)
-}
-
-// TweetList is a free data retrieval call binding the contract method 0x532a9051.
-//
-// Solidity: function tweetList(uint256 roundNo) view returns(bytes32[] tweets)
-func (_TweetLotteryGame *TweetLotteryGameCallerSession) TweetList(roundNo *big.Int) ([][32]byte, error) {
-	return _TweetLotteryGame.Contract.TweetList(&_TweetLotteryGame.CallOpts, roundNo)
-}
-
-// VoteNoOfTeammate is a free data retrieval call binding the contract method 0x04b22aea.
-//
-// Solidity: function voteNoOfTeammate(uint256 roundNo, bytes32 tweet, address memAddr) view returns(uint256, uint256, uint256)
-func (_TweetLotteryGame *TweetLotteryGameCaller) VoteNoOfTeammate(opts *bind.CallOpts, roundNo *big.Int, tweet [32]byte, memAddr common.Address) (*big.Int, *big.Int, *big.Int, error) {
-	var out []interface{}
-	err := _TweetLotteryGame.contract.Call(opts, &out, "voteNoOfTeammate", roundNo, tweet, memAddr)
-
-	if err != nil {
-		return *new(*big.Int), *new(*big.Int), *new(*big.Int), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(*big.Int)).(**big.Int)
-	out1 := *abi.ConvertType(out[1], new(*big.Int)).(**big.Int)
-	out2 := *abi.ConvertType(out[2], new(*big.Int)).(**big.Int)
-
-	return out0, out1, out2, err
-
-}
-
-// VoteNoOfTeammate is a free data retrieval call binding the contract method 0x04b22aea.
-//
-// Solidity: function voteNoOfTeammate(uint256 roundNo, bytes32 tweet, address memAddr) view returns(uint256, uint256, uint256)
-func (_TweetLotteryGame *TweetLotteryGameSession) VoteNoOfTeammate(roundNo *big.Int, tweet [32]byte, memAddr common.Address) (*big.Int, *big.Int, *big.Int, error) {
-	return _TweetLotteryGame.Contract.VoteNoOfTeammate(&_TweetLotteryGame.CallOpts, roundNo, tweet, memAddr)
-}
-
-// VoteNoOfTeammate is a free data retrieval call binding the contract method 0x04b22aea.
-//
-// Solidity: function voteNoOfTeammate(uint256 roundNo, bytes32 tweet, address memAddr) view returns(uint256, uint256, uint256)
-func (_TweetLotteryGame *TweetLotteryGameCallerSession) VoteNoOfTeammate(roundNo *big.Int, tweet [32]byte, memAddr common.Address) (*big.Int, *big.Int, *big.Int, error) {
-	return _TweetLotteryGame.Contract.VoteNoOfTeammate(&_TweetLotteryGame.CallOpts, roundNo, tweet, memAddr)
 }
 
 // WithdrawFeeRate is a free data retrieval call binding the contract method 0xea99e689.
@@ -1477,6 +1212,27 @@ func (_TweetLotteryGame *TweetLotteryGameSession) DiscoverWinner(random *big.Int
 // Solidity: function discoverWinner(uint256 random, bytes32 nextRoundRandomHash) returns()
 func (_TweetLotteryGame *TweetLotteryGameTransactorSession) DiscoverWinner(random *big.Int, nextRoundRandomHash [32]byte) (*types.Transaction, error) {
 	return _TweetLotteryGame.Contract.DiscoverWinner(&_TweetLotteryGame.TransactOpts, random, nextRoundRandomHash)
+}
+
+// FinishPoint is a paid mutator transaction binding the contract method 0xe26f2947.
+//
+// Solidity: function finishPoint(address tokenContract) returns()
+func (_TweetLotteryGame *TweetLotteryGameTransactor) FinishPoint(opts *bind.TransactOpts, tokenContract common.Address) (*types.Transaction, error) {
+	return _TweetLotteryGame.contract.Transact(opts, "finishPoint", tokenContract)
+}
+
+// FinishPoint is a paid mutator transaction binding the contract method 0xe26f2947.
+//
+// Solidity: function finishPoint(address tokenContract) returns()
+func (_TweetLotteryGame *TweetLotteryGameSession) FinishPoint(tokenContract common.Address) (*types.Transaction, error) {
+	return _TweetLotteryGame.Contract.FinishPoint(&_TweetLotteryGame.TransactOpts, tokenContract)
+}
+
+// FinishPoint is a paid mutator transaction binding the contract method 0xe26f2947.
+//
+// Solidity: function finishPoint(address tokenContract) returns()
+func (_TweetLotteryGame *TweetLotteryGameTransactorSession) FinishPoint(tokenContract common.Address) (*types.Transaction, error) {
+	return _TweetLotteryGame.Contract.FinishPoint(&_TweetLotteryGame.TransactOpts, tokenContract)
 }
 
 // SkipToNextRound is a paid mutator transaction binding the contract method 0xedf9938d.
@@ -1903,18 +1659,17 @@ func (it *TweetLotteryGameDiscoverWinnerIterator) Close() error {
 // TweetLotteryGameDiscoverWinner represents a DiscoverWinner event raised by the TweetLotteryGame contract.
 type TweetLotteryGameDiscoverWinner struct {
 	Winner         common.Address
-	WinnerTeam     [32]byte
 	TicketID       *big.Int
 	Bonus          *big.Int
-	BonusToTeam    *big.Int
+	BonusToPoints  *big.Int
 	Random         *big.Int
 	NextRandomHash [32]byte
 	Raw            types.Log // Blockchain specific contextual infos
 }
 
-// FilterDiscoverWinner is a free log retrieval operation binding the contract event 0xb46eb63b055209e08f856513cdeef787d4ad696c7f36cec7d5dd16b8d4a04445.
+// FilterDiscoverWinner is a free log retrieval operation binding the contract event 0x417e93665f4effd641857760fca69aba0324edcd5e0bdbb0d8d210abcc29b414.
 //
-// Solidity: event DiscoverWinner(address winner, bytes32 winnerTeam, uint256 ticketID, uint256 bonus, uint256 bonusToTeam, uint256 random, bytes32 nextRandomHash)
+// Solidity: event DiscoverWinner(address winner, uint256 ticketID, uint256 bonus, uint256 bonusToPoints, uint256 random, bytes32 nextRandomHash)
 func (_TweetLotteryGame *TweetLotteryGameFilterer) FilterDiscoverWinner(opts *bind.FilterOpts) (*TweetLotteryGameDiscoverWinnerIterator, error) {
 
 	logs, sub, err := _TweetLotteryGame.contract.FilterLogs(opts, "DiscoverWinner")
@@ -1924,9 +1679,9 @@ func (_TweetLotteryGame *TweetLotteryGameFilterer) FilterDiscoverWinner(opts *bi
 	return &TweetLotteryGameDiscoverWinnerIterator{contract: _TweetLotteryGame.contract, event: "DiscoverWinner", logs: logs, sub: sub}, nil
 }
 
-// WatchDiscoverWinner is a free log subscription operation binding the contract event 0xb46eb63b055209e08f856513cdeef787d4ad696c7f36cec7d5dd16b8d4a04445.
+// WatchDiscoverWinner is a free log subscription operation binding the contract event 0x417e93665f4effd641857760fca69aba0324edcd5e0bdbb0d8d210abcc29b414.
 //
-// Solidity: event DiscoverWinner(address winner, bytes32 winnerTeam, uint256 ticketID, uint256 bonus, uint256 bonusToTeam, uint256 random, bytes32 nextRandomHash)
+// Solidity: event DiscoverWinner(address winner, uint256 ticketID, uint256 bonus, uint256 bonusToPoints, uint256 random, bytes32 nextRandomHash)
 func (_TweetLotteryGame *TweetLotteryGameFilterer) WatchDiscoverWinner(opts *bind.WatchOpts, sink chan<- *TweetLotteryGameDiscoverWinner) (event.Subscription, error) {
 
 	logs, sub, err := _TweetLotteryGame.contract.WatchLogs(opts, "DiscoverWinner")
@@ -1961,9 +1716,9 @@ func (_TweetLotteryGame *TweetLotteryGameFilterer) WatchDiscoverWinner(opts *bin
 	}), nil
 }
 
-// ParseDiscoverWinner is a log parse operation binding the contract event 0xb46eb63b055209e08f856513cdeef787d4ad696c7f36cec7d5dd16b8d4a04445.
+// ParseDiscoverWinner is a log parse operation binding the contract event 0x417e93665f4effd641857760fca69aba0324edcd5e0bdbb0d8d210abcc29b414.
 //
-// Solidity: event DiscoverWinner(address winner, bytes32 winnerTeam, uint256 ticketID, uint256 bonus, uint256 bonusToTeam, uint256 random, bytes32 nextRandomHash)
+// Solidity: event DiscoverWinner(address winner, uint256 ticketID, uint256 bonus, uint256 bonusToPoints, uint256 random, bytes32 nextRandomHash)
 func (_TweetLotteryGame *TweetLotteryGameFilterer) ParseDiscoverWinner(log types.Log) (*TweetLotteryGameDiscoverWinner, error) {
 	event := new(TweetLotteryGameDiscoverWinner)
 	if err := _TweetLotteryGame.contract.UnpackLog(event, "DiscoverWinner", log); err != nil {

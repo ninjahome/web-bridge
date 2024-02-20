@@ -15,7 +15,6 @@ type GamInfoOnChain struct {
 	RandomHash   string  `json:"random_hash"  firestore:"random_hash"`
 	DiscoverTime int64   `json:"discover_time"  firestore:"discover_time"`
 	Winner       string  `json:"winner"  firestore:"winner"`
-	WinTeam      string  `json:"win_team"  firestore:"win_team"`
 	WinTicketID  int64   `json:"win_ticket_id"  firestore:"win_ticket_id"`
 	Bonus        float64 `json:"bonus"  firestore:"bonus"`
 	RandomVal    string  `json:"random_val"  firestore:"random_val"`
@@ -55,7 +54,6 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) GameInfoRecordEx(opts *bind.Cal
 	construct.Winner = (*abi.ConvertType(out[2], new(common.Address)).(*common.Address)).Hex()
 	construct.Winner = strings.ToLower(construct.Winner)
 
-	construct.WinTeam = hexutil.Encode((*abi.ConvertType(out[3], new([32]byte)).(*[32]byte))[:])
 	construct.WinTicketID = (*abi.ConvertType(out[4], new(*big.Int)).(**big.Int)).Int64()
 	construct.RandomVal = (*abi.ConvertType(out[6], new(*big.Int)).(**big.Int)).String()
 
@@ -87,7 +85,6 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) HistoryRoundInfoEx(opts *bind.C
 		construct.RandomHash = hexutil.Encode(round.RandomHash[:])
 		construct.DiscoverTime = round.DiscoverTime.Int64()
 		construct.Winner = strings.ToLower(round.Winner.Hex())
-		construct.WinTeam = hexutil.Encode(round.WinTeam[:])
 		construct.WinTicketID = round.WinTicketID.Int64()
 		construct.RandomVal = round.RandomVal.String()
 
