@@ -573,44 +573,10 @@
                 <li><span id="winning-history-discover-day">日期</span>: <span class="one-round-discover-val"
                                                                                style="color: #1B1B1D; font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
                 </li>
-                <li><span id="winning-history-win-type">类型</span>: <span class="team-id-txt type"
-                                                                           style="color: #1B1B1D; font-size: 16px; font-weight: bold">个人</span>
-                </li>
-                <li><span id="winning-history-win-id">独立彩票/团队ID</span>: <span class="team-id-txt id"
-                                                                                    style="color: #1B1B1D; font-size: 16px">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
-                </li>
+
             </ul>
         </div>
         <div class="winner-history-list"></div>
-
-        <div class="winning-history" id="winTeam-history-template" style="display: none">
-            <ul style="color: #7E7F82">
-                <li><span id="winning-history-total-bonus-2">总金额</span>: <span class="one-round-bonus-val"
-                                                                                  style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span>
-                    ETH
-                </li>
-                <li><span id="winning-history-my-bonus-2">归我所得</span>: <span class="one-round-bonus-for-me"
-                                                                                 style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span>
-                    ETH
-                </li>
-                <li><span id="winning-history-phase-no-3">期数: 第 </span><span class="one-round-round-val"
-                                                                                style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>
-                    <span id="winning-history-phase-no-4">期</span></li>
-                <li><span id="winning-history-my-vote-in-team">我在本队票数</span>: <span class="one-round-my-vote-no"
-                                                                                          style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>
-                </li>
-                <li><span id="winning-history-team-total-no">团队总票数</span>: <span class="one-round-vote-no"
-                                                                                      style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>
-                </li>
-                <li><span id="winning-history-team-member-no">团队人数</span>: <span class="one-round-mem-no"
-                                                                                     style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>
-                </li>
-                <li><span id="winning-history-team-id">团队ID</span>: <span class="team-id-txt id"
-                                                                            style="color: #1B1B1D; font-size: 16px"></span>
-                </li>
-            </ul>
-        </div>
-        <div class="winTeam-history-list"></div>
 
     </div>
     <div class="game-section">
@@ -1030,18 +996,6 @@
         document.getElementById('winning-history-phase-no-1').textContent = i18next.t('winning-history-phase-no-1');
         document.getElementById('winning-history-phase-no-2').textContent = i18next.t('winning-history-phase-no-2');
         document.getElementById('winning-history-discover-day').textContent = i18next.t('winning-history-discover-day');
-        document.getElementById('winning-history-win-type').textContent = i18next.t('winning-history-win-type');
-        document.getElementById('winning-history-win-id').textContent = i18next.t('winning-history-win-id');
-
-        document.getElementById('winning-history-total-bonus-2').textContent = i18next.t('total-bonus');
-        document.getElementById('winning-history-my-bonus-2').textContent = i18next.t('my-bonus');
-        document.getElementById('winning-history-phase-no-3').textContent = i18next.t('winning-history-phase-no-1');
-        document.getElementById('winning-history-phase-no-4').textContent = i18next.t('winning-history-phase-no-2');
-        document.getElementById('winning-history-my-vote-in-team').textContent = i18next.t('winning-history-my-vote-in-team');
-        document.getElementById('winning-history-team-total-no').textContent = i18next.t('winning-history-team-total-no');
-        document.getElementById('winning-history-team-member-no').textContent = i18next.t('winning-history-team-member-no');
-        document.getElementById('winning-history-team-id').textContent = i18next.t('tickets-detail-team-id');
-
 
         document.getElementById('round-title-info').textContent = i18next.t('round-title-info');
         document.getElementById('round-info-phase-no-1').textContent = i18next.t('winning-history-phase-no-1');

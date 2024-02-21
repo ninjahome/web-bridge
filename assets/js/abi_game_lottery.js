@@ -658,6 +658,11 @@ const gameContractABI =`
             },
             {
                 "internalType": "uint256",
+                "name": "bonusForWinner",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
                 "name": "randomVal",
                 "type": "uint256"
             }
@@ -718,6 +723,11 @@ const gameContractABI =`
                     {
                         "internalType": "uint256",
                         "name": "bonus",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "bonusForWinner",
                         "type": "uint256"
                     },
                     {

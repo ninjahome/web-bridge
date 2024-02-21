@@ -23,6 +23,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         address winner;
         uint256 winTicketID;
         uint256 bonus;
+        uint256 bonusForWinner;
         uint256 randomVal;
     }
 
@@ -59,7 +60,8 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             winner: address(0),
             winTicketID: 0,
             bonus: msg.value,
-            randomVal: 0
+            randomVal: 0,
+            bonusForWinner: 0
         });
 
         gameInfoRecord[currentRoundNo] = newRoundInfo;
@@ -130,18 +132,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     /********************************************************************************
      *                       lottery admin
      *********************************************************************************/
-    /**
-     * @dev Initiates the next round of the lottery game.
-     * @param hash The initial random hash for the new round.
-     * This function transitions the game to a new round. It carries over any unclaimed bonus from the current round to the next round.
-     * The provided hash is used as the starting point for the random number generation in the new round.
-     * Only callable by administrators of the contract to ensure controlled progression of game rounds.
-     * Emits a SkipToNewRound event upon successfully initiating a new round.
-     *
-     * Requirements:
-     * - The provided hash must not be the zero value.
-     * - The function must be called by an administrator.
-     */
+
     function skip(bytes32 hash) private {
         GameInfoOneRound memory newRoundInfo = GameInfoOneRound({
             randomHash: hash,
@@ -149,7 +140,8 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             winner: address(0),
             winTicketID: 0,
             bonus: 0,
-            randomVal: 0
+            randomVal: 0,
+            bonusForWinner: 0
         });
 
         newRoundInfo.bonus += gameInfoRecord[currentRoundNo].bonus;
@@ -167,19 +159,6 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         emit SkipToNewRound(hash, currentRoundNo);
     }
 
-    /**
-     * @dev Generates the winning ticket ID for the current lottery round based on a random number.
-     * @param random The random number provided to determine the winning ticket.
-     * @param currentHash A hash representing the current state of randomness.
-     * @return The ID of the winning ticket.
-     * This function calculates the winner of the current lottery round by using the provided random number.
-     * It ensures the integrity of the random number by checking it against the currentHash.
-     * The function computes a new hash from the given random number and other blockchain parameters, then uses this hash to select a winning ticket from all the tickets in the current round.
-     *
-     * Requirements:
-     * - There must be at least one ticket in the current round.
-     * - The provided hash must match the expected hash, ensuring the random number is valid.
-     */
     function generateWinner(uint256 random, bytes32 currentHash)
     internal
     view
@@ -204,14 +183,6 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         return allTickets[idx];
     }
 
-    /**
-     * @dev Discovers and announces the winner of the current lottery round based on a random number.
-     * @param random The random number used to select the winning ticket.
-     * @param nextRoundRandomHash The hash for the next round's random number.
-     * This function determines the winning ticket based on the provided random number and assigns the winnings.
-     * It also prepares the game for the next round using the provided next round hash.
-     * Emits a DiscoverWinner event upon finding a winner.
-     */
     function discoverWinner(uint256 random, bytes32 nextRoundRandomHash)
     public
     onlyAdmin
@@ -242,7 +213,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
 
         uint256 bonusToWinner = ((gInfo.bonus / 100) * __bonusRateToWinner);
         balance[winnerAddr] += bonusToWinner;
-
+        gInfo.bonusForWinner = bonusToWinner;
         bonusForPoints += gInfo.bonus - bonusToWinner;
 
         currentRoundNo += 1;
@@ -254,7 +225,8 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             winner: address(0),
             winTicketID: 0,
             bonus: 0,
-            randomVal: 0
+            randomVal: 0,
+            bonusForWinner: 0
         });
 
         emit DiscoverWinner(
@@ -285,16 +257,6 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         __currentLotteryTicketID += no;
     }
 
-    /**
-     * @dev Processes the purchase of votes for a specific tweet, as part of the lottery game.
-     * @param tweetHash The hash of the tweet being voted on.
-     * @param tweetOwner The owner of the tweet.
-     * @param buyer The address of the buyer who is purchasing votes.
-     * @param voteNo The number of votes being purchased.
-     * This function increases the game's bonus pool with the value sent to the contract and generates lottery tickets for the buyer.
-     * It also updates the vote count in the relevant tweet team.
-     * Emits a TweetBought event upon successful execution.
-     */
     function tweetBought(
         bytes32 tweetHash,
         address tweetOwner,
@@ -338,20 +300,6 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         emit WithdrawService(msg.sender, reminders);
     }
 
-    /**
-     * @dev Allows external users to buy lottery tickets when the game is open to the public.
-     * @param ticketNo The number of tickets the external user wants to purchase.
-     * This function enables external users (non-platform users) to participate in the lottery game by purchasing tickets.
-     * It verifies if the game is open to external players and if the sent Ether matches the price of the requested number of tickets.
-     * The function calculates the service fee, records it, and adds the remainder of the Ether sent to the game's bonus pool.
-     * It then generates the requested number of tickets for the external user.
-     * Emits a TicketSold event upon successful ticket purchase.
-     *
-     * Requirements:
-     * - The number of tickets requested must be greater than zero.
-     * - The game must be open to external players.
-     * - The sent Ether must exactly match the total price of the requested tickets.
-     */
     function buyTicketFromOuter(uint256 ticketNo)
     public
     payable

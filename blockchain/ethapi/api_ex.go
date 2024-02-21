@@ -11,13 +11,14 @@ import (
 )
 
 type GamInfoOnChain struct {
-	RoundNo      int64   `json:"round_no"  firestore:"round_no"`
-	RandomHash   string  `json:"random_hash"  firestore:"random_hash"`
-	DiscoverTime int64   `json:"discover_time"  firestore:"discover_time"`
-	Winner       string  `json:"winner"  firestore:"winner"`
-	WinTicketID  int64   `json:"win_ticket_id"  firestore:"win_ticket_id"`
-	Bonus        float64 `json:"bonus"  firestore:"bonus"`
-	RandomVal    string  `json:"random_val"  firestore:"random_val"`
+	RoundNo        int64   `json:"round_no"  firestore:"round_no"`
+	RandomHash     string  `json:"random_hash"  firestore:"random_hash"`
+	DiscoverTime   int64   `json:"discover_time"  firestore:"discover_time"`
+	Winner         string  `json:"winner"  firestore:"winner"`
+	WinTicketID    int64   `json:"win_ticket_id"  firestore:"win_ticket_id"`
+	Bonus          float64 `json:"bonus"  firestore:"bonus"`
+	BonusForWinner float64 `json:"bonus_for_winner"  firestore:"bonus_for_winner"`
+	RandomVal      string  `json:"random_val"  firestore:"random_val"`
 }
 
 func (c *GamInfoOnChain) String() string {
@@ -39,13 +40,19 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) GameInfoRecordEx(opts *bind.Cal
 	construct.Winner = (*abi.ConvertType(out[2], new(common.Address)).(*common.Address)).Hex()
 	construct.Winner = strings.ToLower(construct.Winner)
 
-	construct.WinTicketID = (*abi.ConvertType(out[4], new(*big.Int)).(**big.Int)).Int64()
-	construct.RandomVal = (*abi.ConvertType(out[6], new(*big.Int)).(**big.Int)).String()
+	construct.WinTicketID = (*abi.ConvertType(out[3], new(*big.Int)).(**big.Int)).Int64()
 
-	bonusBigInt := *abi.ConvertType(out[5], new(*big.Int)).(**big.Int)
+	bonusBigInt := *abi.ConvertType(out[4], new(*big.Int)).(**big.Int)
 	weiToEth := new(big.Float).SetInt(big.NewInt(1e18))
 	bonusEth := new(big.Float).Quo(new(big.Float).SetInt(bonusBigInt), weiToEth)
 	construct.Bonus, _ = bonusEth.Float64()
+
+	bonusForWinnerBigInt := *abi.ConvertType(out[5], new(*big.Int)).(**big.Int)
+	weiToEthForWinner := new(big.Float).SetInt(big.NewInt(1e18))
+	bonusForWinnerEth := new(big.Float).Quo(new(big.Float).SetInt(bonusForWinnerBigInt), weiToEthForWinner)
+	construct.BonusForWinner, _ = bonusForWinnerEth.Float64()
+
+	construct.RandomVal = (*abi.ConvertType(out[6], new(*big.Int)).(**big.Int)).String()
 
 	return construct, err
 }

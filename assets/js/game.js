@@ -1,6 +1,5 @@
 let lotteryGameContract = null;
 let gameSettings = null;
-let currentRoundData = null;
 let personalData = null
 
 class GameSettings {
@@ -15,19 +14,23 @@ class GameSettings {
 }
 
 class GameRoundInfo {
-    constructor(hash, dTime, winner, winTicketID, curBonus, random) {
+    constructor(hash, dTime, winner, winTicketID, curBonus, random, winnerBonus) {
         this.hash = hash;
         this.dTime = dTime;
         this.winner = winner;
         this.winTicketID = winTicketID;
         this.curBonus = curBonus;
         this.random = random;
+        this.bonusForWinner = winnerBonus;
     }
 
     static fromBlockChainObj(obj) {
         const curBonusInEth = ethers.utils.formatUnits(obj.bonus, 'ether');
         const dTime = obj.discoverTime.toNumber() * 1000;
-        return new GameRoundInfo(obj.randomHash, dTime, obj.winner, obj.winTicketID, curBonusInEth, obj.randomVal);
+        const bonusForWinner = ethers.utils.formatUnits(obj.bonusForWinner, 'ether');
+
+        return new GameRoundInfo(obj.randomHash, dTime, obj.winner, obj.winTicketID,
+            curBonusInEth, obj.randomVal, bonusForWinner);
     }
 }
 
@@ -83,8 +86,7 @@ function __loadPageData() {
     loadGameSettings().then(async r => {
         setupSystemData();
 
-        loadCurrentRoundMeta().then(r => {
-            setupCurrentRoundData();
+        setupCurrentRoundData().then(r => {
         });
 
         loadPersonalMeta().then(r => {
@@ -111,19 +113,6 @@ async function loadGameSettings() {
         showDialog(DLevel.Warning, "load game settings from block chain failed");
     } finally {
         hideLoading()
-    }
-}
-
-async function loadCurrentRoundMeta() {
-    try {
-
-        const gameInfo = await lotteryGameContract.gameInfoRecord(gameSettings.roundNo);
-
-        currentRoundData = GameRoundInfo.fromBlockChainObj(gameInfo);
-
-    } catch (err) {
-        console.log(err);
-        showDialog(DLevel.Warning, "load game data from block chain failed");
     }
 }
 
@@ -157,22 +146,30 @@ function setupSystemData() {
     document.querySelector(".ticket-price-for-outer-user").textContent = gameSettings.tickPriceInEth;
 }
 
-function setupCurrentRoundData() {
+async function setupCurrentRoundData() {
+    try {
 
-    document.getElementById("prize-pool-bonus-val").textContent = currentRoundData.curBonus;
-    document.getElementById("prize-pool-random-hash").textContent = currentRoundData.hash;
-    document.getElementById("prize-pool-tick-no").textContent = gameSettings.voteNo;
+        const gameInfo = await lotteryGameContract.gameInfoRecord(gameSettings.roundNo);
+        const data = GameRoundInfo.fromBlockChainObj(gameInfo);
 
-    const elem = document.getElementById("prize-pool-discover-time");
-    startCountdown(currentRoundData.dTime, function (days, hours, minutes, seconds, finished) {
-        if (finished) {
-            elem.innerText = i18next.t('game-status-with-draw');
-            return;
-        }
+        document.getElementById("prize-pool-bonus-val").textContent = data.curBonus;
+        document.getElementById("prize-pool-random-hash").textContent = data.hash;
+        document.getElementById("prize-pool-tick-no").textContent = gameSettings.voteNo;
 
-        elem.innerText = days + i18next.t('game-status-day') + hours + i18next.t('game-status-hour') + minutes
-            + i18next.t('game-status-minute') + seconds + i18next.t('game-status-second');
-    });
+        const elem = document.getElementById("prize-pool-discover-time");
+        startCountdown(data.dTime, function (days, hours, minutes, seconds, finished) {
+            if (finished) {
+                elem.innerText = i18next.t('game-status-with-draw');
+                return;
+            }
+
+            elem.innerText = days + i18next.t('game-status-day') + hours + i18next.t('game-status-hour') + minutes
+                + i18next.t('game-status-minute') + seconds + i18next.t('game-status-second');
+        });
+    } catch (err) {
+        console.log(err);
+        showDialog(DLevel.Warning, "load game data from block chain failed");
+    }
 }
 
 function setupPersonalData() {
@@ -203,48 +200,8 @@ function showPersonalTicket() {
             row = tableBody.insertRow();
         }
         let cell = row.insertCell();
-        const tid = personalData.tickets[i];
-        cell.innerHTML = tid;
-
-        const teamID = personalData.tickMap.get(tid)
-        if (teamID === __noTeamID) {
-            cell.title = __noTeamTxt;
-            cell.style.background = 'rgba(222, 64, 51, 0.3)';
-        } else {
-            cell.title = "团队: " + teamID;
-        }
-
+        cell.innerHTML = personalData.tickets[i];
         counter++;
-    }
-}
-
-function showTeamDetail() {
-    if (!personalData || personalData.tickets.length === 0) {
-        return;
-    }
-
-    const teamDiv = document.querySelector('.user-team');
-    const isShowing = teamDiv.style.display === 'block';
-    teamDiv.style.display = isShowing ? 'none' : 'block';
-
-    if (isShowing) {
-        const teamDetailDiv = document.querySelector('.team-detail-for-one');
-        teamDetailDiv.style.display = 'none';
-        return;
-    }
-
-    const tableBody = document.getElementById("team-detail-body");
-    tableBody.innerHTML = '';
-    for (let i = 0; i < personalData.teams.length; i++) {
-        const teamHash = personalData.teams[i];
-        if (teamHash === __noTeamID) {
-            continue;
-        }
-        let row = tableBody.insertRow();
-        let cell = row.insertCell();
-        cell.innerHTML = teamHash
-        cell = row.insertCell();
-        cell.innerHTML = `<button class="team-detail-in-one-team" onclick="showOneTeamDetails('${teamHash}')">` + i18next.t('detail-btn') + `</button>`;
     }
 }
 
@@ -252,37 +209,6 @@ function hideOneTeamDetails() {
     const teamDetailDiv = document.querySelector('.team-detail-for-one');
     teamDetailDiv.style.display = 'none';
 }
-
-async function showOneTeamDetails(team) {
-    // console.log(team);
-    const teamDetailDiv = document.querySelector('.team-detail-for-one');
-    teamDetailDiv.style.display = 'block';
-
-    try {
-        showWaiting("syncing from block chain")
-        const obj = await lotteryGameContract.teamMembers(gameSettings.roundNo, team);
-
-        document.getElementById("team-detail-for-one-memNo").textContent = obj.memNo;
-        document.getElementById("team-detail-for-one-tickNo").textContent = obj.voteNo;
-
-        const tableBody = document.getElementById("team-detail-for-one-body");
-        tableBody.innerHTML = '';
-        for (let i = 0; i < obj.voteNos.length; i++) {
-
-            let row = tableBody.insertRow();
-            let cell = row.insertCell();
-            cell.innerHTML = obj.members[i];
-
-            cell = row.insertCell();
-            cell.innerHTML = obj.voteNos[i];
-        }
-    } catch (err) {
-        showDialog(DLevel.Warning, "load team detail failed")
-    } finally {
-        hideLoading();
-    }
-}
-
 
 function showGameRule(className) {
     const gameRuleDiv = document.querySelector(className);
@@ -461,7 +387,7 @@ function showUserWinHistory() {
     if (cachedWinnerHistoryData.length === 0) {
         return;
     }
-    const historyDiv = document.querySelector('.winTeam-history-list');
+    const historyDiv = document.querySelector('.winner-history-list');
     const isShowing = historyDiv.style.display === 'block';
     historyDiv.style.display = isShowing ? 'none' : 'block';
     historyDiv.innerHTML = '';
@@ -479,21 +405,12 @@ function showUserWinHistory() {
             winnerCard.querySelector('.one-round-ticket-id').textContent = obj.win_ticket_id;
             winnerCard.querySelector('.one-round-round-val').textContent = obj.round_no;
             winnerCard.querySelector('.one-round-discover-val').textContent = formatTime(obj.discover_time);
-
-            if (obj.win_team === __noTeamID) {
-                winnerCard.querySelector('.team-id-txt.type').textContent = __noTeamTxt;
-                winnerCard.querySelector('.team-id-txt.id').textContent = '';
-                winnerCard.querySelector('.one-round-bonus-for-me').textContent = obj.bonus;
-
-            } else {
-                winnerCard.querySelector('.team-id-txt.id').textContent = obj.win_team;
-                winnerCard.querySelector('.team-id-txt.type').textContent = i18next.t('winning-history-type-team');
-                winnerCard.querySelector('.one-round-bonus-for-me').textContent = obj.bonus / 2;
-            }
+            winnerCard.querySelector('.one-round-bonus-for-me').textContent = obj.bonus;
 
             historyDiv.appendChild(winnerCard);
         }
     } catch (err) {
+        console.log(err)
         showDialog(DLevel.Warning, "load err:" + err.toString())
     }
     syncWinnerHistoryData().then(r => {

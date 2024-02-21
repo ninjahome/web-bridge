@@ -6,7 +6,7 @@ function toHex(number) {
 const __globalContractConf = new Map([
     [toHex(421614), {
         tweetVote: "0xbC086f9cF06Bc186a1a6eB619b50302dD347518C",
-        gameLottery: "0x3301C1911c399e6F13e2533a069e2584d34d5360",
+        gameLottery: "0x60d33B5AC804419cfAD6F693d52317932881a880",
         kolKey: "0x8836D288165F6136b2be970DAed0612B37dD0B6A",
         postPrice: "0.005",
         votePrice: "0.005"
