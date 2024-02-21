@@ -355,11 +355,12 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
     public
     view
     returns (
-        uint256,
-        uint256,
-        uint256,
-        uint256,
-        bool
+        uint256 roundNo,
+        uint256 tBonus,
+        uint256 curTicketNo,
+        uint256 tickPrice,
+        uint256 bonusPoint,
+        bool isOpenForOuter
     )
     {
         return (
@@ -367,6 +368,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             totalBonus,
             ticketsRecords[currentRoundNo].length,
             __ticketPriceForOuter,
+            bonusForPoints,
             __openToOuterPlayer
         );
     }

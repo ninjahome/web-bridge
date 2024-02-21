@@ -1558,6 +1558,13 @@
         </div>
     </div>
     <div class="right-operation-area">
+        <div class="bonus-for-points">
+            <div class="bonus-for-points-bonus">
+                <span class="bonus-for-points-tittle"><span class="bonus-for-points-value" id="bonus-for-points-value">0.00</span> ETH</span>
+            </div>
+            <div class="bonus-for-points-sub-tittle"><span class="bonus-for-points-tittle" id="bonus-for-points-tittle">积分奖金池</span>
+            </div>
+        </div>
         <div class="lottery-game-info" id="lottery-game-info">
             <div class="lottery-round-info">
                 <div class="lottery-round"><span id="lottery-round-tittle-1">第</span><span
@@ -1668,7 +1675,7 @@
                 </button>
             </div>
             <label style="color: #898989; font-size: 14px; margin-left: 54px">
-                <input type="checkbox" id="shareOnTwitter" checked>
+                <input type="checkbox" id="shareOnTwitter">
                 <span id="btn-tittle-share-when-vote">转发到推特</span>
             </label>
         </div>
@@ -1899,6 +1906,7 @@
                         "lottery-info-content-10": "If a user who placed an individual bet wins, that user will receive the entire prize pool.",
                         "lottery-info-content-11": "4. Post tweets to earn income.",
                         "lottery-info-content-12": "You need to bind your Arbitrum address and Twitter account, then click to tweet on this platform, and the tweet will be forwarded to your Twitter account synchronously. Other users can then vote and tip under your tweet, and you can earn creator income.",
+                        "bonus-for-points-tittle": "Points Prize Pool",
                     }
                 },
                 zh: {
@@ -1971,6 +1979,7 @@
                         "lottery-info-content-10": "若单独投注的用户中奖，则该用户独得所有奖池",
                         "lottery-info-content-11": "4.发布推文,赚取收益",
                         "lottery-info-content-12": "需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益",
+                        "bonus-for-points-tittle": "积分奖金池",
                     }
                 }
             }
@@ -2065,6 +2074,9 @@
         document.getElementById("lottery-info-content-10").textContent = i18next.t('lottery-info-content-10');
         document.getElementById("lottery-info-content-11").textContent = i18next.t('lottery-info-content-11');
         document.getElementById("lottery-info-content-12").textContent = i18next.t('lottery-info-content-12');
+
+        document.getElementById("bonus-for-points-tittle").textContent = i18next.t('bonus-for-points-tittle');
+
     }
 </script>
 </body>

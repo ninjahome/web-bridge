@@ -776,27 +776,32 @@ const gameContractABI =`
         "outputs": [
             {
                 "internalType": "uint256",
-                "name": "",
+                "name": "roundNo",
                 "type": "uint256"
             },
             {
                 "internalType": "uint256",
-                "name": "",
+                "name": "tBonus",
                 "type": "uint256"
             },
             {
                 "internalType": "uint256",
-                "name": "",
+                "name": "curTicketNo",
                 "type": "uint256"
             },
             {
                 "internalType": "uint256",
-                "name": "",
+                "name": "tickPrice",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "bonusPoint",
                 "type": "uint256"
             },
             {
                 "internalType": "bool",
-                "name": "",
+                "name": "isOpenForOuter",
                 "type": "bool"
             }
         ],

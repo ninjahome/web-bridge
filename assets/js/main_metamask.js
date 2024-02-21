@@ -17,15 +17,17 @@ async function initVoteContractMeta() {
 
 async function initGameContractMeta() {
 
-    const [currentRoundNo, totalBonus, voteNo] = await lotteryGameContract.systemSettings();
+    const [currentRoundNo, totalBonus, voteNo,price, bonusPoint] = await lotteryGameContract.systemSettings();
+    // console.log(price, bonusPoint);
     const gameInfo = await lotteryGameContract.gameInfoRecord(currentRoundNo);
 
     const curBonusInEth = ethers.utils.formatUnits(gameInfo.bonus, 'ether');
     const dTime = gameInfo.discoverTime.toNumber() * 1000;
     const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
+    const bonusForPoint = ethers.utils.formatUnits(bonusPoint, 'ether');
 
     gameContractMeta = new GameBasicInfo(currentRoundNo,
-        totalBonusInEth, voteNo, curBonusInEth, dTime);
+        totalBonusInEth, voteNo, curBonusInEth, dTime,bonusForPoint);
 }
 
 async function initBlockChainContract(provider) {

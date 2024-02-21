@@ -6,6 +6,7 @@ async function setupGameInfo(startCounter) {
     gameArea.querySelector('.lottery-amount').textContent = gameContractMeta.curBonus;
     document.getElementById('lottery-total-amount').textContent = gameContractMeta.totalBonus;
     document.getElementById('lottery-current-ticket-amount').textContent = gameContractMeta.ticketNo;
+    document.getElementById('bonus-for-points-value').textContent = gameContractMeta.bonusForPoint;
 
     if (!startCounter) {
         return;

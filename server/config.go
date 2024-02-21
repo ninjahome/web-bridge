@@ -202,7 +202,7 @@ func (c *SysConf) getHistoryBonus() (*big.Float, error) {
 		return nil, err
 	}
 
-	_, totalBonus, _, _, _, err := game.SystemSettings(nil)
+	result, err := game.SystemSettings(nil)
 
 	if err != nil {
 		util.LogInst().Err(err).Msg("query game system setting failed")
@@ -210,7 +210,7 @@ func (c *SysConf) getHistoryBonus() (*big.Float, error) {
 	}
 
 	weiToEth := new(big.Float).SetInt(big.NewInt(1e18))
-	bonusEth := new(big.Float).Quo(new(big.Float).SetInt(totalBonus), weiToEth)
+	bonusEth := new(big.Float).Quo(new(big.Float).SetInt(result.TBonus), weiToEth)
 
 	return bonusEth, nil
 }
