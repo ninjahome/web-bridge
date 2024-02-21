@@ -457,15 +457,6 @@ async function syncWinnerHistoryData() {
     document.querySelector('.personal-winning-count').textContent = "" + cachedWinnerHistoryData.length;
 }
 
-async function syncWinTeamHistoryData() {
-    const data = await GetToSrvByJson('/queryWinTeamHistory');
-    if (!data) {
-        return;
-    }
-    cachedWinTeamHistoryData = data;
-    document.querySelector('.team-winning-count').textContent = "" + cachedWinTeamHistoryData.length;
-}
-
 function showUserWinHistory() {
     if (cachedWinnerHistoryData.length === 0) {
         return;

@@ -22,7 +22,6 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
-	"strings"
 	"syscall"
 	"time"
 )
@@ -463,51 +462,6 @@ func (gs *GameService) updateDiscoverInfo(result *GameResult) error {
 	return err
 }
 
-func (gs *GameService) saveWinTeamInfo(game *ethapi.TweetLotteryGame, gi *ethapi.GamInfoOnChain) {
-	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
-	defer cancel()
-	ti, err := game.MemberInfoOfWinTeam(nil, gi.RoundNo, gi.WinTeam)
-	if err != nil {
-		util.LogInst().Err(err).Int64("round-no", gi.RoundNo).Msg("failed to load winner team info")
-		return
-	}
-	if ti.MemNo <= 1 {
-		util.LogInst().Debug().Int64("round-no", gi.RoundNo).
-			Str("team", gi.WinTeam).Msg("only one winner in this team")
-		return
-	}
-
-	for i, member := range ti.Members {
-
-		vote := ti.VoteNos[i].Int64()
-		if strings.ToLower(member.String()) == strings.ToLower(gi.Winner) {
-			if vote <= 1 {
-				util.LogInst().Debug().Str("winner", gi.Winner).Msg("exclude winner")
-				continue
-			}
-			vote -= 1
-		}
-
-		key := fmt.Sprintf("%s-%d", member.String(), gi.RoundNo)
-		winTeamDoc := gs.fileCli.Collection(database.DBTableWinTeamForMember).Doc(key)
-		var item = &ethapi.WinInfoForTeamMember{
-			RoundNo:      gi.RoundNo,
-			WinTeam:      gi.WinTeam,
-			Bonus:        gi.Bonus,
-			MemberAddr:   strings.ToLower(member.String()),
-			MemberVoteNo: vote,
-			TotalVoteNo:  ti.VoteNo,
-			TotalMemNo:   ti.MemNo,
-		}
-
-		_, err = winTeamDoc.Set(opCtx, item)
-		if err != nil {
-			util.LogInst().Err(err).Str("eth-addr", member.String()).Msg("save user's win team info failed")
-		}
-	}
-	util.LogInst().Info().Int64("round-no", gi.RoundNo).Msg("save winner team for user success")
-}
-
 func (gs *GameService) saveGameHistoryData(no string) {
 
 	roundNo, success := big.NewInt(0).SetString(no, 10)
@@ -544,8 +498,6 @@ func (gs *GameService) saveGameHistoryData(no string) {
 		util.LogInst().Err(err).Str("round-no", roundNo.String()).Msg("failed to save game info to database")
 		return
 	}
-
-	go gs.saveWinTeamInfo(game, result)
 
 	util.LogInst().Info().Str("round-no", roundNo.String()).Msg("save game history data success")
 }
@@ -585,8 +537,6 @@ func (gs *GameService) batchSaveGameHistoryData(start, end *big.Int) {
 		if err != nil {
 			panic(err)
 		}
-		go gs.saveWinTeamInfo(game, chain)
-
 		util.LogInst().Info().Int64("round-no", roundNo).Msg("save game history data success")
 	}
 	time.Sleep(time.Second * 15)

@@ -25,24 +25,9 @@ func (c *GamInfoOnChain) String() string {
 	return string(bts)
 }
 
-type WinInfoForTeamMember struct {
-	RoundNo      int64   `json:"round_no"  firestore:"round_no"`
-	WinTeam      string  `json:"win_team"  firestore:"win_team"`
-	Bonus        float64 `json:"bonus"  firestore:"bonus"`
-	MemberAddr   string  `json:"member_addr"  firestore:"member_addr"`
-	MemberVoteNo int64   `json:"member_vote_no"  firestore:"member_vote_no"`
-	TotalVoteNo  int64   `json:"total_vote_no"  firestore:"total_vote_no"`
-	TotalMemNo   int64   `json:"total_mem_no"  firestore:"total_mem_no"`
-}
-
-func (c *WinInfoForTeamMember) String() string {
-	bts, _ := json.Marshal(c)
-	return string(bts)
-}
-
-func (_TweetLotteryGame *TweetLotteryGameCaller) GameInfoRecordEx(opts *bind.CallOpts, arg0 *big.Int) (*GamInfoOnChain, error) {
+func (_TweetLotteryGame *TweetLotteryGameCaller) GameInfoRecordEx(opts *bind.CallOpts, roundNo *big.Int) (*GamInfoOnChain, error) {
 	var out []interface{}
-	err := _TweetLotteryGame.contract.Call(opts, &out, "gameInfoRecord", arg0)
+	err := _TweetLotteryGame.contract.Call(opts, &out, "gameInfoRecord", roundNo)
 
 	construct := new(GamInfoOnChain)
 	if err != nil {
@@ -103,28 +88,4 @@ type TeamInfos struct {
 	MemNo   int64
 	VoteNos []*big.Int
 	Members []common.Address
-}
-
-func (_TweetLotteryGame *TweetLotteryGameCaller) MemberInfoOfWinTeam(opts *bind.CallOpts, roundNo int64, teamId string) (*TeamInfos, error) {
-
-	bts, err := hexutil.Decode(teamId)
-	if err != nil {
-		return nil, err
-	}
-
-	var tweet [32]byte
-	copy(tweet[:], bts)
-	var out []interface{}
-	err = _TweetLotteryGame.contract.Call(opts, &out, "teamMembers", big.NewInt(roundNo), tweet)
-	if err != nil {
-		return nil, err
-	}
-
-	var ti TeamInfos
-	ti.VoteNo = (*abi.ConvertType(out[0], new(*big.Int)).(**big.Int)).Int64()
-	ti.MemNo = (*abi.ConvertType(out[1], new(*big.Int)).(**big.Int)).Int64()
-	ti.VoteNos = *abi.ConvertType(out[2], new([]*big.Int)).(*[]*big.Int)
-	ti.Members = *abi.ConvertType(out[3], new([]common.Address)).(*[]common.Address)
-
-	return &ti, err
 }

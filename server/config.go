@@ -45,7 +45,6 @@ var (
 		"/mostVotedKol":             {mostVotedKol, true},
 		"/queryTweetByHash":         {queryTweetByHash, true},
 		"/queryWinHistory":          {queryWinHistory, true},
-		"/queryWinTeamHistory":      {queryWinTeamHistory, true},
 	}
 
 	cfgHtmlFileRouter = map[string]string{

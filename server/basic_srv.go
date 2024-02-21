@@ -341,21 +341,3 @@ func queryWinHistory(w http.ResponseWriter, r *http.Request, nu *database.NinjaU
 
 	util.LogInst().Info().Int("len", len(data)).Msg("query winner history success")
 }
-
-func queryWinTeamHistory(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
-	var data, err = database.DbInst().QueryGameWinTeam(nu.EthAddr)
-	if err != nil {
-		util.LogInst().Err(err).Str("web3-id", nu.EthAddr).
-			Msg("failed to query game winner")
-
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	bts, _ := json.Marshal(data)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(bts)
-
-	util.LogInst().Info().Int("len", len(data)).Msg("query win team history data success")
-}
