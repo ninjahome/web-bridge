@@ -804,6 +804,32 @@
         }
     </style>
     <style about="game-lottery">
+
+        .bonus-for-points {
+            height: 66px;
+            background-image: url("/assets/file/bonus-for-points-img.png");
+            background-repeat: no-repeat; /* 防止背景图重复 */
+            background-position: center; /* 背景图居中 */
+            margin: 8px 0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .bonus-for-points-value {
+            font-size: 26px;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+
+        .bonus-for-points-sub-tittle {
+            color: #898989;
+        }
+
+        .bonus-for-points-sub-tittle .bonus-for-points-tittle {
+            margin-left: 16px;
+        }
+
         .lottery-round-info,
         .lottery-timer {
             width: 348px;
@@ -1559,10 +1585,11 @@
     </div>
     <div class="right-operation-area">
         <div class="bonus-for-points">
+            <div class="bonus-for-points-sub-tittle">
+                <span class="bonus-for-points-tittle" id="bonus-for-points-tittle">积分奖金池</span>
+            </div>
             <div class="bonus-for-points-bonus">
                 <span class="bonus-for-points-tittle"><span class="bonus-for-points-value" id="bonus-for-points-value">0.00</span> ETH</span>
-            </div>
-            <div class="bonus-for-points-sub-tittle"><span class="bonus-for-points-tittle" id="bonus-for-points-tittle">积分奖金池</span>
             </div>
         </div>
         <div class="lottery-game-info" id="lottery-game-info">
