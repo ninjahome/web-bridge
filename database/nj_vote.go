@@ -71,8 +71,10 @@ func (dm *DbManager) queryVoteStatus(voter bool, target string, tx *firestore.Tr
 
 	if voter {
 		nu.VoteCount += vote.VoteCount
+		nu.Points += __dbConf.PointForVote * vote.VoteCount
 	} else {
 		nu.BeVotedCount += vote.VoteCount
+		nu.Points += __dbConf.PointForBeVote * vote.VoteCount
 	}
 
 	return njDoc, &nu, nil
@@ -120,13 +122,23 @@ func (dm *DbManager) updateStatus(status *voteStatusForDb, tx *firestore.Transac
 		return err
 	}
 
-	err = tx.Update(status.voterDoc, []firestore.Update{{Path: "vote_count", Value: status.voterObj.VoteCount}})
+	voterUpdates := []firestore.Update{
+		{Path: "vote_count", Value: status.voterObj.VoteCount},
+		{Path: "points", Value: status.voterObj.Points},
+	}
+
+	err = tx.Update(status.voterDoc, voterUpdates)
 	if err != nil {
 		util.LogInst().Err(err).Msg("update voter doc err")
 		return err
 	}
 
-	err = tx.Update(status.votedDoc, []firestore.Update{{Path: "be_voted_count", Value: status.votedObj.BeVotedCount}})
+	votedUpdates := []firestore.Update{
+		{Path: "be_voted_count", Value: status.votedObj.BeVotedCount},
+		{Path: "points", Value: status.votedObj.Points},
+	}
+
+	err = tx.Update(status.votedDoc, votedUpdates)
 	if err != nil {
 		util.LogInst().Err(err).Msg("update voted  doc err")
 		return err

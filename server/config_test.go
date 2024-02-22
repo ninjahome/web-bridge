@@ -12,11 +12,9 @@ import (
 
 func TestCreateDefaultConfigFile(t *testing.T) {
 	cfg := &SysConf{
-		LogLevel:   "debug",
-		HttpPort:   "8880",
-		Slogan:     "Buy my tweet right on",
-		VoteSlogan: "I pay this tweet ",
-		UrlHome:    "https://bridge.simplenets.org",
+		LogLevel: "debug",
+		HttpPort: "8880",
+		UrlHome:  "https://bridge.simplenets.org",
 		HttpConf: &HttpConf{
 			RefreshContent: true,
 			UseHttps:       false,
@@ -39,6 +37,8 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			DatabaseID:     database.DefaultDatabaseID,
 			KeyFilePath:    "dessage-c3b5c95267fb.json",
 			LocalRun:       false,
+			PointForVote:   2,
+			PointForBeVote: 1,
 		},
 		BCConf: &blockchain.BCConf{
 			TweeTVoteContractAddress: "0x63713037a9E337D7Db5D383070199B948598e0Da",
