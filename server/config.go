@@ -29,6 +29,7 @@ var (
 		"/queryNjBasicByID":         {queryNjBasicByID, true},
 		"/signOut":                  {signOut, false},
 		"/main":                     {mainPage, true},
+		"/refreshNjUser":            {refreshNjUser, true},
 		"/lotteryGame":              {showLotteryMain, true},
 		"/kolKey":                   {showKolKeyPage, true},
 		"/postTweet":                {postTweets, true},

@@ -295,6 +295,7 @@ async function voteToTheTweet(obj, callback) {
             obj.vote_count = newVote.vote_count;
             __updateVoteNumberForTweet(obj, newVote).then(() => {
             });
+            reloadSelfNjData().then(()=>{});
             if (shareToTweet && ninjaUserObj.tw_id) {
                 __shareVoteToTweet(create_time, vote_count).then(() => {
                 });
@@ -369,4 +370,17 @@ async function showTargetTweetDetail() {
     const newUrl = rootUrl + '/main';
 
     history.pushState(null, '', newUrl);
+}
+
+async function reloadSelfNjData() {
+    try{
+        nj_data = await GetToSrvByJson("/refreshNjUser");
+        console.log(nj_data);
+        ninjaUserObj= nj_data;
+        document.getElementById("dessage-web3-token").innerText = ninjaUserObj.points;
+
+    }catch (err){
+        console.log(err)
+        showDialog(DLevel.Warning,"reload session failed:" + err.toString())
+    }
 }

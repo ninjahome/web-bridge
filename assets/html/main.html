@@ -1726,7 +1726,7 @@
 </div>
 <script>
 
-    const ninjaUserObj = {{ .NinjaUsrInfoJson }};
+    let ninjaUserObj = {{ .NinjaUsrInfoJson }};
     const targetTweet = {{.TargetTweet }};
 
     let curScrollContentID = 0;
@@ -1814,7 +1814,10 @@
 
 
     async function setupUserBasicInfoInSetting() {
+
+        document.getElementById("dessage-web3-token").innerText = ninjaUserObj.points;
         document.getElementById("basic-web3-id").innerText = ninjaUserObj.eth_addr;
+
         if (!ninjaUserObj.tw_id) {
             return;
         }

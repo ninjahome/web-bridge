@@ -152,6 +152,25 @@ func (p *OuterLinkParam) GetValidId() string {
 	return p.ShareID
 }
 
+func refreshNjUser(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	newNu, err := database.DbInst().QueryNjUsrById(nu.EthAddr)
+	if err != nil {
+		util.LogInst().Err(err).Msg("load nj user failed")
+		http.Error(w, "load nj user failed", http.StatusBadRequest)
+		return
+	}
+
+	err = SMInst().Set(r, w, sesKeyForRightCheck, newNu.RawData())
+	if err != nil {
+		util.LogInst().Err(err).Msg("set session for nj user failed")
+		http.Error(w, "set session for nj user failed", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(newNu.RawData())
+}
 func mainPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 
 	var param OuterLinkParam

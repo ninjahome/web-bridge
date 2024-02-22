@@ -77,12 +77,12 @@ func NewMainService() *MainService {
 				_ = SMInst().Set(request, writer, BuyRightsUrlKey, param.Data())
 			}
 
-			var token = validateUsrRights(request)
-			if token == nil {
+			var njUserData = validateUsrRights(request)
+			if njUserData == nil {
 				http.Redirect(writer, request, "/signIn", http.StatusFound)
 				return
 			}
-			action.Action(writer, request, token)
+			action.Action(writer, request, njUserData)
 		}).Methods("GET", "POST")
 	}
 
