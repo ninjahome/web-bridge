@@ -51,7 +51,7 @@ func (dm *DbManager) queryVoteRecord(createTime, voter string, tx *firestore.Tra
 	return recordDoc, &votedObj, nil
 }
 
-func (dm *DbManager) queryVoteStatus(voter bool, target string, tx *firestore.Transaction, vote *TweetVoteAction) (*firestore.DocumentRef, *NinjaUsrInfo, error) {
+func (dm *DbManager) queryVoteStatus(voter, sameOwner bool, target string, tx *firestore.Transaction, vote *TweetVoteAction) (*firestore.DocumentRef, *NinjaUsrInfo, error) {
 	njDoc := dm.fileCli.Collection(DBTableNJUser).Doc(target)
 
 	voteSnapshot, err := tx.Get(njDoc)
@@ -61,6 +61,7 @@ func (dm *DbManager) queryVoteStatus(voter bool, target string, tx *firestore.Tr
 			Msg("failed to get nj user")
 		return nil, nil, err
 	}
+
 	var nu NinjaUsrInfo
 	err = voteSnapshot.DataTo(&nu)
 	if err != nil {
@@ -69,12 +70,16 @@ func (dm *DbManager) queryVoteStatus(voter bool, target string, tx *firestore.Tr
 		return nil, nil, err
 	}
 
-	if voter {
-		nu.VoteCount += vote.VoteCount
-		nu.Points += __dbConf.PointForVote * vote.VoteCount
+	if sameOwner {
+		nu.Points += (__dbConf.PointForVote + __dbConf.PointForBeVote) * vote.VoteCount
 	} else {
-		nu.BeVotedCount += vote.VoteCount
-		nu.Points += __dbConf.PointForBeVote * vote.VoteCount
+		if voter {
+			nu.VoteCount += vote.VoteCount
+			nu.Points += __dbConf.PointForVote * vote.VoteCount
+		} else {
+			nu.BeVotedCount += vote.VoteCount
+			nu.Points += __dbConf.PointForBeVote * vote.VoteCount
+		}
 	}
 
 	return njDoc, &nu, nil
@@ -95,12 +100,13 @@ func (dm *DbManager) queryStatus(createTime, voter, voted string, tx *firestore.
 		return nil, err
 	}
 
-	voterDoc, voterObj, err := dm.queryVoteStatus(true, voter, tx, vote)
+	sameOwner := voter == voted
+	voterDoc, voterObj, err := dm.queryVoteStatus(true, sameOwner, voter, tx, vote)
 	if err != nil {
 		return nil, err
 	}
 
-	votedDoc, votedObj, err := dm.queryVoteStatus(false, voted, tx, vote)
+	votedDoc, votedObj, err := dm.queryVoteStatus(false, sameOwner, voted, tx, vote)
 	if err != nil {
 		return nil, err
 	}

@@ -537,10 +537,11 @@ function decreaseVote() {
     voteCountElement.value = newVoteCount.toString();
 }
 
-async function __shareVoteToTweet(create_time, vote_count) {
+async function __shareVoteToTweet(create_time, vote_count,slogan) {
     await PostToSrvByJson("/shareVoteAction", {
         create_time: create_time,
         vote_count: Number(vote_count),
+        slogan:slogan,
     });
 }
 

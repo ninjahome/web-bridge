@@ -297,7 +297,7 @@ async function voteToTheTweet(obj, callback) {
             });
             reloadSelfNjData().then(()=>{});
             if (shareToTweet && ninjaUserObj.tw_id) {
-                __shareVoteToTweet(create_time, vote_count).then(() => {
+                __shareVoteToTweet(create_time, vote_count,  i18next.t('voter-slogan')).then(() => {
                 });
             }
             if (callback) {
@@ -373,14 +373,13 @@ async function showTargetTweetDetail() {
 }
 
 async function reloadSelfNjData() {
-    try{
+    let nj_data;
+    try {
         nj_data = await GetToSrvByJson("/refreshNjUser");
-        console.log(nj_data);
-        ninjaUserObj= nj_data;
-        document.getElementById("dessage-web3-token").innerText = ninjaUserObj.points;
-
-    }catch (err){
+        ninjaUserObj = nj_data;
+        await setupUserBasicInfoInSetting();
+    } catch (err) {
         console.log(err)
-        showDialog(DLevel.Warning,"reload session failed:" + err.toString())
+        showDialog(DLevel.Warning, "reload session failed:" + err.toString())
     }
 }

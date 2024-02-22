@@ -74,7 +74,7 @@ func twitterApiPost(url string, token *oauth1.Token,
 
 func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) (*TweetRequest, error) {
 
-	var appendStr = _globalCfg.GetNjProtocolAd(njTweet.CreateAt, njTweet.Slogan)
+	var appendStr = _globalCfg.GetNjProtocolAd(njTweet.CreateAt)
 	var combinedTxt = njTweet.Txt + appendStr
 	if !util.IsOverTwitterLimit(combinedTxt) {
 		return &TweetRequest{

@@ -358,7 +358,7 @@ async function procTicketPayment(no, ifShare) {
         showDialog(DLevel.Success, "buy success");
 
         if (ifShare) {
-            __shareVoteToTweet(0, no).then(r => {
+            __shareVoteToTweet(0, no, i18next.t('voter-slogan')).then(r => {
                 console.log("share to twitter success")
             });
         }

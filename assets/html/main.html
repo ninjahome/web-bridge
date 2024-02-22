@@ -1810,6 +1810,7 @@
 
     async function setupUserBasicInfoInSetting() {
 
+        document.getElementById('tweet-no-has-income').innerText = ninjaUserObj.tweet_count;
         document.getElementById("dessage-web3-token").innerText = ninjaUserObj.points;
         document.getElementById("basic-web3-id").innerText = ninjaUserObj.eth_addr;
 
@@ -1831,17 +1832,18 @@
 
             showWaiting("syncing from block chain");
 
-            await setupUserBasicInfoInSetting();
 
             await reloadGameBalance();
             await reloadTweetBalance();
 
-            const obj = await loadNJUserInfoFromSrv(ninjaUserObj.eth_addr, true);
+            const obj = await loadNJUserInfoFromSrv(ninjaUserObj.eth_addr, false);
             if (!obj) {
                 console.log("can't be empty")
                 return;
             }
-            document.getElementById('tweet-no-has-income').innerText = obj.tweet_count;
+            ninjaUserObj = obj;
+            await setupUserBasicInfoInSetting();
+
         } catch (err) {
             checkMetamaskErr(err);
         } finally {
@@ -1932,6 +1934,7 @@
                         "lottery-info-content-11": "4. Post tweets to earn income.",
                         "lottery-info-content-12": "You need to bind your Arbitrum address and Twitter account, then click to tweet on this platform, and the tweet will be forwarded to your Twitter account synchronously. Other users can then vote and tip under your tweet, and you can earn creator income.",
                         "bonus-for-points-tittle": "Points Prize Pool",
+                        "voter-slogan":"Come to this blockchain social network to grab lottery tickets!",
                     }
                 },
                 zh: {
@@ -2005,6 +2008,7 @@
                         "lottery-info-content-11": "4.发布推文,赚取收益",
                         "lottery-info-content-12": "需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益",
                         "bonus-for-points-tittle": "积分奖金池",
+                        "voter-slogan":"快来这个区块链社交网络撸彩票！",
                     }
                 }
             }
