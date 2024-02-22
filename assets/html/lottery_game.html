@@ -166,11 +166,24 @@
         .ticket-action {
             display: flex;
             flex-direction: row;
-            justify-content: space-between;
+            justify-content: space-around;
             list-style-type: none;
             margin-top: 12px;
             padding-top: 12px;
             border-top: 1px solid #E8E8E8;
+            position: relative; /* 设置相对定位，为伪元素定位做准备 */
+        }
+
+
+        .ticket-action::after {
+            content: ""; /* 伪元素内容为空 */
+            position: absolute; /* 绝对定位，相对于其最近的相对定位祖先（.ticket-action） */
+            left: 50%; /* 定位到容器的中央 */
+            transform: translateX(-50%); /* 确保准确居中 */
+            top: 16px; /* 从顶部开始 */
+            bottom: 0; /* 延伸到底部 */
+            width: 1px; /* 分割线宽度 */
+            background-color: #E8E8E8; /* 分割线颜色 */
         }
 
         .user-tickets,
