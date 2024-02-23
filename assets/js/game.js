@@ -269,15 +269,24 @@ function fullFillGameCard(obj, cardDiv, showHideBtn) {
 let __toRoundNo = 0;
 
 async function loadHistoryData() {
+    const parentDiv = document.querySelector('.history-data-list');
     const moreBtn = document.querySelector('.history-data-list-more-btn');
+    const isShowing = parentDiv.style.display === 'block';
+
+    if (isShowing){
+        this.textContent = i18next.t('all-history-query-btn');
+        parentDiv.style.display = 'none';
+        parentDiv.innerHTML = '';
+        moreBtn.style.display = 'none';
+        return;
+    }
+    this.textContent = i18next.t('hide-history-data-btn');
+
     moreBtn.style.display = 'block';
     __toRoundNo = gameSettings.roundNo - 1;
 
-    const parentDiv = document.querySelector('.history-data-list');
     parentDiv.style.display = 'block';
     parentDiv.innerHTML = '';
-
-    document.getElementById('hide-history-data-btn').style.display = 'block'
 
     await __loadHistoryData(parentDiv);
 }
@@ -321,14 +330,6 @@ async function __loadHistoryData(parentDiv) {
     }
 }
 
-function hideHistoryData() {
-    const parentDiv = document.querySelector('.history-data-list');
-    parentDiv.style.display = 'none';
-    parentDiv.innerHTML = '';
-    document.getElementById('hide-history-data-btn').style.display = 'none';
-    document.querySelector('.history-data-list-more-btn').style.display = 'none';
-}
-
 async function buyTicket() {
     if (!gameSettings) {
         await loadGameSettings();
@@ -341,7 +342,6 @@ async function buyTicket() {
 
     openVoteModal(procTicketPayment);
 }
-
 
 async function procTicketPayment(no, ifShare) {
     if (no === 0) {

@@ -743,15 +743,13 @@
             <button class="load-history-btn" style="display: none" onclick="hideInfoOfThisRound()" id="history-section-hide-btn">隐藏</button>
         </div>
         <div class="all-history" style="margin-top: 8px">
-            <button class="load-history-btn" onclick="loadHistoryData()" id="all-history-query-btn">加载历史数据
+            <button class="load-history-btn" onclick="loadHistoryData.call(this)" id="all-history-query-btn">加载历史数据
             </button>
             <div class="history-data-list"></div>
             <button class="history-data-list-more-btn" style="display: none" onclick="moreHistoryData()"
                     id="all-history-btn-more">更多
             </button>
-            <button class="load-history-btn" style="display: none" id="hide-history-data-btn"
-                    onclick="hideHistoryData()">隐藏历史数据
-            </button>
+
         </div>
     </div>
 </div>
@@ -1066,7 +1064,6 @@
 
         document.getElementById('all-history-query-btn').textContent = i18next.t('all-history-query-btn');
         document.getElementById('all-history-btn-more').textContent = i18next.t('all-history-btn-more');
-        document.getElementById('hide-history-data-btn').textContent = i18next.t('hide-history-data-btn');
         document.getElementById('vote-modal-tittle').textContent = i18next.t('vote-modal-tittle');
         document.getElementById('vote-modal-bet-no').textContent = i18next.t('vote-modal-bet-no');
         document.getElementById('shareOnTwitter-2').textContent = i18next.t('shareOnTwitter');
