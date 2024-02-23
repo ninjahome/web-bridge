@@ -223,6 +223,7 @@ async function showOneRoundGameInfo() {
             showDialog(DLevel.Tips, "invalid round no");
             return;
         }
+        document.getElementById('round-input').value = '';
         const queryNo = Number(roundNo);
         if (queryNo > gameSettings.roundNo) {
             showDialog(DLevel.Tips, "bigger than current round no:" + gameSettings.roundNo);
@@ -232,7 +233,7 @@ async function showOneRoundGameInfo() {
         const obj = await lotteryGameContract.gameInfoRecord(queryNo);
         const cardDiv = document.querySelector('.round-history');
 
-        fullFillGameCard(obj, cardDiv);
+        fullFillGameCard(obj, cardDiv, true);
 
     } catch (err) {
         showDialog(DLevel.Error, "failed to query form block chain:" + err.toString());
@@ -246,7 +247,7 @@ function hideInfoOfThisRound() {
     cardDiv.style.display = 'none';
 }
 
-function fullFillGameCard(obj, cardDiv) {
+function fullFillGameCard(obj, cardDiv, showHideBtn) {
     cardDiv.style.display = 'block';
     cardDiv.querySelector('.one-round-bonus-val').textContent = ethers.utils.formatUnits(obj.bonus, 'ether');
 
@@ -258,6 +259,11 @@ function fullFillGameCard(obj, cardDiv) {
     cardDiv.querySelector('.history-game-winner-address').textContent = obj.winner;
     cardDiv.querySelector('.history-game-winner-team').textContent = obj.winTeam;
     cardDiv.querySelector('.history-game-winner-ticket').textContent = obj.winTicketID;
+    if (showHideBtn) {
+        cardDiv.querySelector('.load-history-btn').style.display = 'block';
+    }else{
+        cardDiv.querySelector('.load-history-btn').style.display = 'none';
+    }
 }
 
 let __toRoundNo = 0;

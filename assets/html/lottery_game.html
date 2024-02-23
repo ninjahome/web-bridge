@@ -713,7 +713,6 @@
         <div class="history-query">
             <input id="round-input" class="round-query-input" placeholder="请输入序期号">
             <button class="query-btn" onclick="showOneRoundGameInfo()" id="history-section-query-btn">查询</button>
-            <button class="load-history-btn" onclick="hideInfoOfThisRound()" id="history-section-hide-btn">隐藏</button>
         </div>
         <div class="round-history" style="display: none" id="history-data-one-round-template">
             <ul style="color: #7E7F82">
@@ -741,6 +740,7 @@
                             style="font-size: 16px; font-weight: bold">0</span>
                 </li>
             </ul>
+            <button class="load-history-btn" style="display: none" onclick="hideInfoOfThisRound()" id="history-section-hide-btn">隐藏</button>
         </div>
         <div class="all-history" style="margin-top: 8px">
             <button class="load-history-btn" onclick="loadHistoryData()" id="all-history-query-btn">加载历史数据
@@ -884,7 +884,7 @@
                         "shareOnTwitter": "Share to Twitter",
                         "cancelButton": "Cancel",
                         "confirmButton": "Confirm",
-                        "voter-slogan":"Come to this blockchain social network to grab lottery tickets!",
+                        "voter-slogan": "Come to this blockchain social network to grab lottery tickets!",
                     }
                 },
                 zh: {
@@ -973,7 +973,7 @@
                         "shareOnTwitter": "转发到推特",
                         "cancelButton": "取消",
                         "confirmButton": "确定",
-                        "voter-slogan":"快来这个区块链社交网络撸彩票！",
+                        "voter-slogan": "快来这个区块链社交网络撸彩票！",
                     }
                 }
             }
