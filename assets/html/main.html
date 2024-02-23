@@ -1451,6 +1451,12 @@
                         <br>
                         <span><span id="user-setting-points">积分</span>:<span id="dessage-web3-token"
                                                                                class="user-ninja-noun">0.00 </span> dsg</span>
+                        <br>
+                        <span><span id="user-setting-my-voted">投票数</span>:<span id="dessage-my-vote"
+                                                                                   class="user-ninja-noun">0</span></span>
+                        <br>
+                        <span><span id="user-setting-be-voted">被投票数</span>:<span id="dessage-be-vote"
+                                                                                   class="user-ninja-noun">0</span></span>
                     </div>
                 </div>
 
@@ -1813,6 +1819,8 @@
         document.getElementById('tweet-no-has-income').innerText = ninjaUserObj.tweet_count;
         document.getElementById("dessage-web3-token").innerText = ninjaUserObj.points;
         document.getElementById("basic-web3-id").innerText = ninjaUserObj.eth_addr;
+        document.getElementById("dessage-my-vote").innerText = ninjaUserObj.vote_count;
+        document.getElementById("dessage-be-vote").innerText = ninjaUserObj.be_voted_count;
 
         if (!ninjaUserObj.tw_id) {
             return;
@@ -1903,6 +1911,8 @@
                         "user-setting-quit": "Sign Out",
                         "user-setting-sync-twitter": "Sync Twitter",
                         "user-setting-points": "Points",
+                        "user-setting-my-voted": "Number of Votes",
+                        "user-setting-be-voted": "Number of Votes Received",
                         "user-setting-tweet-income": "Tweet Revenue",
                         "user-setting-tweet-no": "Total Tweets",
                         "withdraw-history": "Withdrawal Records",
@@ -1934,7 +1944,7 @@
                         "lottery-info-content-11": "4. Post tweets to earn income.",
                         "lottery-info-content-12": "You need to bind your Arbitrum address and Twitter account, then click to tweet on this platform, and the tweet will be forwarded to your Twitter account synchronously. Other users can then vote and tip under your tweet, and you can earn creator income.",
                         "bonus-for-points-tittle": "Points Prize Pool",
-                        "voter-slogan":"Come to this blockchain social network to grab lottery tickets!",
+                        "voter-slogan": "Come to this blockchain social network to grab lottery tickets!",
                     }
                 },
                 zh: {
@@ -1977,6 +1987,8 @@
                         "user-setting-quit": "退出",
                         "user-setting-sync-twitter": "同步推特",
                         "user-setting-points": "积分",
+                        "user-setting-my-voted": "投票数",
+                        "user-setting-be-voted": "被投票数",
                         "user-setting-tweet-income": "推文收入",
                         "user-setting-tweet-no": "推文总数",
                         "withdraw-history": "提现记录",
@@ -2008,7 +2020,7 @@
                         "lottery-info-content-11": "4.发布推文,赚取收益",
                         "lottery-info-content-12": "需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益",
                         "bonus-for-points-tittle": "积分奖金池",
-                        "voter-slogan":"快来这个区块链社交网络撸彩票！",
+                        "voter-slogan": "快来这个区块链社交网络撸彩票！",
                     }
                 }
             }
@@ -2066,6 +2078,8 @@
         document.getElementById('user-setting-clear').textContent = i18next.t('user-setting-clear');
         document.getElementById('user-setting-sync-twitter').textContent = i18next.t('user-setting-sync-twitter');
         document.getElementById('user-setting-points').textContent = i18next.t('user-setting-points');
+        document.getElementById('user-setting-my-voted').textContent = i18next.t('user-setting-my-voted');
+        document.getElementById('user-setting-be-voted').textContent = i18next.t('user-setting-be-voted');
         document.getElementById('user-setting-tweet-income').textContent = i18next.t('user-setting-tweet-income');
         document.getElementById('user-setting-tweet-no').textContent = i18next.t('user-setting-tweet-no');
         document.getElementById('user-setting-tweet-income-tittle').textContent = i18next.t('user-setting-tweet-income');
