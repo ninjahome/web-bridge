@@ -37,7 +37,7 @@
         .left-menu-area {
             flex: 1; /* 左边菜单区域占据剩余空间的一部分 */
             background-color: #ffffff; /* 背景色，可根据需要调整 */
-            padding: 10px; /* 内边距 */
+            padding: 16px; /* 内边距 */
             display: flex; /* 添加flex布局 */
             flex-direction: column; /* 确保子元素垂直排列 */
         }
@@ -45,9 +45,7 @@
         .middle-content-area {
             flex: 3; /* 中间主要内容区域占据剩余空间的两部分 */
             background-color: #fff; /* 背景色，可根据需要调整 */
-            border-right: 1px solid #F7F8F9; /* 右边框线 */
-            border-left: 1px solid #F7F8F9; /* 右边框线 */
-            width: 800px;
+            width: 600px;
         }
 
         .right-operation-area {
@@ -110,7 +108,6 @@
             justify-content: space-around;
             align-items: center;
             height: 64px;
-            width: 800px;
             margin-top: 16px;
             border-bottom: 1px solid #F7F8F9;
         }
@@ -145,7 +142,6 @@
             flex-grow: 1.618;
             background-color: #e6e6e6;
             margin-bottom: 16px;
-            width: 800px;
         }
 
         .tweet-first-half {
@@ -221,11 +217,15 @@
             max-height: 400px;
             overflow: hidden;
             background-color: #fff;
-            border-bottom: 1px solid #E4E4DF;
+            border: 1px solid #F7F8F9;
+            border-top: none;
             padding: 16px;
             transition: max-height 0.3s ease;
         }
 
+        .tweet-card:hover {
+            background-color: #F7F8F9;
+        }
         .twitterAvatar {
             width: 52px;
             margin-right: 8px;
@@ -396,7 +396,6 @@
             list-style-type: none;
             padding: 0;
             margin: auto;
-            width: 800px;
         }
 
         .team-membersName,
@@ -939,7 +938,7 @@
 
         .rule-info ul li {
             list-style: none;
-            color: #464648;
+            color: #898989;
         }
 
         .rule-info ul li h4 {
@@ -1538,7 +1537,7 @@
                 </div>
 
                 <div>
-                    <ul class="team-members" style=" background-color: #F1F2F3; border-bottom: 1px solid #e7e8e9">
+                    <ul class="team-members" style="background-color: #F1F2F3;">
                     </ul>
                 </div>
             </div>
