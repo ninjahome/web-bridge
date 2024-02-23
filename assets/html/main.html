@@ -1389,7 +1389,6 @@
                                     class="vote-number">0</span></span>
                     </div>
                     <div class="tweet-action-with-status">
-                        <span id="user-tweet-label-payment">支付状态</span>: <span class="tweetPaymentStatus"></span>
                         <button class="tweetPaymentRetry cancel-btn" id="user-tweet-btn-goon-pay">继续支付</button>
                         <button class="tweetPaymentDelete" id="user-tweet-btn-delete">删除</button>
                     </div>
@@ -1524,8 +1523,6 @@
                 <span class="tweet-info"><span id="tweet-detail-signature">推文数字签名</span>:<span
                             class="tweet-signature">0x08abe2bcddad20cf2bf5a929cfb81e1dce20ba29c4d6d65d343b105c6abe3cc57f995519620298c93f060eb65080e74996c239f74524ccd0b40693e8f6c03c261b</span></span>
                 <div style="text-align: right; border-top: 1px solid #F7F8F9;padding-top: 8px;margin-top: 8px">
-                    <span class="tweet-info"><span id="tweet-detail-payment">支付状态</span>: <span
-                                class="tweet-payment_status">success</span></span>
                     <span class="tweet-info"><span id="tweet-detail-vote-no">投票数</span>: <span
                                 class="tweet-vote-number">0</span></span>
                     <button class="tweet-action-vote">
@@ -1896,7 +1893,6 @@
                         "tweet-detail-creator": "Creator Web3 ID",
                         "tweet-detail-hash": "Tweet Hash",
                         "tweet-detail-signature": "Tweet Signature",
-                        "tweet-detail-payment": "Payment Status",
                         "tweet-detail-vote-no": "Vote No",
                         "tweet-detail-vote": "Vote",
                         "back": "Back",
@@ -1974,7 +1970,6 @@
                         "tweet-detail-creator": "作者Web3 ID",
                         "tweet-detail-hash": "推文哈希",
                         "tweet-detail-signature": "推文数字签名",
-                        "tweet-detail-payment": "支付状态",
                         "back": "返回",
                         "user-tweet-btn-my-tweet": "我的推文",
                         "user-tweet-btn-my-vote": "我的投票",
@@ -2059,7 +2054,6 @@
         document.getElementById('tweet-detail-hash').textContent = i18next.t('tweet-detail-hash');
         document.getElementById('tweet-detail-signature').textContent = i18next.t('tweet-detail-signature');
 
-        document.getElementById('tweet-detail-payment').textContent = i18next.t('tweet-detail-payment');
         document.getElementById('tweet-detail-vote-no').textContent = i18next.t('label-vote-no');
         document.getElementById('tweet-detail-vote').textContent = i18next.t('btn-tittle-vote-no');
         document.getElementById('back-button-tweet-tittle').textContent = i18next.t('back');
@@ -2067,7 +2061,6 @@
         document.getElementById('user-tweet-btn-my-tweet').textContent = i18next.t('user-tweet-btn-my-tweet');
         document.getElementById('user-tweet-btn-my-vote').textContent = i18next.t('user-tweet-btn-my-vote');
         document.getElementById('user-tweet-label-vote-no').textContent = i18next.t('label-vote-no');
-        document.getElementById('user-tweet-label-payment').textContent = i18next.t('tweet-detail-payment');
         document.getElementById('user-tweet-btn-delete').textContent = i18next.t('user-tweet-btn-delete');
         document.getElementById('user-tweet-label-total-vote').textContent = i18next.t('user-tweet-label-total-vote');
         document.getElementById('user-tweet-label-my-vote').textContent = i18next.t('user-tweet-label-my-vote');

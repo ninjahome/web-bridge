@@ -26,6 +26,7 @@ async function loadTweetsUserPosted() {
         await __loadTweetAtUserPost(true, ninjaUserObj.eth_addr, cachedUserTweets, fillUserPostedTweetsList);
 
     } catch (err) {
+        console.log(err);
         showDialog(DLevel.Warning, err.toString());
     } finally {
         hideLoading();
@@ -51,9 +52,6 @@ async function __loadTweetAtUserPost(newest, web3ID, cache, callback) {
 }
 
 function __checkPayment(tweetCard, tweet) {
-    const statusElem = tweetCard.querySelector('.tweetPaymentStatus');
-    statusElem.textContent = TXStatus.Str(tweet.payment_status);
-
     if (tweet.payment_status !== TXStatus.NoPay) {
         return;
     }
@@ -68,7 +66,6 @@ function __checkPayment(tweetCard, tweet) {
         if (newObj.payment_status !== TXStatus.NoPay) {
             retryButton.classList.remove('show');
             deleteButton.classList.remove('show');
-            statusElem.textContent = TXStatus.Str(newObj.payment_status);
         }
     });
 

@@ -235,7 +235,6 @@ async function showTweetDetail(parentEleID, tweet) {
     detail.querySelector('.tweet-web3_id').textContent = tweet.web3_id;
     detail.querySelector('.tweet-prefixed-hash').textContent = tweet.prefixed_hash;
     detail.querySelector('.tweet-signature').textContent = tweet.signature;
-    detail.querySelector('.tweet-payment_status').textContent = TXStatus.Str(tweet.payment_status);
     detail.querySelector('.tweet-vote-number').textContent = tweet.vote_count;
 
     // detail.querySelector('.show-team-mates').onclick = () => showTeammates(tweet.prefixed_hash, detail);
