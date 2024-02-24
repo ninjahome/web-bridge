@@ -127,8 +127,10 @@ func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 		return err
 	}
 	nu.TweetCount += 1
+	nu.Points += __dbConf.PointForPost
 	_, err = docRef.Update(opCtx, []firestore.Update{
 		{Path: "tweet_count", Value: nu.TweetCount},
+		{Path: "points", Value: nu.Points},
 	})
 
 	return err

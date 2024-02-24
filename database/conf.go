@@ -10,6 +10,7 @@ type FileStoreConf struct {
 	KeyFilePath    string `json:"key_file_path"`
 	TweetsPageSize int    `json:"tweets_page_size"`
 	LocalRun       bool   `json:"local_run"`
+	PointForPost   int    `json:"point_for_post"`
 	PointForVote   int    `json:"point_for_vote"`
 	PointForBeVote int    `json:"point_for_be_vote"`
 }

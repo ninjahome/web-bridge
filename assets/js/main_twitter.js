@@ -146,6 +146,7 @@ function updatePaymentStatusToSrv(tweet) {
         hash: tweet.prefixed_hash
     }).then(r => {
         console.log(r);
+
     })
 }
 
