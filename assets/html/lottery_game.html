@@ -636,31 +636,38 @@
                 <button class="game-rule-btn"><img src="/assets/file/rules-info-icon.png"></button>
             </div>
             <div class="rule-info" style="display: none">
-                <h4 id="lottery-info-tittle">本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与</h4>
+                <h4 style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-tittle">玩法规则：</h4>
+                <p style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content">本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与</p>
                 <ul>
                     <li>
-                        <h4>参与游戏的推文下打赏</h4>
-                        <span>你的任何推文打赏都会有30%进入彩票奖池，30%进入积分奖池，30%归属推文作者，10%归属Dessage协议收入</span>
+                        <h4 id="lottery-info-content-1">购买彩票方式</h4>
+                        <span id="lottery-info-content-2">1.推文下打赏</span>
+                        <span id="lottery-info-content-3">你的任何推文打赏都会有30%进入彩票奖池，30%进入积分奖池，30%归属推文作者，10%归属Dessage协议收入</span>
                     </li>
                     <li>
-                        <h4>你也可以在“我的彩票”页面进行单独投注</h4>
-                        <span>单独投注的投注额的45%进入彩票奖池，45%进入积分奖池，10%归属Dessage协议收入</span>
+                        <span id="lottery-info-content-4">2.单独投注</span>
+                        <span id="lottery-info-content-5">你也可以在“我的彩票”页面进行单独投注，单独投注的投注额的45%进入彩票奖池，45%进入积分奖池，10%归属Dessage协议收入</span>
                     </li>
                 </ul>
-                <p style="font-size: 14px"><strong>积分奖池</strong> <br>在Dessage的chapter 1阶段持续累积，数额公开，在进入chapter 2阶段时将按照所有用户的积分情况等比例分配。用户获得积分的途径如下：</p>
+                <p style="font-size: 14px"><strong id="bonus-for-points-tittle">积分奖池</strong> <br>
+                    <span id="lottery-info-content-6">在Dessage的chapter 1阶段持续累积，数额公开，在进入chapter 2阶段时将按照所有用户的积分情况等比例分配。用户获得积分的途径如下：</span></p>
                 <ul>
                     <li>
-                        <p style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content-2">1.每投票一票可获得2分</p>
+                        <p style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content-7">
+                            1.每投票一票可获得2分</p>
                     </li>
                     <li>
-                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-4">2.每发推一次可获得2分</p>
+                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-8">
+                            2.每发推一次可获得2分</p>
                     </li>
                     <li>
-                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-6">3.用户发布的推文被其他用户投票时，创作者可按1分/票获得积分</p>
+                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-9">
+                            3.用户发布的推文被其他用户投票时，创作者可按1分每票获得积分</p>
                     </li>
                     <li>
-                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-11">
-                            4.chapter 1结束时， 总得票数排名前10的十篇推文投票用户可依据投票时间先后获得额外积分奖励。上述每篇推文下前10%的投票用户可获得额外10倍的投票积分奖励，前10%-20%的投票用户可获得额外9倍的投票积分奖励，以此类推。
+                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-10">
+                            4.chapter 1结束时，
+                            总得票数排名前10的十篇推文投票用户可依据投票时间先后获得额外积分奖励。上述每篇推文下前10%的投票用户可获得额外10倍的投票积分奖励，前10%-20%的投票用户可获得额外9倍的投票积分奖励，以此类推。
                         </p>
                     </li>
                     <li>
@@ -669,11 +676,13 @@
                         </p>
                     </li>
                     <li>
-                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-11">
-                            6.最早在本平台发布推文并获得超过100票投票的前十位创作者用户将会获得积分加成特权，在chapter 1通过任何方式取得的所有积分将会获得额外20%的加成
+                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-12">
+                            6.最早在本平台发布推文并获得超过100票投票的前十位创作者用户将会获得积分加成特权，在chapter
+                            1通过任何方式取得的所有积分将会获得额外20%的加成
                         </p>
-                        <p id="lottery-info-content-12" style="color: #DD2111">*积分不仅仅可用于参与积分奖池的分配，后续还能获得Dessage的其他权益</p>
-                        <span>要发布参与游戏的推文，需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益</span>
+                        <p id="lottery-info-content-13" style="color: #DD2111">
+                            *积分不仅仅可用于参与积分奖池的分配，后续还能获得Dessage的其他权益</p>
+                        <span id="lottery-info-content-14">要发布参与游戏的推文，需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益</span>
                     </li>
                 </ul>
             </div>
@@ -757,7 +766,9 @@
                             style="font-size: 16px; font-weight: bold">0</span>
                 </li>
             </ul>
-            <button class="load-history-btn" style="display: none" onclick="hideInfoOfThisRound()" id="history-section-hide-btn">隐藏</button>
+            <button class="load-history-btn" style="display: none" onclick="hideInfoOfThisRound()"
+                    id="history-section-hide-btn">隐藏
+            </button>
         </div>
         <div class="all-history" style="margin-top: 8px">
             <button class="load-history-btn" onclick="loadHistoryData.call(this)" id="all-history-query-btn">加载历史数据
@@ -859,7 +870,8 @@
                         "round-summary-withdraw-hash": "Random Hash:",
                         "round-summary-pool-tittle": "Prize Pool",
                         "game-rules-tittle": "Game Rules",
-                        "lottery-info-tittle": "This game is a lottery game, with draws every 48 hours that anyone can participate in.",
+                        "lottery-info-tittle": "Game Rules:",
+                        "lottery-info-content": "This game is a lottery game, with draws every 48 hours that anyone can participate in.",
                         "lottery-info-content-1": "The method of purchasing lottery tickets is as follows",
                         "lottery-info-content-2": "1.Reward The Tweet",
                         "lottery-info-content-3": "Tipping under the tweet participating in the game, any of your tips will have 60% go into the lottery prize pool, 30% belong to the tweet author, and 10% belong to Dessage protocol income.",
@@ -948,7 +960,8 @@
                         "round-summary-withdraw-hash": "开奖hash:",
                         "round-summary-pool-tittle": "奖池",
                         "game-rules-tittle": "游戏规则",
-                        "lottery-info-tittle": "本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与",
+                        "lottery-info-tittle": "游戏规则:",
+                        "lottery-info-content": "本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与",
                         "lottery-info-content-1": "购买彩票的方式为",
                         "lottery-info-content-2": "1.推文下打赏",
                         "lottery-info-content-3": "在参与游戏的推文下打赏，你的任何打赏都会有60%进入彩票奖池，30%归属推文作者，10%归属Dessage协议收入",
@@ -1039,6 +1052,8 @@
 
         document.getElementById('game-rules-tittle').textContent = i18next.t('game-rules-tittle');
         document.getElementById('lottery-info-tittle').textContent = i18next.t('lottery-info-tittle');
+        document.getElementById('lottery-info-content').textContent = i18next.t('lottery-info-content');
+
         document.getElementById('lottery-info-content-1').textContent = i18next.t('lottery-info-content-1');
         document.getElementById('lottery-info-content-2').textContent = i18next.t('lottery-info-content-2');
         document.getElementById('lottery-info-content-3').textContent = i18next.t('lottery-info-content-3');
