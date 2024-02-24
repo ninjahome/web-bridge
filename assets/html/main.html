@@ -1571,22 +1571,22 @@
                 </div>
             </div>
             <div class="topic-switch tweet-topic-switch" id="twee-switch-area-for-nj-user">
-                <button class="tweetsPostedByNjUser top-topic-btn" onclick="loadPostedTweetsOfNjUsr()">他发布推文
+                <button class="tweetsPostedByNjUser top-topic-btn" onclick="loadPostedTweetsOfNjUsr()" id="twee-switch-area-his-tweet">他发布推文
                 </button>
-                <button class="tweetsVotedNjUser top-topic-btn" onclick="loadVotedTweetsOfNjUsr()">他投票推文</button>
+                <button class="tweetsVotedNjUser top-topic-btn" onclick="loadVotedTweetsOfNjUsr()" id="twee-switch-area-his-vote">他投票推文</button>
             </div>
 
             <div class="nj-user-tweet-area">
                 <div id="tweetTemplateForNjUsrProfile" class="tweet-card" style="display: none;">
                     <div class="tweet-footer">
-                        <div class="tweet-info"> 投票数: <span class="total-vote-count">0</span></div>
-                        <div class="vote-count"> 他的投票数: <span class="nj-user-vote-count">0</span></div>
+                        <div class="tweet-info"> <span id="nj-user-tweet-vote-no">投票数</span>: <span class="total-vote-count">0</span></div>
+                        <div class="vote-count"> <span id="nj-user-tweet-his-vote-no">他的投票数</span>: <span class="nj-user-vote-count">0</span></div>
                         <div class="tweet-action">
                             <button class="tweet-action-vote">
                                 <img src="/assets/file/tweet-action-vote-eth.png"
                                      style="width: 22px;height: auto" alt=""/>
                                 <span style="font-weight: lighter"> <span
-                                            class="tweet-action-vote-val">0.01</span> eth</span> 投票
+                                            class="tweet-action-vote-val">0.01</span> eth</span> <span id="nj-user-tweet-vote-action">投票</span>
                             </button>
                         </div>
                     </div>
@@ -1930,6 +1930,9 @@
                         "tweet-detail-vote-no": "Vote No",
                         "tweet-detail-vote": "Vote",
                         "back": "Back",
+                        "twee-switch-area-his-tweet": "His/Her Posts",
+                        "twee-switch-area-his-vote": "His/Her Votes",
+                        "nj-user-tweet-his-vote-no": "His/Her Votes",
                         "user-tweet-btn-my-tweet": "My Tweet",
                         "user-tweet-btn-my-vote": "My Vote",
                         "user-tweet-btn-goon-pay": "Pay It",
@@ -2019,6 +2022,9 @@
                         "user-setting-sync-twitter": "同步推特",
                         "user-setting-points": "积分",
                         "user-setting-my-voted": "投票数",
+                        "twee-switch-area-his-tweet": "他发布推文",
+                        "twee-switch-area-his-vote": "他投票推文",
+                        "nj-user-tweet-his-vote-no": "他投票推文",
                         "user-setting-be-voted": "被投票数",
                         "user-setting-tweet-income": "推文收入",
                         "user-setting-tweet-no": "推文总数",
@@ -2124,6 +2130,11 @@
         document.getElementById('user-setting-tweet-no-suffix').textContent = i18next.t('user-setting-tweet-no-suffix');
         document.getElementById('user-setting-tweet-no-suffix').textContent = i18next.t('user-setting-tweet-no-suffix');
 
+        document.getElementById('twee-switch-area-his-tweet').textContent = i18next.t('twee-switch-area-his-tweet');
+        document.getElementById('twee-switch-area-his-vote').textContent = i18next.t('twee-switch-area-his-vote');
+        document.getElementById('nj-user-tweet-vote-no').textContent = i18next.t('user-setting-my-voted');
+        document.getElementById('nj-user-tweet-his-vote-no').textContent = i18next.t('nj-user-tweet-his-vote-no');
+        document.getElementById('nj-user-tweet-vote-action').textContent = i18next.t('btn-tittle-vote-no');
 
         document.getElementById('lottery-round-tittle-1').textContent = i18next.t('lottery-round-tittle-1');
         document.getElementById('lottery-round-tittle-2').textContent = i18next.t('lottery-round-tittle-2');
