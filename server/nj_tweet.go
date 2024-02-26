@@ -93,14 +93,34 @@ func queryTweetDetails(w http.ResponseWriter, r *http.Request, _ *database.Ninja
 }
 
 func updatePointsForSingleBets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	vote := &database.TweetVoteAction{}
+	var err = util.ReadRequest(r, vote)
+	if err != nil {
+		util.LogInst().Err(err).Msg("parsing vote param failed ")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
+	err = database.DbInst().UpdatePointsForSingleBets(vote, nu.EthAddr)
+	if err != nil {
+		util.LogInst().Err(err).Int64("create_time", vote.CreateTime).
+			Int("vote_count", vote.VoteCount).
+			Msg("failed to update points for single bets")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	util.LogInst().Debug().Int64("create_time", vote.CreateTime).
+		Int("vote_count", vote.VoteCount).
+		Msg(" update points for single vote success")
 }
 
 func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 	vote := &database.TweetVoteAction{}
 	var err = util.ReadRequest(r, vote)
 	if err != nil {
-		util.LogInst().Err(err).Msg("parsing payment status param failed ")
+		util.LogInst().Err(err).Msg("parsing vote param failed ")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}

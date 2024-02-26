@@ -361,8 +361,11 @@ async function procTicketPayment(no, ifShare) {
             showDialog(DLevel.Error, "transaction " + "failed");
             return;
         }
+        await PostToSrvByJson("/updatePointsForSingleBets", {
+            create_time: 0,
+            vote_count: Number(no),
+        });
         showDialog(DLevel.Success, "buy success");
-
         if (ifShare) {
             __shareVoteToTweet(0, no, i18next.t('voter-slogan')).then(r => {
                 console.log("share to twitter success")
