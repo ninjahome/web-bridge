@@ -92,6 +92,10 @@ func queryTweetDetails(w http.ResponseWriter, r *http.Request, _ *database.Ninja
 	util.LogInst().Debug().Int64("id", createTime).Msg("query tweet detail success")
 }
 
+func updatePointsForSingleBets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+
+}
+
 func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 	vote := &database.TweetVoteAction{}
 	var err = util.ReadRequest(r, vote)
