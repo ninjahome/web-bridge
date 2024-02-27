@@ -758,9 +758,7 @@
                             class="one-round-winner-val history-game-winner-address"
                             style=" font-size: 16px; font-weight: bold">0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB</span>
                 </li>
-                <li><span id="history-section-team">获奖团队</span>: <span class="team-id-txt history-game-winner-team"
-                                                                           style=" font-size: 16px; font-weight: bold">0x182bd38d6f81c8d77e4cc49dab221109e03fdea8978cab7e04f928435368562a</span>
-                </li>
+
                 <li><span id="history-section-ticket">获奖彩票ID</span>: <span
                             class="one-round-win-ticket-val history-game-winner-ticket"
                             style="font-size: 16px; font-weight: bold">0</span>
@@ -882,7 +880,7 @@
                         "lottery-info-content-7": "1. Each vote cast earns 2 points.",
                         "lottery-info-content-8": "2. Each tweet posted earns 2 points.",
                         "lottery-info-content-9": "3. When a user's tweet is voted on by other users, the creator can earn points at a rate of 1 point per vote.",
-                        "lottery-info-content-10": "4. At the end of Chapter 1, the voters of the top 10 tweets with the highest total number of votes can receive additional points rewards based on the order of their voting time. The top 10% of voters under each of these tweets can receive an additional 10 times their voting points as a reward, the next 10%-20% of voters can receive 9 times their voting points as a reward, and so on.",
+                        "lottery-info-content-10": "4.At the end of Chapter 1, the top 10 tweets with the highest total number of votes will reward their voting users with additional points based on the order of voting time. The users in the top 10% of voting time will receive 10 times the points of their votes, those in the 10%-20% range will receive 9 times the points, and so on.",
                         "lottery-info-content-11": "5. At the end of Chapter 1, the top 10 users on the Whale Leaderboard can receive an additional 50% bonus to their points.",
                         "lottery-info-content-12": "6. The first ten creator users to post a tweet on this platform and receive more than 100 votes will receive a points bonus privilege. All points obtained through any means during Chapter 1 will receive an additional 20% bonus.",
                         "lottery-info-content-13": "*Points are not only usable for participating in the distribution of the points prize pool, but they can also be used to obtain other rights and interests in Dessage in the future.",
@@ -906,7 +904,6 @@
                         "history-section-random-no": "Random Number",
                         "history-section-random-hash": "Random Hash",
                         "history-section-winner": "Winner",
-                        "history-section-team": "Winning Team",
                         "history-section-ticket": "Winning Ticket ID",
                         "all-history-query-btn": "Load Historical Data",
                         "all-history-btn-more": "More",
@@ -977,7 +974,7 @@
                         "lottery-info-content-7": "1.每投票一票可获得2分",
                         "lottery-info-content-8": "2.每发推一次可获得2分",
                         "lottery-info-content-9": "3.用户发布的推文被其他用户投票时，创作者可按1分每票获得积分",
-                        "lottery-info-content-10": "4.chapter 1结束时，总得票数排名前10的十篇推文投票用户可依据投票时间先后获得额外积分奖励。上述每篇推文下前10%的投票用户可获得额外10倍的投票积分奖励，前10%-20%的投票用户可获得额外9倍的投票积分奖励，以此类推。",
+                        "lottery-info-content-10": "4.chapter 1结束时，总得票数排名前10的推文,其投票用户可依据投票时间先后获得额外积分奖励。投票时间排名前10%的用户奖励投票数10倍的积分，前10%-20%的可获得额外9倍的积分，以此类推。",
                         "lottery-info-content-11": "5.chapter 1结束时，大户排行榜前10位的用户可获得额外积分加成50%",
                         "lottery-info-content-12": "6.最早在本平台发布推文并获得超过100票投票的前十位创作者用户将会获得积分加成特权，在chapter 1通过任何方式取得的所有积分将会获得额外20%的加成",
                         "lottery-info-content-13": "*积分不仅仅可用于参与积分奖池的分配，后续还能获得Dessage的其他权益",
@@ -1001,7 +998,6 @@
                         "history-section-random-no": "随机数",
                         "history-section-random-hash": "随机数 Hash",
                         "history-section-winner": "获奖者",
-                        "history-section-team": "获奖团队",
                         "history-section-ticket": "获奖彩票ID",
                         "all-history-query-btn": "加载历史数据",
                         "all-history-btn-more": "更多",
@@ -1103,7 +1099,6 @@
         document.getElementById('history-section-random-no').textContent = i18next.t('history-section-random-no');
         document.getElementById('history-section-random-hash').textContent = i18next.t('history-section-random-hash');
         document.getElementById('history-section-winner').textContent = i18next.t('history-section-winner');
-        document.getElementById('history-section-team').textContent = i18next.t('history-section-team');
         document.getElementById('history-section-ticket').textContent = i18next.t('history-section-ticket');
 
         document.getElementById('all-history-query-btn').textContent = i18next.t('all-history-query-btn');

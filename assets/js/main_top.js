@@ -34,7 +34,9 @@ async function fillMostVotedTweet(clear, tweetArray) {
         true, TweetDetailSource.MostVoted,
         function (tweetCard, tweetHeader, tweet) {
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
-            __showVoteButton(tweetCard, tweet);
+            __showVoteButton(tweetCard, tweet,function (newVote) {
+                tweetCard.querySelector('.vote-number').textContent = newVote.vote_count;
+            });
         });
 }
 

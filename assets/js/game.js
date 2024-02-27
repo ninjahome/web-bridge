@@ -257,7 +257,6 @@ function fullFillGameCard(obj, cardDiv, showHideBtn) {
     cardDiv.querySelector('.history-game-random').textContent = obj.randomVal;
     cardDiv.querySelector('.history-game-random-hash').textContent = obj.randomHash;
     cardDiv.querySelector('.history-game-winner-address').textContent = obj.winner;
-    cardDiv.querySelector('.history-game-winner-team').textContent = obj.winTeam;
     cardDiv.querySelector('.history-game-winner-ticket').textContent = obj.winTicketID;
     if (showHideBtn) {
         cardDiv.querySelector('.load-history-btn').style.display = 'block';

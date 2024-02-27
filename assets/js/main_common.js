@@ -237,8 +237,6 @@ async function showTweetDetail(parentEleID, tweet) {
     detail.querySelector('.tweet-signature').textContent = tweet.signature;
     detail.querySelector('.tweet-vote-number').textContent = tweet.vote_count;
 
-    // detail.querySelector('.show-team-mates').onclick = () => showTeammates(tweet.prefixed_hash, detail);
-
     await __showVoteButton(detail, tweet, function (newVote) {
         detail.querySelector('.tweet-vote-number').textContent = newVote.vote_count;
     });
