@@ -34,7 +34,7 @@ async function fillMostVotedTweet(clear, tweetArray) {
         true, TweetDetailSource.MostVoted,
         function (tweetCard, tweetHeader, tweet) {
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
-            __showVoteButton(tweetCard, tweet,function (newVote) {
+            __showVoteButton(tweetCard, tweet, function (newVote) {
                 tweetCard.querySelector('.vote-number').textContent = newVote.vote_count;
             });
         });
@@ -124,7 +124,7 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
             avatarImg.src = __defaultLogo;
             njUsrCard.querySelector(".twitterName").innerText = usr.eth_addr;
         } else {
-            const twitterObj = await __setOnlyHeader(njUsrCard, usr.tw_id);
+            const twitterObj = await __setOnlyHeader(njUsrCard, usr.tw_id, usr.eth_addr);
             const hoverDiv = njUsrCard.querySelector(".team-member-card-header");
             hoverDiv.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, usr.eth_addr));
             hoverDiv.addEventListener('mouseleave', () => hideHoverCard(hoverDiv));

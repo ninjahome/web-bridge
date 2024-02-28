@@ -196,7 +196,7 @@ async function showUserProfile(njUser) {
 
     detail.querySelector(".web3id").textContent = njUser.eth_addr;
     const header = detail.querySelector(".tweet-header-in-profile")
-    await __setOnlyHeader(header, njUser.tw_id);
+    await __setOnlyHeader(header, njUser.tw_id, njUser.eth_addr);
     await loadPostedTweetsOfNjUsr();
 }
 
