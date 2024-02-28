@@ -23,6 +23,7 @@ type NinjaUsrInfo struct {
 	VoteCount    int    `json:"vote_count" firestore:"vote_count"`
 	BeVotedCount int    `json:"be_voted_count" firestore:"be_voted_count"`
 	Points       int    `json:"points"  firestore:"points"`
+	IsElder      bool   `json:"is_elder" firestore:"is_elder"`
 }
 
 func (nu *NinjaUsrInfo) String() string {

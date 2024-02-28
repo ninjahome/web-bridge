@@ -76,9 +76,13 @@ func (dm *DbManager) queryVoteStatus(voter, sameOwner bool, target string, tx *f
 			Int64("create_time", vote.CreateTime).Msg("parse nj user failed")
 		return nil, nil, err
 	}
-
+	multiPly := 1
+	if nu.IsElder {
+		multiPly = 2
+	}
 	if sameOwner {
-		nu.Points += (__dbConf.PointForVote + __dbConf.PointForBeVote) * vote.VoteCount
+		nu.Points += __dbConf.PointForVote * vote.VoteCount
+		nu.Points += __dbConf.PointForBeVote * vote.VoteCount * multiPly
 		nu.VoteCount += vote.VoteCount
 		nu.BeVotedCount += vote.VoteCount
 	} else {
@@ -87,7 +91,7 @@ func (dm *DbManager) queryVoteStatus(voter, sameOwner bool, target string, tx *f
 			nu.Points += __dbConf.PointForVote * vote.VoteCount
 		} else {
 			nu.BeVotedCount += vote.VoteCount
-			nu.Points += __dbConf.PointForBeVote * vote.VoteCount
+			nu.Points += __dbConf.PointForBeVote * vote.VoteCount * multiPly
 		}
 	}
 
