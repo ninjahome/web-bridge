@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -17,6 +18,7 @@ import (
 	"github.com/ninjahome/web-bridge/server"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/crypto/ssh/terminal"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"math/big"
 	"os"
@@ -75,6 +77,7 @@ func readWallet(filePath string) *keystore.Key {
 		return key
 	}
 }
+
 func main() {
 
 	walletFile := flag.String("wallet", "dessage.key", "wallet file")
@@ -84,6 +87,7 @@ func main() {
 	endRoundNo := flag.Int("round-no-end", -1, "end round no")
 	version := flag.Bool("version", false, "game_lottery --version")
 	syncHistory := flag.Bool("sync", false, "--sync --round-no")
+	findTopKol := flag.Bool("kol-top", false, "--kol-top")
 	flag.Parse()
 
 	if *version {
@@ -99,6 +103,11 @@ func main() {
 	key := readWallet(*walletFile)
 
 	gs := NewGame(key, cf)
+
+	if *findTopKol {
+		gs.findTopKol()
+		return
+	}
 
 	if *syncHistory {
 		if *startRoundNo < 0 {
@@ -540,4 +549,35 @@ func (gs *GameService) batchSaveGameHistoryData(start, end *big.Int) {
 		util.LogInst().Info().Int64("round-no", roundNo).Msg("save game history data success")
 	}
 	time.Sleep(time.Second * 15)
+}
+
+func (gs *GameService) findTopKol() {
+	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
+	defer cancel()
+
+	randomDoc := gs.fileCli.Collection(database.DBTableNJUser)
+	var query = randomDoc.Where("be_voted_count", ">=", 20).
+		OrderBy("be_voted_count", firestore.Desc).
+		Limit(10)
+
+	iter := query.Documents(opCtx)
+	defer iter.Stop()
+
+	for {
+		doc, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			return
+		}
+		if err != nil {
+			panic(err)
+		}
+
+		var njObj database.NinjaUsrInfo
+		err = doc.DataTo(&njObj)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Println(njObj.String())
+	}
 }

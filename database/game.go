@@ -11,9 +11,8 @@ import (
 )
 
 const (
-	MaxWinHistoryQuery      = 40
-	DBTableGameResult       = "lottery_game_round_info"
-	DBTableWinTeamForMember = "win_team_info_for_member"
+	MaxWinHistoryQuery = 40
+	DBTableGameResult  = "lottery_game_round_info"
 )
 
 func (dm *DbManager) QueryGameWinner(web3id string) ([]*ethapi.GamInfoOnChain, error) {
