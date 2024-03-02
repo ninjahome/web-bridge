@@ -585,8 +585,8 @@ func (gs *GameService) findTopKol() {
 	}
 
 	fmt.Printf("\nelder no:%d", len(toBeElder))
-	if len(toBeElder) > 0 {
-		fmt.Println("kol elder to ")
+	if len(toBeElder) == 0 {
+		fmt.Println("no need to update")
 		return
 	}
 
