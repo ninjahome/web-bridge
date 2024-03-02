@@ -556,7 +556,7 @@ func (gs *GameService) findTopKol() {
 	defer cancel()
 
 	randomDoc := gs.fileCli.Collection(database.DBTableNJUser)
-	var query = randomDoc.Where("be_voted_count", ">=", 20).
+	var query = randomDoc.Where("be_voted_count", ">=", 100).
 		OrderBy("be_voted_count", firestore.Desc).
 		Limit(10)
 
