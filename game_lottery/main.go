@@ -552,21 +552,22 @@ func (gs *GameService) batchSaveGameHistoryData(start, end *big.Int) {
 }
 
 func (gs *GameService) findTopKol() {
-	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
+	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut*10)
 	defer cancel()
 
 	randomDoc := gs.fileCli.Collection(database.DBTableNJUser)
-	var query = randomDoc.Where("be_voted_count", ">=", 100).
+	var query = randomDoc.Where("be_voted_count", ">=", 20).
 		OrderBy("be_voted_count", firestore.Desc).
 		Limit(10)
 
 	iter := query.Documents(opCtx)
 	defer iter.Stop()
+	var toBeElder = make([]database.NinjaUsrInfo, 0)
 
 	for {
 		doc, err := iter.Next()
 		if errors.Is(err, iterator.Done) {
-			return
+			break
 		}
 		if err != nil {
 			panic(err)
@@ -577,7 +578,28 @@ func (gs *GameService) findTopKol() {
 		if err != nil {
 			panic(err)
 		}
-
 		fmt.Println(njObj.String())
+		if njObj.IsElder == false {
+			toBeElder = append(toBeElder, njObj)
+		}
+	}
+
+	fmt.Printf("\nelder no:%d", len(toBeElder))
+	if len(toBeElder) > 0 {
+		fmt.Println("kol elder to ")
+		return
+	}
+
+	err := gs.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
+		for _, njObj := range toBeElder {
+			docRef := gs.fileCli.Collection(database.DBTableNJUser).Doc(njObj.EthAddr)
+			tx.Update(docRef, []firestore.Update{{Path: "is_elder", Value: true}})
+			fmt.Println("update nj user to elder", njObj.EthAddr)
+		}
+
+		return nil
+	})
+	if err != nil {
+		panic(err)
 	}
 }
