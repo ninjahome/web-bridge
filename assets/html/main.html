@@ -714,7 +714,7 @@
 
         .modal-for-tweet-post {
             display: none;
-            /* z-index: 2;*/
+            z-index: 2;
             padding: 16px 32px; /* 增加内边距 */
             position: fixed; /* 固定定位 */
             left: 50%; /* 水平居中 */
@@ -1977,7 +1977,6 @@
         try {
 
             showWaiting("syncing from block chain");
-
 
             await reloadGameBalance();
             await reloadTweetBalance();
