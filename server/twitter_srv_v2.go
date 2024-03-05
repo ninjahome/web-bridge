@@ -14,7 +14,6 @@ import (
 
 const (
 	accessPointPostTweets = "https://api.twitter.com/2/tweets"
-	tweetTimeFormat       = "01/02/06 15:04:05"
 )
 
 func twitterGetWithAccessToken(token *oauth2.Token, accUrl string, result any) error {

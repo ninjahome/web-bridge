@@ -16,8 +16,9 @@ import (
 )
 
 const (
-	accessPointTweet = "https://api.twitter.com/2/tweets"
-	accessPointMedia = "https://upload.twitter.com/1.1/media/upload.json"
+	accessPointTweet  = "https://api.twitter.com/2/tweets"
+	accessPointMedia  = "https://upload.twitter.com/1.1/media/upload.json"
+	accessPointSearch = "https://api.twitter.com/1.1/users/search.json"
 )
 
 func checkTwitterRights(twitterUid string, r *http.Request) (*database.TwUserAccessToken, error) {
@@ -201,6 +202,10 @@ func uploadMedia(token *oauth1.Token, img image.Image) (string, error) {
 	}
 
 	return mediaID, nil
+}
+
+func queryTwitterByName() {
+
 }
 
 func shareVoteAction(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
