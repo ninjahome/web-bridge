@@ -1794,9 +1794,8 @@
 <div class="modal-for-tweet-post">
     <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
     <div class="tweets-content-txt-area .d-radius" id="tweets-content-txt-area" contenteditable="true"
-         data-placeholder="What's happening!?">
+         data-placeholder="What's happening!?" oninput="checkAtTarget()">
     </div>
-    <!-- 图片预览 -->
     <div id="twImagePreview" style="display: none;">
     </div>
     <div style="display: flex; justify-content: space-between; align-items: center">
@@ -1861,7 +1860,6 @@
             reader.readAsDataURL(file);
         });
 
-        // 清空file input以便下次选择相同的文件，这一步是可选的
         document.getElementById('fileInput').value = '';
     }
 
@@ -2272,7 +2270,6 @@
         document.getElementById("lottery-info-content-13").textContent = i18next.t('lottery-info-content-13');
         document.getElementById("lottery-info-content-14").textContent = i18next.t('lottery-info-content-14');
         document.getElementById("lottery-info-content-15").textContent = i18next.t('lottery-info-content-15');
-
     }
 </script>
 </body>

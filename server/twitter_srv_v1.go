@@ -12,6 +12,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"unicode/utf8"
 )
 
@@ -26,6 +27,7 @@ func checkTwitterRights(twitterUid string, r *http.Request) (*database.TwUserAcc
 		util.LogInst().Warn().Msg("no twitter id for ninja user:" + twitterUid)
 		return nil, fmt.Errorf("bind twitter first")
 	}
+
 	var ut, err = getAccessTokenFromSession(r)
 	if err == nil {
 		return ut, nil
@@ -71,6 +73,30 @@ func twitterApiPost(url string, token *oauth1.Token,
 		return err
 	}
 	return nil
+}
+
+func searchTwitterUsr(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	var ut, err = checkTwitterRights(nu.TwID, r)
+	if err != nil {
+		util.LogInst().Err(err).Msg("load access token failed")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var keyWords = r.URL.Query().Get("q")
+
+	var token = ut.GetToken()
+	var users = make([]database.TWUserInfo, 0)
+	users, err = queryTwitterByName(token, keyWords)
+	if err != nil {
+		util.LogInst().Err(err).Msg("search twitter user failed")
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	bts, _ := json.Marshal(users)
+	w.Write(bts)
+
+	util.LogInst().Debug().Str("q", keyWords).Int("user-no", len(users)).Msg("search twitter user")
 }
 
 func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) (*TweetRequest, error) {
@@ -204,8 +230,36 @@ func uploadMedia(token *oauth1.Token, img image.Image) (string, error) {
 	return mediaID, nil
 }
 
-func queryTwitterByName() {
+func queryTwitterByName(token *oauth1.Token, query string) ([]database.TWUserInfo, error) {
+	httpClient := oauth1.NewConfig(_globalCfg.ConsumerKey, _globalCfg.ConsumerSecret).Client(oauth1.NoContext, token)
 
+	queryParams := url.Values{}
+	queryParams.Add("q", query)
+	queryParams.Add("page", "3")
+	queryParams.Add("count", "5")
+
+	requestURL := fmt.Sprintf("%s?%s", accessPointSearch, queryParams.Encode())
+
+	resp, err := httpClient.Get(requestURL)
+	if err != nil {
+		util.LogInst().Err(err).Msg("Failed to query Twitter API")
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		buf, _ := io.ReadAll(resp.Body)
+		util.LogInst().Warn().Str("body", string(buf)).Int("status", resp.StatusCode).Msg("Twitter API request failed")
+		return nil, fmt.Errorf("twitter API request failed with status code: %d", resp.StatusCode)
+	}
+
+	var users []database.TWUserInfo
+	if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {
+		util.LogInst().Err(err).Msg("Failed to decode response from Twitter API")
+		return nil, err
+	}
+
+	return users, nil
 }
 
 func shareVoteAction(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {

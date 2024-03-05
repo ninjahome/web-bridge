@@ -113,6 +113,33 @@ async function fillTweetParkAtHomePage(clear) {
         });
 }
 
+
+let currentTargetIdx = 1
+
+async function checkAtTarget() {
+    const tweetsContentTxtArea = document.getElementById("tweets-content-txt-area");
+    const text = tweetsContentTxtArea.innerText;
+    const usrName = findAtTarget(text)
+    if (!usrName) {
+        return;
+    }
+    const data = await GetToSrvByJson('/searchTwitterUsr?q=' + usrName);
+    if (!data) {
+        return;
+    }
+    console.log(data);
+}
+
+function findAtTarget(text) {
+    const regex = /(?:^|\s)@(\w+)/g;
+    let match;
+    while ((match = regex.exec(text)) !== null) {
+        console.log(`Found mention: ${match[currentTargetIdx]}`);
+        return match[currentTargetIdx];
+    }
+    return null;
+}
+
 async function preparePostMsg() {
     const contentHtml = document.getElementById("tweets-content-txt-area").innerHTML.trim();
     const formattedContent = contentHtml
