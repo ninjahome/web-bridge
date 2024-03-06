@@ -52,6 +52,14 @@ func (sp *SignDataByEth) ParseNinjaTweet() (*database.NinjaTweet, error) {
 	tweetContent.Signature = sp.Signature
 	tweetContent.PrefixedHash = prefixedHash
 	tweetContent.PaymentStatus = database.TxStNotPay
+	imagesI, ok := sp.PayLoad.([]interface{})
+	if ok && len(imagesI) > 0 {
+
+		tweetContent.Images = make([]string, 0)
+		for _, str := range imagesI {
+			tweetContent.Images = append(tweetContent.Images, str.(string))
+		}
+	}
 
 	return &tweetContent, nil
 }

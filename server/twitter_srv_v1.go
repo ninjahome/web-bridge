@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/dghubble/oauth1"
@@ -13,6 +14,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"strings"
 	"unicode/utf8"
 )
 
@@ -20,6 +22,7 @@ const (
 	accessPointTweet  = "https://api.twitter.com/2/tweets"
 	accessPointMedia  = "https://upload.twitter.com/1.1/media/upload.json"
 	accessPointSearch = "https://api.twitter.com/1.1/users/search.json"
+	MaxImgInTweet     = 4
 )
 
 func checkTwitterRights(twitterUid string, r *http.Request) (*database.TwUserAccessToken, error) {
@@ -100,25 +103,54 @@ func searchTwitterUsr(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 }
 
 func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) (*TweetRequest, error) {
+	var token = ut.GetToken()
 
 	var appendStr = _globalCfg.GetNjProtocolAd(njTweet.CreateAt)
 	var combinedTxt = njTweet.Txt + appendStr
+	mediaIDs := make([]string, 0)
+	if len(njTweet.Images) > MaxImgInTweet {
+		return nil, fmt.Errorf("images must be less than 5")
+	}
+
+	for _, base64Data := range njTweet.Images {
+		base64Data = base64Data[strings.IndexByte(base64Data, ',')+1:]
+		imgData, err := base64.StdEncoding.DecodeString(base64Data)
+		if err != nil {
+			util.LogInst().Err(err).Msg("decode tweet image failed")
+			return nil, err
+		}
+
+		img, _, err := image.Decode(bytes.NewReader(imgData))
+		if err != nil {
+			util.LogInst().Err(err).Msg("parse tweet image to image object failed")
+			return nil, err
+		}
+		mediaID, err := uploadMedia(token, img)
+		if err != nil {
+			util.LogInst().Err(err).Msg("upload media for tweet failed")
+			return nil, err
+		}
+		mediaIDs = append(mediaIDs, mediaID)
+	}
+
 	if !util.IsOverTwitterLimit(combinedTxt) {
 		return &TweetRequest{
 			Text: combinedTxt,
+			Media: &Media{
+				MediaIDs: mediaIDs,
+			},
 		}, nil
 	}
 
-	var token = ut.GetToken()
 	var txtLen = len(njTweet.Txt)
 	count := utf8.RuneCountInString(njTweet.Txt)
 	util.LogInst().Debug().Int("txt-len", txtLen).Int("txt-count", count).Send()
 
 	splitTxt := util.SplitIntoChunks(njTweet.Txt, _globalCfg.MaxTxtPerImg)
-	if len(splitTxt) > 4 {
+	if len(splitTxt)+len(njTweet.Images) > MaxImgInTweet {
 		return nil, fmt.Errorf("txt is too long")
 	}
-	mediaIDs := make([]string, 0)
+
 	for _, content := range splitTxt {
 		txtImg, err := util.ConvertLongTweetToImg(content, _globalCfg.imgFont, _globalCfg.FontSize)
 		if err != nil {
@@ -235,8 +267,8 @@ func queryTwitterByName(token *oauth1.Token, query string) ([]database.TWUserInf
 
 	queryParams := url.Values{}
 	queryParams.Add("q", query)
-	queryParams.Add("page", "3")
-	queryParams.Add("count", "5")
+	//queryParams.Add("page", "3")
+	//queryParams.Add("count", "5")
 
 	requestURL := fmt.Sprintf("%s?%s", accessPointSearch, queryParams.Encode())
 

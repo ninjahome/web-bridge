@@ -1,4 +1,3 @@
-const __defaultLogo = '/assets/file/logo.png';
 
 function formatTime(createTime) {
     const date = new Date(createTime);
@@ -571,12 +570,14 @@ function checkMetamaskErr(err) {
     return code;
 }
 
-const __noTeamID = '0x0000000000000000000000000000000000000000000000000000000000000000';
-const __noTeamID2 = '0000000000000000000000000000000000000000000000000000000000000000';
-
 function __incomeWithdrawHistory(address) {
     let targetUrl = __globalMetaMaskNetworkParam.get(__globalTargetChainNetworkID).blockExplorerUrls[0];
     targetUrl += '/address/' + address;
     targetUrl += '#internaltx';
     window.open(targetUrl);
 }
+
+const __defaultLogo = '/assets/file/logo.png';
+const maxTextLenPerImg = 1000;
+const maxImgPerTweet = 4;
+const defaultTextLenForTweet  = 100;

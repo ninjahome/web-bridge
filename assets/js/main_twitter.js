@@ -123,6 +123,8 @@ async function checkAtTarget() {
     if (!usrName) {
         return;
     }
+    console.log(usrName);
+
     const data = await GetToSrvByJson('/searchTwitterUsr?q=' + usrName);
     if (!data) {
         return;
@@ -133,7 +135,7 @@ async function checkAtTarget() {
 function findAtTarget(text) {
     const regex = /(?:^|\s)@(\w+)/g;
     let match;
-    while ((match = regex.exec(text)) !== null) {
+    if ((match = regex.exec(text)) !== null) {
         console.log(`Found mention: ${match[currentTargetIdx]}`);
         return match[currentTargetIdx];
     }
@@ -146,10 +148,26 @@ async function preparePostMsg() {
         .replace(/<br\s*[\/]?>/gi, "\n") // 将 <br> 标签转换为换行符
         .replace(/<\/?p>/gi, "\n") // 将 <p> 标签转换为换行符
         .replace(/<[^>]+>/g, ''); // 移除所有其他HTML标签
-    // const content = document.getElementById("tweets-content-txt-area").textContent.trim();
-    if (!formattedContent) {
+    const images = document.querySelectorAll("#twImagePreview img");
+    if (!formattedContent && images.length === 0) {
         showDialog(DLevel.Warning, "content can't be empty")
         return null;
+    }
+
+    const imageDatas = Array.from(images).map(img => img.src);
+    console.log("formattedContent length:=>", formattedContent.length, images.length);
+    let validTxtLen = maxTextLenPerImg * (maxImgPerTweet - images.length);
+    if (validTxtLen < 0) {
+        showDialog(DLevel.Warning, "too many images to post");
+        return;
+    }
+    if (validTxtLen === 0) {
+        validTxtLen = defaultTextLenForTweet;
+    }
+
+    if (formattedContent.length > validTxtLen) {
+        showDialog(DLevel.Warning, "tweet content too long");
+        return
     }
 
     const tweet = new TweetContentToPost(formattedContent,
@@ -163,7 +181,7 @@ async function preparePostMsg() {
         showDialog(DLevel.Warning, "empty signature")
         return null;
     }
-    return new SignDataForPost(message, signature);
+    return new SignDataForPost(message, signature, imageDatas);
 }
 
 function updatePaymentStatusToSrv(tweet) {
@@ -238,6 +256,8 @@ function closePostTweetDiv() {
 
 function clearDraftTweetContent() {
     document.getElementById("tweets-content-txt-area").innerHTML = '';
+    document.getElementById("twImagePreview").innerHTML = '';
+    document.getElementById("twImagePreview").style.display = 'none'
 }
 
 function showFullTweetContent() {

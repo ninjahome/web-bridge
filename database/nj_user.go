@@ -178,17 +178,16 @@ func (dm *DbManager) CheckKolElder() {
 				util.LogInst().Err(err).Msg("parse kol failed")
 				return err
 			}
-			util.LogInst().Debug().Msg(njObj.String())
 			if njObj.IsElder == false {
 				toBeElder = append(toBeElder, njObj)
 			}
 		}
 
-		util.LogInst().Debug().Msgf("\nelder no:%d", len(toBeElder))
 		if len(toBeElder) == 0 {
 			util.LogInst().Debug().Msg("no need to update elder status")
 			return nil
 		}
+		util.LogInst().Debug().Msgf("elder no:%d to add", len(toBeElder))
 
 		for _, njObj := range toBeElder {
 			docRef := dm.fileCli.Collection(DBTableNJUser).Doc(njObj.EthAddr)

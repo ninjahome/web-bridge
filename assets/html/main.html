@@ -1794,12 +1794,12 @@
 <div class="modal-for-tweet-post">
     <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
     <div class="tweets-content-txt-area .d-radius" id="tweets-content-txt-area" contenteditable="true"
-         data-placeholder="What's happening!?" oninput="checkAtTarget()">
+         data-placeholder="What's happening!?">
     </div>
     <div id="twImagePreview" style="display: none;">
     </div>
     <div style="display: flex; justify-content: space-between; align-items: center">
-        <button onclick="document.getElementById('fileInput').click();" class="tweets-fileImg"><img
+        <button onclick="loadImgFromLocal()" class="tweets-fileImg"><img
                     src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
         <input type="file" id="fileInput" style="display: none;" accept=".jpg, .png" multiple onchange="previewImage()">
         <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()" class="d-radius" style="margin: 8px">
@@ -1810,13 +1810,31 @@
 </div>
 
 <script>
-    function previewImage() {
-        const files = document.getElementById('fileInput').files;
-        const imagePreviewDiv = document.getElementById('twImagePreview');
-        imagePreviewDiv.style.display = 'block'; // 确保预览区域可见
+    function loadImgFromLocal() {
+        const images = document.querySelectorAll("#twImagePreview img");
+        console.log(images.length);
+        if (images.length >= maxImgPerTweet) {
+            showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
+            return;
+        }
 
-        // 为了简化示例，不再清除之前的预览，直接添加新的预览
-        Array.from(files).forEach(file => {
+        document.getElementById('fileInput').click();
+    }
+
+    function previewImage() {
+
+        let files = document.getElementById('fileInput').files;
+        const imagePreviewDiv = document.getElementById('twImagePreview');
+        imagePreviewDiv.style.display = 'block';
+        const images = document.querySelectorAll("#twImagePreview img");
+        const validLen = maxImgPerTweet - images.length;
+        if (validLen <= 0) {
+            return;
+        }
+
+        files = Array.from(files).slice(0, validLen);
+
+        files.forEach(file => {
             const reader = new FileReader();
             reader.onload = function (e) {
                 const imgWrapper = document.createElement('div');
