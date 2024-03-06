@@ -196,7 +196,10 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     // const cleanHtml = DOMPurify.sanitize(tweet.text);
     contentArea.innerHTML = DOMPurify.sanitize(tweet.text.replace(/\n/g, "<br>"));
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
-
+    if (tweet.images&&tweet.images.length > 0){
+        const div = tweetHeader.querySelector('.tweet-images');
+        console.log(tweet.images.length);
+    }
     if (overlap) {
         wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, tweet.web3_id));
         wrappedHeader.addEventListener('mouseleave', () => hideHoverCard(wrappedHeader));
