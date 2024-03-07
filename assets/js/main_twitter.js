@@ -289,12 +289,10 @@ function showFullTweetContent() {
 
 function loadImgFromLocal() {
     const images = document.querySelectorAll("#twImagePreview img");
-    console.log(images.length);
     if (images.length >= maxImgPerTweet) {
         showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
         return;
     }
-
     document.getElementById('fileInput').click();
 }
 
@@ -322,9 +320,8 @@ function previewImage() {
         const reader = new FileReader();
         reader.onload = async function (e) {
             img.setAttribute('data-raw', e.target.result);
-            const thumbnail = await createThumbnail(e.target.result,200,200);
-            img.src = thumbnail;
-            const msg = ethers.utils.toUtf8Bytes(thumbnail);
+            img.src = await createThumbnail(e.target.result, 200, 200);
+            const msg = ethers.utils.toUtf8Bytes(e.target.result);
             const hash = ethers.utils.sha256(msg);
             img.setAttribute('data-hash', hash);
             imagePreviewDiv.appendChild(imgWrapper);

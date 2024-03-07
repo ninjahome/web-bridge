@@ -99,11 +99,25 @@ class TeamDetailOnBlockChain {
         this.voteCount = voteCount;
     }
 }
+const dbKeyCachedRawImg = "__db_key_cached_tweet_raw_img__"
 
-class ImageData {
+class ImageRawData {
     constructor(hash,rawData,thumbnail){
         this.hash = hash;
         this.raw_data = rawData;
         this.thumb_nail = thumbnail;
+    }
+
+    static sycToDb(obj) {
+        localStorage.setItem(ImageRawData.DBKey(obj.hash), JSON.stringify(obj));
+    }
+
+    static DBKey(hash) {
+        return dbKeyCachedRawImg+hash;
+    }
+
+    static load(hash) {
+        const storedVal = localStorage.getItem(ImageRawData.DBKey(hash));
+        return storedVal ? JSON.parse(storedVal) : null;
     }
 }

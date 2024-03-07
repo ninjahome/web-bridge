@@ -188,25 +188,59 @@ async function __setOnlyHeader(tweetHeader, twitter_id, web3ID) {
     return newObj;
 }
 
+async function showImgRaw() {
+    const hash = this.getAttribute('data-hash');
+    const obj = await loadTweetImgRaw(hash);
+    if (!obj) {
+        showDialog(DLevel.Warning, "failed to load raw image");
+        return;
+    }
+    const imgDiv = document.querySelector('.tweet-image-raw')
+    imgDiv.style.display='block';
+    imgDiv.querySelector('.tweet-image-detail').src = obj.raw_data;
+    imgDiv.querySelector('.tweet-image-hash').innerText = obj.hash;
+}
+
+function CloseImgDetail(){
+    document.querySelector('.tweet-image-raw').style.display='none';
+}
+
+async function loadTweetImgRaw(hash) {
+    let obj = ImageRawData.load(hash)
+    if (obj) {
+        return obj;
+    }
+
+    const response = await GetToSrvByJson("/tweetImgRaw?img_hash=" + hash);
+    obj = new ImageRawData(response.hash,response.raw)
+    ImageRawData.sycToDb(obj);
+    return  obj;
+}
+
 async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     tweetHeader.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
     const twitterObj = await __setOnlyHeader(tweetHeader, tweet.twitter_id, tweet.web3_id);
-
     const contentArea = tweetHeader.querySelector('.tweet-content');
-    // const cleanHtml = DOMPurify.sanitize(tweet.text);
     contentArea.innerHTML = DOMPurify.sanitize(tweet.text.replace(/\n/g, "<br>"));
+
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
-    if (tweet.images&&tweet.images.length > 0){
+
+    if (tweet.images && tweet.images.length > 0) {
         const div = tweetHeader.querySelector('.tweet-images');
-        console.log(tweet.images.length);
-        tweet.images.forEach(img=>{
-            const imgDiv  = tweetHeader.querySelector('.image-item-in-tweet').cloneNode(true)
+        for (let i = 0; i < tweet.images.length; i++) {
+            const img = tweet.images[i];
+            const imgDiv = tweetHeader.querySelector('.image-item-in-tweet').cloneNode(true)
             imgDiv.style.display = 'block';
-            imgDiv.id=null;
-            imgDiv.querySelector('.image-src-to-show').src=img;
+            imgDiv.id = null;
+            const imgElm = imgDiv.querySelector('.image-src-to-show')
+            imgElm.src = img;
+            if (tweet.image_hash) {
+                imgElm.setAttribute('data-hash', tweet.image_hash[i]);
+            }
             div.appendChild(imgDiv);
-        });
+        }
     }
+
     if (overlap) {
         wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, tweet.web3_id));
         wrappedHeader.addEventListener('mouseleave', () => hideHoverCard(wrappedHeader));

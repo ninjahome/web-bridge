@@ -1364,7 +1364,7 @@
         <span class="show-more" data-more="true"
               onclick="showFullTweetContent.call(this)">更多</span>
         <div class="image-item-in-tweet" id="image-item-in-tweet" style="display: none">
-            <img src="" class="image-src-to-show">
+            <img src="" data-raw="" data-hash="" class="image-src-to-show" onclick="showImgRaw.call(this)">
         </div>
         <div class="tweet-images">
         </div>
@@ -1865,6 +1865,11 @@
     </div>
 </div>
 
+<div class="tweet-image-raw" style="display:none;">
+    <img src="" class="tweet-image-detail">
+    <span class="tweet-image-hash"></span>
+    <button onclick="CloseImgDetail.call(this)">x</button>
+</div>
 
 <script>
 

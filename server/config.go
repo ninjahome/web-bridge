@@ -48,6 +48,7 @@ var (
 		"/queryTweetByHash":          {queryTweetByHash, true},
 		"/queryWinHistory":           {queryWinHistory, true},
 		"/searchTwitterUsr":          {searchTwitterUsr, true},
+		"/tweetImgRaw":               {tweetImgRaw, false},
 	}
 
 	cfgHtmlFileRouter = map[string]string{
