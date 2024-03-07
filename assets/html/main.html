@@ -99,7 +99,7 @@
         }
 
         .content-in-middle-area.active {
-            display: none; /* 显示激活的内容 */
+            display: block; /* 显示激活的内容 */
         }
 
         .topic-switch {
@@ -307,7 +307,7 @@
         }
 
         .tweetPaymentDelete {
-            display: block;
+            display: none;
             background-color: transparent; /* 例如，红色背景 */
             color: #7E7F82;
             padding: 6px 12px;
@@ -321,7 +321,7 @@
         }
 
         .tweetPaymentRetry {
-            display: block;
+            display: none;
             background-color: #1DA1F2;
             color: white;
             padding: 6px 12px;
@@ -1369,7 +1369,7 @@
         </div>
     </div>
     <div class="middle-content-area">
-        <div id="middle-div-home" class="content-in-middle-area">
+        <div id="middle-div-home" class="content-in-middle-area active">
             <div id="tweetTemplateForHomePage" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
                     <div class="tweet-info">
