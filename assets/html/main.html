@@ -99,7 +99,7 @@
         }
 
         .content-in-middle-area.active {
-            display: block; /* 显示激活的内容 */
+            display: none; /* 显示激活的内容 */
         }
 
         .topic-switch {
@@ -172,7 +172,7 @@
         }
 
         .tweet-footer {
-            display: flex;
+            display: flex !important;
             justify-content: flex-end;
             align-items: center;
             /*margin-top: -4px;*/
@@ -195,6 +195,11 @@
             height: auto;
         }
 
+        .tweet-action-with-status {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
 
         .vote-count,
         .tweet-info {
@@ -302,7 +307,7 @@
         }
 
         .tweetPaymentDelete {
-            display: none;
+            display: block;
             background-color: transparent; /* 例如，红色背景 */
             color: #7E7F82;
             padding: 6px 12px;
@@ -316,7 +321,7 @@
         }
 
         .tweetPaymentRetry {
-            display: none;
+            display: block;
             background-color: #1DA1F2;
             color: white;
             padding: 6px 12px;
@@ -1364,7 +1369,7 @@
         </div>
     </div>
     <div class="middle-content-area">
-        <div id="middle-div-home" class="content-in-middle-area active">
+        <div id="middle-div-home" class="content-in-middle-area">
             <div id="tweetTemplateForHomePage" class="tweet-card" style="display: none;">
                 <div class="tweet-footer">
                     <div class="tweet-info">
@@ -1475,8 +1480,8 @@
                                     class="vote-number">0</span></span>
                     </div>
                     <div class="tweet-action-with-status">
-                        <button class="tweetPaymentRetry cancel-btn" id="user-tweet-btn-goon-pay">继续支付</button>
-                        <button class="tweetPaymentDelete" id="user-tweet-btn-delete">删除</button>
+                        <button class="tweetPaymentRetry confirm-btn" id="user-tweet-btn-goon-pay">继续支付</button>
+                        <button class="tweetPaymentDelete cancel-btn" id="user-tweet-btn-delete" >删除</button>
                     </div>
                 </div>
             </div>
