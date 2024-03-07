@@ -834,12 +834,17 @@
             background-color: rgba(72, 72, 216, 0.1);
         }
 
+        .img-wrapper-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* Creates two columns with equal width */
+            gap: 8px; /* Adjusts the gap between grid items */
+        }
+
         .img-wrapper {
             position: relative;
-            display: inline-block;
-            margin: 4px;
-            width: 117px;
-            height: 117px;
+            margin-top: 8px;
+            width: 119px;
+            height: 119px;
             border-radius: 16px;
             overflow: hidden;
             justify-content: center;
@@ -864,6 +869,7 @@
             width: 20px;
             height: 20px;
             cursor: pointer;
+            align-items: center;
         }
 
         .delete-btn:hover {
@@ -1834,11 +1840,13 @@
     <div class="tweets-content-txt-area .d-radius" id="tweets-content-txt-area" contenteditable="true"
          data-placeholder="What's happening!?">
     </div>
-    <div id="twImagePreview" style="display: none;">
+    <div id="twImagePreview" style="display: block;">
     </div>
-    <div class="img-wrapper" id="img-wrapper" style="display: none">
+    <div class="img-wrapper-container ">
+    <div class="img-wrapper" id="img-wrapper" style="display: block">
         <img src="" class="img-preview">
         <button class="delete-btn">x</button>
+    </div>
     </div>
     <div style="display: flex; justify-content: space-between; align-items: center">
         <button onclick="loadImgFromLocal()" class="tweets-fileImg"><img
