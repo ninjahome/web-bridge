@@ -713,7 +713,7 @@
         }
 
         .modal-for-tweet-post {
-            display: block;
+            display: none;
             z-index: 2;
             padding: 16px 32px; /* 增加内边距 */
             position: fixed; /* 固定定位 */
@@ -841,6 +841,7 @@
         }
 
         .img-wrapper {
+            display: none;
             position: relative;
             margin-top: 8px;
             width: 119px;
@@ -1840,17 +1841,11 @@
     <div class="tweets-content-txt-area .d-radius" id="tweets-content-txt-area" contenteditable="true"
          data-placeholder="What's happening!?">
     </div>
-
-    <div id="twImagePreview" class="img-wrapper-container" style="display: block;">
-        <div class="img-wrapper">
-            <img src="" class="img-preview">
-            <button class="delete-btn">x</button>
-        </div>
-        <div class="img-wrapper">
-            <img src="" class="img-preview">
-            <button class="delete-btn">x</button>
-        </div>
-
+    <div class="img-wrapper" id="img-wrapper-template">
+        <img src="" class="img-preview">
+        <button class="delete-btn">x</button>
+    </div>
+    <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
     </div>
 
     <div style="display: flex; justify-content: space-between; align-items: center">
@@ -1889,8 +1884,9 @@
 
         files = Array.from(files).slice(0, validLen);
         files.forEach(file => {
-            const imgWrapper = document.getElementById('img-wrapper').cloneNode(true);
+            const imgWrapper = document.getElementById('img-wrapper-template').cloneNode(true);
             imgWrapper.style.display = 'block';
+            imgWrapper.id="";
             const img = imgWrapper.querySelector('.img-preview');
             const deleteBtn = imgWrapper.querySelector('.delete-btn');
             deleteBtn.onclick = function () {

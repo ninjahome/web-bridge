@@ -10,6 +10,7 @@ import (
 	"github.com/ninjahome/web-bridge/util"
 	"image"
 	"image/jpeg"
+	_ "image/png"
 	"io"
 	"mime/multipart"
 	"net/http"
