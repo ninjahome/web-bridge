@@ -713,7 +713,7 @@
         }
 
         .modal-for-tweet-post {
-            display: none;
+            display: block;
             z-index: 2;
             padding: 16px 32px; /* 增加内边距 */
             position: fixed; /* 固定定位 */
@@ -1840,14 +1840,18 @@
     <div class="tweets-content-txt-area .d-radius" id="tweets-content-txt-area" contenteditable="true"
          data-placeholder="What's happening!?">
     </div>
-    <div id="twImagePreview" style="display: block;">
+
+    <div id="twImagePreview" class="img-wrapper-container" style="display: block;">
+        <div class="img-wrapper">
+            <img src="" class="img-preview">
+            <button class="delete-btn">x</button>
+        </div>
+        <div class="img-wrapper2">
+            <img src="" class="img-preview">
+            <button class="delete-btn">x</button>
+        </div>
     </div>
-    <div class="img-wrapper-container ">
-    <div class="img-wrapper" id="img-wrapper" style="display: block">
-        <img src="" class="img-preview">
-        <button class="delete-btn">x</button>
-    </div>
-    </div>
+
     <div style="display: flex; justify-content: space-between; align-items: center">
         <button onclick="loadImgFromLocal()" class="tweets-fileImg"><img
                     src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
