@@ -1363,9 +1363,10 @@
         <div class="tweet-content tweet-content-collapsed"></div>
         <span class="show-more" data-more="true"
               onclick="showFullTweetContent.call(this)">更多</span>
-
+        <div class="image-item-in-tweet" id="image-item-in-tweet" style="display: none">
+            <img src="" class="image-src-to-show">
+        </div>
         <div class="tweet-images">
-
         </div>
     </div>
     <div class="middle-content-area">
@@ -1481,7 +1482,7 @@
                     </div>
                     <div class="tweet-action-with-status">
                         <button class="tweetPaymentRetry confirm-btn" id="user-tweet-btn-goon-pay">继续支付</button>
-                        <button class="tweetPaymentDelete cancel-btn" id="user-tweet-btn-delete" >删除</button>
+                        <button class="tweetPaymentDelete cancel-btn" id="user-tweet-btn-delete">删除</button>
                     </div>
                 </div>
             </div>
@@ -1866,47 +1867,7 @@
 
 
 <script>
-    function loadImgFromLocal() {
-        const images = document.querySelectorAll("#twImagePreview img");
-        console.log(images.length);
-        if (images.length >= maxImgPerTweet) {
-            showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
-            return;
-        }
 
-        document.getElementById('fileInput').click();
-    }
-
-    function previewImage() {
-        let files = document.getElementById('fileInput').files;
-        const imagePreviewDiv = document.getElementById('twImagePreview');
-        imagePreviewDiv.style.display = 'block';
-        const images = document.querySelectorAll("#twImagePreview img");
-        const validLen = maxImgPerTweet - images.length;
-        if (validLen <= 0) {
-            return;
-        }
-
-        files = Array.from(files).slice(0, validLen);
-        files.forEach(file => {
-            const imgWrapper = document.getElementById('img-wrapper-template').cloneNode(true);
-            imgWrapper.style.display = 'block';
-            imgWrapper.id="";
-            const img = imgWrapper.querySelector('.img-preview');
-            const deleteBtn = imgWrapper.querySelector('.delete-btn');
-            deleteBtn.onclick = function () {
-                imagePreviewDiv.removeChild(imgWrapper);
-            };
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                img.src = e.target.result;
-                imagePreviewDiv.appendChild(imgWrapper);
-            };
-            reader.readAsDataURL(file);
-        });
-        document.getElementById('fileInput').value = '';
-    }
 
     let ninjaUserObj = {{ .NinjaUsrInfoJson}};
     const targetTweet = {{.TargetTweet}};
@@ -2315,6 +2276,8 @@
         document.getElementById("lottery-info-content-13").textContent = i18next.t('lottery-info-content-13');
         document.getElementById("lottery-info-content-14").textContent = i18next.t('lottery-info-content-14');
         document.getElementById("lottery-info-content-15").textContent = i18next.t('lottery-info-content-15');
+
+        document.getElementById("user-tweet-btn-goon-pay").textContent = i18next.t('user-tweet-btn-goon-pay');
     }
 </script>
 </body>

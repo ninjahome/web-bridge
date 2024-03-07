@@ -280,3 +280,45 @@ function showFullTweetContent() {
         this.innerText = i18next.t('tweet-show-more');
     }
 }
+
+function loadImgFromLocal() {
+    const images = document.querySelectorAll("#twImagePreview img");
+    console.log(images.length);
+    if (images.length >= maxImgPerTweet) {
+        showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
+        return;
+    }
+
+    document.getElementById('fileInput').click();
+}
+
+function previewImage() {
+    let files = document.getElementById('fileInput').files;
+    const imagePreviewDiv = document.getElementById('twImagePreview');
+    imagePreviewDiv.style.display = 'block';
+    const images = document.querySelectorAll("#twImagePreview img");
+    const validLen = maxImgPerTweet - images.length;
+    if (validLen <= 0) {
+        return;
+    }
+
+    files = Array.from(files).slice(0, validLen);
+    files.forEach(file => {
+        const imgWrapper = document.getElementById('img-wrapper-template').cloneNode(true);
+        imgWrapper.style.display = 'block';
+        imgWrapper.id = "";
+        const img = imgWrapper.querySelector('.img-preview');
+        const deleteBtn = imgWrapper.querySelector('.delete-btn');
+        deleteBtn.onclick = function () {
+            imagePreviewDiv.removeChild(imgWrapper);
+        };
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            img.src = e.target.result;
+            imagePreviewDiv.appendChild(imgWrapper);
+        };
+        reader.readAsDataURL(file);
+    });
+    document.getElementById('fileInput').value = '';
+}

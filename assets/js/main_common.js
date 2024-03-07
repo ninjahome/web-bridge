@@ -199,6 +199,13 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     if (tweet.images&&tweet.images.length > 0){
         const div = tweetHeader.querySelector('.tweet-images');
         console.log(tweet.images.length);
+        tweet.images.forEach(img=>{
+            const imgDiv  = tweetHeader.querySelector('.image-item-in-tweet').cloneNode(true)
+            imgDiv.style.display = 'block';
+            imgDiv.id=null;
+            imgDiv.querySelector('.image-src-to-show').src=img;
+            div.appendChild(imgDiv);
+        });
     }
     if (overlap) {
         wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, tweet.web3_id));
