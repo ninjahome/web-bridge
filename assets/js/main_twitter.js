@@ -154,7 +154,13 @@ async function preparePostMsg() {
         return null;
     }
 
-    const imageDatas = Array.from(images).map(img => img.src);
+    const imageData = Array.from(images).map(img => {
+        const thumbnail = img.src
+        const raw = img.getAttribute('data-raw');
+        const hash = img.getAttribute('data-hash');
+        return new ImageData(hash, raw, thumbnail);
+    });
+
     console.log("formattedContent length:=>", formattedContent.length, images.length);
     let validTxtLen = maxTextLenPerImg * (maxImgPerTweet - images.length);
     if (validTxtLen < 0) {
@@ -181,7 +187,8 @@ async function preparePostMsg() {
         showDialog(DLevel.Warning, "empty signature")
         return null;
     }
-    return new SignDataForPost(message, signature, imageDatas);
+
+    return new SignDataForPost(message, signature, JSON.stringify(imageData));
 }
 
 function updatePaymentStatusToSrv(tweet) {
@@ -191,7 +198,6 @@ function updatePaymentStatusToSrv(tweet) {
         hash: tweet.prefixed_hash
     }).then(r => {
         console.log(r);
-
     })
 }
 
@@ -314,8 +320,13 @@ function previewImage() {
         };
 
         const reader = new FileReader();
-        reader.onload = function (e) {
-            img.src = e.target.result;
+        reader.onload = async function (e) {
+            img.setAttribute('data-raw', e.target.result);
+            const thumbnail = await createThumbnail(e.target.result,200,200);
+            img.src = thumbnail;
+            const msg = ethers.utils.toUtf8Bytes(thumbnail);
+            const hash = ethers.utils.sha256(msg);
+            img.setAttribute('data-hash', hash);
             imagePreviewDiv.appendChild(imgWrapper);
         };
         reader.readAsDataURL(file);

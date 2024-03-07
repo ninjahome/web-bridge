@@ -113,7 +113,7 @@ func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) 
 		return nil, fmt.Errorf("images must be less than 5")
 	}
 
-	for _, base64Data := range njTweet.Images {
+	for _, base64Data := range njTweet.ImageRaw {
 		base64Data = base64Data[strings.IndexByte(base64Data, ',')+1:]
 		imgData, err := base64.StdEncoding.DecodeString(base64Data)
 		if err != nil {

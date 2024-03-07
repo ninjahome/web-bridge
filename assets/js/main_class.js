@@ -99,3 +99,11 @@ class TeamDetailOnBlockChain {
         this.voteCount = voteCount;
     }
 }
+
+class ImageData {
+    constructor(hash,rawData,thumbnail){
+        this.hash = hash;
+        this.raw_data = rawData;
+        this.thumb_nail = thumbnail;
+    }
+}
