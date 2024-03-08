@@ -224,6 +224,28 @@ async function loadTweetImgRaw(hash) {
     return obj;
 }
 
+function fulfillTweetImages(tweet, tweetHeader) {
+    const div = tweetHeader.querySelector('.tweet-images');
+    div.innerHTML = '';
+
+    if (!tweet.images) {
+        return;
+    }
+
+    for (let i = 0; i < tweet.images.length; i++) {
+        const img = tweet.images[i];
+        const imgDiv = tweetHeader.querySelector('.image-item-in-tweet').cloneNode(true)
+        imgDiv.style.display = 'block';
+        imgDiv.id = null;
+        const imgElm = imgDiv.querySelector('.image-src-to-show')
+        imgElm.src = img;
+        if (tweet.image_hash) {
+            imgElm.setAttribute('data-hash', tweet.image_hash[i]);
+        }
+        div.appendChild(imgDiv);
+    }
+}
+
 async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     tweetHeader.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
     const twitterObj = await __setOnlyHeader(tweetHeader, tweet.twitter_id, tweet.web3_id);
@@ -232,21 +254,7 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
 
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
 
-    if (tweet.images && tweet.images.length > 0) {
-        const div = tweetHeader.querySelector('.tweet-images');
-        for (let i = 0; i < tweet.images.length; i++) {
-            const img = tweet.images[i];
-            const imgDiv = tweetHeader.querySelector('.image-item-in-tweet').cloneNode(true)
-            imgDiv.style.display = 'block';
-            imgDiv.id = null;
-            const imgElm = imgDiv.querySelector('.image-src-to-show')
-            imgElm.src = img;
-            if (tweet.image_hash) {
-                imgElm.setAttribute('data-hash', tweet.image_hash[i]);
-            }
-            div.appendChild(imgDiv);
-        }
-    }
+    fulfillTweetImages(tweet, tweetHeader);
 
     if (overlap) {
         wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, tweet.web3_id));
@@ -285,6 +293,9 @@ async function showTweetDetail(parentEleID, tweet) {
     detail.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
     await __setOnlyHeader(detail, tweet.twitter_id, tweet.web3_id);
     detail.querySelector('.tweet-text').innerHTML = DOMPurify.sanitize(tweet.text.replace(/\n/g, "<br>"));
+
+    fulfillTweetImages(tweet, detail);
+
     detail.querySelector('.back-button').onclick = () => {
         parentNode.style.display = 'block';
         detail.style.display = 'none';
