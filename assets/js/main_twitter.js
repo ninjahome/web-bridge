@@ -158,7 +158,7 @@ async function preparePostMsg() {
         const thumbnail = img.src
         const raw = img.getAttribute('data-raw');
         const hash = img.getAttribute('data-hash');
-        return new ImageData(hash, raw, thumbnail);
+        return new ImageRawData(hash, raw, thumbnail);
     });
 
     console.log("formattedContent length:=>", formattedContent.length, images.length);
@@ -320,7 +320,7 @@ function previewImage() {
         const reader = new FileReader();
         reader.onload = async function (e) {
             img.setAttribute('data-raw', e.target.result);
-            img.src = await createThumbnail(e.target.result, 200, 200);
+            img.src = await createThumbnail(e.target.result, 400, 400);
             const msg = ethers.utils.toUtf8Bytes(e.target.result);
             const hash = ethers.utils.sha256(msg);
             img.setAttribute('data-hash', hash);

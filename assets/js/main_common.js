@@ -189,20 +189,27 @@ async function __setOnlyHeader(tweetHeader, twitter_id, web3ID) {
 }
 
 async function showImgRaw() {
-    const hash = this.getAttribute('data-hash');
-    const obj = await loadTweetImgRaw(hash);
-    if (!obj) {
-        showDialog(DLevel.Warning, "failed to load raw image");
-        return;
+    try {
+        showWaiting("loading.....");
+        const hash = this.getAttribute('data-hash');
+        const obj = await loadTweetImgRaw(hash);
+        if (!obj) {
+            showDialog(DLevel.Warning, "failed to load raw image");
+            return;
+        }
+        const imgDiv = document.querySelector('.tweet-image-raw')
+        imgDiv.style.display = 'block';
+        imgDiv.querySelector('.tweet-image-detail').src = obj.raw_data;
+        imgDiv.querySelector('.tweet-image-hash').innerText = obj.hash;
+    } catch (e) {
+        showDialog(DLevel.Error, e.toString());
+    } finally {
+        hideLoading();
     }
-    const imgDiv = document.querySelector('.tweet-image-raw')
-    imgDiv.style.display='block';
-    imgDiv.querySelector('.tweet-image-detail').src = obj.raw_data;
-    imgDiv.querySelector('.tweet-image-hash').innerText = obj.hash;
 }
 
-function CloseImgDetail(){
-    document.querySelector('.tweet-image-raw').style.display='none';
+function CloseImgDetail() {
+    document.querySelector('.tweet-image-raw').style.display = 'none';
 }
 
 async function loadTweetImgRaw(hash) {
@@ -212,9 +219,9 @@ async function loadTweetImgRaw(hash) {
     }
 
     const response = await GetToSrvByJson("/tweetImgRaw?img_hash=" + hash);
-    obj = new ImageRawData(response.hash,response.raw)
+    obj = new ImageRawData(response.hash, response.raw)
     ImageRawData.sycToDb(obj);
-    return  obj;
+    return obj;
 }
 
 async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {

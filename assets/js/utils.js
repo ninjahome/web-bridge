@@ -239,8 +239,14 @@ style.innerHTML = `
     }
 `;
 document.head.appendChild(style);
-
+let isShowingTips = false;
 function showWaiting(message, timeout) {
+    if (isShowingTips){
+        changeLoadingTips(message);
+        return;
+    }
+
+    isShowingTips = true;
     const modal = createModalElement();
     document.body.appendChild(modal);
 
@@ -262,6 +268,10 @@ function changeLoadingTips(content) {
 }
 
 function hideLoading() {
+    if (!isShowingTips){
+        return;
+    }
+    isShowingTips = false;
     const modal = document.getElementById('loading-modal');
     if (modal) {
         document.body.removeChild(modal);
@@ -379,6 +389,7 @@ function createDialogElement(imageSrc) {
 }
 
 function showDialog(type, msg, confirmCB, cancelCB) {
+    hideLoading();
     let imageSrc;
     switch (type) {
         case DLevel.Tips:
@@ -579,45 +590,33 @@ function __incomeWithdrawHistory(address) {
 
 function createThumbnail(originalImageSrc, maxWidth, maxHeight) {
     return new Promise((resolve, reject) => {
-        // 创建一个Image对象并设置源为原始Base64数据
         const img = new Image();
         img.src = originalImageSrc;
 
         img.onload = function() {
-            // 原图的宽度和高度
             const originalWidth = img.width;
             const originalHeight = img.height;
-
-            // 计算宽高比
             const aspectRatio = originalWidth / originalHeight;
 
-            // 计算目标缩略图的宽度和高度
-            var targetWidth, targetHeight;
+            let targetWidth, targetHeight;
             if (originalWidth / originalHeight > maxWidth / maxHeight) {
-                // 图片过宽，按最大宽度调整尺寸
                 targetWidth = maxWidth;
                 targetHeight = maxWidth / aspectRatio;
             } else {
-                // 图片过高，按最大高度调整尺寸
                 targetHeight = maxHeight;
                 targetWidth = maxHeight * aspectRatio;
             }
 
-            // 创建一个canvas元素
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
 
-            // 设置canvas的尺寸为目标尺寸
             canvas.width = targetWidth;
             canvas.height = targetHeight;
 
-            // 将图片绘制到canvas上，并调整尺寸
             ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
 
-            // 导出新的Base64编码的图片数据
             const thumbnailDataUrl = canvas.toDataURL('image/png');
 
-            // 解决Promise，返回缩略图的Base64数据
             resolve(thumbnailDataUrl);
         };
 
