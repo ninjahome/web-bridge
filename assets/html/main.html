@@ -255,7 +255,8 @@
 
         .tweet-image-detail {
             display: block;
-            max-height: 95vh;
+            width: 95%;
+            height: 95vh;
             object-fit: contain;
             margin: auto;
         }
@@ -265,15 +266,21 @@
             top: 12px;
             right: 12px;
             color: #d2d1d1;
-            font-size: 24px;
-            font-weight: 500;
+            font-size: 20px;
+            font-weight: 400;
             transition: 0.3s;
             background-color: rgba(0, 0, 0, 0.5);
             border-radius: 50%;
             width: 42px;
             height: 42px;
+            line-height: 36px;
             border: none;
             align-items: center;
+        }
+
+        .tweet-image-raw button:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+
         }
 
         .tweet-image-hash {
@@ -353,7 +360,7 @@
         }
 
         .tweet-content {
-            margin-left: 56px;
+            margin-left: 60px;
             display: -webkit-box;
             -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
@@ -866,9 +873,10 @@
 
         .show-post-tweet-div {
             background-color: #4848D8;
+            height: 42px;
+            width: 148px;
             color: white; /* 字体颜色 */
             border: none; /* 无边框 */
-            padding: 8px 32px; /* 内边距 */
             cursor: pointer; /* 鼠标样式 */
             font-size: 16px; /* 字体大小 */
             box-shadow: rgba(0, 0, 0, 0.08) 0 8px 28px;
@@ -1201,7 +1209,7 @@
         }
 
         .income-body {
-            padding: 8px;
+            padding-top: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
