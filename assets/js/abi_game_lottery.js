@@ -611,19 +611,6 @@ const gameContractABI =`
     {
         "inputs": [
             {
-                "internalType": "address payable",
-                "name": "tokenContract",
-                "type": "address"
-            }
-        ],
-        "name": "finishPoint",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
@@ -896,6 +883,19 @@ const gameContractABI =`
             }
         ],
         "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address payable",
+                "name": "tokenContract",
+                "type": "address"
+            }
+        ],
+        "name": "transferBonusOfPoints",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {

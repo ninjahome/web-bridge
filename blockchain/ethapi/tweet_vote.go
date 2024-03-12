@@ -31,7 +31,7 @@ var (
 
 // TweetVoteMetaData contains all meta data concerning the TweetVote contract.
 var TweetVoteMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"stateMutability\":\"payable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"opType\",\"type\":\"bool\"}],\"name\":\"AdminOperation\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kolAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"rightsNo\",\"type\":\"uint256\"}],\"name\":\"KolRightsBought\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"KolWithdraw\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnerSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"pAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"stop\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"typ\",\"type\":\"string\"}],\"name\":\"PluginChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Received\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newSerficeFeeRate\",\"type\":\"uint256\"}],\"name\":\"ServiceFeeChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"pricePost\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"rateName\",\"type\":\"string\"}],\"name\":\"SystemRateChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"tweetHash\",\"type\":\"bytes32\"}],\"name\":\"TweetPublished\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"tweetHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"voter\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"pricePerVote\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"voteNo\",\"type\":\"uint256\"}],\"name\":\"TweetVoted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newContract\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"name\":\"UpgradeToNewRule\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"name\":\"WithdrawService\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"__admins\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__minValCheck\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminChangeKolKeyRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"isDelete\",\"type\":\"bool\"}],\"name\":\"adminOperation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"adminServiceFeeWithdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetKolIncomePerTweetRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"adminSetKolKeyAddr\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newMaxVote\",\"type\":\"uint256\"}],\"name\":\"adminSetMaxVotePerTweet\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"addr\",\"type\":\"address\"}],\"name\":\"adminSetPluginAddr\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetServiceFeeRateForPerTweetVote\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newPriceInFinney\",\"type\":\"uint256\"}],\"name\":\"adminSetTweetPostPrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newPriceInFinney\",\"type\":\"uint256\"}],\"name\":\"adminSetTweetVotePrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetWithdrawFeeRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"stop\",\"type\":\"bool\"}],\"name\":\"adminStopKolKey\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"stop\",\"type\":\"bool\"}],\"name\":\"adminStopPlugin\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"adminUpgradeToNewRule\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"changeOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"stop\",\"type\":\"bool\"}],\"name\":\"changeStatus\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"contractBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getOwner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kolIncomePerTweetVoteRate\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kolKeyAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kolKeyIncomeRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kolKeyIncomeSourceID\",\"outputs\":[{\"internalType\":\"int8\",\"name\":\"\",\"type\":\"int8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kolKeyStop\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maxVotePerTweet\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"oneFinney\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"ownersOfAllTweets\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pluginAddress\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"pluginStop\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"publishTweet\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"prefixedHash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"recoverSigner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"serviceFeePerTweetVoteRate\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"serviceFeeReceived\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"systemSettings\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tweetPostPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tweetVotePrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"tweetHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"voteNo\",\"type\":\"uint256\"}],\"name\":\"voteToTweets\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"all\",\"type\":\"bool\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawFeeRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}]",
+	ABI: "[{\"inputs\":[],\"stateMutability\":\"payable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"opType\",\"type\":\"bool\"}],\"name\":\"AdminOperation\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"kolAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"buyer\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"rightsNo\",\"type\":\"uint256\"}],\"name\":\"KolRightsBought\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"kol\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"KolWithdraw\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnerSet\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"pAddr\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"stop\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"typ\",\"type\":\"string\"}],\"name\":\"PluginChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"Received\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newSerficeFeeRate\",\"type\":\"uint256\"}],\"name\":\"ServiceFeeChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"pricePost\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"rateName\",\"type\":\"string\"}],\"name\":\"SystemRateChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"tweetHash\",\"type\":\"bytes32\"}],\"name\":\"TweetPublished\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bytes32\",\"name\":\"tweetHash\",\"type\":\"bytes32\"},{\"indexed\":false,\"internalType\":\"address\",\"name\":\"voter\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"pricePerVote\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"voteNo\",\"type\":\"uint256\"}],\"name\":\"TweetVoted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newContract\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"name\":\"UpgradeToNewRule\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"balance\",\"type\":\"uint256\"}],\"name\":\"WithdrawService\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"__admins\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"__minValCheck\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminChangeKolKeyRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"admin\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"isDelete\",\"type\":\"bool\"}],\"name\":\"adminOperation\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"adminServiceFeeWithdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newGameAddr\",\"type\":\"address\"}],\"name\":\"adminSetGameContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetKolIncomePerTweetRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newKolContract\",\"type\":\"address\"}],\"name\":\"adminSetKolKeyContract\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newMaxVote\",\"type\":\"uint256\"}],\"name\":\"adminSetMaxVotePerTweet\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetServiceFeeRateForPerTweetVote\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newPriceInFinney\",\"type\":\"uint256\"}],\"name\":\"adminSetTweetPostPrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"newPriceInFinney\",\"type\":\"uint256\"}],\"name\":\"adminSetTweetVotePrice\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint8\",\"name\":\"newRate\",\"type\":\"uint8\"}],\"name\":\"adminSetWithdrawFeeRate\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"stop\",\"type\":\"bool\"}],\"name\":\"adminStopKolKey\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"stop\",\"type\":\"bool\"}],\"name\":\"adminStopPlugin\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"addresspayable\",\"name\":\"recipient\",\"type\":\"address\"}],\"name\":\"adminUpgradeToNewRule\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"balance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"changeOwner\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"stop\",\"type\":\"bool\"}],\"name\":\"changeStatus\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"contractBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"gameContract\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"gameStop\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getOwner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kolIncomePerTweetVoteRate\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kolKeyConract\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kolKeyIncomeRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kolKeyIncomeSourceID\",\"outputs\":[{\"internalType\":\"int8\",\"name\":\"\",\"type\":\"int8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"kolKeyStop\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"maxVotePerTweet\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"oneFinney\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"name\":\"ownersOfAllTweets\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"hash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"publishTweet\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"prefixedHash\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"signature\",\"type\":\"bytes\"}],\"name\":\"recoverSigner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"serviceFeePerTweetVoteRate\",\"outputs\":[{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"serviceFeeReceived\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"systemSettings\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"},{\"internalType\":\"uint8\",\"name\":\"\",\"type\":\"uint8\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tweetPostPrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"tweetVotePrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"tweetHash\",\"type\":\"bytes32\"},{\"internalType\":\"uint256\",\"name\":\"voteNo\",\"type\":\"uint256\"}],\"name\":\"voteToTweets\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"all\",\"type\":\"bool\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"withdrawFeeRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}]",
 }
 
 // TweetVoteABI is the input ABI used to generate the binding from.
@@ -304,6 +304,68 @@ func (_TweetVote *TweetVoteCallerSession) ContractBalance() (*big.Int, error) {
 	return _TweetVote.Contract.ContractBalance(&_TweetVote.CallOpts)
 }
 
+// GameContract is a free data retrieval call binding the contract method 0xd3f33009.
+//
+// Solidity: function gameContract() view returns(address)
+func (_TweetVote *TweetVoteCaller) GameContract(opts *bind.CallOpts) (common.Address, error) {
+	var out []interface{}
+	err := _TweetVote.contract.Call(opts, &out, "gameContract")
+
+	if err != nil {
+		return *new(common.Address), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
+
+	return out0, err
+
+}
+
+// GameContract is a free data retrieval call binding the contract method 0xd3f33009.
+//
+// Solidity: function gameContract() view returns(address)
+func (_TweetVote *TweetVoteSession) GameContract() (common.Address, error) {
+	return _TweetVote.Contract.GameContract(&_TweetVote.CallOpts)
+}
+
+// GameContract is a free data retrieval call binding the contract method 0xd3f33009.
+//
+// Solidity: function gameContract() view returns(address)
+func (_TweetVote *TweetVoteCallerSession) GameContract() (common.Address, error) {
+	return _TweetVote.Contract.GameContract(&_TweetVote.CallOpts)
+}
+
+// GameStop is a free data retrieval call binding the contract method 0xd70feef1.
+//
+// Solidity: function gameStop() view returns(bool)
+func (_TweetVote *TweetVoteCaller) GameStop(opts *bind.CallOpts) (bool, error) {
+	var out []interface{}
+	err := _TweetVote.contract.Call(opts, &out, "gameStop")
+
+	if err != nil {
+		return *new(bool), err
+	}
+
+	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
+
+	return out0, err
+
+}
+
+// GameStop is a free data retrieval call binding the contract method 0xd70feef1.
+//
+// Solidity: function gameStop() view returns(bool)
+func (_TweetVote *TweetVoteSession) GameStop() (bool, error) {
+	return _TweetVote.Contract.GameStop(&_TweetVote.CallOpts)
+}
+
+// GameStop is a free data retrieval call binding the contract method 0xd70feef1.
+//
+// Solidity: function gameStop() view returns(bool)
+func (_TweetVote *TweetVoteCallerSession) GameStop() (bool, error) {
+	return _TweetVote.Contract.GameStop(&_TweetVote.CallOpts)
+}
+
 // GetOwner is a free data retrieval call binding the contract method 0x893d20e8.
 //
 // Solidity: function getOwner() view returns(address)
@@ -366,12 +428,12 @@ func (_TweetVote *TweetVoteCallerSession) KolIncomePerTweetVoteRate() (uint8, er
 	return _TweetVote.Contract.KolIncomePerTweetVoteRate(&_TweetVote.CallOpts)
 }
 
-// KolKeyAddress is a free data retrieval call binding the contract method 0xbba9de42.
+// KolKeyConract is a free data retrieval call binding the contract method 0xdb466642.
 //
-// Solidity: function kolKeyAddress() view returns(address)
-func (_TweetVote *TweetVoteCaller) KolKeyAddress(opts *bind.CallOpts) (common.Address, error) {
+// Solidity: function kolKeyConract() view returns(address)
+func (_TweetVote *TweetVoteCaller) KolKeyConract(opts *bind.CallOpts) (common.Address, error) {
 	var out []interface{}
-	err := _TweetVote.contract.Call(opts, &out, "kolKeyAddress")
+	err := _TweetVote.contract.Call(opts, &out, "kolKeyConract")
 
 	if err != nil {
 		return *new(common.Address), err
@@ -383,18 +445,18 @@ func (_TweetVote *TweetVoteCaller) KolKeyAddress(opts *bind.CallOpts) (common.Ad
 
 }
 
-// KolKeyAddress is a free data retrieval call binding the contract method 0xbba9de42.
+// KolKeyConract is a free data retrieval call binding the contract method 0xdb466642.
 //
-// Solidity: function kolKeyAddress() view returns(address)
-func (_TweetVote *TweetVoteSession) KolKeyAddress() (common.Address, error) {
-	return _TweetVote.Contract.KolKeyAddress(&_TweetVote.CallOpts)
+// Solidity: function kolKeyConract() view returns(address)
+func (_TweetVote *TweetVoteSession) KolKeyConract() (common.Address, error) {
+	return _TweetVote.Contract.KolKeyConract(&_TweetVote.CallOpts)
 }
 
-// KolKeyAddress is a free data retrieval call binding the contract method 0xbba9de42.
+// KolKeyConract is a free data retrieval call binding the contract method 0xdb466642.
 //
-// Solidity: function kolKeyAddress() view returns(address)
-func (_TweetVote *TweetVoteCallerSession) KolKeyAddress() (common.Address, error) {
-	return _TweetVote.Contract.KolKeyAddress(&_TweetVote.CallOpts)
+// Solidity: function kolKeyConract() view returns(address)
+func (_TweetVote *TweetVoteCallerSession) KolKeyConract() (common.Address, error) {
+	return _TweetVote.Contract.KolKeyConract(&_TweetVote.CallOpts)
 }
 
 // KolKeyIncomeRate is a free data retrieval call binding the contract method 0x5feab7cb.
@@ -581,68 +643,6 @@ func (_TweetVote *TweetVoteSession) OwnersOfAllTweets(arg0 [32]byte) (common.Add
 // Solidity: function ownersOfAllTweets(bytes32 ) view returns(address)
 func (_TweetVote *TweetVoteCallerSession) OwnersOfAllTweets(arg0 [32]byte) (common.Address, error) {
 	return _TweetVote.Contract.OwnersOfAllTweets(&_TweetVote.CallOpts, arg0)
-}
-
-// PluginAddress is a free data retrieval call binding the contract method 0x67795783.
-//
-// Solidity: function pluginAddress() view returns(address)
-func (_TweetVote *TweetVoteCaller) PluginAddress(opts *bind.CallOpts) (common.Address, error) {
-	var out []interface{}
-	err := _TweetVote.contract.Call(opts, &out, "pluginAddress")
-
-	if err != nil {
-		return *new(common.Address), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(common.Address)).(*common.Address)
-
-	return out0, err
-
-}
-
-// PluginAddress is a free data retrieval call binding the contract method 0x67795783.
-//
-// Solidity: function pluginAddress() view returns(address)
-func (_TweetVote *TweetVoteSession) PluginAddress() (common.Address, error) {
-	return _TweetVote.Contract.PluginAddress(&_TweetVote.CallOpts)
-}
-
-// PluginAddress is a free data retrieval call binding the contract method 0x67795783.
-//
-// Solidity: function pluginAddress() view returns(address)
-func (_TweetVote *TweetVoteCallerSession) PluginAddress() (common.Address, error) {
-	return _TweetVote.Contract.PluginAddress(&_TweetVote.CallOpts)
-}
-
-// PluginStop is a free data retrieval call binding the contract method 0x7d9a38cd.
-//
-// Solidity: function pluginStop() view returns(bool)
-func (_TweetVote *TweetVoteCaller) PluginStop(opts *bind.CallOpts) (bool, error) {
-	var out []interface{}
-	err := _TweetVote.contract.Call(opts, &out, "pluginStop")
-
-	if err != nil {
-		return *new(bool), err
-	}
-
-	out0 := *abi.ConvertType(out[0], new(bool)).(*bool)
-
-	return out0, err
-
-}
-
-// PluginStop is a free data retrieval call binding the contract method 0x7d9a38cd.
-//
-// Solidity: function pluginStop() view returns(bool)
-func (_TweetVote *TweetVoteSession) PluginStop() (bool, error) {
-	return _TweetVote.Contract.PluginStop(&_TweetVote.CallOpts)
-}
-
-// PluginStop is a free data retrieval call binding the contract method 0x7d9a38cd.
-//
-// Solidity: function pluginStop() view returns(bool)
-func (_TweetVote *TweetVoteCallerSession) PluginStop() (bool, error) {
-	return _TweetVote.Contract.PluginStop(&_TweetVote.CallOpts)
 }
 
 // RecoverSigner is a free data retrieval call binding the contract method 0x97aba7f9.
@@ -931,6 +931,27 @@ func (_TweetVote *TweetVoteTransactorSession) AdminServiceFeeWithdraw() (*types.
 	return _TweetVote.Contract.AdminServiceFeeWithdraw(&_TweetVote.TransactOpts)
 }
 
+// AdminSetGameContract is a paid mutator transaction binding the contract method 0xeb54be2a.
+//
+// Solidity: function adminSetGameContract(address newGameAddr) returns()
+func (_TweetVote *TweetVoteTransactor) AdminSetGameContract(opts *bind.TransactOpts, newGameAddr common.Address) (*types.Transaction, error) {
+	return _TweetVote.contract.Transact(opts, "adminSetGameContract", newGameAddr)
+}
+
+// AdminSetGameContract is a paid mutator transaction binding the contract method 0xeb54be2a.
+//
+// Solidity: function adminSetGameContract(address newGameAddr) returns()
+func (_TweetVote *TweetVoteSession) AdminSetGameContract(newGameAddr common.Address) (*types.Transaction, error) {
+	return _TweetVote.Contract.AdminSetGameContract(&_TweetVote.TransactOpts, newGameAddr)
+}
+
+// AdminSetGameContract is a paid mutator transaction binding the contract method 0xeb54be2a.
+//
+// Solidity: function adminSetGameContract(address newGameAddr) returns()
+func (_TweetVote *TweetVoteTransactorSession) AdminSetGameContract(newGameAddr common.Address) (*types.Transaction, error) {
+	return _TweetVote.Contract.AdminSetGameContract(&_TweetVote.TransactOpts, newGameAddr)
+}
+
 // AdminSetKolIncomePerTweetRate is a paid mutator transaction binding the contract method 0xa1cd090a.
 //
 // Solidity: function adminSetKolIncomePerTweetRate(uint8 newRate) returns()
@@ -952,25 +973,25 @@ func (_TweetVote *TweetVoteTransactorSession) AdminSetKolIncomePerTweetRate(newR
 	return _TweetVote.Contract.AdminSetKolIncomePerTweetRate(&_TweetVote.TransactOpts, newRate)
 }
 
-// AdminSetKolKeyAddr is a paid mutator transaction binding the contract method 0xca16e3cc.
+// AdminSetKolKeyContract is a paid mutator transaction binding the contract method 0x23266c86.
 //
-// Solidity: function adminSetKolKeyAddr(address addr) returns()
-func (_TweetVote *TweetVoteTransactor) AdminSetKolKeyAddr(opts *bind.TransactOpts, addr common.Address) (*types.Transaction, error) {
-	return _TweetVote.contract.Transact(opts, "adminSetKolKeyAddr", addr)
+// Solidity: function adminSetKolKeyContract(address newKolContract) returns()
+func (_TweetVote *TweetVoteTransactor) AdminSetKolKeyContract(opts *bind.TransactOpts, newKolContract common.Address) (*types.Transaction, error) {
+	return _TweetVote.contract.Transact(opts, "adminSetKolKeyContract", newKolContract)
 }
 
-// AdminSetKolKeyAddr is a paid mutator transaction binding the contract method 0xca16e3cc.
+// AdminSetKolKeyContract is a paid mutator transaction binding the contract method 0x23266c86.
 //
-// Solidity: function adminSetKolKeyAddr(address addr) returns()
-func (_TweetVote *TweetVoteSession) AdminSetKolKeyAddr(addr common.Address) (*types.Transaction, error) {
-	return _TweetVote.Contract.AdminSetKolKeyAddr(&_TweetVote.TransactOpts, addr)
+// Solidity: function adminSetKolKeyContract(address newKolContract) returns()
+func (_TweetVote *TweetVoteSession) AdminSetKolKeyContract(newKolContract common.Address) (*types.Transaction, error) {
+	return _TweetVote.Contract.AdminSetKolKeyContract(&_TweetVote.TransactOpts, newKolContract)
 }
 
-// AdminSetKolKeyAddr is a paid mutator transaction binding the contract method 0xca16e3cc.
+// AdminSetKolKeyContract is a paid mutator transaction binding the contract method 0x23266c86.
 //
-// Solidity: function adminSetKolKeyAddr(address addr) returns()
-func (_TweetVote *TweetVoteTransactorSession) AdminSetKolKeyAddr(addr common.Address) (*types.Transaction, error) {
-	return _TweetVote.Contract.AdminSetKolKeyAddr(&_TweetVote.TransactOpts, addr)
+// Solidity: function adminSetKolKeyContract(address newKolContract) returns()
+func (_TweetVote *TweetVoteTransactorSession) AdminSetKolKeyContract(newKolContract common.Address) (*types.Transaction, error) {
+	return _TweetVote.Contract.AdminSetKolKeyContract(&_TweetVote.TransactOpts, newKolContract)
 }
 
 // AdminSetMaxVotePerTweet is a paid mutator transaction binding the contract method 0x489e2590.
@@ -992,27 +1013,6 @@ func (_TweetVote *TweetVoteSession) AdminSetMaxVotePerTweet(newMaxVote *big.Int)
 // Solidity: function adminSetMaxVotePerTweet(uint256 newMaxVote) returns()
 func (_TweetVote *TweetVoteTransactorSession) AdminSetMaxVotePerTweet(newMaxVote *big.Int) (*types.Transaction, error) {
 	return _TweetVote.Contract.AdminSetMaxVotePerTweet(&_TweetVote.TransactOpts, newMaxVote)
-}
-
-// AdminSetPluginAddr is a paid mutator transaction binding the contract method 0xcaa27f5b.
-//
-// Solidity: function adminSetPluginAddr(address addr) returns()
-func (_TweetVote *TweetVoteTransactor) AdminSetPluginAddr(opts *bind.TransactOpts, addr common.Address) (*types.Transaction, error) {
-	return _TweetVote.contract.Transact(opts, "adminSetPluginAddr", addr)
-}
-
-// AdminSetPluginAddr is a paid mutator transaction binding the contract method 0xcaa27f5b.
-//
-// Solidity: function adminSetPluginAddr(address addr) returns()
-func (_TweetVote *TweetVoteSession) AdminSetPluginAddr(addr common.Address) (*types.Transaction, error) {
-	return _TweetVote.Contract.AdminSetPluginAddr(&_TweetVote.TransactOpts, addr)
-}
-
-// AdminSetPluginAddr is a paid mutator transaction binding the contract method 0xcaa27f5b.
-//
-// Solidity: function adminSetPluginAddr(address addr) returns()
-func (_TweetVote *TweetVoteTransactorSession) AdminSetPluginAddr(addr common.Address) (*types.Transaction, error) {
-	return _TweetVote.Contract.AdminSetPluginAddr(&_TweetVote.TransactOpts, addr)
 }
 
 // AdminSetServiceFeeRateForPerTweetVote is a paid mutator transaction binding the contract method 0xcef8e395.
