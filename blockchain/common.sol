@@ -19,12 +19,18 @@ abstract contract Owner {
         emit OwnerSet(address(0), owner);
     }
 
-    function changeOwner(address newOwner) public isOwner {
-        emit OwnerSet(owner, newOwner);
+    function changeOwner(address newOwner)
+    public
+    isOwner
+    isValidAddress(newOwner)
+    {
+        require(newOwner != owner, "no need to change");
         owner = newOwner;
+        emit OwnerSet(owner, newOwner);
     }
 
     function changeStatus(bool stop) public isOwner {
+        require(stop != paused, "no need to change");
         paused = stop;
     }
 
