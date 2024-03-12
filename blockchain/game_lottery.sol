@@ -123,7 +123,10 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         emit AdminOperated(newRate, "rate_for_bonus_winner");
     }
 
-    function finishPoint(address payable tokenContract) public isOwner {
+    function transferBonusOfPoints(address payable tokenContract)
+    public
+    isOwner
+    {
         require(address(0) != tokenContract, "invalid address");
         require(bonusForPoints >= __minValCheck, "too small point eth");
         tokenContract.transfer(bonusForPoints);
@@ -170,7 +173,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         bytes32 hash = keccak256(abi.encodePacked(random));
         require(hash == currentHash, "invalid random data");
 
-        bytes32 newRandom = keccak256(
+        bytes32 seed = keccak256(
             abi.encodePacked(
                 uint256(blockhash(block.number - 1)),
                 block.timestamp,
@@ -179,7 +182,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             )
         );
 
-        uint256 idx = uint256(newRandom) % allTickets.length;
+        uint256 idx = uint256(seed) % allTickets.length;
         return allTickets[idx];
     }
 
@@ -273,7 +276,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         uint256 val = msg.value;
         require(val > __minValCheck, "invalid msg value");
         require(voteNo >= 1, "invalid vote no");
-        require(tweetHash != bytes32(0));
+        require(tweetHash != bytes32(0), "invalid tweet hash");
 
         gameInfoRecord[currentRoundNo].bonus += val;
 
