@@ -359,6 +359,15 @@
             color: #3333BE;
         }
 
+
+        .tweet-content-collapsed,
+        .tweet-content {
+            font-size: 15px;
+            line-height: 25px;
+            font-weight: 400;
+            color: #1B1B1D;
+        }
+
         .tweet-content {
             margin-left: 60px;
             display: -webkit-box;
@@ -375,13 +384,16 @@
             display: -webkit-box;
             -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
+            position: relative;
+        }
+
+        .tweet-text {
             font-size: 15px;
             line-height: 1.5;
             font-weight: 400;
             color: #1B1B1D;
-            position: relative;
+            margin-top: 8px;
         }
-
         .tweetPaymentDelete {
             display: none;
             background-color: transparent; /* 例如，红色背景 */
@@ -1356,6 +1368,8 @@
 
         .tweet-detail {
             padding: 16px;
+            border-left: solid 1px #F7F8F9;
+            border-right: solid 1px #F7F8F9;
         }
 
         .tweet-payment_status {
