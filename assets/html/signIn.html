@@ -185,7 +185,7 @@
                 </button>
             </div>
             <div id="sign-in-div">
-                <button class="sign-in-button" id="sign-in-button" style="display: none"
+                <button class="sign-in-button" id="sign-in-button"
                         onclick="signInByEth()">Sign In
                 </button>
             </div>
@@ -234,15 +234,15 @@
                 <div class="services">
                     <div class="service">
                         <img src="/assets/file/Arbitrum-logo.png" alt="Blockchain Logo 1">
-                        <div class="logo-container" id="logo-container-btc"><span class="connected-icon"></span> </div>
+                        <div class="logo-container" id="logo-container-arbitrum"><span class="connected-icon"></span> </div>
                     </div>
                     <div class="service">
                         <img src="/assets/file/Solana-logo.png" alt="Blockchain Logo 2">
-                        <div class="logo-container" id="logo-container-eth"><span class="connected-icon"></span> </div>
+                        <div class="logo-container" id="logo-container-solana"><span class="connected-icon"></span> </div>
                     </div>
                     <div class="service">
                         <img src="/assets/file/Bitcoin-logo.png" alt="Blockchain Logo 2">
-                        <div class="logo-container" id="logo-container-eth"><span class="connected-icon"></span> </div>
+                        <div class="logo-container" id="logo-container-btc"><span class="connected-icon"></span> </div>
                     </div>
                     <div class="service">
                         <img src="/assets/file/Ethereum-logo.png" alt="Blockchain Logo 2">
@@ -283,10 +283,6 @@
         const signInDiv = document.getElementById("sign-in-div");
         const metamaskDiv = document.getElementById("metamask-div");
         const web3Id = document.getElementById("web3-id");
-         const twitterAvatar = document.getElementById("cached-twitter-logo" );
-        const twitterName = document.getElementById("cached-twitter-name" );
-        twitterAvatar.src = "/assets/file/logo.png";
-        twitterName.innerHTML = "Dessage";
         if (!web3ID) {
             web3IdTips.style.display = 'block';
             signInDiv.style.display = 'none';
@@ -300,6 +296,7 @@
         metamaskDiv.style.display = 'none';
         web3Id.style.display = 'block';
         web3Id.textContent = web3ID;
+        document.getElementById("logo-container-arbitrum").classList.add("active")
         document.getElementById("logo-container-eth").classList.add("active")
 
         const savedUserInfo = NJUserBasicInfo.loadNjBasic(web3ID);
@@ -312,12 +309,6 @@
         }
 
         document.getElementById("logo-container-twitter").classList.add("active")
-        if (tw_data.profile_image_url) {
-            twitterAvatar.src = tw_data.profile_image_url
-        }
-        if (tw_data.name) {
-            twitterName.innerHTML = tw_data.name
-        }
     }
 
     document.addEventListener("DOMContentLoaded", initElmStatus);
@@ -447,13 +438,6 @@
         document.title = i18next.t('title');
         document.getElementById('title-of-bridge-list').textContent = i18next.t('bridge-title');
         document.getElementById('bridge-list-sub-tittle').textContent = i18next.t('bridge-list-sub-tittle');
-        document.getElementById('road-map-tittle').textContent = i18next.t('road-map-title');
-        document.getElementById('road-map-step1').textContent = i18next.t('road-map-step1');
-        document.getElementById('road-map-step2').textContent = i18next.t('road-map-step2');
-        document.getElementById('road-map-step3').textContent = i18next.t('road-map-step3');
-        document.getElementById('road-map-step4').textContent = i18next.t('road-map-step4');
-        document.getElementById('road-map-step5').textContent = i18next.t('road-map-step5');
-        document.getElementById('road-map-step6').textContent = i18next.t('road-map-step6');
     }
 </script>
 </body>
