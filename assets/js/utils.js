@@ -1,4 +1,3 @@
-const __defaultLogo = '/assets/file/logo.png';
 
 function formatTime(createTime) {
     const date = new Date(createTime);
@@ -48,7 +47,7 @@ function PostToSrvByJson(url, data) {
     return new Promise((resolve, reject) => {
         fetch(url, requestOptions)
             .then(response => {
-                if (response.redirected){
+                if (response.redirected) {
                     window.location = response.url;
                     return;
                 }
@@ -89,7 +88,7 @@ async function GetToSrvByJson(url) {
 
     try {
         const response = await fetch(url, requestOptions);
-        if (response.redirected){
+        if (response.redirected) {
             window.location = response.url;
             return;
         }
@@ -240,8 +239,14 @@ style.innerHTML = `
     }
 `;
 document.head.appendChild(style);
-
+let isShowingTips = false;
 function showWaiting(message, timeout) {
+    if (isShowingTips){
+        changeLoadingTips(message);
+        return;
+    }
+
+    isShowingTips = true;
     const modal = createModalElement();
     document.body.appendChild(modal);
 
@@ -263,6 +268,10 @@ function changeLoadingTips(content) {
 }
 
 function hideLoading() {
+    if (!isShowingTips){
+        return;
+    }
+    isShowingTips = false;
     const modal = document.getElementById('loading-modal');
     if (modal) {
         document.body.removeChild(modal);
@@ -316,7 +325,7 @@ class TwitterBasicInfo {
 class NJUserBasicInfo {
 
     constructor(address, eth_addr, create_at, tw_id, update_at,
-                tweet_count, vote_count, be_voted_count) {
+                tweet_count, vote_count, be_voted_count,is_elder) {
         this.address = address;
         this.eth_addr = eth_addr;
         this.create_at = create_at;
@@ -325,6 +334,7 @@ class NJUserBasicInfo {
         this.tweet_count = tweet_count;
         this.vote_count = vote_count;
         this.be_voted_count = be_voted_count;
+        this.is_elder = is_elder;
     }
 
 
@@ -335,10 +345,10 @@ class NJUserBasicInfo {
         }
         const nuObj = JSON.parse(storedData);
         return new NJUserBasicInfo(nuObj.address, nuObj.eth_addr, nuObj.create_at, nuObj.tw_id,
-            nuObj.update_at, nuObj.tweet_count, nuObj.vote_count, nuObj.be_voted_count);
+            nuObj.update_at, nuObj.tweet_count, nuObj.vote_count, nuObj.be_voted_count,nuObj.is_elder);
     }
 
-    static  cacheNJUsrObj(obj) {
+    static cacheNJUsrObj(obj) {
         if (!obj.eth_addr) {
             throw new Error("invalid twitter basic info")
         }
@@ -379,6 +389,7 @@ function createDialogElement(imageSrc) {
 }
 
 function showDialog(type, msg, confirmCB, cancelCB) {
+    hideLoading();
     let imageSrc;
     switch (type) {
         case DLevel.Tips:
@@ -537,10 +548,11 @@ function decreaseVote() {
     voteCountElement.value = newVoteCount.toString();
 }
 
-async function __shareVoteToTweet(create_time, vote_count) {
+async function __shareVoteToTweet(create_time, vote_count,slogan) {
     await PostToSrvByJson("/shareVoteAction", {
         create_time: create_time,
         vote_count: Number(vote_count),
+        slogan:slogan,
     });
 }
 
@@ -561,7 +573,7 @@ function checkMetamaskErr(err) {
     if (code.includes("duplicate post")) {
         return code;
     }
-    if (code.includes("insufficient funds")){
+    if (code.includes("insufficient funds")) {
         showDialog(DLevel.Warning, "insufficient funds");
         return
     }
@@ -569,12 +581,54 @@ function checkMetamaskErr(err) {
     return code;
 }
 
-const __noTeamID = '0x0000000000000000000000000000000000000000000000000000000000000000';
-const __noTeamID2 = '0000000000000000000000000000000000000000000000000000000000000000';
-
-function __incomeWithdrawHistory(address){
+function __incomeWithdrawHistory(address) {
     let targetUrl = __globalMetaMaskNetworkParam.get(__globalTargetChainNetworkID).blockExplorerUrls[0];
-    targetUrl+='/address/'+address;
-    targetUrl+='#internaltx';
+    targetUrl += '/address/' + address;
+    targetUrl += '#internaltx';
     window.open(targetUrl);
 }
+
+function createThumbnail(originalImageSrc, maxWidth, maxHeight) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = originalImageSrc;
+
+        img.onload = function() {
+            const originalWidth = img.width;
+            const originalHeight = img.height;
+            const aspectRatio = originalWidth / originalHeight;
+
+            let targetWidth, targetHeight;
+            if (originalWidth / originalHeight > maxWidth / maxHeight) {
+                targetWidth = maxWidth;
+                targetHeight = maxWidth / aspectRatio;
+            } else {
+                targetHeight = maxHeight;
+                targetWidth = maxHeight * aspectRatio;
+            }
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = targetWidth;
+            canvas.height = targetHeight;
+
+            ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+            const thumbnailDataUrl = canvas.toDataURL('image/png');
+
+            resolve(thumbnailDataUrl);
+        };
+
+        img.onerror = function() {
+            reject(new Error('Could not load image'));
+        };
+    });
+}
+
+
+
+const __defaultLogo = '/assets/file/logo.png';
+const maxTextLenPerImg = 1000;
+const maxImgPerTweet = 4;
+const defaultTextLenForTweet  = 100;

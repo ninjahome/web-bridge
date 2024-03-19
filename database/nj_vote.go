@@ -9,6 +9,8 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"strings"
+	"time"
 )
 
 type TweetVoteAction struct {
@@ -19,8 +21,9 @@ type TweetVoteAction struct {
 }
 
 type TweetVotePersonalRecord struct {
-	CreateTime int64 `json:"create_time" firestore:"create_time"`
-	VoteCount  int   `json:"vote_count" firestore:"vote_count"`
+	CreateTime    int64 `json:"create_time" firestore:"create_time"`
+	FirstVoteTime int64 `json:"first_vote_time" firestore:"first_vote_time"`
+	VoteCount     int   `json:"vote_count" firestore:"vote_count"`
 }
 
 func (dm *DbManager) queryVoteRecord(createTime, voter string, tx *firestore.Transaction, vote *TweetVoteAction) (*firestore.DocumentRef, *TweetVotePersonalRecord, error) {
@@ -35,8 +38,9 @@ func (dm *DbManager) queryVoteRecord(createTime, voter string, tx *firestore.Tra
 			return nil, nil, voteErr
 		}
 		votedObj = TweetVotePersonalRecord{
-			CreateTime: vote.CreateTime,
-			VoteCount:  vote.VoteCount,
+			FirstVoteTime: time.Now().UnixMilli(),
+			CreateTime:    vote.CreateTime,
+			VoteCount:     vote.VoteCount,
 		}
 	} else {
 		var err = voteSnapshot.DataTo(&votedObj)
@@ -46,87 +50,114 @@ func (dm *DbManager) queryVoteRecord(createTime, voter string, tx *firestore.Tra
 		}
 
 		votedObj.VoteCount += vote.VoteCount
+		if votedObj.FirstVoteTime == 0 {
+			votedObj.FirstVoteTime = time.Now().UnixMilli()
+		}
 	}
 
 	return recordDoc, &votedObj, nil
 }
 
-func (dm *DbManager) queryVoteStatus(voter bool, target string, tx *firestore.Transaction, vote *TweetVoteAction) (*firestore.DocumentRef, *NinjaUsrInfo, error) {
+func (dm *DbManager) queryVoteStatus(voter, sameOwner bool, target string, tx *firestore.Transaction, vote *TweetVoteAction) (*firestore.DocumentRef, *NinjaUsrInfo, error) {
 	njDoc := dm.fileCli.Collection(DBTableNJUser).Doc(target)
 
-	voteSnapshot, err := tx.Get(njDoc)
+	njUsrObj, err := tx.Get(njDoc)
 	if err != nil {
 		util.LogInst().Err(err).Str("web3-id", target).
 			Int64("create_time", vote.CreateTime).
 			Msg("failed to get nj user")
 		return nil, nil, err
 	}
+
 	var nu NinjaUsrInfo
-	err = voteSnapshot.DataTo(&nu)
+	err = njUsrObj.DataTo(&nu)
 	if err != nil {
 		util.LogInst().Err(err).Str("web3-id", target).
 			Int64("create_time", vote.CreateTime).Msg("parse nj user failed")
 		return nil, nil, err
 	}
-
-	if voter {
+	multiPly := 1
+	if nu.IsElder {
+		multiPly = 2
+	}
+	if sameOwner {
+		nu.Points += __dbConf.PointForVote * vote.VoteCount
+		nu.Points += __dbConf.PointForBeVote * vote.VoteCount * multiPly
 		nu.VoteCount += vote.VoteCount
-	} else {
 		nu.BeVotedCount += vote.VoteCount
+	} else {
+		if voter {
+			nu.VoteCount += vote.VoteCount
+			nu.Points += __dbConf.PointForVote * vote.VoteCount
+		} else {
+			nu.BeVotedCount += vote.VoteCount
+			nu.Points += __dbConf.PointForBeVote * vote.VoteCount * multiPly
+		}
 	}
 
 	return njDoc, &nu, nil
 }
 
 type voteStatusForDb struct {
-	recordDoc *firestore.DocumentRef
+	statusDoc *firestore.DocumentRef
 	voterDoc  *firestore.DocumentRef
 	votedDoc  *firestore.DocumentRef
-	recordObj *TweetVotePersonalRecord
+	statusObj *TweetVotePersonalRecord
 	voterObj  *NinjaUsrInfo
 	votedObj  *NinjaUsrInfo
 }
 
 func (dm *DbManager) queryStatus(createTime, voter, voted string, tx *firestore.Transaction, vote *TweetVoteAction) (*voteStatusForDb, error) {
-	recordDoc, recordObj, err := dm.queryVoteRecord(createTime, voter, tx, vote)
+	statusDoc, statusObj, err := dm.queryVoteRecord(createTime, voter, tx, vote)
 	if err != nil {
 		return nil, err
 	}
 
-	voterDoc, voterObj, err := dm.queryVoteStatus(true, voter, tx, vote)
+	sameOwner := voter == voted
+	voterDoc, voterObj, err := dm.queryVoteStatus(true, sameOwner, voter, tx, vote)
 	if err != nil {
 		return nil, err
 	}
 
-	votedDoc, votedObj, err := dm.queryVoteStatus(false, voted, tx, vote)
+	votedDoc, votedObj, err := dm.queryVoteStatus(false, sameOwner, voted, tx, vote)
 	if err != nil {
 		return nil, err
 	}
 
 	return &voteStatusForDb{
-		recordDoc: recordDoc,
+		statusDoc: statusDoc,
 		voterDoc:  voterDoc,
 		votedDoc:  votedDoc,
-		recordObj: recordObj,
+		statusObj: statusObj,
 		voterObj:  voterObj,
 		votedObj:  votedObj,
 	}, nil
 }
 
 func (dm *DbManager) updateStatus(status *voteStatusForDb, tx *firestore.Transaction) error {
-	var err = tx.Set(status.recordDoc, status.recordObj)
+	var err = tx.Set(status.statusDoc, status.statusObj)
 	if err != nil {
 		util.LogInst().Err(err).Msg("update vote status doc err")
 		return err
 	}
 
-	err = tx.Update(status.voterDoc, []firestore.Update{{Path: "vote_count", Value: status.voterObj.VoteCount}})
+	voterUpdates := []firestore.Update{
+		{Path: "vote_count", Value: status.voterObj.VoteCount},
+		{Path: "points", Value: status.voterObj.Points},
+	}
+
+	err = tx.Update(status.voterDoc, voterUpdates)
 	if err != nil {
 		util.LogInst().Err(err).Msg("update voter doc err")
 		return err
 	}
 
-	err = tx.Update(status.votedDoc, []firestore.Update{{Path: "be_voted_count", Value: status.votedObj.BeVotedCount}})
+	votedUpdates := []firestore.Update{
+		{Path: "be_voted_count", Value: status.votedObj.BeVotedCount},
+		{Path: "points", Value: status.votedObj.Points},
+	}
+
+	err = tx.Update(status.votedDoc, votedUpdates)
 	if err != nil {
 		util.LogInst().Err(err).Msg("update voted  doc err")
 		return err
@@ -135,8 +166,34 @@ func (dm *DbManager) updateStatus(status *voteStatusForDb, tx *firestore.Transac
 	return nil
 }
 
-func (dm *DbManager) UpdateTweetVoteStatic(vote *TweetVoteAction, voter string) error {
+func (dm *DbManager) UpdatePointsForSingleBets(vote *TweetVoteAction, voter string) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+
+	docRef := dm.fileCli.Collection(DBTableNJUser).Doc(strings.ToLower(voter))
+	doc, err := docRef.Get(opCtx)
+	if err != nil {
+		util.LogInst().Err(err).Str("web3-id", voter).Msg("query nj user data err")
+		return err
+	}
+
+	var nu NinjaUsrInfo
+	err = doc.DataTo(&nu)
+	if err != nil {
+		util.LogInst().Err(err).Str("web3-id", voter).Msg("data to nj user err")
+		return err
+	}
+
+	nu.Points += __dbConf.PointForVote * vote.VoteCount
+
+	_, err = docRef.Update(opCtx, []firestore.Update{
+		{Path: "points", Value: nu.Points},
+	})
+	return err
+}
+
+func (dm *DbManager) UpdateTweetVoteStatic(vote *TweetVoteAction, voter string) error {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut*3)
 	defer cancel()
 
 	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
@@ -176,7 +233,7 @@ func (dm *DbManager) UpdateTweetVoteStatic(vote *TweetVoteAction, voter string) 
 		}
 
 		vote.VoteCount = newFieldValue
-		vote.VoteForTheTweet = queryStatus.recordObj.VoteCount
+		vote.VoteForTheTweet = queryStatus.statusObj.VoteCount
 		return nil
 	})
 

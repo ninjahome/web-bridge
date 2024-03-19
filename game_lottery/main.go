@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -17,12 +18,12 @@ import (
 	"github.com/ninjahome/web-bridge/server"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/crypto/ssh/terminal"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"math/big"
 	"os"
 	"os/signal"
 	"strconv"
-	"strings"
 	"syscall"
 	"time"
 )
@@ -76,6 +77,7 @@ func readWallet(filePath string) *keystore.Key {
 		return key
 	}
 }
+
 func main() {
 
 	walletFile := flag.String("wallet", "dessage.key", "wallet file")
@@ -85,6 +87,7 @@ func main() {
 	endRoundNo := flag.Int("round-no-end", -1, "end round no")
 	version := flag.Bool("version", false, "game_lottery --version")
 	syncHistory := flag.Bool("sync", false, "--sync --round-no")
+	findTopKol := flag.Bool("kol-top", false, "--kol-top")
 	flag.Parse()
 
 	if *version {
@@ -100,6 +103,11 @@ func main() {
 	key := readWallet(*walletFile)
 
 	gs := NewGame(key, cf)
+
+	if *findTopKol {
+		gs.findTopKol()
+		return
+	}
 
 	if *syncHistory {
 		if *startRoundNo < 0 {
@@ -463,51 +471,6 @@ func (gs *GameService) updateDiscoverInfo(result *GameResult) error {
 	return err
 }
 
-func (gs *GameService) saveWinTeamInfo(game *ethapi.TweetLotteryGame, gi *ethapi.GamInfoOnChain) {
-	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut)
-	defer cancel()
-	ti, err := game.MemberInfoOfWinTeam(nil, gi.RoundNo, gi.WinTeam)
-	if err != nil {
-		util.LogInst().Err(err).Int64("round-no", gi.RoundNo).Msg("failed to load winner team info")
-		return
-	}
-	if ti.MemNo <= 1 {
-		util.LogInst().Debug().Int64("round-no", gi.RoundNo).
-			Str("team", gi.WinTeam).Msg("only one winner in this team")
-		return
-	}
-
-	for i, member := range ti.Members {
-
-		vote := ti.VoteNos[i].Int64()
-		if strings.ToLower(member.String()) == strings.ToLower(gi.Winner) {
-			if vote <= 1 {
-				util.LogInst().Debug().Str("winner", gi.Winner).Msg("exclude winner")
-				continue
-			}
-			vote -= 1
-		}
-
-		key := fmt.Sprintf("%s-%d", member.String(), gi.RoundNo)
-		winTeamDoc := gs.fileCli.Collection(database.DBTableWinTeamForMember).Doc(key)
-		var item = &ethapi.WinInfoForTeamMember{
-			RoundNo:      gi.RoundNo,
-			WinTeam:      gi.WinTeam,
-			Bonus:        gi.Bonus,
-			MemberAddr:   strings.ToLower(member.String()),
-			MemberVoteNo: vote,
-			TotalVoteNo:  ti.VoteNo,
-			TotalMemNo:   ti.MemNo,
-		}
-
-		_, err = winTeamDoc.Set(opCtx, item)
-		if err != nil {
-			util.LogInst().Err(err).Str("eth-addr", member.String()).Msg("save user's win team info failed")
-		}
-	}
-	util.LogInst().Info().Int64("round-no", gi.RoundNo).Msg("save winner team for user success")
-}
-
 func (gs *GameService) saveGameHistoryData(no string) {
 
 	roundNo, success := big.NewInt(0).SetString(no, 10)
@@ -544,8 +507,6 @@ func (gs *GameService) saveGameHistoryData(no string) {
 		util.LogInst().Err(err).Str("round-no", roundNo.String()).Msg("failed to save game info to database")
 		return
 	}
-
-	go gs.saveWinTeamInfo(game, result)
 
 	util.LogInst().Info().Str("round-no", roundNo.String()).Msg("save game history data success")
 }
@@ -585,9 +546,60 @@ func (gs *GameService) batchSaveGameHistoryData(start, end *big.Int) {
 		if err != nil {
 			panic(err)
 		}
-		go gs.saveWinTeamInfo(game, chain)
-
 		util.LogInst().Info().Int64("round-no", roundNo).Msg("save game history data success")
 	}
 	time.Sleep(time.Second * 15)
+}
+
+func (gs *GameService) findTopKol() {
+	opCtx, cancel := context.WithTimeout(gs.ctx, database.DefaultDBTimeOut*10)
+	defer cancel()
+
+	randomDoc := gs.fileCli.Collection(database.DBTableNJUser)
+	var query = randomDoc.Where("be_voted_count", ">=", 20).
+		OrderBy("be_voted_count", firestore.Desc).
+		Limit(10)
+
+	iter := query.Documents(opCtx)
+	defer iter.Stop()
+	var toBeElder = make([]database.NinjaUsrInfo, 0)
+
+	for {
+		doc, err := iter.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		if err != nil {
+			panic(err)
+		}
+
+		var njObj database.NinjaUsrInfo
+		err = doc.DataTo(&njObj)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(njObj.String())
+		if njObj.IsElder == false {
+			toBeElder = append(toBeElder, njObj)
+		}
+	}
+
+	fmt.Printf("\nelder no:%d", len(toBeElder))
+	if len(toBeElder) == 0 {
+		fmt.Println("no need to update")
+		return
+	}
+
+	err := gs.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
+		for _, njObj := range toBeElder {
+			docRef := gs.fileCli.Collection(database.DBTableNJUser).Doc(njObj.EthAddr)
+			tx.Update(docRef, []firestore.Update{{Path: "is_elder", Value: true}})
+			fmt.Println("update nj user to elder", njObj.EthAddr)
+		}
+
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
 }

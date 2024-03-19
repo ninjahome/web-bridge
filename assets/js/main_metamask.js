@@ -1,4 +1,3 @@
-
 let tweetVoteContract;
 let lotteryGameContract = null;
 let voteContractMeta = TweetVoteContractSetting.load();
@@ -18,22 +17,22 @@ async function initVoteContractMeta() {
 
 async function initGameContractMeta() {
 
-    const [currentRoundNo, totalBonus] = await lotteryGameContract.systemSettings();
+    const [currentRoundNo, totalBonus, voteNo,price, bonusPoint] = await lotteryGameContract.systemSettings();
+    // console.log(price, bonusPoint);
     const gameInfo = await lotteryGameContract.gameInfoRecord(currentRoundNo);
 
     const curBonusInEth = ethers.utils.formatUnits(gameInfo.bonus, 'ether');
     const dTime = gameInfo.discoverTime.toNumber() * 1000;
     const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
+    const bonusForPoint = ethers.utils.formatUnits(bonusPoint, 'ether');
 
-    const [teamNo, voteNo]  = await lotteryGameContract.allTeamInfoNo(currentRoundNo);
     gameContractMeta = new GameBasicInfo(currentRoundNo,
-        totalBonusInEth, voteNo, curBonusInEth,
-        teamNo, dTime);
+        totalBonusInEth, voteNo, curBonusInEth, dTime,bonusForPoint);
 }
 
 async function initBlockChainContract(provider) {
     try {
-        if (!provider){
+        if (!provider) {
             tweetVoteContract = null;
             lotteryGameContract = null
             return
@@ -90,7 +89,7 @@ async function procPaymentForPostedTweet(tweet, callback) {
 }
 
 async function procTweetVotePayment(voteCount, tweet, callback) {
-    if (!tweetVoteContract|| !voteContractMeta ||!voteContractMeta.votePrice || !voteContractMeta.votePrice.mul) {
+    if (!tweetVoteContract || !voteContractMeta || !voteContractMeta.votePrice || !voteContractMeta.votePrice.mul) {
         showDialog(DLevel.Tips, "please wait for metamask syncing data")
         return;
     }
@@ -108,18 +107,18 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
 
         const txReceipt = await txResponse.wait();
 
-        if(!txReceipt.status){
-            showDialog(DLevel.Error,"transaction failed");
+        if (!txReceipt.status) {
+            showDialog(DLevel.Error, "transaction failed");
             return;
         }
-        showDialog(DLevel.Success,"transaction success");
+        showDialog(DLevel.Success, "transaction success");
 
         if (callback) {
             callback(tweet.create_time, voteCount);
         }
     } catch (err) {
         checkMetamaskErr(err);
-    }finally {
+    } finally {
         hideLoading();
     }
 }
@@ -160,7 +159,7 @@ async function withdrawFromUserTweetIncome() {
     await reloadTweetBalance();
 }
 
-function incomeWithdrawHistory(){
+function incomeWithdrawHistory() {
     __incomeWithdrawHistory(ninjaUserObj.eth_addr);
 }
 

@@ -37,8 +37,10 @@ func (ts TxStatus) String() string {
 
 type NinjaTweet struct {
 	Txt           string   `json:"text" firestore:"text"`
+	Images        []string `json:"images,omitempty"  firestore:"images"`
+	ImageHash     []string `json:"image_hash,omitempty"  firestore:"image_hash"`
+	ImageRaw      []string `json:"-"  firestore:"-"`
 	CreateAt      int64    `json:"create_time" firestore:"create_time"`
-	Slogan        string   `json:"slogan"  firestore:"-"`
 	Web3ID        string   `json:"web3_id" firestore:"web3_id"`
 	TweetUsrId    string   `json:"twitter_id" firestore:"twitter_id"`
 	TweetId       string   `json:"tweet_id,omitempty" firestore:"tweet_id"`
@@ -53,6 +55,11 @@ type TweetQueryParm struct {
 	Web3ID   string   `json:"web3_id"`
 	VotedIDs []int64  `json:"voted_ids"`
 	HashArr  []string `json:"hash_arr"`
+}
+
+type TweetImgRaw struct {
+	Raw  string `json:"raw" firestore:"raw"`
+	Hash string `json:"hash" firestore:"hash"`
 }
 
 func (p *TweetQueryParm) String() string {
@@ -101,6 +108,39 @@ func (nt *NinjaTweet) String() string {
 	return string(bts)
 }
 
+func (dm *DbManager) SaveRawImg(hash, raw string) error {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	imgDoc := dm.fileCli.Collection(DBTableTweetsImages).Doc(hash)
+
+	var obj = TweetImgRaw{
+		raw,
+		hash,
+	}
+	_, err := imgDoc.Set(opCtx, obj)
+	return err
+}
+
+func (dm *DbManager) GetRawImg(hash string) (*TweetImgRaw, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	imgDoc := dm.fileCli.Collection(DBTableTweetsImages).Doc(hash)
+
+	docSnapshot, err := imgDoc.Get(opCtx)
+	if err != nil {
+		util.LogInst().Err(err).Msg("not found image raw obj :" + hash)
+		return nil, err
+	}
+	var imgRaw TweetImgRaw
+	err = docSnapshot.DataTo(&imgRaw)
+	if err != nil {
+		util.LogInst().Err(err).Msg("parse image raw obj failed:" + hash)
+		return nil, err
+	}
+
+	return &imgRaw, nil // 返回TweetImgRaw结构体中的Raw字段
+}
+
 func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
@@ -127,8 +167,10 @@ func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 		return err
 	}
 	nu.TweetCount += 1
+	nu.Points += __dbConf.PointForPost
 	_, err = docRef.Update(opCtx, []firestore.Update{
 		{Path: "tweet_count", Value: nu.TweetCount},
+		{Path: "points", Value: nu.Points},
 	})
 
 	return err

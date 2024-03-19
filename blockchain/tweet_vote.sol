@@ -18,9 +18,9 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
     uint8 public kolIncomePerTweetVoteRate = 30;
     uint8 public serviceFeePerTweetVoteRate = 10;
 
-    address public pluginAddress;
-    bool public pluginStop = true;
-    address public kolKeyAddress;
+    address public gameContract;
+    bool public gameStop = true;
+    address public kolKeyConract;
     bool public kolKeyStop = true;
     uint256 public kolKeyIncomeRate = 5;
 
@@ -88,33 +88,33 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
         emit SystemRateChanged(newMaxVote, "max_vote_number_once");
     }
 
-    function adminSetPluginAddr(address addr) public isOwner {
+    function adminSetGameContract(address newGameAddr) public isOwner {
         require(
-            TweetVotePlugInI(addr).checkPluginInterface(),
+            TweetVotePlugInI(newGameAddr).checkPluginInterface(),
             "invalid plugin address"
         );
-        require(pluginAddress != addr, "no need change");
-        pluginAddress = addr;
-        pluginStop = false;
-        emit PluginChanged(pluginAddress, pluginStop, "plugin address changed");
+        require(gameContract != newGameAddr, "no need to change");
+        gameContract = newGameAddr;
+        gameStop = false;
+        emit PluginChanged(gameContract, gameStop, "plugin address changed");
     }
 
     function adminStopPlugin(bool stop) public isOwner {
-        require(pluginStop != stop, "no need change");
-        pluginStop = stop;
-        emit PluginChanged(pluginAddress, pluginStop, "plugin status changed");
+        require(gameStop != stop, "no need change");
+        gameStop = stop;
+        emit PluginChanged(gameContract, gameStop, "plugin status changed");
     }
 
-    function adminSetKolKeyAddr(address addr) public isOwner {
+    function adminSetKolKeyContract(address newKolContract) public isOwner {
         require(
-            IsValidNjContract(addr).checkPluginInterface(),
+            IsValidNjContract(newKolContract).checkPluginInterface(),
             "invalid kol key address"
         );
-        require(kolKeyAddress != addr, "no need change");
-        kolKeyAddress = addr;
+        require(kolKeyConract != newKolContract, "no need change");
+        kolKeyConract = newKolContract;
         kolKeyStop = false;
         emit PluginChanged(
-            kolKeyAddress,
+            kolKeyConract,
             kolKeyStop,
             "kol key address changed"
         );
@@ -123,7 +123,7 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
     function adminStopKolKey(bool stop) public isOwner {
         require(kolKeyStop != stop, "no need change");
         kolKeyStop = stop;
-        emit PluginChanged(kolKeyAddress, kolKeyStop, "kol key status changed");
+        emit PluginChanged(kolKeyConract, kolKeyStop, "kol key status changed");
     }
 
     function adminChangeKolKeyRate(uint8 newRate) public isOwner {
@@ -224,11 +224,11 @@ contract TweetVote is TweetVoteAmin {
         uint256 leftVal = amount - forKolSum - serviceFee;
 
         if (
-            pluginAddress != address(0) &&
-            pluginStop == false &&
+            gameContract != address(0) &&
+            gameStop == false &&
             leftVal > __minValCheck
         ) {
-            TweetVotePlugInI(pluginAddress).tweetBought{value: leftVal}(
+            TweetVotePlugInI(gameContract).tweetBought{value: leftVal}(
                 tweetHash,
                 tweetOwner,
                 msg.sender,
@@ -252,11 +252,11 @@ contract TweetVote is TweetVoteAmin {
 
         uint256 reminders = minusWithdrawFee(amount);
 
-        if (kolKeyAddress != address(0) && kolKeyStop == false) {
-            if (KolIncomeToPoolI(kolKeyAddress).kolOpenKeyPool(msg.sender)) {
+        if (kolKeyConract != address(0) && kolKeyStop == false) {
+            if (KolIncomeToPoolI(kolKeyConract).kolOpenKeyPool(msg.sender)) {
                 uint256 kolKeyPool = (reminders / 100) * kolKeyIncomeRate;
                 reminders -= kolKeyPool;
-                KolIncomeToPoolI(kolKeyAddress).kolGotIncome{value: kolKeyPool}(
+                KolIncomeToPoolI(kolKeyConract).kolGotIncome{value: kolKeyPool}(
                     kolKeyIncomeSourceID,
                     msg.sender
                 );
@@ -309,8 +309,8 @@ contract TweetVote is TweetVoteAmin {
             tweetPostPrice,
             tweetVotePrice,
             maxVotePerTweet,
-            pluginAddress,
-            pluginStop,
+            gameContract,
+            gameStop,
             kolIncomePerTweetVoteRate,
             serviceFeePerTweetVoteRate
         );

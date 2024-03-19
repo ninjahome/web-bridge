@@ -22,6 +22,8 @@ type NinjaUsrInfo struct {
 	TweetCount   int    `json:"tweet_count" firestore:"tweet_count"`
 	VoteCount    int    `json:"vote_count" firestore:"vote_count"`
 	BeVotedCount int    `json:"be_voted_count" firestore:"be_voted_count"`
+	Points       int    `json:"points"  firestore:"points"`
+	IsElder      bool   `json:"is_elder" firestore:"is_elder"`
 }
 
 func (nu *NinjaUsrInfo) String() string {
@@ -141,5 +143,66 @@ func (dm *DbManager) MostVotedKol(pageSize int, startID int64, vote bool) ([]*Ni
 			return nil, err
 		}
 		users = append(users, &usr)
+	}
+}
+
+func (dm *DbManager) CheckKolElder() {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut*10)
+	defer cancel()
+	util.LogInst().Info().Msg("start to check elder status")
+	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
+
+		randomDoc := dm.fileCli.Collection(DBTableNJUser)
+		var query = randomDoc.Where("be_voted_count", ">=", 100).
+			OrderBy("be_voted_count", firestore.Desc).
+			Limit(10)
+
+		iter := query.Documents(opCtx)
+		defer iter.Stop()
+		var toBeElder = make([]NinjaUsrInfo, 0)
+
+		for {
+			doc, err := iter.Next()
+			if errors.Is(err, iterator.Done) {
+				util.LogInst().Info().Msg("query kol status success")
+				break
+			}
+			if err != nil {
+				util.LogInst().Err(err).Msg("query kol status failed")
+				return err
+			}
+
+			var njObj NinjaUsrInfo
+			err = doc.DataTo(&njObj)
+			if err != nil {
+				util.LogInst().Err(err).Msg("parse kol failed")
+				return err
+			}
+			if njObj.IsElder == false {
+				toBeElder = append(toBeElder, njObj)
+			}
+		}
+
+		if len(toBeElder) == 0 {
+			util.LogInst().Debug().Msg("no need to update elder status")
+			return nil
+		}
+		util.LogInst().Debug().Msgf("elder no:%d to add", len(toBeElder))
+
+		for _, njObj := range toBeElder {
+			docRef := dm.fileCli.Collection(DBTableNJUser).Doc(njObj.EthAddr)
+			errUpdate := tx.Update(docRef, []firestore.Update{{Path: "is_elder", Value: true}})
+			if errUpdate != nil {
+				util.LogInst().Err(errUpdate).Str("eth-addr", njObj.EthAddr).Msg("update elder status failed")
+				continue
+			}
+			util.LogInst().Info().Str("eth-addr", njObj.EthAddr).Msg("update elder status success")
+		}
+
+		return nil
+	})
+	if err != nil {
+		util.LogInst().Err(err).Msg("update elder transaction failed")
+		return
 	}
 }

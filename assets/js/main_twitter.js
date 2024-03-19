@@ -113,16 +113,67 @@ async function fillTweetParkAtHomePage(clear) {
         });
 }
 
+
+let currentTargetIdx = 1
+
+async function checkAtTarget() {
+    const tweetsContentTxtArea = document.getElementById("tweets-content-txt-area");
+    const text = tweetsContentTxtArea.innerText;
+    const usrName = findAtTarget(text)
+    if (!usrName) {
+        return;
+    }
+    console.log(usrName);
+
+    const data = await GetToSrvByJson('/searchTwitterUsr?q=' + usrName);
+    if (!data) {
+        return;
+    }
+    console.log(data);
+}
+
+function findAtTarget(text) {
+    const regex = /(?:^|\s)@(\w+)/g;
+    let match;
+    if ((match = regex.exec(text)) !== null) {
+        console.log(`Found mention: ${match[currentTargetIdx]}`);
+        return match[currentTargetIdx];
+    }
+    return null;
+}
+
 async function preparePostMsg() {
     const contentHtml = document.getElementById("tweets-content-txt-area").innerHTML.trim();
     const formattedContent = contentHtml
         .replace(/<br\s*[\/]?>/gi, "\n") // 将 <br> 标签转换为换行符
         .replace(/<\/?p>/gi, "\n") // 将 <p> 标签转换为换行符
         .replace(/<[^>]+>/g, ''); // 移除所有其他HTML标签
-    // const content = document.getElementById("tweets-content-txt-area").textContent.trim();
-    if (!formattedContent) {
+    const images = document.querySelectorAll("#twImagePreview img");
+    if (!formattedContent && images.length === 0) {
         showDialog(DLevel.Warning, "content can't be empty")
         return null;
+    }
+
+    const imageData = Array.from(images).map(img => {
+        const thumbnail = img.src
+        const raw = img.getAttribute('data-raw');
+        const hash = img.getAttribute('data-hash');
+        return new ImageRawData(hash, raw, thumbnail);
+    });
+
+    console.log("formattedContent length:=>", formattedContent.length, images.length);
+    let validTxtLen = maxTextLenPerImg * (maxImgPerTweet - images.length);
+    if (validTxtLen < 0) {
+        showDialog(DLevel.Warning, "too many images to post");
+        return;
+    }
+    if (validTxtLen === 0) {
+        validTxtLen = defaultTextLenForTweet;
+    }
+
+    if (formattedContent.length > validTxtLen) {
+        showDialog(DLevel.Warning, "tweet content too long");
+        return
     }
 
     const tweet = new TweetContentToPost(formattedContent,
@@ -136,7 +187,8 @@ async function preparePostMsg() {
         showDialog(DLevel.Warning, "empty signature")
         return null;
     }
-    return new SignDataForPost(message, signature);
+
+    return new SignDataForPost(message, signature, JSON.stringify(imageData));
 }
 
 function updatePaymentStatusToSrv(tweet) {
@@ -169,9 +221,11 @@ async function postTweetWithPayment() {
         clearDraftTweetContent();
 
         if (curScrollContentID === 0) {
-            __loadTweetsAtHomePage(true).then(() => { });
+            __loadTweetsAtHomePage(true).then(() => {
+            });
         } else if (curScrollContentID === 2) {
-            __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(() => { });
+            __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(() => {
+            });
         }
     } catch (err) {
         checkMetamaskErr(err);
@@ -197,7 +251,7 @@ async function showPostTweetDiv() {
 
 
     const postBtn = document.getElementById("tweet-post-with-eth-btn-txt");
-    postBtn.innerText = i18next.t('btn-tittle-post-tweet')+"(" + voteContractMeta.votePriceInEth + " eth)"
+    postBtn.innerText = i18next.t('btn-tittle-post-tweet') + "(" + voteContractMeta.votePriceInEth + " eth)"
 }
 
 function closePostTweetDiv() {
@@ -208,6 +262,8 @@ function closePostTweetDiv() {
 
 function clearDraftTweetContent() {
     document.getElementById("tweets-content-txt-area").innerHTML = '';
+    document.getElementById("twImagePreview").innerHTML = '';
+    document.getElementById("twImagePreview").style.display = 'none'
 }
 
 function showFullTweetContent() {
@@ -229,4 +285,48 @@ function showFullTweetContent() {
         this.setAttribute('data-more', 'true');
         this.innerText = i18next.t('tweet-show-more');
     }
+}
+
+function loadImgFromLocal() {
+    const images = document.querySelectorAll("#twImagePreview img");
+    if (images.length >= maxImgPerTweet) {
+        showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
+        return;
+    }
+    document.getElementById('fileInput').click();
+}
+
+function previewImage() {
+    let files = document.getElementById('fileInput').files;
+    const imagePreviewDiv = document.getElementById('twImagePreview');
+    imagePreviewDiv.style.display = 'block';
+    const images = document.querySelectorAll("#twImagePreview img");
+    const validLen = maxImgPerTweet - images.length;
+    if (validLen <= 0) {
+        return;
+    }
+
+    files = Array.from(files).slice(0, validLen);
+    files.forEach(file => {
+        const imgWrapper = document.getElementById('img-wrapper-template').cloneNode(true);
+        imgWrapper.style.display = 'block';
+        imgWrapper.id = "";
+        const img = imgWrapper.querySelector('.img-preview');
+        const deleteBtn = imgWrapper.querySelector('.delete-btn');
+        deleteBtn.onclick = function () {
+            imagePreviewDiv.removeChild(imgWrapper);
+        };
+
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+            img.setAttribute('data-raw', e.target.result);
+            img.src = await createThumbnail(e.target.result, 400, 400);
+            const msg = ethers.utils.toUtf8Bytes(e.target.result);
+            const hash = ethers.utils.sha256(msg);
+            img.setAttribute('data-hash', hash);
+            imagePreviewDiv.appendChild(imgWrapper);
+        };
+        reader.readAsDataURL(file);
+    });
+    document.getElementById('fileInput').value = '';
 }

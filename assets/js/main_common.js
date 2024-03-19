@@ -87,11 +87,11 @@ async function showHoverCard(event, twitterObj, web3ID) {
 
     const njUsrInfo = await loadNJUserInfoFromSrv(web3ID, true);
 
-    if (twitterObj){
+    if (twitterObj) {
         document.getElementById('hover-avatar').src = twitterObj.profile_image_url;
         document.getElementById('hover-name').textContent = twitterObj.name;
         document.getElementById('hover-user-name').textContent = '@' + twitterObj.username;
-    }else{
+    } else {
         document.getElementById('hover-name').textContent = web3ID;
     }
 
@@ -159,10 +159,15 @@ async function TweetsQuery(param, newest, cacheObj) {
     }
 }
 
-async function __setOnlyHeader(tweetHeader, twitter_id) {
+async function __setOnlyHeader(tweetHeader, twitter_id, web3ID) {
     const twitterObj = TwitterBasicInfo.loadTwBasicInfo(twitter_id);
+    const njUsrInfo = await loadNJUserInfoFromSrv(web3ID, true);
+
     if (twitterObj) {
         tweetHeader.querySelector('.twitterAvatar').src = twitterObj.profile_image_url;
+        if (njUsrInfo && njUsrInfo.is_elder) {
+            tweetHeader.querySelector('.elderFlagOnAvatar').style.display = 'block';
+        }
         tweetHeader.querySelector('.twitterName').textContent = twitterObj.name;
         tweetHeader.querySelector('.twitterUserName').textContent = '@' + twitterObj.username;
         return twitterObj;
@@ -174,20 +179,82 @@ async function __setOnlyHeader(tweetHeader, twitter_id) {
         return null;
     }
     tweetHeader.querySelector('.twitterAvatar').src = newObj.profile_image_url;
+    if (njUsrInfo && njUsrInfo.is_elder) {
+        tweetHeader.querySelector('.elderFlagOnAvatar').style.display = 'block';
+    }
     tweetHeader.querySelector('.twitterName').textContent = newObj.name;
     tweetHeader.querySelector('.twitterUserName').textContent = '@' + newObj.username;
 
     return newObj;
 }
 
+async function showImgRaw() {
+    try {
+        showWaiting("loading.....");
+        const hash = this.getAttribute('data-hash');
+        const obj = await loadTweetImgRaw(hash);
+        if (!obj) {
+            showDialog(DLevel.Warning, "failed to load raw image");
+            return;
+        }
+        const imgDiv = document.querySelector('.tweet-image-raw')
+        imgDiv.style.display = 'block';
+        imgDiv.querySelector('.tweet-image-detail').src = obj.raw_data;
+        imgDiv.querySelector('.tweet-image-hash').innerText = obj.hash;
+    } catch (e) {
+        showDialog(DLevel.Error, e.toString());
+    } finally {
+        hideLoading();
+    }
+}
+
+function CloseImgDetail() {
+    document.querySelector('.tweet-image-raw').style.display = 'none';
+}
+
+async function loadTweetImgRaw(hash) {
+    let obj = ImageRawData.load(hash)
+    if (obj) {
+        return obj;
+    }
+
+    const response = await GetToSrvByJson("/tweetImgRaw?img_hash=" + hash);
+    obj = new ImageRawData(response.hash, response.raw)
+    ImageRawData.sycToDb(obj);
+    return obj;
+}
+
+function fulfillTweetImages(tweet, tweetHeader) {
+    const div = tweetHeader.querySelector('.tweet-images');
+    div.innerHTML = '';
+
+    if (!tweet.images) {
+        return;
+    }
+
+    for (let i = 0; i < tweet.images.length; i++) {
+        const img = tweet.images[i];
+        const imgDiv = tweetHeader.querySelector('.image-item-in-tweet').cloneNode(true)
+        imgDiv.style.display = 'block';
+        imgDiv.id = null;
+        const imgElm = imgDiv.querySelector('.image-src-to-show')
+        imgElm.src = img;
+        if (tweet.image_hash) {
+            imgElm.setAttribute('data-hash', tweet.image_hash[i]);
+        }
+        div.appendChild(imgDiv);
+    }
+}
+
 async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     tweetHeader.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
-    const twitterObj = await __setOnlyHeader(tweetHeader, tweet.twitter_id);
-
+    const twitterObj = await __setOnlyHeader(tweetHeader, tweet.twitter_id, tweet.web3_id);
     const contentArea = tweetHeader.querySelector('.tweet-content');
-    // const cleanHtml = DOMPurify.sanitize(tweet.text);
     contentArea.innerHTML = DOMPurify.sanitize(tweet.text.replace(/\n/g, "<br>"));
+
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
+
+    fulfillTweetImages(tweet, tweetHeader);
 
     if (overlap) {
         wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, tweet.web3_id));
@@ -224,8 +291,11 @@ async function showTweetDetail(parentEleID, tweet) {
     parentNode.style.display = 'none';
 
     detail.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
-    await __setOnlyHeader(detail, tweet.twitter_id);
+    await __setOnlyHeader(detail, tweet.twitter_id, tweet.web3_id);
     detail.querySelector('.tweet-text').innerHTML = DOMPurify.sanitize(tweet.text.replace(/\n/g, "<br>"));
+
+    fulfillTweetImages(tweet, detail);
+
     detail.querySelector('.back-button').onclick = () => {
         parentNode.style.display = 'block';
         detail.style.display = 'none';
@@ -235,12 +305,9 @@ async function showTweetDetail(parentEleID, tweet) {
     detail.querySelector('.tweet-web3_id').textContent = tweet.web3_id;
     detail.querySelector('.tweet-prefixed-hash').textContent = tweet.prefixed_hash;
     detail.querySelector('.tweet-signature').textContent = tweet.signature;
-    detail.querySelector('.tweet-payment_status').textContent = TXStatus.Str(tweet.payment_status);
     detail.querySelector('.tweet-vote-number').textContent = tweet.vote_count;
 
-    // detail.querySelector('.show-team-mates').onclick = () => showTeammates(tweet.prefixed_hash, detail);
-
-    await __showVoteButton(detail,tweet,function (newVote){
+    await __showVoteButton(detail, tweet, function (newVote) {
         detail.querySelector('.tweet-vote-number').textContent = newVote.vote_count;
     });
 }
@@ -295,8 +362,10 @@ async function voteToTheTweet(obj, callback) {
             obj.vote_count = newVote.vote_count;
             __updateVoteNumberForTweet(obj, newVote).then(() => {
             });
+            reloadSelfNjData().then(() => {
+            });
             if (shareToTweet && ninjaUserObj.tw_id) {
-                __shareVoteToTweet(create_time, vote_count).then(() => {
+                __shareVoteToTweet(create_time, vote_count, i18next.t('voter-slogan')).then(() => {
                 });
             }
             if (callback) {
@@ -325,12 +394,12 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
         }
 
         let nj_data = NJUserBasicInfo.loadNjBasic(ethAddr);
-        if (nj_data){
+        if (nj_data) {
             return nj_data;
         }
 
         nj_data = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
-        if (nj_data){
+        if (nj_data) {
             NJUserBasicInfo.cacheNJUsrObj(nj_data);
         }
         return nj_data;
@@ -369,4 +438,16 @@ async function showTargetTweetDetail() {
     const newUrl = rootUrl + '/main';
 
     history.pushState(null, '', newUrl);
+}
+
+async function reloadSelfNjData() {
+    let nj_data;
+    try {
+        nj_data = await GetToSrvByJson("/refreshNjUser");
+        ninjaUserObj = nj_data;
+        await setupUserBasicInfoInSetting();
+    } catch (err) {
+        console.log(err)
+        showDialog(DLevel.Warning, "reload session failed:" + err.toString())
+    }
 }

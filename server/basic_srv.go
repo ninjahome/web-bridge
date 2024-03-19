@@ -31,6 +31,12 @@ func (sp *SignDataByEth) RawData() string {
 	return string(bts)
 }
 
+type TweetImgData struct {
+	RawData   string `json:"raw_data"`
+	Hash      string `json:"hash"`
+	ThumbNail string `json:"thumb_nail"`
+}
+
 func (sp *SignDataByEth) ParseNinjaTweet() (*database.NinjaTweet, error) {
 	var tweetContent database.NinjaTweet
 	var err = json.Unmarshal([]byte(sp.Message), &tweetContent)
@@ -52,6 +58,24 @@ func (sp *SignDataByEth) ParseNinjaTweet() (*database.NinjaTweet, error) {
 	tweetContent.Signature = sp.Signature
 	tweetContent.PrefixedHash = prefixedHash
 	tweetContent.PaymentStatus = database.TxStNotPay
+	var payloadStr, ok = sp.PayLoad.(string)
+	if ok {
+		var imagesI []TweetImgData
+		if err := json.Unmarshal([]byte(payloadStr), &imagesI); err != nil {
+			util.LogInst().Err(err).Msg("parse tweet img failed")
+			return &tweetContent, nil
+		}
+
+		for _, imgData := range imagesI {
+			tweetContent.Images = append(tweetContent.Images, imgData.ThumbNail)
+			tweetContent.ImageHash = append(tweetContent.ImageHash, imgData.Hash)
+			tweetContent.ImageRaw = append(tweetContent.ImageRaw, imgData.RawData)
+			err = database.DbInst().SaveRawImg(imgData.Hash, imgData.RawData)
+			if err != nil {
+				util.LogInst().Err(err).Msg("save tweet img failed")
+			}
+		}
+	}
 
 	return &tweetContent, nil
 }
@@ -152,6 +176,25 @@ func (p *OuterLinkParam) GetValidId() string {
 	return p.ShareID
 }
 
+func refreshNjUser(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	newNu, err := database.DbInst().QueryNjUsrById(nu.EthAddr)
+	if err != nil {
+		util.LogInst().Err(err).Msg("load nj user failed")
+		http.Error(w, "load nj user failed", http.StatusBadRequest)
+		return
+	}
+
+	err = SMInst().Set(r, w, sesKeyForRightCheck, newNu.RawData())
+	if err != nil {
+		util.LogInst().Err(err).Msg("set session for nj user failed")
+		http.Error(w, "set session for nj user failed", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(newNu.RawData())
+}
 func mainPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 
 	var param OuterLinkParam
@@ -340,22 +383,4 @@ func queryWinHistory(w http.ResponseWriter, r *http.Request, nu *database.NinjaU
 	w.Write(bts)
 
 	util.LogInst().Info().Int("len", len(data)).Msg("query winner history success")
-}
-
-func queryWinTeamHistory(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
-	var data, err = database.DbInst().QueryGameWinTeam(nu.EthAddr)
-	if err != nil {
-		util.LogInst().Err(err).Str("web3-id", nu.EthAddr).
-			Msg("failed to query game winner")
-
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	bts, _ := json.Marshal(data)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	w.Write(bts)
-
-	util.LogInst().Info().Int("len", len(data)).Msg("query win team history data success")
 }

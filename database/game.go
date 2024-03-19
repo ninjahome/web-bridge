@@ -11,9 +11,8 @@ import (
 )
 
 const (
-	MaxWinHistoryQuery      = 40
-	DBTableGameResult       = "lottery_game_round_info"
-	DBTableWinTeamForMember = "win_team_info_for_member"
+	MaxWinHistoryQuery = 40
+	DBTableGameResult  = "lottery_game_round_info"
 )
 
 func (dm *DbManager) QueryGameWinner(web3id string) ([]*ethapi.GamInfoOnChain, error) {
@@ -46,38 +45,5 @@ func (dm *DbManager) QueryGameWinner(web3id string) ([]*ethapi.GamInfoOnChain, e
 			continue
 		}
 		gameInfos = append(gameInfos, &gi)
-	}
-}
-
-func (dm *DbManager) QueryGameWinTeam(web3id string) ([]*ethapi.WinInfoForTeamMember, error) {
-
-	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
-	defer cancel()
-
-	query := dm.fileCli.Collection(DBTableWinTeamForMember).
-		Where("member_addr", "==", strings.ToLower(web3id)).
-		OrderBy("round_no", firestore.Desc).
-		Limit(MaxWinHistoryQuery)
-
-	iter := query.Documents(opCtx)
-	defer iter.Stop()
-	var teamInfos = make([]*ethapi.WinInfoForTeamMember, 0)
-	for {
-		doc, err := iter.Next()
-		if errors.Is(err, iterator.Done) {
-			return teamInfos, nil
-		}
-		if err != nil {
-			util.LogInst().Err(err).Msgf("game info to iterate: %v", err)
-			return nil, err
-		}
-
-		var ti ethapi.WinInfoForTeamMember
-		err = doc.DataTo(&ti)
-		if err != nil {
-			util.LogInst().Err(err).Msg("parse to game info failed")
-			continue
-		}
-		teamInfos = append(teamInfos, &ti)
 	}
 }

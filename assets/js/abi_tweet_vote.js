@@ -324,6 +324,19 @@ const tweetVoteContractABI =`
     {
         "inputs": [
             {
+                "internalType": "address",
+                "name": "newGameAddr",
+                "type": "address"
+            }
+        ],
+        "name": "adminSetGameContract",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "uint8",
                 "name": "newRate",
                 "type": "uint8"
@@ -338,11 +351,11 @@ const tweetVoteContractABI =`
         "inputs": [
             {
                 "internalType": "address",
-                "name": "addr",
+                "name": "newKolContract",
                 "type": "address"
             }
         ],
-        "name": "adminSetKolKeyAddr",
+        "name": "adminSetKolKeyContract",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -356,19 +369,6 @@ const tweetVoteContractABI =`
             }
         ],
         "name": "adminSetMaxVotePerTweet",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "addr",
-                "type": "address"
-            }
-        ],
-        "name": "adminSetPluginAddr",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -524,6 +524,32 @@ const tweetVoteContractABI =`
     },
     {
         "inputs": [],
+        "name": "gameContract",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "gameStop",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "getOwner",
         "outputs": [
             {
@@ -550,7 +576,7 @@ const tweetVoteContractABI =`
     },
     {
         "inputs": [],
-        "name": "kolKeyAddress",
+        "name": "kolKeyConract",
         "outputs": [
             {
                 "internalType": "address",
@@ -640,32 +666,6 @@ const tweetVoteContractABI =`
                 "internalType": "address",
                 "name": "",
                 "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "pluginAddress",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "pluginStop",
-        "outputs": [
-            {
-                "internalType": "bool",
-                "name": "",
-                "type": "bool"
             }
         ],
         "stateMutability": "view",

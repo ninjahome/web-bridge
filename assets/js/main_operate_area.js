@@ -5,19 +5,19 @@ async function setupGameInfo(startCounter) {
     gameArea.querySelector('.lottery-game-round-no').textContent = gameContractMeta.curRound;
     gameArea.querySelector('.lottery-amount').textContent = gameContractMeta.curBonus;
     document.getElementById('lottery-total-amount').textContent = gameContractMeta.totalBonus;
-    document.getElementById('lottery-current-team-amount').textContent = gameContractMeta.teamNo;
     document.getElementById('lottery-current-ticket-amount').textContent = gameContractMeta.ticketNo;
+    document.getElementById('bonus-for-points-value').textContent = gameContractMeta.bonusForPoint;
 
     if (!startCounter) {
         return;
     }
 
     let apiCounter = 0;
-    startCountdown(gameContractMeta.dTime, function (days,hours,minutes,seconds, finished) {
+    startCountdown(gameContractMeta.dTime, function (days, hours, minutes, seconds, finished) {
         const countDown = document.getElementById("lottery-count-down");
         const countDownResult = document.getElementById("countdown-result");
         if (finished) {
-            countDownResult.style.display ='block';
+            countDownResult.style.display = 'block';
             countDown.style.display = 'none';
             initGameContractMeta().then(r => {
                 setupGameInfo(true);
@@ -27,7 +27,7 @@ async function setupGameInfo(startCounter) {
 
         apiCounter += 1;
         countDown.style.display = '';
-        countDownResult.style.display ='none';
+        countDownResult.style.display = 'none';
         countDown.querySelector(".days").textContent = days;
         countDown.querySelector(".hours").textContent = hours;
         countDown.querySelector(".minutes").textContent = minutes;

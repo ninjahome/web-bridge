@@ -2,6 +2,7 @@ package blockchain
 
 import (
 	"fmt"
+	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"time"
 )
@@ -55,6 +56,7 @@ func (dp *DaemonProc) Monitor() {
 		select {
 		case <-dp.checkTicker.C:
 			util.LogInst().Debug().Msg("time to check block chain data")
+			go database.DbInst().CheckKolElder()
 		}
 	}
 }

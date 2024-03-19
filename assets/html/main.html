@@ -37,7 +37,7 @@
         .left-menu-area {
             flex: 1; /* 左边菜单区域占据剩余空间的一部分 */
             background-color: #ffffff; /* 背景色，可根据需要调整 */
-            padding: 10px; /* 内边距 */
+            padding: 16px; /* 内边距 */
             display: flex; /* 添加flex布局 */
             flex-direction: column; /* 确保子元素垂直排列 */
         }
@@ -45,9 +45,7 @@
         .middle-content-area {
             flex: 3; /* 中间主要内容区域占据剩余空间的两部分 */
             background-color: #fff; /* 背景色，可根据需要调整 */
-            border-right: 1px solid #F7F8F9; /* 右边框线 */
-            border-left: 1px solid #F7F8F9; /* 右边框线 */
-            width: 800px;
+            width: 600px;
         }
 
         .right-operation-area {
@@ -59,7 +57,6 @@
         .menu-list-left-area {
             list-style: none;
             padding: 0;
-            border-right: 1px solid #F7F8F9; /* 右边框线 */
             display: flex; /* 添加flex布局 */
             flex-direction: column; /* 确保子元素垂直排列 */
             width: 100%; /* 设置宽度为父容器的100% */
@@ -107,12 +104,12 @@
 
         .topic-switch {
             display: flex;
-            justify-content: space-around;
+            justify-content: space-evenly;
             align-items: center;
             height: 64px;
-            width: 800px;
             margin-top: 16px;
-            border-bottom: 1px solid #F7F8F9;
+            border: 1px solid #F7F8F9;
+            border-top: none;
         }
 
         .top-topic-btn {
@@ -145,12 +142,12 @@
             flex-grow: 1.618;
             background-color: #e6e6e6;
             margin-bottom: 16px;
-            width: 800px;
         }
 
         .tweet-first-half {
             display: flex; /* 启用flex布局 */
             align-items: center; /* 垂直居中对齐子元素 */
+            position: relative;
         }
 
         .tweet-header {
@@ -175,7 +172,7 @@
         }
 
         .tweet-footer {
-            display: flex;
+            display: flex !important;
             justify-content: flex-end;
             align-items: center;
             /*margin-top: -4px;*/
@@ -198,6 +195,11 @@
             height: auto;
         }
 
+        .tweet-action-with-status {
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
 
         .vote-count,
         .tweet-info {
@@ -212,6 +214,82 @@
             font-weight: bold;
             color: #4848D8;
         }
+
+        .tweet-images {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            align-items: center;
+            margin-left: 56px;
+            margin-top: 8px;
+        }
+
+        .image-item-in-tweet {
+            margin-right: 9px;
+        }
+
+        .image-item-in-tweet img {
+            width: 164px;
+            height: 164px;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+
+        .image-item-in-tweet:last-child {
+            margin-right: 0;
+        }
+
+        .tweet-image-raw {
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+
+        .tweet-image-detail {
+            display: block;
+            width: 95%;
+            height: 95vh;
+            object-fit: contain;
+            margin: auto;
+        }
+
+        .tweet-image-raw button {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            color: #d2d1d1;
+            font-size: 20px;
+            font-weight: 400;
+            transition: 0.3s;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            line-height: 36px;
+            border: none;
+            align-items: center;
+        }
+
+        .tweet-image-raw button:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+
+        }
+
+        .tweet-image-hash {
+            position: absolute;
+            left: 35%;
+            color: white;
+            margin-top: 8px;
+        }
+
     </style>
     <style about="tweet card">
 
@@ -221,15 +299,29 @@
             max-height: 400px;
             overflow: hidden;
             background-color: #fff;
-            border-bottom: 1px solid #E4E4DF;
+            border: 1px solid #F7F8F9;
+            border-top: none;
             padding: 16px;
             transition: max-height 0.3s ease;
+        }
+
+        .tweet-card:hover {
+            background-color: #F7F8F9;
         }
 
         .twitterAvatar {
             width: 52px;
             margin-right: 8px;
             border-radius: 50%;
+            position: relative;
+        }
+
+        .elderFlagOnAvatar {
+            width: 18px;
+            display: none;
+            position: absolute;
+            top: 37px;
+            left: 35px;
         }
 
         .tweet-action-vote {
@@ -267,8 +359,17 @@
             color: #3333BE;
         }
 
+
+        .tweet-content-collapsed,
         .tweet-content {
-            margin-left: 56px;
+            font-size: 15px;
+            line-height: 25px;
+            font-weight: 400;
+            color: #1B1B1D;
+        }
+
+        .tweet-content {
+            margin-left: 60px;
             display: -webkit-box;
             -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
@@ -283,13 +384,16 @@
             display: -webkit-box;
             -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
+            position: relative;
+        }
+
+        .tweet-text {
             font-size: 15px;
             line-height: 1.5;
             font-weight: 400;
             color: #1B1B1D;
-            position: relative;
+            margin-top: 8px;
         }
-
         .tweetPaymentDelete {
             display: none;
             background-color: transparent; /* 例如，红色背景 */
@@ -396,7 +500,6 @@
             list-style-type: none;
             padding: 0;
             margin: auto;
-            width: 800px;
         }
 
         .team-membersName,
@@ -409,8 +512,8 @@
         .team-members li {
             position: relative;
             height: 80px; /* 根据需要调整高度 */
-            width: 800px;
-            border-bottom: 1px solid #E4E4DF;
+            border: 1px solid #F7F8F9;
+            border-top: none;
         }
 
         .team-members-number {
@@ -458,7 +561,6 @@
             top: 16px;
             left: 50px; /* 根据需要调整位置 */
         }
-
 
         .team-membersName {
             position: absolute;
@@ -536,7 +638,6 @@
         }
 
         .tweet-header-img {
-            width: 768px;
             height: 132px;
             background-image: url("/assets/file/tweet-bgimg.png");
             margin: 16px;
@@ -582,14 +683,22 @@
             background-color: rgba(0, 0, 0, 0.4); /* 黑色背景透明度 */
         }
 
+        .vote-no-modal-content h2 {
+            font-size: 18px;
+        }
+
         .vote-no-modal-content {
             background-color: #fefefe;
             margin: 15% auto; /* 15% 从顶部开始 */
-            padding: 32px;
-            border: 1px solid #888;
+            padding: 16px 32px 32px;
             border-radius: 24px;
-            width: 50%; /* 宽度 */
+            width: 322px; /* 宽度 */
+        }
 
+        .vote-no-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .vote-no-modal-body {
@@ -597,16 +706,14 @@
             flex-direction: column;
             flex-wrap: wrap;
             align-content: center;
-
-
         }
 
         .quantity-selector {
             display: flex;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             margin-bottom: 8px;
-            margin-top: 24px;
+            margin-top: 32px;
         }
 
         .quantity-selector button {
@@ -629,6 +736,7 @@
 
         .quantity-selector input {
             height: 40px;
+            width: 188px;
             text-align: center;
             border: 1px solid #F1F2F3;
             padding: 0;
@@ -637,9 +745,8 @@
         /* 关闭按钮 */
         .vote-no-close {
             color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
+            font-size: 24px;
+            font-weight: normal;
         }
 
         .vote-no-close:hover,
@@ -651,8 +758,8 @@
 
         .vote-no-modal-footer {
             display: flex;
-            justify-content: center;
-            margin-top: 24px;
+            justify-content: space-between;
+            margin-top: 32px;
         }
 
         .cancel-btn {
@@ -676,6 +783,11 @@
             font-size: 14px;
             color: #ffffff;
         }
+
+        .vote-no-modal-footer .cancel-btn,
+        .vote-no-modal-footer .confirm-btn {
+            padding: 10px 58px;
+        }
     </style>
     <style about="tweet post div">
         .d-radius {
@@ -697,7 +809,6 @@
             display: none;
             z-index: 2;
             padding: 16px 32px; /* 增加内边距 */
-            /*display: none; !* 默认隐藏 *!*/
             position: fixed; /* 固定定位 */
             left: 50%; /* 水平居中 */
             top: 50%; /* 垂直居中 */
@@ -718,6 +829,7 @@
             overflow-y: auto; /* 内容超出最大高度时显示垂直滚动条 */
             padding: 4px; /* 内边距 */
             border: 1px solid #D3D5D6; /* 边框 */
+            border-radius: 6px;
             resize: none; /* 禁止调整大小 */
             position: relative;
         }
@@ -773,9 +885,10 @@
 
         .show-post-tweet-div {
             background-color: #4848D8;
+            height: 42px;
+            width: 148px;
             color: white; /* 字体颜色 */
             border: none; /* 无边框 */
-            padding: 8px 32px; /* 内边距 */
             cursor: pointer; /* 鼠标样式 */
             font-size: 16px; /* 字体大小 */
             box-shadow: rgba(0, 0, 0, 0.08) 0 8px 28px;
@@ -802,8 +915,89 @@
         .tweet-post-close-btn:hover {
             color: black; /* 悬停时颜色 */
         }
+
+        .tweets-fileImg {
+            width: 42px;
+            height: 42px;
+            border: none;
+            background-color: transparent;
+            border-radius: 50%;
+        }
+
+        .tweets-fileImg:hover {
+            background-color: rgba(72, 72, 216, 0.1);
+        }
+
+        .img-wrapper-container {
+            display: grid !important;
+            grid-template-columns: repeat(4, 1fr); /* Creates two columns with equal width */
+            gap: 8px; /* Adjusts the gap between grid items */
+        }
+
+        .img-wrapper {
+            display: none;
+            position: relative;
+            margin-top: 8px;
+            width: 119px;
+            height: 119px;
+            border-radius: 16px;
+            overflow: hidden;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .img-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* For the delete button */
+        .delete-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #d2d1d1;
+            border-radius: 50%;
+            border: none;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            align-items: center;
+        }
+
+        .delete-btn:hover {
+            background-color: #1B1B1D;
+        }
     </style>
     <style about="game-lottery">
+
+        .bonus-for-points {
+            height: 66px;
+            background-image: url("/assets/file/bonus-for-points-img.png");
+            background-repeat: no-repeat; /* 防止背景图重复 */
+            background-position: center; /* 背景图居中 */
+            margin: 8px 0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .bonus-for-points-value {
+            font-size: 26px;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+
+        .bonus-for-points-sub-tittle {
+            color: #898989;
+        }
+
+        .bonus-for-points-sub-tittle .bonus-for-points-tittle {
+            margin-left: 16px;
+        }
+
         .lottery-round-info,
         .lottery-timer {
             width: 348px;
@@ -905,6 +1099,10 @@
             padding-top: 16px;
         }
 
+        .rule-info p {
+            margin: 6px 0;
+        }
+
         .rule-info ul,
         .rule-info ul li h4 {
             padding: 0;
@@ -913,7 +1111,7 @@
 
         .rule-info ul li {
             list-style: none;
-            color: #464648;
+            margin-top: 6px;
         }
 
         .rule-info ul li h4 {
@@ -1023,7 +1221,7 @@
         }
 
         .income-body {
-            padding: 8px;
+            padding-top: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1170,6 +1368,8 @@
 
         .tweet-detail {
             padding: 16px;
+            border-left: solid 1px #F7F8F9;
+            border-right: solid 1px #F7F8F9;
         }
 
         .tweet-payment_status {
@@ -1231,11 +1431,6 @@
                 <img src="/assets/file/path-to-user-icon.png" alt="Home" class="menu-icon"/> <span
                         id="left-menu-item-my-setting">我的</span>
             </li>
-            {{/*            <li onclick="openKolKeyMainPage()" data-icon-active="/assets/file/path-to-keys-active-icon.png"*/}}
-            {{/*                data-icon-inactive="/assets/file/path-to-keys-icon.png" class="menu-item-left-area"*/}}
-            {{/*                data-content="middle-div-userKolKey">*/}}
-            {{/*                <img src="/assets/file/path-to-keys-icon.png" alt="Home" class="menu-icon"/> Keys*/}}
-            {{/*            </li>*/}}
         </ul>
         <button class="show-post-tweet-div d-radius" onclick="showPostTweetDiv()" id="btn-post-tweet-on-left-menu">
             发推
@@ -1245,6 +1440,7 @@
         <div class="tweet-first-half">
             <div>
                 <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar">
+                <img src="/assets/file/elder_icon.png" alt="flag" class="elderFlagOnAvatar">
             </div>
             <div class="tweet-header">
                 <div style="margin-top: 2px">
@@ -1258,6 +1454,11 @@
         <div class="tweet-content tweet-content-collapsed"></div>
         <span class="show-more" data-more="true"
               onclick="showFullTweetContent.call(this)">更多</span>
+        <div class="image-item-in-tweet" id="image-item-in-tweet" style="display: none">
+            <img src="" data-raw="" data-hash="" class="image-src-to-show" onclick="showImgRaw.call(this)">
+        </div>
+        <div class="tweet-images">
+        </div>
     </div>
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
@@ -1285,7 +1486,6 @@
 
             <div class="topic-switch">
                 <button class="top-topic-btn" onclick="initTopPage()" id="tittle-top-vote">总得票排行榜</button>
-                <button class="top-topic-btn" onclick="switchToTopTeam()" id="tittle-top-team">本期得票排行榜</button>
                 <button class="top-topic-btn" onclick="switchToTopKol()" id="tittle-top-best-writer">最佳创作者排行榜
                 </button>
                 <button class="top-topic-btn" onclick="switchToTopVoter()" id="tittle-top-best-voter">大户荣誉榜
@@ -1314,6 +1514,8 @@
                 <div class="team-member-card-header">
                     <div class="team-members-number">1</div>
                     <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
+                    <img src="/assets/file/elder_icon.png" alt="flag" class="elderFlagOnAvatar"
+                         style="left: 82px; top:49px">
                     <div class="team-membersName"><span class="name twitterName ">nan</span>
                         <span class="username twitterUserName" style="font-weight: lighter"></span>
                     </div>
@@ -1370,9 +1572,8 @@
                                     class="vote-number">0</span></span>
                     </div>
                     <div class="tweet-action-with-status">
-                        <span id="user-tweet-label-payment">支付状态</span>: <span class="tweetPaymentStatus"></span>
-                        <button class="tweetPaymentRetry cancel-btn" id="user-tweet-btn-goon-pay">继续支付</button>
-                        <button class="tweetPaymentDelete" id="user-tweet-btn-delete">删除</button>
+                        <button class="tweetPaymentRetry confirm-btn" id="user-tweet-btn-goon-pay">继续支付</button>
+                        <button class="tweetPaymentDelete cancel-btn" id="user-tweet-btn-delete">删除</button>
                     </div>
                 </div>
             </div>
@@ -1431,6 +1632,12 @@
                         <br>
                         <span><span id="user-setting-points">积分</span>:<span id="dessage-web3-token"
                                                                                class="user-ninja-noun">0.00 </span> dsg</span>
+                        <br>
+                        <span><span id="user-setting-my-voted">投票数</span>:<span id="dessage-my-vote"
+                                                                                   class="user-ninja-noun">0</span></span>
+                        <br>
+                        <span><span id="user-setting-be-voted">被投票数</span>:<span id="dessage-be-vote"
+                                                                                     class="user-ninja-noun">0</span></span>
                     </div>
                 </div>
 
@@ -1476,12 +1683,6 @@
                         </div>
                     </div>
                 </div>
-                {{/*                <div class="income-kol-area">*/}}
-                {{/*                    <div class="income-header">Key收入</div>*/}}
-                {{/*                    <div class="income-body">*/}}
-                {{/*                        <button onclick="openKolKeyMainPage()" class="withdraw-btn">key主页查看</button>*/}}
-                {{/*                    </div>*/}}
-                {{/*                </div>*/}}
             </div>
 
         </div>
@@ -1490,35 +1691,45 @@
                                                                            alt=" ">
                 <span id="back-button-tweet-tittle">返回</span>
             </button>
-            <div class="tweet-header">
-                <img src="" alt="Avatar" class="twitterAvatar">
-                <span class="name twitterName"></span>
-                <span class="username twitterUserName"></span>
-                <span class="time tweetCreateTime"></span>
+            <div class="tweet-first-half">
+                <div style="position: relative;">
+                    <img src="" alt="Avatar" class="twitterAvatar">
+                    <img src="/assets/file/elder_icon.png" alt="flag" class="elderFlagOnAvatar">
+                </div>
+                <div class="tweet-header">
+                    <div style="margin-top: 2px">
+                        <span class="name twitterName"></span>
+                        <span class="username twitterUserName"></span>
+                    </div>
+                    <span class="time tweetCreateTime"></span>
+                </div>
             </div>
 
             <div class="tweet-text"></div>
-
+            <div class="image-item-in-tweet" id="image-item-in-tweet" style="display: none">
+                <img src="" data-raw="" data-hash="" class="image-src-to-show" onclick="showImgRaw.call(this)">
+            </div>
+            <div class="tweet-images">
+            </div>
             <div class="tweet-detail-info">
                 <span class="tweet-info"><span id="tweet-detail-creator">作者Web3 ID</span>:<span class="tweet-web3_id">0x00a7539cc7cc54f08a761175aa678005ef91f4dc</span></span>
                 <span class="tweet-info"><span id="tweet-detail-hash">推文Hash</span>:<span class="tweet-prefixed-hash">0xad5fa0cd63cd872bfa31f9a61085aa36193f57fdfe31bfb601efdee51821af3f</span></span>
                 <span class="tweet-info"><span id="tweet-detail-signature">推文数字签名</span>:<span
                             class="tweet-signature">0x08abe2bcddad20cf2bf5a929cfb81e1dce20ba29c4d6d65d343b105c6abe3cc57f995519620298c93f060eb65080e74996c239f74524ccd0b40693e8f6c03c261b</span></span>
                 <div style="text-align: right; border-top: 1px solid #F7F8F9;padding-top: 8px;margin-top: 8px">
-                    <span class="tweet-info"><span id="tweet-detail-payment">支付状态</span>: <span
-                                class="tweet-payment_status">success</span></span>
                     <span class="tweet-info"><span id="tweet-detail-vote-no">投票数</span>: <span
                                 class="tweet-vote-number">0</span></span>
                     <button class="tweet-action-vote">
                         <img src="/assets/file/tweet-action-vote-eth.png"
                              style="width: 22px;height: auto" alt=""/>
                         <span style="font-weight: lighter"> (<span
-                                    class="tweet-action-vote-val">0.01</span> eth)</span> <span id="tweet-detail-vote">投票</span>
+                                    class="tweet-action-vote-val">0.01</span> eth)</span> <span
+                                id="tweet-detail-vote">投票</span>
                     </button>
                 </div>
 
                 <div>
-                    <ul class="team-members" style=" background-color: #F1F2F3; border-bottom: 1px solid #e7e8e9">
+                    <ul class="team-members" style="background-color: #F1F2F3;">
                     </ul>
                 </div>
             </div>
@@ -1539,22 +1750,28 @@
                 </div>
             </div>
             <div class="topic-switch tweet-topic-switch" id="twee-switch-area-for-nj-user">
-                <button class="tweetsPostedByNjUser top-topic-btn" onclick="loadPostedTweetsOfNjUsr()">他发布推文
+                <button class="tweetsPostedByNjUser top-topic-btn" onclick="loadPostedTweetsOfNjUsr()"
+                        id="twee-switch-area-his-tweet">他发布推文
                 </button>
-                <button class="tweetsVotedNjUser top-topic-btn" onclick="loadVotedTweetsOfNjUsr()">他投票推文</button>
+                <button class="tweetsVotedNjUser top-topic-btn" onclick="loadVotedTweetsOfNjUsr()"
+                        id="twee-switch-area-his-vote">他投票推文
+                </button>
             </div>
 
             <div class="nj-user-tweet-area">
                 <div id="tweetTemplateForNjUsrProfile" class="tweet-card" style="display: none;">
                     <div class="tweet-footer">
-                        <div class="tweet-info"> 投票数: <span class="total-vote-count">0</span></div>
-                        <div class="vote-count"> 他的投票数: <span class="nj-user-vote-count">0</span></div>
+                        <div class="tweet-info"><span id="nj-user-tweet-vote-no">投票数</span>: <span
+                                    class="total-vote-count">0</span></div>
+                        <div class="vote-count"><span id="nj-user-tweet-his-vote-no">他的投票数</span>: <span
+                                    class="nj-user-vote-count">0</span></div>
                         <div class="tweet-action">
                             <button class="tweet-action-vote">
                                 <img src="/assets/file/tweet-action-vote-eth.png"
                                      style="width: 22px;height: auto" alt=""/>
                                 <span style="font-weight: lighter"> <span
-                                            class="tweet-action-vote-val">0.01</span> eth</span> 投票
+                                            class="tweet-action-vote-val">0.01</span> eth</span> <span
+                                        id="nj-user-tweet-vote-action">投票</span>
                             </button>
                         </div>
                     </div>
@@ -1565,14 +1782,25 @@
         </div>
     </div>
     <div class="right-operation-area">
+        <div class="bonus-for-points">
+            <div class="bonus-for-points-sub-tittle">
+                <span class="bonus-for-points-tittle" id="bonus-for-points-tittle">积分奖池</span>
+            </div>
+            <div class="bonus-for-points-bonus">
+                <span class="bonus-for-points-tittle"><span class="bonus-for-points-value" id="bonus-for-points-value">0.00</span> ETH</span>
+            </div>
+        </div>
         <div class="lottery-game-info" id="lottery-game-info">
             <div class="lottery-round-info">
-                <div class="lottery-round"><span id="lottery-round-tittle-1">第</span><span class="lottery-game-round-no"> 0 </span><span id="lottery-round-tittle-2">期</span></div>
+                <div class="lottery-round"><span id="lottery-round-tittle-1">第</span><span
+                            class="lottery-game-round-no"> 0 </span><span id="lottery-round-tittle-2">期</span></div>
                 <div class="lottery-amount-div">
                     <span class="lottery-amount">0.0</span>
                     <span class="eth-symbol">eth</span>
                 </div>
-                <div class="lottery-amount-tips" id="lottery-tittle-tips" style="color: rgba(255,255,255,0.5)">本期奖池</div>
+                <div class="lottery-amount-tips" id="lottery-tittle-tips" style="color: rgba(255,255,255,0.5)">
+                    本期奖池
+                </div>
             </div>
             <div class="lottery-timer">
                 <div class="countdown-result" id="countdown-result">开奖中</div>
@@ -1593,38 +1821,64 @@
                     <span class="lottery-stats-no" id="lottery-total-amount" style="font-weight: bold">0.00</span>
                     <span class="lottery-stats-unit">eth</span>
                 </div>
-                <div class="lottery-stats-label">
-                    <span id="lottery-info-current-team-no">本期队伍总数</span>:
-                    <span class="lottery-stats-no" id="lottery-current-team-amount" style="font-weight: bold">0</span>
-                    <span class="lottery-stats-unit" id="lottery-stats-unit-1"> 队</span>
-                </div>
+
                 <div class="lottery-stats-label">
                     <span id="lottery-info-current-tickets-no">本期总票数</span>:
                     <span class="lottery-stats-no" id="lottery-current-ticket-amount" style="font-weight: bold">0</span>
                     <span class="lottery-stats-unit" id="lottery-stats-unit-2">张</span>
                 </div>
-                <button class="lottery-participate-btn" onclick="openLotteryMainPage()" id="lottery-info-btn-mine">我的彩票</button>
+                <button class="lottery-participate-btn" onclick="openLotteryMainPage()" id="lottery-info-btn-mine">
+                    我的彩票
+                </button>
                 <div class="rule-info">
-                    <h4 style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-tittle">
-                        本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与</h4>
+                    <h4 style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-tittle">玩法规则：</h4>
+                    <p style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content">
+                        本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与</p>
                     <ul>
-                        <span id="lottery-info-content-1">购买彩票的方式为</span>:
                         <li>
-                            <h4 style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content-2">1.推文下打赏</h4>
-                            <span id="lottery-info-content-3">在参与游戏的推文下打赏，你的任何打赏都会有60%进入彩票奖池，30%归属推文作者，10%归属Dessage协议收入</span>
+                            <h4 id="lottery-info-content-1">购买彩票方式</h4>
+                            <span id="lottery-info-content-2">1.推文下打赏</span>
+                            <span id="lottery-info-content-3">你的任何推文打赏都会有30%进入彩票奖池，30%进入积分奖池，30%归属推文作者，10%归属Dessage协议收入</span>
                         </li>
                         <li>
-                            <h4 style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-4">2.单独投注</h4>
-                           <span id="lottery-info-content-5">你也可以在“我的彩票”页面进行单独投注，单独投注的投注额的90%进入奖池，10%归属Dessage协议收入</span>
+                            <span id="lottery-info-content-4">2.单独投注</span>
+                            <span id="lottery-info-content-5">你也可以在“我的彩票”页面进行单独投注，单独投注的投注额的45%进入彩票奖池，45%进入积分奖池，10%归属Dessage协议收入</span>
+                        </li>
+                    </ul>
+                    <p><strong id="bonus-for-points-tittle-2">积分奖池</strong> <br>
+                        <span id="lottery-info-content-6">在Dessage的chapter 1阶段持续累积，数额公开，在进入chapter 2阶段时将按照所有用户的积分情况等比例分配。用户获得积分的途径如下：</span>
+                    </p>
+                    <ul>
+                        <li>
+                            <p style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content-7">
+                                1.每投票一票可获得2分</p>
                         </li>
                         <li>
-                            <h4 style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-6">3.中奖规则</h4>
-                            <strong id="lottery-info-content-7">同一篇推文下同期打赏的用户为一个抽奖队伍，</strong><span id="lottery-info-content-8">若最终大奖归属队伍中的任何一人，则该中奖者独得一半奖池，剩余一半奖池按照投票打赏比例归属该队伍所有参与者，所以请尽量打赏你认为更优质更有可能获得更多打赏的推文，这样你的中奖概率会更高。
-                            </span><br><strong id="lottery-info-content-9">单独投注的用户不归属任何队伍,</strong><span id="lottery-info-content-10">单独投注的用户不归属任何队伍，若单独投注的用户中奖，则该用户独得所有奖池</span>
+                            <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-8">
+                                2.每发推一次可获得2分</p>
                         </li>
                         <li>
-                            <h4 style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-11">4.发布推文,赚取收益</h4>
-                            <span id="lottery-info-content-12">需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益</span>
+                            <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-9">
+                                3.用户发布的推文被其他用户投票时，创作者可按1分/票获得积分</p>
+                        </li>
+                        <li>
+                            <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-10">
+                                4.chapter 1结束时，
+                                总得票数排名前10的十篇推文投票用户可依据投票时间先后获得额外积分奖励。上述每篇推文下前10%的投票用户可获得额外10倍的投票积分奖励，前10%-20%的投票用户可获得额外9倍的投票积分奖励，以此类推。
+                            </p>
+                        </li>
+                        <li>
+                            <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-11">
+                                5.chapter 1结束时，大户排行榜前10位的用户可获得额外积分加成50%
+                            </p>
+                        </li>
+                        <li>
+                            <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-15">
+                                6.chapter 1进行中，获得投票数率先达到100的前10位KOL可以获得元老勋章，这10位KOL的所有推文被投票时，元老可以获得2倍于普通创作的被投票积分。
+                            </p>
+                            <p id="lottery-info-content-13" style="color: #DD2111">
+                                *积分不仅仅可用于参与积分奖池的分配，后续还能获得Dessage的其他权益</p>
+                            <span id="lottery-info-content-14">要发布参与游戏的推文，需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益</span>
                         </li>
                     </ul>
                 </div>
@@ -1656,8 +1910,8 @@
 <div id="vote-no-chose-modal" class="vote-chose-modal-class">
     <div class="vote-no-modal-content">
         <div class="vote-no-modal-header">
-            <span class="vote-no-close" onclick="closeVoteModal()">&times;</span>
             <h2 style="margin: 0" id="vote-to-tweet-dialog-tittle">推文投票</h2>
+            <span class="vote-no-close" onclick="closeVoteModal()">&times;</span>
         </div>
         <div class="vote-no-modal-body">
             <div class="quantity-selector">
@@ -1671,7 +1925,7 @@
                 </button>
             </div>
             <label style="color: #898989; font-size: 14px; margin-left: 54px">
-                <input type="checkbox" id="shareOnTwitter" checked>
+                <input type="checkbox" id="shareOnTwitter">
                 <span id="btn-tittle-share-when-vote">转发到推特</span>
             </label>
         </div>
@@ -1686,17 +1940,37 @@
 <div class="modal-for-tweet-post">
     <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
     <div class="tweets-content-txt-area .d-radius" id="tweets-content-txt-area" contenteditable="true"
-         data-placeholder="What's happening!?"></div>
-    <div style="display: flex; justify-content: flex-end; align-items: center">
-        <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()" class="d-radius">
+         data-placeholder="What's happening!?">
+    </div>
+    <div class="img-wrapper" id="img-wrapper-template">
+        <img src="" class="img-preview">
+        <button class="delete-btn">x</button>
+    </div>
+    <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center">
+        <button onclick="loadImgFromLocal()" class="tweets-fileImg"><img
+                    src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
+        <input type="file" id="fileInput" style="display: none;" accept=".jpg, .png" multiple onchange="previewImage()">
+        <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()" class="d-radius" style="margin: 8px">
             <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">
-            <span id="tweet-post-with-eth-btn-txt">发布推文</span></button>
+            <span id="tweet-post-with-eth-btn-txt">发布推文</span>
+        </button>
     </div>
 </div>
+
+<div class="tweet-image-raw" style="display:none;">
+    <img src="" class="tweet-image-detail">
+    <span class="tweet-image-hash"></span>
+    <button onclick="CloseImgDetail.call(this)">x</button>
+</div>
+
 <script>
 
-    const ninjaUserObj = {{ .NinjaUsrInfoJson }};
-    const targetTweet = {{.TargetTweet }};
+
+    let ninjaUserObj = {{ .NinjaUsrInfoJson}};
+    const targetTweet = {{.TargetTweet}};
 
     let curScrollContentID = 0;
 
@@ -1783,7 +2057,13 @@
 
 
     async function setupUserBasicInfoInSetting() {
+
+        document.getElementById('tweet-no-has-income').innerText = ninjaUserObj.tweet_count;
+        document.getElementById("dessage-web3-token").innerText = ninjaUserObj.points;
         document.getElementById("basic-web3-id").innerText = ninjaUserObj.eth_addr;
+        document.getElementById("dessage-my-vote").innerText = ninjaUserObj.vote_count;
+        document.getElementById("dessage-be-vote").innerText = ninjaUserObj.be_voted_count;
+
         if (!ninjaUserObj.tw_id) {
             return;
         }
@@ -1802,17 +2082,17 @@
 
             showWaiting("syncing from block chain");
 
-            await setupUserBasicInfoInSetting();
-
             await reloadGameBalance();
             await reloadTweetBalance();
 
-            const obj = await loadNJUserInfoFromSrv(ninjaUserObj.eth_addr, true);
+            const obj = await loadNJUserInfoFromSrv(ninjaUserObj.eth_addr, false);
             if (!obj) {
                 console.log("can't be empty")
                 return;
             }
-            document.getElementById('tweet-no-has-income').innerText = obj.tweet_count;
+            ninjaUserObj = obj;
+            await setupUserBasicInfoInSetting();
+
         } catch (err) {
             checkMetamaskErr(err);
         } finally {
@@ -1847,7 +2127,6 @@
                         "tweet-show-less": "Less",
                         "tweet-show-more": "More",
                         "tittle-top-vote": "Most Voted",
-                        "tittle-top-team": "Most Voted In This Round",
                         "tittle-top-best-writer": "Top Creators Leaderboard",
                         "tittle-top-best-voter": "Whale Honor Roll",
                         "show-details-button": "Show More >>",
@@ -1859,10 +2138,12 @@
                         "tweet-detail-creator": "Creator Web3 ID",
                         "tweet-detail-hash": "Tweet Hash",
                         "tweet-detail-signature": "Tweet Signature",
-                        "tweet-detail-payment": "Payment Status",
                         "tweet-detail-vote-no": "Vote No",
                         "tweet-detail-vote": "Vote",
                         "back": "Back",
+                        "twee-switch-area-his-tweet": "His/Her Posts",
+                        "twee-switch-area-his-vote": "His/Her Votes",
+                        "nj-user-tweet-his-vote-no": "His/Her Votes",
                         "user-tweet-btn-my-tweet": "My Tweet",
                         "user-tweet-btn-my-vote": "My Vote",
                         "user-tweet-btn-goon-pay": "Pay It",
@@ -1873,6 +2154,8 @@
                         "user-setting-quit": "Sign Out",
                         "user-setting-sync-twitter": "Sync Twitter",
                         "user-setting-points": "Points",
+                        "user-setting-my-voted": "Number of Votes",
+                        "user-setting-be-voted": "Number of Votes Received",
                         "user-setting-tweet-income": "Tweet Revenue",
                         "user-setting-tweet-no": "Total Tweets",
                         "withdraw-history": "Withdrawal Records",
@@ -1887,24 +2170,27 @@
                         "countdown-tips-days": "Day(s)",
                         "countdown-tips-sub-tittle": "Next Draw Time",
                         "lottery-info-history-bonus": "Total Historical Prize",
-                        "lottery-info-current-team-no": "Current Period's Total Teams",
-                        "lottery-stats-unit-1": " ",
-                        "lottery-info-current-tickets-no": "Total Votes This Period",
+                        "lottery-info-current-tickets-no": "Total Votes This Phase",
                         "lottery-stats-unit-2": " ",
                         "lottery-info-btn-mine": "My Tickets",
-                        "lottery-info-tittle": "This game is a lottery game, with draws every 48 hours that anyone can participate in.",
-                        "lottery-info-content-1": "The method of purchasing lottery tickets is as follows",
+                        "lottery-info-tittle": "Game Rule",
+                        "lottery-info-content": "This game is a lottery game, with draws every 48 hours that anyone can participate in.",
+                        "lottery-info-content-1": "The method of purchasing lottery tickets",
                         "lottery-info-content-2": "1.Reward The Tweet",
-                        "lottery-info-content-3": "Tipping under the tweet participating in the game, any of your tips will have 60% go into the lottery prize pool, 30% belong to the tweet author, and 10% belong to Dessage protocol income.",
+                        "lottery-info-content-3": "30% of any tips on your tweets will go into the lottery prize pool, 30% into the points prize pool, 30% to the tweet author, and 10% to Dessage protocol income.",
                         "lottery-info-content-4": "2. Place a separate bet.",
-                        "lottery-info-content-5": "You can also place individual bets on the 'My Lottery Tickets' page, with 90% of the bet amount going into the prize pool and 10% belonging to Dessage protocol income.",
-                        "lottery-info-content-6": "3.Winning Rules",
-                        "lottery-info-content-7": "Users who tip under the same tweet during the same period form a lottery team.",
-                        "lottery-info-content-8": "If the final grand prize belongs to any member of the team, that winner will receive half of the prize pool, while the remaining half of the prize pool will be distributed to all participants of that team according to the proportion of their tipping contributions. Therefore, please try to tip tweets that you think are of higher quality and more likely to receive more tips, as this will increase your chances of winning.",
-                        "lottery-info-content-9": "Users who place individual bets do not belong to any team,",
-                        "lottery-info-content-10": "If a user who placed an individual bet wins, that user will receive the entire prize pool.",
-                        "lottery-info-content-11": "4. Post tweets to earn income.",
-                        "lottery-info-content-12": "You need to bind your Arbitrum address and Twitter account, then click to tweet on this platform, and the tweet will be forwarded to your Twitter account synchronously. Other users can then vote and tip under your tweet, and you can earn creator income.",
+                        "lottery-info-content-5": "You can also place individual bets on the 'My Tickets' page, with 45% of the bet amount going into the lottery prize pool, 45% into the points prize pool, and 10% belonging to Dessage protocol income.",
+                        "lottery-info-content-6": "During Dessage's Chapter 1 phase, it will continue to accumulate, with the amount being public. Upon entering Chapter 2, it will be distributed proportionally according to all users' points situation. The ways users can earn points are as follows:",
+                        "lottery-info-content-7": "1. Each vote cast earns 2 points.",
+                        "lottery-info-content-8": "2. Each tweet posted earns 2 points.",
+                        "lottery-info-content-9": "3. When a user's tweet is voted on by other users, the creator can earn points at a rate of 1 point per vote.",
+                        "lottery-info-content-10": "4.At the end of Chapter 1, the voters of the top 10 tweets with the highest total votes will receive additional points rewards based on the chronological order of their votes. The top 10% of voters by voting time under each tweet will be rewarded with points ten times their number of votes, the next 10%-20% will receive nine times the points, and so on.",
+                        "lottery-info-content-11": "5. At the end of Chapter 1, the top 10 users on the Whale Leaderboard can receive an additional 50% bonus to their points.",
+                        "lottery-info-content-13": "*Points are not only usable for participating in the distribution of the points prize pool, but they can also be used to obtain other rights and interests in Dessage in the future.",
+                        "lottery-info-content-14": "To post a tweet participating in the game, you need to bind your Arbitrum address and Twitter account. Then, by clicking to tweet on this platform, your tweet will be synchronously forwarded to your Twitter account. Other users can then vote and tip under your tweet, allowing you to earn creator income.",
+                        "lottery-info-content-15": "6. During Chapter 1, the first 10 KOLs to reach 100 votes can receive the Elder Medal. When any tweet posted by these 10 KOLs receives votes, the Elder can earn twice the points for votes compared to ordinary creators.",
+                        "bonus-for-points-tittle": "Points Prize Pool",
+                        "voter-slogan": "Come to this blockchain social network to grab lottery tickets!",
                     }
                 },
                 zh: {
@@ -1924,7 +2210,6 @@
                         "tweet-show-less": "更少",
                         "tweet-show-more": "更多",
                         "tittle-top-vote": "总得票排行榜",
-                        "tittle-top-team": "本期得票排行榜",
                         "tittle-top-best-writer": "最佳创作者排行榜",
                         "tittle-top-best-voter": "大户荣誉榜",
                         "show-details-button": "查看详情 >>",
@@ -1936,7 +2221,6 @@
                         "tweet-detail-creator": "作者Web3 ID",
                         "tweet-detail-hash": "推文哈希",
                         "tweet-detail-signature": "推文数字签名",
-                        "tweet-detail-payment": "支付状态",
                         "back": "返回",
                         "user-tweet-btn-my-tweet": "我的推文",
                         "user-tweet-btn-my-vote": "我的投票",
@@ -1948,6 +2232,11 @@
                         "user-setting-quit": "退出",
                         "user-setting-sync-twitter": "同步推特",
                         "user-setting-points": "积分",
+                        "user-setting-my-voted": "投票数",
+                        "twee-switch-area-his-tweet": "他发布推文",
+                        "twee-switch-area-his-vote": "他投票推文",
+                        "nj-user-tweet-his-vote-no": "他投票推文",
+                        "user-setting-be-voted": "被投票数",
                         "user-setting-tweet-income": "推文收入",
                         "user-setting-tweet-no": "推文总数",
                         "withdraw-history": "提现记录",
@@ -1962,24 +2251,27 @@
                         "countdown-tips-days": "天",
                         "countdown-tips-sub-tittle": "开奖时间",
                         "lottery-info-history-bonus": "历史累计奖金",
-                        "lottery-info-current-team-no": "本期队伍总数",
-                        "lottery-stats-unit-1": "队",
                         "lottery-info-current-tickets-no": "本期总票数",
                         "lottery-stats-unit-2": "张",
                         "lottery-info-btn-mine": "我的彩票",
-                        "lottery-info-tittle": "本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与",
-                        "lottery-info-content-1": "购买彩票的方式为",
+                        "lottery-info-tittle": "玩法规则",
+                        "lottery-info-content": "本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与",
+                        "lottery-info-content-1": "购买彩票方式",
                         "lottery-info-content-2": "1.推文下打赏",
-                        "lottery-info-content-3": "在参与游戏的推文下打赏，你的任何打赏都会有60%进入彩票奖池，30%归属推文作者，10%归属Dessage协议收入",
+                        "lottery-info-content-3": "你的任何推文打赏都会有30%进入彩票奖池，30%进入积分奖池，30%归属推文作者，10%归属Dessage协议收入",
                         "lottery-info-content-4": "2.单独投注",
-                        "lottery-info-content-5": "你也可以在“我的彩票”页面进行单独投注，单独投注的投注额的90%进入奖池，10%归属Dessage协议收入",
-                        "lottery-info-content-6": "3.中奖规则",
-                        "lottery-info-content-7": "同一篇推文下同期打赏的用户为一个抽奖队伍，",
-                        "lottery-info-content-8": "若最终大奖归属队伍中的任何一人，则该中奖者独得一半奖池，剩余一半奖池按照投票打赏比例归属该队伍所有参与者，所以请尽量打赏你认为更优质更有可能获得更多打赏的推文，这样你的中奖概率会更高。",
-                        "lottery-info-content-9": "单独投注的用户不归属任何队伍,",
-                        "lottery-info-content-10": "若单独投注的用户中奖，则该用户独得所有奖池",
-                        "lottery-info-content-11": "4.发布推文,赚取收益",
-                        "lottery-info-content-12": "需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益",
+                        "lottery-info-content-5": "你也可以在“我的彩票”页面进行单独投注，单独投注的投注额的45%进入彩票奖池，45%进入积分奖池，10%归属Dessage协议收入",
+                        "lottery-info-content-6": "在Dessage的chapter 1阶段持续累积，数额公开，在进入chapter 2阶段时将按照所有用户的积分情况等比例分配。用户获得积分的途径如下",
+                        "lottery-info-content-7": "1.每投票一票可获得2分",
+                        "lottery-info-content-8": "2.每发推一次可获得2分",
+                        "lottery-info-content-9": "3.用户发布的推文被其他用户投票时，创作者可按1分每票获得积分",
+                        "lottery-info-content-10": "4.chapter 1结束时，总得票数排名前10的推文,其投票用户可依据投票时间先后获得额外积分奖励。每篇推文下投票时间排名前10%的用户奖励投票数10倍的积分，前10%-20%的可获得额外9倍的积分，以此类推。",
+                        "lottery-info-content-11": "5.chapter 1结束时，大户排行榜前10位的用户可获得额外积分加成50%",
+                        "lottery-info-content-13": "*积分不仅仅可用于参与积分奖池的分配，后续还能获得Dessage的其他权益",
+                        "lottery-info-content-14": "要发布参与游戏的推文，需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益",
+                        "lottery-info-content-15": "6.chapter 1进行中，获得投票数率先达到100的前10位KOL可以获得元老勋章，这10位KOL的所有推文被投票时，元老可以获得2倍于普通创作的被投票积分。",
+                        "bonus-for-points-tittle": "积分奖池",
+                        "voter-slogan": "快来这个区块链社交网络撸彩票！",
                     }
                 }
             }
@@ -2002,7 +2294,6 @@
         document.getElementById('vote-to-tweet-dialog-tittle').textContent = i18next.t('vote-to-tweet-dialog-tittle');
 
         document.getElementById('tittle-top-vote').textContent = i18next.t('tittle-top-vote');
-        document.getElementById('tittle-top-team').textContent = i18next.t('tittle-top-team');
         document.getElementById('tittle-top-best-writer').textContent = i18next.t('tittle-top-best-writer');
         document.getElementById('tittle-top-best-voter').textContent = i18next.t('tittle-top-best-voter');
 
@@ -2020,7 +2311,6 @@
         document.getElementById('tweet-detail-hash').textContent = i18next.t('tweet-detail-hash');
         document.getElementById('tweet-detail-signature').textContent = i18next.t('tweet-detail-signature');
 
-        document.getElementById('tweet-detail-payment').textContent = i18next.t('tweet-detail-payment');
         document.getElementById('tweet-detail-vote-no').textContent = i18next.t('label-vote-no');
         document.getElementById('tweet-detail-vote').textContent = i18next.t('btn-tittle-vote-no');
         document.getElementById('back-button-tweet-tittle').textContent = i18next.t('back');
@@ -2028,7 +2318,6 @@
         document.getElementById('user-tweet-btn-my-tweet').textContent = i18next.t('user-tweet-btn-my-tweet');
         document.getElementById('user-tweet-btn-my-vote').textContent = i18next.t('user-tweet-btn-my-vote');
         document.getElementById('user-tweet-label-vote-no').textContent = i18next.t('label-vote-no');
-        document.getElementById('user-tweet-label-payment').textContent = i18next.t('tweet-detail-payment');
         document.getElementById('user-tweet-btn-delete').textContent = i18next.t('user-tweet-btn-delete');
         document.getElementById('user-tweet-label-total-vote').textContent = i18next.t('user-tweet-label-total-vote');
         document.getElementById('user-tweet-label-my-vote').textContent = i18next.t('user-tweet-label-my-vote');
@@ -2038,6 +2327,8 @@
         document.getElementById('user-setting-clear').textContent = i18next.t('user-setting-clear');
         document.getElementById('user-setting-sync-twitter').textContent = i18next.t('user-setting-sync-twitter');
         document.getElementById('user-setting-points').textContent = i18next.t('user-setting-points');
+        document.getElementById('user-setting-my-voted').textContent = i18next.t('user-setting-my-voted');
+        document.getElementById('user-setting-be-voted').textContent = i18next.t('user-setting-be-voted');
         document.getElementById('user-setting-tweet-income').textContent = i18next.t('user-setting-tweet-income');
         document.getElementById('user-setting-tweet-no').textContent = i18next.t('user-setting-tweet-no');
         document.getElementById('user-setting-tweet-income-tittle').textContent = i18next.t('user-setting-tweet-income');
@@ -2050,6 +2341,11 @@
         document.getElementById('user-setting-tweet-no-suffix').textContent = i18next.t('user-setting-tweet-no-suffix');
         document.getElementById('user-setting-tweet-no-suffix').textContent = i18next.t('user-setting-tweet-no-suffix');
 
+        document.getElementById('twee-switch-area-his-tweet').textContent = i18next.t('twee-switch-area-his-tweet');
+        document.getElementById('twee-switch-area-his-vote').textContent = i18next.t('twee-switch-area-his-vote');
+        document.getElementById('nj-user-tweet-vote-no').textContent = i18next.t('user-setting-my-voted');
+        document.getElementById('nj-user-tweet-his-vote-no').textContent = i18next.t('nj-user-tweet-his-vote-no');
+        document.getElementById('nj-user-tweet-vote-action').textContent = i18next.t('btn-tittle-vote-no');
 
         document.getElementById('lottery-round-tittle-1').textContent = i18next.t('lottery-round-tittle-1');
         document.getElementById('lottery-round-tittle-2').textContent = i18next.t('lottery-round-tittle-2');
@@ -2058,13 +2354,14 @@
         document.getElementById("countdown-tips-days").textContent = i18next.t('countdown-tips-days');
         document.getElementById("countdown-tips-sub-tittle").textContent = i18next.t('countdown-tips-sub-tittle');
         document.getElementById("lottery-info-history-bonus").textContent = i18next.t('lottery-info-history-bonus');
-        document.getElementById("lottery-info-current-team-no").textContent = i18next.t('lottery-info-current-team-no');
-        document.getElementById("lottery-stats-unit-1").textContent = i18next.t('lottery-stats-unit-1');
         document.getElementById("lottery-info-current-tickets-no").textContent = i18next.t('lottery-info-current-tickets-no');
         document.getElementById("lottery-stats-unit-2").textContent = i18next.t('lottery-stats-unit-2');
         document.getElementById("lottery-info-btn-mine").textContent = i18next.t('lottery-info-btn-mine');
 
         document.getElementById("lottery-info-tittle").textContent = i18next.t('lottery-info-tittle');
+        document.getElementById("bonus-for-points-tittle").textContent = i18next.t('bonus-for-points-tittle');
+        document.getElementById("bonus-for-points-tittle-2").textContent = i18next.t('bonus-for-points-tittle');
+        document.getElementById("lottery-info-content").textContent = i18next.t('lottery-info-content');
         document.getElementById("lottery-info-content-1").textContent = i18next.t('lottery-info-content-1');
         document.getElementById("lottery-info-content-2").textContent = i18next.t('lottery-info-content-2');
         document.getElementById("lottery-info-content-3").textContent = i18next.t('lottery-info-content-3');
@@ -2076,7 +2373,11 @@
         document.getElementById("lottery-info-content-9").textContent = i18next.t('lottery-info-content-9');
         document.getElementById("lottery-info-content-10").textContent = i18next.t('lottery-info-content-10');
         document.getElementById("lottery-info-content-11").textContent = i18next.t('lottery-info-content-11');
-        document.getElementById("lottery-info-content-12").textContent = i18next.t('lottery-info-content-12');
+        document.getElementById("lottery-info-content-13").textContent = i18next.t('lottery-info-content-13');
+        document.getElementById("lottery-info-content-14").textContent = i18next.t('lottery-info-content-14');
+        document.getElementById("lottery-info-content-15").textContent = i18next.t('lottery-info-content-15');
+
+        document.getElementById("user-tweet-btn-goon-pay").textContent = i18next.t('user-tweet-btn-goon-pay');
     }
 </script>
 </body>

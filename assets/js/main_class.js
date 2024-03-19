@@ -51,13 +51,13 @@ class TweetVoteContractSetting {
 }
 
 class GameBasicInfo {
-    constructor(curRound, totalBonus, ticketNo, curBonus, teamNo, dTime) {
+    constructor(curRound, totalBonus, ticketNo, curBonus, dTime, bonusForPoint) {
         this.curRound = curRound;
         this.totalBonus = totalBonus;
         this.ticketNo = ticketNo;
         this.curBonus = curBonus;
-        this.teamNo = teamNo;
         this.dTime = dTime;
+        this.bonusForPoint = bonusForPoint;
     }
 }
 
@@ -79,7 +79,7 @@ const TXStatus = Object.freeze({
 });
 
 const TweetDetailSource = Object.freeze({
-    NoNeed:'0', HomePage: '1',  MyVoted: '2', MostVoted: '3',
+    NoNeed: '0', HomePage: '1', MyVoted: '2', MostVoted: '3',
     MostTeam: '4',
 });
 
@@ -97,5 +97,27 @@ class TeamDetailOnBlockChain {
         this.tweetHash = tweetHash;
         this.memCount = memCount;
         this.voteCount = voteCount;
+    }
+}
+const dbKeyCachedRawImg = "__db_key_cached_tweet_raw_img__"
+
+class ImageRawData {
+    constructor(hash,rawData,thumbnail){
+        this.hash = hash;
+        this.raw_data = rawData;
+        this.thumb_nail = thumbnail;
+    }
+
+    static sycToDb(obj) {
+        localStorage.setItem(ImageRawData.DBKey(obj.hash), JSON.stringify(obj));
+    }
+
+    static DBKey(hash) {
+        return dbKeyCachedRawImg+hash;
+    }
+
+    static load(hash) {
+        const storedVal = localStorage.getItem(ImageRawData.DBKey(hash));
+        return storedVal ? JSON.parse(storedVal) : null;
     }
 }

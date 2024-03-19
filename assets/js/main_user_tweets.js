@@ -1,19 +1,19 @@
 const cachedUserTweets = new MemCachedTweets();
 
-function __myPostOrVotedTweetsStatus(isPosted){
+function __myPostOrVotedTweetsStatus(isPosted) {
     const tweetsDiv = document.getElementById('tweets-post-by-user');
-    tweetsDiv.style.display = isPosted?'block':'none';
+    tweetsDiv.style.display = isPosted ? 'block' : 'none';
     const votedDiv = document.getElementById('tweets-voted-by-user');
-    votedDiv.style.display = isPosted?'none':'block';
+    votedDiv.style.display = isPosted ? 'none' : 'block';
     const detail = document.querySelector('#tweet-detail');
     detail.style.display = 'none';
 
     const switchArea = document.getElementById("my-vote-or-post-tweet-switch-area")
-    switchArea.querySelectorAll(".top-topic-btn").forEach(c=> c.classList.remove('active'));
+    switchArea.querySelectorAll(".top-topic-btn").forEach(c => c.classList.remove('active'));
 
-    if (isPosted){
+    if (isPosted) {
         switchArea.querySelector('.my-posted-tweets').classList.add('active')
-    }else{
+    } else {
         switchArea.querySelector('.my-voted-tweets').classList.add('active')
     }
 }
@@ -26,6 +26,7 @@ async function loadTweetsUserPosted() {
         await __loadTweetAtUserPost(true, ninjaUserObj.eth_addr, cachedUserTweets, fillUserPostedTweetsList);
 
     } catch (err) {
+        console.log(err);
         showDialog(DLevel.Warning, err.toString());
     } finally {
         hideLoading();
@@ -51,9 +52,6 @@ async function __loadTweetAtUserPost(newest, web3ID, cache, callback) {
 }
 
 function __checkPayment(tweetCard, tweet) {
-    const statusElem = tweetCard.querySelector('.tweetPaymentStatus');
-    statusElem.textContent = TXStatus.Str(tweet.payment_status);
-
     if (tweet.payment_status !== TXStatus.NoPay) {
         return;
     }
@@ -68,7 +66,6 @@ function __checkPayment(tweetCard, tweet) {
         if (newObj.payment_status !== TXStatus.NoPay) {
             retryButton.classList.remove('show');
             deleteButton.classList.remove('show');
-            statusElem.textContent = TXStatus.Str(newObj.payment_status);
         }
     });
 
@@ -199,7 +196,7 @@ async function showUserProfile(njUser) {
 
     detail.querySelector(".web3id").textContent = njUser.eth_addr;
     const header = detail.querySelector(".tweet-header-in-profile")
-    await __setOnlyHeader(header, njUser.tw_id);
+    await __setOnlyHeader(header, njUser.tw_id, njUser.eth_addr);
     await loadPostedTweetsOfNjUsr();
 }
 
@@ -218,11 +215,11 @@ function __njUserVoteOrPostedTweetsStatus(isPosted) {
     votedDiv.style.display = isPosted ? 'none' : 'block';
 
     const switchArea = document.getElementById('twee-switch-area-for-nj-user')
-    switchArea.querySelectorAll('.top-topic-btn').forEach(btn=>btn.classList.remove('active'));
+    switchArea.querySelectorAll('.top-topic-btn').forEach(btn => btn.classList.remove('active'));
 
-    if (isPosted){
+    if (isPosted) {
         switchArea.querySelector('.tweetsPostedByNjUser').classList.add('active')
-    }else{
+    } else {
         switchArea.querySelector('.tweetsVotedNjUser').classList.add('active')
     }
 }

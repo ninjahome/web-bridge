@@ -19,33 +19,36 @@ import (
 
 var (
 	cfgActionRouter = map[string]LogicAction{
-		"/signUpByTwitter":          {signUpByTwitterV1, true},
-		"/tw_callback":              {twitterSignCallBackV1, false},
-		"/signUpSuccessByTw":        {signUpSuccessByTw, false},
-		"/signInByEth":              {signInByEth, false},
-		"/bindWeb3ID":               {bindingWeb3ID, true},
-		"/queryTwBasicById":         {queryTwBasicById, true},
-		"/queryTwBasicByTweetHash":  {queryTwBasicByTweetHash, true},
-		"/queryNjBasicByID":         {queryNjBasicByID, true},
-		"/signOut":                  {signOut, false},
-		"/main":                     {mainPage, true},
-		"/lotteryGame":              {showLotteryMain, true},
-		"/kolKey":                   {showKolKeyPage, true},
-		"/postTweet":                {postTweets, true},
-		"/updateTweetPaymentStatus": {updateTweetTxStatus, true},
-		"/reloadPaymentDetails":     {queryTweetDetails, false},
-		"/updateTweetVoteStatus":    {updateTweetVoteStatus, true},
-		"/shareVoteAction":          {shareVoteAction, true},
-		"/buyRights":                {mainPage, true},
-		"/buyFromShare":             {mainPage, true},
-		"/tweetQuery":               {globalTweetQuery, true},
-		"/votedTweetIds":            {votedTweetsQuery, true},
-		"/removeUnpaidTweet":        {removeUnpaidTweet, true},
-		"/mostVotedTweet":           {mostVotedTweet, true},
-		"/mostVotedKol":             {mostVotedKol, true},
-		"/queryTweetByHash":         {queryTweetByHash, true},
-		"/queryWinHistory":          {queryWinHistory, true},
-		"/queryWinTeamHistory":      {queryWinTeamHistory, true},
+		"/signUpByTwitter":           {signUpByTwitterV1, true},
+		"/tw_callback":               {twitterSignCallBackV1, false},
+		"/signUpSuccessByTw":         {signUpSuccessByTw, false},
+		"/signInByEth":               {signInByEth, false},
+		"/bindWeb3ID":                {bindingWeb3ID, true},
+		"/queryTwBasicById":          {queryTwBasicById, true},
+		"/queryTwBasicByTweetHash":   {queryTwBasicByTweetHash, true},
+		"/queryNjBasicByID":          {queryNjBasicByID, true},
+		"/signOut":                   {signOut, false},
+		"/main":                      {mainPage, true},
+		"/refreshNjUser":             {refreshNjUser, true},
+		"/lotteryGame":               {showLotteryMain, true},
+		"/kolKey":                    {showKolKeyPage, true},
+		"/postTweet":                 {postTweets, true},
+		"/updateTweetPaymentStatus":  {updateTweetTxStatus, true},
+		"/reloadPaymentDetails":      {queryTweetDetails, false},
+		"/updateTweetVoteStatus":     {updateTweetVoteStatus, true},
+		"/updatePointsForSingleBets": {updatePointsForSingleBets, true},
+		"/shareVoteAction":           {shareVoteAction, true},
+		"/buyRights":                 {mainPage, true},
+		"/buyFromShare":              {mainPage, true},
+		"/tweetQuery":                {globalTweetQuery, true},
+		"/votedTweetIds":             {votedTweetsQuery, true},
+		"/removeUnpaidTweet":         {removeUnpaidTweet, true},
+		"/mostVotedTweet":            {mostVotedTweet, true},
+		"/mostVotedKol":              {mostVotedKol, true},
+		"/queryTweetByHash":          {queryTweetByHash, true},
+		"/queryWinHistory":           {queryWinHistory, true},
+		"/searchTwitterUsr":          {searchTwitterUsr, true},
+		"/tweetImgRaw":               {tweetImgRaw, false},
 	}
 
 	cfgHtmlFileRouter = map[string]string{
@@ -174,8 +177,8 @@ const (
 	SharedUsr = "shareUsr"
 )
 
-func (c *SysConf) GetNjProtocolAd(NjTwID int64, slogan string) string {
-	return fmt.Sprintf("\n"+slogan+c.UrlHome+"/buyRights?"+NjTweetID+"=%d", NjTwID)
+func (c *SysConf) GetNjProtocolAd(NjTwID int64) string {
+	return fmt.Sprintf("\n"+c.UrlHome+"/buyRights?"+NjTweetID+"=%d", NjTwID)
 }
 
 func (c *SysConf) getContractObj() (*ethapi.TweetLotteryGame, error) {
@@ -203,7 +206,7 @@ func (c *SysConf) getHistoryBonus() (*big.Float, error) {
 		return nil, err
 	}
 
-	_, totalBonus, _, _, err := game.SystemSettings(nil)
+	result, err := game.SystemSettings(nil)
 
 	if err != nil {
 		util.LogInst().Err(err).Msg("query game system setting failed")
@@ -211,11 +214,11 @@ func (c *SysConf) getHistoryBonus() (*big.Float, error) {
 	}
 
 	weiToEth := new(big.Float).SetInt(big.NewInt(1e18))
-	bonusEth := new(big.Float).Quo(new(big.Float).SetInt(totalBonus), weiToEth)
+	bonusEth := new(big.Float).Quo(new(big.Float).SetInt(result.TBonus), weiToEth)
 
 	return bonusEth, nil
 }
 
 func (c *SysConf) GetNjVoteAd(NjTwID int64, web3Id, slogan string) string {
-	return fmt.Sprintf("\n%"+slogan+c.UrlHome+"/buyFromShare?"+SharedID+"=%d&&"+SharedUsr+"=%s", NjTwID, web3Id)
+	return fmt.Sprintf("\n"+slogan+c.UrlHome+"/buyFromShare?"+SharedID+"=%d&&"+SharedUsr+"=%s", NjTwID, web3Id)
 }

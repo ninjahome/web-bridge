@@ -10,157 +10,6 @@ function initTopDivStatus(showID, idx) {
     buttons[idx].classList.add("active");
 }
 
-async function switchToTopTeam() {
-    try {
-        curScrollContentID = 12;
-        initTopDivStatus("top-hot-tweet-team", 1);
-
-        showWaiting("syncing from block chain");
-        if (!gameContractMeta) {
-            await initGameContractMeta();
-        }
-
-        changeLoadingTips("querying team detail from block chain");
-        const obj = await lotteryGameContract.allTeamInfo(gameContractMeta.curRound);
-        const cachedTopTeam = [];
-
-        for (let i = 0; i < obj.tweets.length; i++) {
-            const teamObj = new TeamDetailOnBlockChain(obj.tweets[i], obj.memCounts[i], obj.voteCounts[i]);
-            cachedTopTeam.push(teamObj);
-        }
-
-        changeLoadingTips("sorting result");
-        cachedTopTeam.sort((a, b) => b.voteCount - a.voteCount);
-
-        await fulfillTopTeam(cachedTopTeam);
-
-    } catch (err) {
-        console.log(err);
-        showDialog("error", err.toString());
-    } finally {
-        hideLoading();
-    }
-}
-
-async function fulfillTopTeam(cachedTopTeam) {
-
-    const parent_node = document.getElementById("top-hot-tweet-team");
-    parent_node.innerHTML = '';
-
-    for (const teamDetails of cachedTopTeam) {
-
-        const team_card = document.getElementById("team-card-in-top-template").cloneNode(true);
-        team_card.style.display = '';
-
-        team_card.dataset.tweetHash = teamDetails.tweetHash;
-
-        const tweetHeader = team_card.querySelector(".team-leader");
-        team_card.id = "team-header=" + teamDetails.tweetHash;
-
-        team_card.querySelector('.team-id-txt').innerText = teamDetails.tweetHash;
-
-
-        team_card.querySelector('.team-voted-count').innerText = teamDetails.voteCount;
-        team_card.querySelector('.team-members-count').innerText = teamDetails.memCount;
-
-        team_card.querySelector('.join-team').onclick = () => joinTeam(tweet, teamDetails.tweetHash, team_card);
-        team_card.querySelector('.show-team-mates').onclick = () => showTeammates(teamDetails.tweetHash, team_card);
-
-        let tweet = __globalTweetMemCacheByHash.get(teamDetails.tweetHash);
-        if (!tweet) {
-            tweet = await __queryTweetFoTeam(tweetHeader, teamDetails.tweetHash);
-        }
-
-        if (!tweet) {
-            tweetHeader.querySelector('.team-id').style.cursor = 'default';
-            tweetHeader.querySelector('.twitterAvatar').src = __defaultLogo;
-            tweetHeader.querySelector('.twitterName').textContent = "非本系统推文";
-        } else {
-            await __setOnlyHeader(tweetHeader, tweet.twitter_id);
-            team_card.dataset.createTime = tweet.create_time;
-            team_card.querySelector('.team-id-txt').onclick = () =>
-                showTweetDetail('top-hot-tweet-team', tweet);
-        }
-
-        parent_node.appendChild(team_card);
-    }
-}
-
-async function joinTeam(obj, hash, team_card) {
-    try {
-        await voteToTheTweet(obj, async function (newVote) {
-            switchToTopTeam().then(r => {
-            });
-        });
-    } catch (err) {
-        console.log(err);
-    }
-}
-
-async function showTeammates(tweetHash, team_card) {
-
-    const memberPark = team_card.querySelector('.team-members')
-    memberPark.innerHTML = '';
-
-    const isShowing = memberPark.style.display === 'block';
-    if (isShowing) {
-        memberPark.style.display = 'none';
-        return;
-    }
-    memberPark.style.display = 'block';
-    try {
-        showWaiting("syncing members from block chain");
-        if (!lotteryGameContract) {
-            return;
-        }
-        const allMates = await lotteryGameContract.teamMembers(gameContractMeta.curRound, tweetHash);
-        if (allMates.memNo === 0) {
-            memberPark.style.display = 'none';
-            showDialog("tips", "empty members")
-            return;
-        }
-
-        for (let i = 0; i < allMates.members.length; i++) {
-            const memberCard = document.getElementById('team-member-card-template').cloneNode(true);
-            memberCard.style.display = '';
-            memberCard.id='';
-            memberCard.querySelector('.user-voted-count').innerText = allMates.voteNos[i];
-            memberCard.querySelector(".team-members-number").innerText = "" + i;
-
-            const ethAddr = allMates.members[i];
-            const njUsr = await loadNJUserInfoFromSrv(ethAddr, true);
-            if (!njUsr.tw_id) {
-                memberCard.querySelector(".team-membersAvatar").src = __defaultLogo;
-                memberCard.querySelector(".team-membersName").innerText = ethAddr;
-            } else {
-                await __setOnlyHeader(memberCard, njUsr.tw_id);
-            }
-
-            memberPark.appendChild(memberCard);
-        }
-    } catch (err) {
-        checkMetamaskErr(err);
-    } finally {
-        hideLoading();
-    }
-}
-
-async function __queryTweetFoTeam(tweetHeader, tweetHash) {
-    try {
-        const obj = await GetToSrvByJson("/queryTweetByHash?tweet_hash=" + tweetHash);
-        if (!obj) {
-            return null;
-        }
-        __globalTweetMemCacheByHash.set(tweetHash, obj);
-        __globalTweetMemCache.set(obj.create_time, obj);
-        return obj;
-    } catch (err) {
-        console.log(err);
-        return null;
-    }
-}
-
-
 const cachedTopVotedTweets = new MemCachedTweets();
 
 async function initTopPage() {
@@ -185,7 +34,9 @@ async function fillMostVotedTweet(clear, tweetArray) {
         true, TweetDetailSource.MostVoted,
         function (tweetCard, tweetHeader, tweet) {
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
-            __showVoteButton(tweetCard, tweet);
+            __showVoteButton(tweetCard, tweet, function (newVote) {
+                tweetCard.querySelector('.vote-number').textContent = newVote.vote_count;
+            });
         });
 }
 
@@ -218,8 +69,8 @@ async function __loadMostVotedTweets(newest) {
 const cachedTopVotedKolUser = new MemCachedTweets();
 
 async function switchToTopKol() {
-    curScrollContentID = 13;
-    initTopDivStatus("top-hot-Kol", 2);
+    curScrollContentID = 12;
+    initTopDivStatus("top-hot-Kol", 1);
     await __loadMostVotedKolUserInfo("top-hot-Kol", cachedTopVotedKolUser, true, false);
 }
 
@@ -273,7 +124,7 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
             avatarImg.src = __defaultLogo;
             njUsrCard.querySelector(".twitterName").innerText = usr.eth_addr;
         } else {
-            const twitterObj = await __setOnlyHeader(njUsrCard, usr.tw_id);
+            const twitterObj = await __setOnlyHeader(njUsrCard, usr.tw_id, usr.eth_addr);
             const hoverDiv = njUsrCard.querySelector(".team-member-card-header");
             hoverDiv.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, usr.eth_addr));
             hoverDiv.addEventListener('mouseleave', () => hideHoverCard(hoverDiv));
@@ -306,8 +157,8 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
 const cachedTopVoterUser = new MemCachedTweets();
 
 async function switchToTopVoter() {
-    curScrollContentID = 14;
-    initTopDivStatus("top-hot-voter", 3);
+    curScrollContentID = 13;
+    initTopDivStatus("top-hot-voter", 2);
     await __loadMostVotedKolUserInfo("top-hot-voter", cachedTopVoterUser, true, true);
 }
 

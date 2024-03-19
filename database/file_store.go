@@ -23,6 +23,7 @@ const (
 	DBTableTweetsPosted       = "tweets-posted"
 	DBTableTweetsVoted        = "tweets-voted"
 	DBTableTweetsSubStatus    = "vote-status"
+	DBTableTweetsImages       = "raw_img"
 )
 
 /*******************************************************************************************************

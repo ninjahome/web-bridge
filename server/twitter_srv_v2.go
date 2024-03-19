@@ -14,7 +14,6 @@ import (
 
 const (
 	accessPointPostTweets = "https://api.twitter.com/2/tweets"
-	tweetTimeFormat       = "01/02/06 15:04:05"
 )
 
 func twitterGetWithAccessToken(token *oauth2.Token, accUrl string, result any) error {
@@ -109,7 +108,7 @@ func postTweetsV2(w http.ResponseWriter, r *http.Request) {
 
 	var tweetResponse = &TweetResponse{}
 	var tweetReq = &TweetRequest{
-		Text: _globalCfg.GetNjProtocolAd(tweetContent.CreateAt, tweetContent.Slogan),
+		Text: _globalCfg.GetNjProtocolAd(tweetContent.CreateAt),
 	}
 	err = twitterPostWithAccessToken(ut.Token, accessPointPostTweets, "application/json", tweetReq, tweetResponse)
 	if err != nil {
