@@ -9,35 +9,42 @@
     <script src="/assets/js/utils.js"></script>
     <style>
         body {
-            background-color: #f6f7f8;
+            margin: 0;
+            background-color: #EBE9E9;
+        }
+
+        h1, h2,h3,h4 {
             margin: 0;
         }
 
-        .d-radius {
-            border-radius: 9999px;
-        }
-
-        .d-radius2 {
-            border-radius: 16px;
-        }
-
-        .d-bgradius {
-            border-radius: 24px;
+        .success-image {
+            position: absolute;
+            z-index: 9;
+            top: 0;
+            left: 0;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            width: 100%;
+            height: 100%;
+            background-image: url('/assets/file/signupsuccess-BGimage.png'); /* 背景图片路径 */
         }
 
         .profile-container {
-            font-family: Arial, sans-serif, Helvetica;
-            font-size: 14px;
-            background: #ffffff;
-            max-width: 600px;
-            margin: 56px auto;
-            padding: 32px;
+            font-family: "Baloo Chettan 2", Helvetica, Arial, sans-serif, "Alibaba PuHuiTi";
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.95);
+            width: 866px;
+            height: 415px;
+            margin: 25vh auto;
+            border-radius:32px;
+            padding-top: 56px;
         }
 
         .profile-header {
-            background-color: #F1F2F3;
+            width: 654px;
             padding: 8px;
-            margin-bottom: 12px;
+            margin: auto;
         }
 
         .profile-x {
@@ -47,8 +54,8 @@
         }
 
         .profile-image {
-            width: 64px;
-            height: 64px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             overflow: hidden;
             margin-right: 6px;
@@ -58,20 +65,27 @@
             width: 100%;
         }
 
-        .profile-info{
-            margin: 4px 0;
+        .profile-infoBlockchain {
+            width: 622px;
+            background-color: white;
+            border-radius: 12px;
+            border: 1px dashed #271D1E;
+            margin: 4px auto;
+            padding: 16px;
         }
 
-        .profile-info p {
-            margin: 6px 0;
+        .profile-infoBlockchain p {
+            margin: 2px 0;
         }
 
-        .profile-info strong {
+        .profile-infoBlockchain strong {
+            font-size: 16px;
             color: #1B1B1D;
         }
 
-        .profile-info span {
-            color: #7E7F82;
+        .profile-infoBlockchain span {
+            color: #271D1E;
+            font-size: 18px;
         }
 
         .profile-action {
@@ -85,42 +99,48 @@
             width: 266px;
             height: 46px;
             border: none;
-            background-color: #4848D8;
+            background-color: #222223;
             color: white;
+            font-size: 16px;
+            font-weight: 300;
             cursor: pointer;
             margin-top: 24px;
+            border-radius: 12px;
         }
+
     </style>
 </head>
 <body>
-<div class="profile-container d-bgradius">
-    <div class="profile-header d-radius2">
-        <div class="profile-x">
-            <div class="profile-image" id="profile-image">
-                <img src="/assets/file/logo.png" alt="avatar">
-            </div>
-            <div class="profile-username">
-                <div class="profile-info" id="profile-name" style="font-size: 20px; font-weight: bolder;color: #1B1B1D">
-                    nanjie
+<div class="success-image">
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-x">
+                <div class="profile-image" id="profile-image">
+                    <img src="/assets/file/logo.png" alt="avatar">
                 </div>
-                <div class="profile-info" id="profile-user-name" style="color: #536471">
-                    @nanjie
+                <div class="profile-username">
+                    <div class="profile-info" id="profile-name" style="font-size: 20px; font-weight: bolder;color: #1B1B1D">
+                        nanjie
+                    </div>
+                    <div class="profile-info" id="profile-user-name" style="color: #536471">
+                        @nanjie
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="profile-info" id="profile-description">
-            <strong style="display: inline-block; margin-bottom: 4px">Dessage-Web3-ID:</strong>0x87a43eeda49f2ec52c581573489743f86d8c8649
-        </div>
+            <div class="profile-info" id="profile-description">
+                <strong style="display: inline-block; margin-bottom: 4px">Dessage-Web3-ID:</strong>0x87a43eeda49f2ec52c581573489743f86d8c8649
+            </div>
 
-    </div>
-    <div class="profile-info" id="blockchain-info">
-        <h2 style="margin-top: 12px; margin-bottom: 0">Web3元身份</h2>
-        <p><strong>Ethereum 地址:</strong> <span id="eth-address">0x87a43eeda49f2ec52c581573489743f86d8c8649</span></p>
-        <p><strong>绑定时间:</strong> <span id="signup-time">2024-1-11</span></p>
-    </div>
-    <div class="profile-action">
-        <button class="d-radius" onclick="bindWeb3Id()">绑定web3身份</button>
-        <button onclick="backToHome()" style="background-color: transparent; color: #7E7F82; margin-top: 0; height: 32px" >暂时不绑定</button>
+        </div>
+        <div class="profile-infoBlockchain" id="blockchain-info">
+            <h2 style="margin-bottom: 6px; font-size: 18px">Web3元身份</h2>
+            <p><strong>Ethereum 地址:</strong> <span id="eth-address">0x87a43eeda49f2ec52c581573489743f86d8c8649</span></p>
+            <p style="font-size: 14px">绑定时间:<span id="signup-time" style="font-size: 14px">2024-1-11</span></p>
+        </div>
+        <div class="profile-action">
+            <button onclick="bindWeb3Id()">绑定web3身份</button>
+            <button onclick="backToHome()" style="background-color: transparent; color: #7E7F82; margin-top: 8px; height: 32px; font-size: 14px" >暂时不绑定</button>
+        </div>
     </div>
 </div>
 
