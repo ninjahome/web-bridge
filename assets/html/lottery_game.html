@@ -23,12 +23,17 @@
             overflow-x: hidden; /* Hide horizontal scrollbar at the body level */
         }
 
+        body {
+            background-image: url("/assets/file/lottery-bgimage.png");
+            background-repeat: no-repeat;
+           background-color: #F4F5F6;
+        }
         .main-container {
             width: auto;
             margin: 0 auto; /* Center the container */
         }
 
-        @media (max-width: 1200px) {
+        @media (max-width: 1000px) {
             body {
                 overflow-x: auto; /* Enable horizontal scrollbar when viewport width is less than 1000px */
             }
@@ -40,7 +45,7 @@
         }
 
         body {
-            font-family: DIN, "Mona Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-family: "Baloo Chettan 2", Helvetica, Arial, sans-serif, "Alibaba PuHuiTi";
         }
 
         .main-container {
@@ -48,12 +53,12 @@
         }
 
         .rule-info-btn:hover {
-            color: #4848D8;
+            color: #4EA0F2;
         }
 
         .return-main-btn {
             color: #898989;
-            background-color: #F1F2F3;
+            background-color: #ffffff;
             padding: 8px 24px;
             border: none;
             border-radius: 999px;
@@ -67,11 +72,12 @@
         .user-section,
         .game-section,
         .history-section {
-            max-width: 800px;
-            padding: 24px 24px;
+            max-width: 734px;
+            background-color: white;
+            padding: 16px 24px;
             border: 1px solid #EDEEF2;
-            margin: 12px 0;
-            border-radius: 24px;
+            margin: 8px 0;
+            border-radius: 6px;
             color: #1B1B1D;
 
         }
@@ -79,31 +85,32 @@
         .withdraw-btn,
         .betting-btn,
         .query-btn {
-            border-radius: 999px;
+            border-radius: 12px;
             border: none;
             color: white;
             font-size: 16px;
-            font-weight: bolder;
+            font-weight: 500;
             padding: 8px 24px;
             flex-shrink: 0; /* 防止按钮在小屏幕上缩小 */
         }
 
         .withdraw-btn,
         .query-btn {
-            background-color: #4848D8;
+            background-color: #141415;
         }
 
         .betting-btn {
-            background-color: #DE4033;
+            background-color: #F3D86D;
+            color: #141415;
         }
 
         .betting-btn:hover {
-            background-color: #b73127;
+            background-color: #e1c24f;
         }
 
         .withdraw-btn:hover,
         .query-btn:hover {
-            background-color: #3333BE;
+            background-color: #232326;
         }
 
         .ticket-price-for-outer-user {
@@ -249,34 +256,39 @@
         }
     </style>
     <style about="history-section">
-        .round-title-betting {
-            display: flex;
-            flex-wrap: nowrap;
-            justify-content: space-between;
+        :root {
+            --main-text-color: #1B1B1D;
+
+            --font-size-large: 26px;
+            --font-size-normal: 14px;
+            --primary-color: #DE4033;
+            --secondary-color: #898989;
         }
 
+        .round-title-betting,
         .round-title-number,
         .round-time-betting {
             display: flex;
             flex-wrap: nowrap;
+            justify-content: space-between;
             align-items: center;
         }
 
         .round-summary {
-            background-color: rgba(222, 64, 51, 0.1);
-            border: 1px dashed rgba(222, 64, 51, 0.2);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
+            width: 703px;
+            height: 85px;
+            border: 1px dashed #271D1E;
+            border-radius: 12px;
+            padding: 16px;
             margin-top: 16px;
-            height: 88px;
-
         }
 
         .prize-pool-value {
-            font-size: 26px;
+            font-size: var(--font-size-large);
             font-weight: bold;
-            color: #1B1B1D;
+            color: var(--main-text-color);
+            display: inline-block;
+            align-items: center; /* 垂直居中 */
         }
 
         ul {
@@ -284,10 +296,11 @@
         }
 
         ul li {
-            font-size: 14px;
+            font-size: var(--font-size-normal);
             line-height: 1.5;
             list-style-type: none;
         }
+
 
     </style>
     <style about="history-section">
@@ -302,7 +315,7 @@
             flex-grow: 1; /* 让 input 元素占据所有可用空间 */
             margin-right: 8px; /* 右边距设置为 8px */
             height: 42px;
-            border-radius: 999px;
+            border-radius: 12px;
             outline: none;
             border: 1px solid #D3D5D6;
             background-color: #F1F2F3;
@@ -310,7 +323,7 @@
         }
 
         .round-query-input:focus {
-            border-color: #4848D8;
+            border-color: #4EA0F2;
         }
 
         .round-history ul li span {
@@ -330,7 +343,7 @@
 
         .load-history-btn:hover,
         .history-data-list-more-btn:hover {
-            color: #4848D8;
+            color: #4EA0F2;
         }
 
         .game-rules-open,
@@ -359,7 +372,6 @@
 
     </style>
     <style about="tweet vote div">
-
         .vote-chose-modal-class {
             display: none; /* 默认隐藏 */
             position: fixed; /* 固定位置 */
@@ -415,7 +427,7 @@
 
         .quantity-selector button:active {
             background-color: #B0B2B3; /* 鼠标点击时的背景色 */
-            color: #4848D8;
+            color: #4EA0F2;
         }
 
         .quantity-selector input {
@@ -461,7 +473,7 @@
             padding: 10px 42px;
             border-radius: 9999px;
             border: none;
-            background-color: #4848D8;
+            background-color: #4EA0F2;
             font-size: 14px;
             color: #ffffff;
         }
@@ -469,348 +481,354 @@
 </head>
 
 <body>
-<div class="main-container">
-    <div class="back-to-main-btn">
-        <button onclick="window.location.href='/main'" class="return-main-btn"><img src="/assets/file/back-icon.png">
-            <span id="back-to-main-btn-txt"> 返回首页</span>
-        </button>
-    </div>
-    <div class="user-section">
-        <div class="user-info"></div>
-        <h3 class="user-title" id="user-title-txt">我的彩票</h3>
-        <div class="user-balance">
-            <p style="margin: 0"><span id="user-info-bonus">奖金</span>: <span class="balance-value"
-                                                                               id="personal-balance-val">0.00</span> ETH
-            </p>
-            <div>
-                <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()"
-                        id="user-info-withdraw-history">提现记录 >>
-                </button>
-                <button class="withdraw-btn" onclick="withdrawBonus()" id="user-info-withdraw">提现</button>
-            </div>
+<div class="lotteryBgimg">
+    <div class="main-container">
+        <div class="back-to-main-btn">
+            <button onclick="window.location.href='/main'" class="return-main-btn"><img src="/assets/file/back-icon.png">
+                <span id="back-to-main-btn-txt"> 返回首页</span>
+            </button>
         </div>
-        <ul class="ticket-action">
-            <li>
-                <p><span id="user-info-ticket-no">彩票数</span>: <span class="ticket-count"
-                                                                       style="font-size: 20px;font-weight:bold; color: #DE4033"
-                                                                       id="personal-ticket-no-val">0</span></p>
-                <button class="ticket-count-btn rule-info-btn" onclick="showPersonalTicket()"
-                        id="ticket-count-btn-txt-1">查看详情
-                </button>
-            </li>
-            <li>
-                <p><span id="user-info-my-win-ticket">我的中奖彩票</span>: <span class="personal-winning-count"
-                                                                                 style="font-size: 20px; font-weight:bold; color: #DE8633">0</span>
+        <div class="user-section">
+            <div class="user-info"></div>
+            <h3 class="user-title" id="user-title-txt">我的彩票</h3>
+            <div class="user-balance">
+                <p style="margin: 0"><span id="user-info-bonus">奖金</span>: <span class="balance-value"
+                                                                                   id="personal-balance-val">0.00</span> ETH
                 </p>
-                <button class="personal-winning-btn rule-info-btn" onclick="showUserWinHistory()"
-                        id="ticket-count-btn-txt-3">查看详情
-                </button>
-            </li>
-
-        </ul>
-        <div class="user-tickets" style="display: none;">
-            <table class="tickets-detail">
-                <thead>
-                <tr>
-                    <th id="tickets-detail-tittle">彩票ID</th>
-                </tr>
-                </thead>
-                <tbody class="tickets-num">
-                <tr>
-                    <td class="ticket-id-td"></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="user-team" style="display: none">
-            <table class="team-detail">
-                <thead>
-                <tr>
-                    <th id="tickets-detail-team-id">团队ID</th>
-                    <th id="tickets-detail-team-detail">团队详情</th>
-                </tr>
-                </thead>
-                <tbody id="team-detail-body">
-                <tr>
-                    <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
-                    <td>
-                        <button class="team-detail-in-one-team rule-info-btn"><span id="tickets-detail-team-detail-btn">详情</span>
-                            >>
-                        </button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <div class="team-detail-for-one" style="display: none">
-                <div class="team-detail-for-one-header">
-                    <span id="team-detail-header-tittle">人数</span>:<span id="team-detail-for-one-memNo"
-                                                                           style="font-size: 20px;font-weight: bolder;color: #4848D8; margin: 0 6px"></span>
-                    <span id="team-detail-header-vote-no">票数</span>:<span id="team-detail-for-one-tickNo"
-                                                                            style="font-size: 20px;font-weight: bolder;color: #DE4033; margin: 0 6px"></span>
-                    <button class="rule-info-btn" onclick="hideOneTeamDetails()" id="team-detail-hide-btn">隐藏</button>
+                <div>
+                    <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()"
+                            id="user-info-withdraw-history">提现记录 >>
+                    </button>
+                    <button class="withdraw-btn" onclick="withdrawBonus()" id="user-info-withdraw">提现</button>
                 </div>
-                <table class="team-detail">
+            </div>
+            <ul class="ticket-action">
+                <li>
+                    <p><span id="user-info-ticket-no">彩票数</span>: <span class="ticket-count"
+                                                                           style="font-size: 20px;font-weight:bold; color: #DE4033"
+                                                                           id="personal-ticket-no-val">0</span></p>
+                    <button class="ticket-count-btn rule-info-btn" onclick="showPersonalTicket()"
+                            id="ticket-count-btn-txt-1">查看详情
+                    </button>
+                </li>
+                <li>
+                    <p><span id="user-info-my-win-ticket">我的中奖彩票</span>: <span class="personal-winning-count"
+                                                                                     style="font-size: 20px; font-weight:bold; color: #DE8633">0</span>
+                    </p>
+                    <button class="personal-winning-btn rule-info-btn" onclick="showUserWinHistory()"
+                            id="ticket-count-btn-txt-3">查看详情
+                    </button>
+                </li>
+
+            </ul>
+            <div class="user-tickets" style="display: none;">
+                <table class="tickets-detail">
                     <thead>
                     <tr>
-                        <th id="team-detail-header-member">队员</th>
-                        <th id="team-detail-item-vote-no">票数</th>
+                        <th id="tickets-detail-tittle">彩票ID</th>
                     </tr>
                     </thead>
-                    <tbody id="team-detail-for-one-body">
-                    <tr style="display: none">
-                        <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
-                        <td>0</td>
+                    <tbody class="tickets-num">
+                    <tr>
+                        <td class="ticket-id-td"></td>
                     </tr>
                     </tbody>
                 </table>
-
             </div>
-        </div>
+            <div class="user-team" style="display: none">
+                <table class="team-detail">
+                    <thead>
+                    <tr>
+                        <th id="tickets-detail-team-id">团队ID</th>
+                        <th id="tickets-detail-team-detail">团队详情</th>
+                    </tr>
+                    </thead>
+                    <tbody id="team-detail-body">
+                    <tr>
+                        <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                        <td>
+                            <button class="team-detail-in-one-team rule-info-btn"><span id="tickets-detail-team-detail-btn">详情</span>
+                                >>
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="team-detail-for-one" style="display: none">
+                    <div class="team-detail-for-one-header">
+                        <span id="team-detail-header-tittle">人数</span>:<span id="team-detail-for-one-memNo"
+                                                                               style="font-size: 20px;font-weight: bolder;color: #4848D8; margin: 0 6px"></span>
+                        <span id="team-detail-header-vote-no">票数</span>:<span id="team-detail-for-one-tickNo"
+                                                                                style="font-size: 20px;font-weight: bolder;color: #DE4033; margin: 0 6px"></span>
+                        <button class="rule-info-btn" onclick="hideOneTeamDetails()" id="team-detail-hide-btn">隐藏</button>
+                    </div>
+                    <table class="team-detail">
+                        <thead>
+                        <tr>
+                            <th id="team-detail-header-member">队员</th>
+                            <th id="team-detail-item-vote-no">票数</th>
+                        </tr>
+                        </thead>
+                        <tbody id="team-detail-for-one-body">
+                        <tr style="display: none">
+                            <td class="team-id-txt">0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46</td>
+                            <td>0</td>
+                        </tr>
+                        </tbody>
+                    </table>
 
-        <div class="winning-history" id="winning-history-template" style="display: none">
-            <ul style="color: #7E7F82">
-                <li><span id="winning-history-total-bonus">总金额</span>: <span class="one-round-bonus-val"
-                                                                                style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span>
-                    ETH
-                </li>
-                <li><span id="winning-history-my-bonus">归我所得</span>: <span class="one-round-bonus-for-me"
-                                                                               style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span>
-                    ETH
-                </li>
-                <li><span id="winning-history-winner-ticket-id">中奖彩票编号</span>: <span class="one-round-ticket-id"
-                                                                                           style="color: #1B1B1D; font-size: 16px; font-weight: bold">0</span>
-
-                <li><span id="winning-history-phase-no-1">期数: 第 </span><span class="one-round-round-val"
-                                                                                style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>
-                    <span id="winning-history-phase-no-2">期</span></li>
-                <li><span id="winning-history-discover-day">日期</span>: <span class="one-round-discover-val"
-                                                                               style="color: #1B1B1D; font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
-                </li>
-
-            </ul>
-        </div>
-        <div class="winner-history-list"></div>
-
-    </div>
-    <div class="game-section">
-        <div class="round-title-betting">
-            <div class="round-title-number">
-                <h3 class="round-title" id="round-title-info">当前彩票信息</h3>
-                <p style="background-color:rgba(216,216,216,0.1); border: 1px solid rgba(151,151,151,0.2);padding: 2px 12px; margin-left: 4px; color: #DE4033; font-size: 14px">
-                    <span id="round-info-phase-no-1">第</span><span class="round-number">0</span><span
-                            id="round-info-phase-no-2">期</span></p>
-            </div>
-            <div class="round-time-betting">
-                <p style="font-size: 14px"><span id="round-info-withdraw-time">开奖时间</span>:
-                    <span class="round-discover-time-val" id="prize-pool-discover-time"
-                          style="font-size: 14px; font-weight: bolder;color: #DE4033; margin-right: 6px">2天2小时24分</span>
-                </p>
-                <div style="display: flex;flex-direction: column; align-items: flex-start; margin-top: 14px">
-                    <button class="betting-btn" onclick="buyTicket()" id="round-info-vote-btn-txt">投注</button>
-                    <span style="font-size: 14px; font-weight: lighter; color: #898989">(<span
-                                class="ticket-price-for-outer-user"> 0.00 </span> eth)</span>
                 </div>
             </div>
-        </div>
-        <div class="round-summary">
-            <div style="border:1px dashed #D3D5D6; border-radius:18px; background-color: #F1F2F3; height: 48px;padding: 20px 12px">
-                <h4 id="round-summary-withdraw-hash">开奖hash:</h4>
-                <p class="team-id-txt" id="prize-pool-random-hash">
-                    0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46 </p>
-            </div>
-            <div style="margin-left: 16px; margin-right: 12px">
-                <div class="prize-pool-value"><span id="prize-pool-bonus-val">0</span><span
-                            style="font-weight: lighter;font-size: 14px"> ETH</span></div>
-                <p style="color: rgba(29,29,31,0.5);font-size: 14px" id="round-summary-pool-tittle">奖池</p>
-            </div>
-            <div style="margin-left: 16px; margin-right: 12px">
-                <div class="prize-pool-value" id="prize-pool-tick-no">0</div>
-                <p style="color: rgba(29,29,31,0.5);font-size: 14px" id="round-summary-vote-no">彩票数</p>
-            </div>
-        </div>
-        <div class="game-rules" style="border-bottom: 1px solid #E8E8E8">
-            <div class="game-rules-open"
-                 style="display: flex; justify-content: space-between; align-items: center;cursor: pointer"
-                 onclick="showGameRule('.rule-info')">
-                <p id="game-rules-tittle">游戏规则</p>
-                <button class="game-rule-btn"><img src="/assets/file/rules-info-icon.png"></button>
-            </div>
-            <div class="rule-info" style="display: none">
-                <h4 style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-tittle">玩法规则：</h4>
-                <p style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content">本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与</p>
-                <ul>
-                    <li>
-                        <h4 id="lottery-info-content-1">购买彩票方式</h4>
-                        <span id="lottery-info-content-2">1.推文下打赏</span>
-                        <span id="lottery-info-content-3">你的任何推文打赏都会有30%进入彩票奖池，30%进入积分奖池，30%归属推文作者，10%归属Dessage协议收入</span>
+
+            <div class="winning-history" id="winning-history-template" style="display: none">
+                <ul style="color: #7E7F82">
+                    <li><span id="winning-history-total-bonus">总金额</span>: <span class="one-round-bonus-val"
+                                                                                    style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span>
+                        ETH
                     </li>
-                    <li>
-                        <span id="lottery-info-content-4">2.单独投注</span>
-                        <span id="lottery-info-content-5">你也可以在“我的彩票”页面进行单独投注，单独投注的投注额的45%进入彩票奖池，45%进入积分奖池，10%归属Dessage协议收入</span>
+                    <li><span id="winning-history-my-bonus">归我所得</span>: <span class="one-round-bonus-for-me"
+                                                                                   style="color: #DE4033; font-size: 16px; font-weight: bold">0.00</span>
+                        ETH
                     </li>
-                </ul>
-                <p style="font-size: 14px"><strong id="bonus-for-points-tittle">积分奖池</strong> <br>
-                    <span id="lottery-info-content-6">在Dessage的chapter 1阶段持续累积，数额公开，在进入chapter 2阶段时将按照所有用户的积分情况等比例分配。用户获得积分的途径如下：</span></p>
-                <ul>
-                    <li>
-                        <p style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content-7">
-                            1.每投票一票可获得2分</p>
+                    <li><span id="winning-history-winner-ticket-id">中奖彩票编号</span>: <span class="one-round-ticket-id"
+                                                                                               style="color: #1B1B1D; font-size: 16px; font-weight: bold">0</span>
+
+                    <li><span id="winning-history-phase-no-1">期数: 第 </span><span class="one-round-round-val"
+                                                                                    style="color: #1B1B1D; font-size: 16px; font-weight: bold">2</span>
+                        <span id="winning-history-phase-no-2">期</span></li>
+                    <li><span id="winning-history-discover-day">日期</span>: <span class="one-round-discover-val"
+                                                                                   style="color: #1B1B1D; font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
                     </li>
-                    <li>
-                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-8">
-                            2.每发推一次可获得2分</p>
-                    </li>
-                    <li>
-                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-9">
-                            3.用户发布的推文被其他用户投票时，创作者可按1分每票获得积分</p>
-                    </li>
-                    <li>
-                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-10">
-                            4.chapter 1结束时，
-                            总得票数排名前10的十篇推文投票用户可依据投票时间先后获得额外积分奖励。上述每篇推文下前10%的投票用户可获得额外10倍的投票积分奖励，前10%-20%的投票用户可获得额外9倍的投票积分奖励，以此类推。
-                        </p>
-                    </li>
-                    <li>
-                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-11">
-                            5.chapter 1结束时，大户排行榜前10位的用户可获得额外积分加成50%
-                        </p>
-                    </li>
-                    <li>
-                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-15">
-                            6.chapter 1进行中，获得投票数率先达到100的前10位KOL可以获得元老勋章，这10位KOL的所有推文被投票时，元老可以获得2倍于普通创作的被投票积分。
-                        </p>
-                    </li>
-                    <li>
-                        <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-12">
-                            7.最早在本平台发布推文并获得超过100票投票的前十位创作者用户将会获得积分加成特权，在chapter
-                            1通过任何方式取得的所有积分将会获得额外20%的加成
-                        </p>
-                        <p id="lottery-info-content-13" style="color: #DD2111">
-                            *积分不仅仅可用于参与积分奖池的分配，后续还能获得Dessage的其他权益</p>
-                        <span id="lottery-info-content-14">要发布参与游戏的推文，需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益</span>
-                    </li>
+
                 </ul>
             </div>
+            <div class="winner-history-list"></div>
 
         </div>
-        <div class="game-algorithm">
-            <div class="game-algorithm-open"
-                 style="display: flex; justify-content: space-between; align-items: center;cursor: pointer"
-                 onclick="showGameRule('.game-algorithm-info')">
-                <p id="game-algorithm-tittle">彩票算法</p>
-                <button class="game-algorithm-btn"><img src="/assets/file/rules-info-icon.png" alt=" "></button>
+        <div class="game-section">
+            <div class="round-title-betting">
+                <div class="round-title-number">
+                    <h3 class="round-title" id="round-title-info">当前彩票信息</h3>
+                    <p style="background-color:rgba(216,216,216,0.1); border: 1px solid rgba(151,151,151,0.2);padding: 2px 12px; margin-left: 4px; color: #DE4033; font-size: 14px">
+                        <span id="round-info-phase-no-1">第</span><span class="round-number">0</span><span
+                                id="round-info-phase-no-2">期</span></p>
+                </div>
+                <div class="round-time-betting">
+                    <p style="font-size: 14px"><span id="round-info-withdraw-time">开奖时间</span>:
+                        <span class="round-discover-time-val" id="prize-pool-discover-time"
+                              style="font-size: 14px; font-weight: bolder;color: #DE4033; margin-right: 6px">2天2小时24分</span>
+                    </p>
+                    <div style="display: flex;flex-direction: column; align-items: flex-start; margin-top: 14px">
+                        <button class="betting-btn" onclick="buyTicket()" id="round-info-vote-btn-txt">投注</button>
+                        <span style="font-size: 14px; font-weight: lighter; color: #898989">(<span
+                                    class="ticket-price-for-outer-user"> 0.00 </span> eth)</span>
+                    </div>
+                </div>
             </div>
-            <div class="game-algorithm-info" style="display: none">
-                <h4 id="game-algorithm-tittle-2">彩票算法</h4>
-                <ul>
-                    <li id="game-algorithm-content-1">1.随机数链下生成.</li>
-                    <li id="game-algorithm-content-2">2.每期开奖结束后，将下期开奖随机数的hash值写入区块链.</li>
-                    <li id="game-algorithm-content-3">3.开奖日期截止是，智能合约接受随机数.</li>
-                    <li id="game-algorithm-content-4">4.智能合约计算随机数hash值与区块链随机数hash比对.</li>
-                    <li id="game-algorithm-content-5">5.比对成功后随机选择中奖者web3ID</li>
-                </ul>
-                <ul class="algorithm-detail" style="color: #7E7F82">
-                    <li><span id="game-algorithm-core-tittle">算法</span>:
-                        <span class="algorithm-title"
-                              style="color: #DE4033; font-size: 16px; font-weight: bold ;background-color: #F1F2F3; border: 1px dashed #D3D5D6;padding: 6px;margin: 6px 0; border-radius: 12px"
-                              id="game-algorithm-core-address">(中奖者地址)</span>
-                    </li>
-                    <li style="background-color: #F1F2F3; border: 1px dashed #D3D5D6;padding: 6px;margin: 6px 0; border-radius: 12px">
+            <div class="round-summary">
+                <div style="border-bottom: 1px dashed #F2F2F2; padding-bottom: 8px">
+                    <h4 id="round-summary-withdraw-hash">开奖hash:</h4>
+                    <p class="team-id-txt" id="prize-pool-random-hash">
+                        0x99e0ad7158b21d1ecf2e7511134f66634827b8ce210c58ac871098c3c08e1e46 </p>
+                </div>
+                <div style="margin-left: 16px; margin-right: 12px; display: inline-block">
+                    <div class="prize-pool-value">
+                        <span style="color: rgba(29,29,31,0.5);font-size: 14px" id="round-summary-pool-tittle">奖池</span>
+                        <span id="prize-pool-bonus-val" style="color: #DE4033">0</span>
+                        <span style="font-weight: lighter;font-size: 14px">ETH</span>
+                    </div>
+
+                </div>
+                <div style="margin-left: 16px; margin-right: 12px; display: inline-block">
+                    <span style="color: rgba(29,29,31,0.5);font-size: 14px" id="round-summary-vote-no">彩票数</span>
+                    <div class="prize-pool-value" id="prize-pool-tick-no" style="color: #DF6A39">0</div>
+                </div>
+            </div>
+            <div class="game-rules" style="border-bottom: 1px solid #E8E8E8">
+                <div class="game-rules-open"
+                     style="display: flex; justify-content: space-between; align-items: center;cursor: pointer"
+                     onclick="showGameRule('.rule-info')">
+                    <p id="game-rules-tittle">游戏规则</p>
+                    <button class="game-rule-btn"><img src="/assets/file/rules-info-icon.png"></button>
+                </div>
+                <div class="rule-info" style="display: none">
+                    <h4 style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-tittle">玩法规则：</h4>
+                    <p style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content">本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与</p>
+                    <ul>
+                        <li>
+                            <h4 id="lottery-info-content-1">购买彩票方式</h4>
+                            <span id="lottery-info-content-2">1.推文下打赏</span>
+                            <span id="lottery-info-content-3">你的任何推文打赏都会有30%进入彩票奖池，30%进入积分奖池，30%归属推文作者，10%归属Dessage协议收入</span>
+                        </li>
+                        <li>
+                            <span id="lottery-info-content-4">2.单独投注</span>
+                            <span id="lottery-info-content-5">你也可以在“我的彩票”页面进行单独投注，单独投注的投注额的45%进入彩票奖池，45%进入积分奖池，10%归属Dessage协议收入</span>
+                        </li>
+                    </ul>
+                    <p style="font-size: 14px"><strong id="bonus-for-points-tittle">积分奖池</strong> <br>
+                        <span id="lottery-info-content-6">在Dessage的chapter 1阶段持续累积，数额公开，在进入chapter 2阶段时将按照所有用户的积分情况等比例分配。用户获得积分的途径如下：</span></p>
+                    <ul>
+                        <li>
+                            <p style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content-7">
+                                1.每投票一票可获得2分</p>
+                        </li>
+                        <li>
+                            <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-8">
+                                2.每发推一次可获得2分</p>
+                        </li>
+                        <li>
+                            <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-9">
+                                3.用户发布的推文被其他用户投票时，创作者可按1分每票获得积分</p>
+                        </li>
+                        <li>
+                            <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-10">
+                                4.chapter 1结束时，
+                                总得票数排名前10的十篇推文投票用户可依据投票时间先后获得额外积分奖励。上述每篇推文下前10%的投票用户可获得额外10倍的投票积分奖励，前10%-20%的投票用户可获得额外9倍的投票积分奖励，以此类推。
+                            </p>
+                        </li>
+                        <li>
+                            <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-11">
+                                5.chapter 1结束时，大户排行榜前10位的用户可获得额外积分加成50%
+                            </p>
+                        </li>
+                        <li>
+                            <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-15">
+                                6.chapter 1进行中，获得投票数率先达到100的前10位KOL可以获得元老勋章，这10位KOL的所有推文被投票时，元老可以获得2倍于普通创作的被投票积分。
+                            </p>
+                        </li>
+                        <li>
+                            <p style="margin-top: 6px; margin-bottom: 4px" id="lottery-info-content-12">
+                                7.最早在本平台发布推文并获得超过100票投票的前十位创作者用户将会获得积分加成特权，在chapter
+                                1通过任何方式取得的所有积分将会获得额外20%的加成
+                            </p>
+                            <p id="lottery-info-content-13" style="color: #DD2111">
+                                *积分不仅仅可用于参与积分奖池的分配，后续还能获得Dessage的其他权益</p>
+                            <span id="lottery-info-content-14">要发布参与游戏的推文，需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+            <div class="game-algorithm">
+                <div class="game-algorithm-open"
+                     style="display: flex; justify-content: space-between; align-items: center;cursor: pointer"
+                     onclick="showGameRule('.game-algorithm-info')">
+                    <p id="game-algorithm-tittle">彩票算法</p>
+                    <button class="game-algorithm-btn"><img src="/assets/file/rules-info-icon.png" alt=" "></button>
+                </div>
+                <div class="game-algorithm-info" style="display: none">
+                    <h4 id="game-algorithm-tittle-2">彩票算法</h4>
+                    <ul>
+                        <li id="game-algorithm-content-1">1.随机数链下生成.</li>
+                        <li id="game-algorithm-content-2">2.每期开奖结束后，将下期开奖随机数的hash值写入区块链.</li>
+                        <li id="game-algorithm-content-3">3.开奖日期截止是，智能合约接受随机数.</li>
+                        <li id="game-algorithm-content-4">4.智能合约计算随机数hash值与区块链随机数hash比对.</li>
+                        <li id="game-algorithm-content-5">5.比对成功后随机选择中奖者web3ID</li>
+                    </ul>
+                    <ul class="algorithm-detail" style="color: #7E7F82">
+                        <li><span id="game-algorithm-core-tittle">算法</span>:
+                            <span class="algorithm-title"
+                                  style="color: #DE4033; font-size: 16px; font-weight: bold ;background-color: #F1F2F3; border: 1px dashed #D3D5D6;padding: 6px;margin: 6px 0; border-radius: 12px"
+                                  id="game-algorithm-core-address">(中奖者地址)</span>
+                        </li>
+                        <li style="background-color: #F1F2F3; border: 1px dashed #D3D5D6;padding: 6px;margin: 6px 0; border-radius: 12px">
                         <span class="algorithm-description" id="game-algorithm-core-algorithm"
                               style="color: #4848D8; font-size: 16px; font-weight: bold">购买地址列表[Hash(block.hash,block.timestamp,block.difficulty,随机数)%购买地址数].</span>
+                        </li>
+                        <li><span id="game-algorithm-core-contract">合约地址</span>: <span class="contract-address-value"
+                                                                                           style="color: #1B1B1D; font-size: 16px;cursor: pointer"
+                                                                                           onclick="showContractUrl()">0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</span>
+                        </li>
+                    </ul>
+                    <button class="contract-code-btn"><img src="/assets/file/GitHub-logo.png" alt="GitHub"
+                                                           onclick="window.open('https://gist.github.com/hopwesley/b39d2107159ce36d382188d566beb981')">GitHub
+                    </button>
+                </div>
+            </div>
+
+        </div>
+        <div class="history-section">
+            <div style="display: flex;align-items: center">
+                <h3 class="history-title" id="history-section-tittle">历史记录</h3>
+                <p style="background-color:rgba(216,216,216,0.1); border: 1px solid rgba(151,151,151,0.2);padding: 2px 12px; margin-left: 4px; color: #898989; font-size: 14px">
+                    <span id="history-section-bonus-sum">累计奖金</span>:
+                    <span class="history-total-bonus" style="font-size: 14px;font-weight: bolder;color: #4848D8">0</span>
+                    eth
+                </p>
+            </div>
+
+            <div class="history-query">
+                <input id="round-input" class="round-query-input" placeholder="请输入序期号">
+                <button class="query-btn" onclick="showOneRoundGameInfo()" id="history-section-query-btn">查询</button>
+            </div>
+            <div class="round-history" style="display: none" id="history-data-one-round-template">
+                <ul style="color: #7E7F82">
+                    <li><span id="history-section-item-bonus">奖金</span>: <span class="one-round-bonus-val"
+                                                                                 style="color: #DE4033; font-size: 16px; font-weight: bold">0.02 </span>
+                        ETH
                     </li>
-                    <li><span id="game-algorithm-core-contract">合约地址</span>: <span class="contract-address-value"
-                                                                                       style="color: #1B1B1D; font-size: 16px;cursor: pointer"
-                                                                                       onclick="showContractUrl()">0x5B38Da6a701c568545dCfcB03FcB875f56beddC4</span>
+                    <li><span id="history-section-draw-time">开奖时间</span>: <span class="one-round-discover-val"
+                                                                                    style="font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
+                    </li>
+                    <li><span id="history-section-random-no">随机数</span>: <span class="team-id-txt history-game-random">37482194388201444118418062240926890660227596936268075126588913967857445000838</span>
+                    </li>
+                    <li><span id="history-section-random-hash">随机数 Hash</span>: <span
+                                class="team-id-txt history-game-random-hash">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
+                    </li>
+                    <li><span id="history-section-winner">获奖者</span>: <span
+                                class="one-round-winner-val history-game-winner-address"
+                                style=" font-size: 16px; font-weight: bold">0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB</span>
+                    </li>
+
+                    <li><span id="history-section-ticket">获奖彩票ID</span>: <span
+                                class="one-round-win-ticket-val history-game-winner-ticket"
+                                style="font-size: 16px; font-weight: bold">0</span>
                     </li>
                 </ul>
-                <button class="contract-code-btn"><img src="/assets/file/GitHub-logo.png" alt="GitHub"
-                                                       onclick="window.open('https://gist.github.com/hopwesley/b39d2107159ce36d382188d566beb981')">GitHub
+                <button class="load-history-btn" style="display: none" onclick="hideInfoOfThisRound()"
+                        id="history-section-hide-btn">隐藏
                 </button>
             </div>
-        </div>
-
-    </div>
-    <div class="history-section">
-        <div style="display: flex;align-items: center">
-            <h3 class="history-title" id="history-section-tittle">历史记录</h3>
-            <p style="background-color:rgba(216,216,216,0.1); border: 1px solid rgba(151,151,151,0.2);padding: 2px 12px; margin-left: 4px; color: #898989; font-size: 14px">
-                <span id="history-section-bonus-sum">累计奖金</span>:
-                <span class="history-total-bonus" style="font-size: 14px;font-weight: bolder;color: #4848D8">0</span>
-                eth
-            </p>
-        </div>
-
-        <div class="history-query">
-            <input id="round-input" class="round-query-input" placeholder="请输入序期号">
-            <button class="query-btn" onclick="showOneRoundGameInfo()" id="history-section-query-btn">查询</button>
-        </div>
-        <div class="round-history" style="display: none" id="history-data-one-round-template">
-            <ul style="color: #7E7F82">
-                <li><span id="history-section-item-bonus">奖金</span>: <span class="one-round-bonus-val"
-                                                                             style="color: #DE4033; font-size: 16px; font-weight: bold">0.02 </span>
-                    ETH
-                </li>
-                <li><span id="history-section-draw-time">开奖时间</span>: <span class="one-round-discover-val"
-                                                                                style="font-size: 16px; font-weight: bold">2024-01-15 23:35:44</span>
-                </li>
-                <li><span id="history-section-random-no">随机数</span>: <span class="team-id-txt history-game-random">37482194388201444118418062240926890660227596936268075126588913967857445000838</span>
-                </li>
-                <li><span id="history-section-random-hash">随机数 Hash</span>: <span
-                            class="team-id-txt history-game-random-hash">0x78ec5160965b594568b858dc4843f78f38c212ec75efbbc2b12842593b7e2c5b</span>
-                </li>
-                <li><span id="history-section-winner">获奖者</span>: <span
-                            class="one-round-winner-val history-game-winner-address"
-                            style=" font-size: 16px; font-weight: bold">0x78731D3Ca6b7E34aC0F824c42a7cC18A495cabaB</span>
-                </li>
-
-                <li><span id="history-section-ticket">获奖彩票ID</span>: <span
-                            class="one-round-win-ticket-val history-game-winner-ticket"
-                            style="font-size: 16px; font-weight: bold">0</span>
-                </li>
-            </ul>
-            <button class="load-history-btn" style="display: none" onclick="hideInfoOfThisRound()"
-                    id="history-section-hide-btn">隐藏
-            </button>
-        </div>
-        <div class="all-history" style="margin-top: 8px">
-            <button class="load-history-btn" onclick="loadHistoryData.call(this)" id="all-history-query-btn">加载历史数据
-            </button>
-            <div class="history-data-list"></div>
-            <button class="history-data-list-more-btn" style="display: none" onclick="moreHistoryData()"
-                    id="all-history-btn-more">更多
-            </button>
-
-        </div>
-    </div>
-</div>
-<div id="vote-no-chose-modal" class="vote-chose-modal-class">
-    <div class="vote-no-modal-content">
-        <div class="vote-no-modal-header">
-            <span class="vote-no-close" onclick="closeVoteModal()">&times;</span>
-            <h2 style="margin: 0" id="vote-modal-tittle">彩票投注</h2>
-        </div>
-        <div class="vote-no-modal-body">
-            <div class="quantity-selector">
-                <p style="padding: 0; margin: 0;" id="vote-modal-bet-no">票数：</p>
-                <button id="decreaseVote" onclick="decreaseVote()"
-                        style="border-bottom-left-radius: 12px;border-top-left-radius: 12px">-
+            <div class="all-history" style="margin-top: 8px">
+                <button class="load-history-btn" onclick="loadHistoryData.call(this)" id="all-history-query-btn">加载历史数据
                 </button>
-                <input type="number" id="voteCountInChoseModal" value="1" min="1">
-                <button id="increaseVote" onclick="increaseVote()"
-                        style="border-bottom-right-radius: 12px;border-top-right-radius: 12px">+
+                <div class="history-data-list"></div>
+                <button class="history-data-list-more-btn" style="display: none" onclick="moreHistoryData()"
+                        id="all-history-btn-more">更多
                 </button>
+
             </div>
-            <label style="color: #898989; font-size: 14px; margin-left: 54px">
-                <input type="checkbox" id="shareOnTwitter">
-                <span id="shareOnTwitter-2">转发到推特</span>
-            </label>
-        </div>
-        <div class="vote-no-modal-footer">
-            <button id="cancelButton" class="cancel-btn" onclick="closeVoteModal()">取消</button>
-            <button id="confirmButton" class="confirm-btn" onclick="confirmVoteModal()">确定</button>
         </div>
     </div>
+    <div id="vote-no-chose-modal" class="vote-chose-modal-class">
+        <div class="vote-no-modal-content">
+            <div class="vote-no-modal-header">
+                <span class="vote-no-close" onclick="closeVoteModal()">&times;</span>
+                <h2 style="margin: 0" id="vote-modal-tittle">彩票投注</h2>
+            </div>
+            <div class="vote-no-modal-body">
+                <div class="quantity-selector">
+                    <p style="padding: 0; margin: 0;" id="vote-modal-bet-no">票数：</p>
+                    <button id="decreaseVote" onclick="decreaseVote()"
+                            style="border-bottom-left-radius: 12px;border-top-left-radius: 12px">-
+                    </button>
+                    <input type="number" id="voteCountInChoseModal" value="1" min="1">
+                    <button id="increaseVote" onclick="increaseVote()"
+                            style="border-bottom-right-radius: 12px;border-top-right-radius: 12px">+
+                    </button>
+                </div>
+                <label style="color: #898989; font-size: 14px; margin-left: 54px">
+                    <input type="checkbox" id="shareOnTwitter">
+                    <span id="shareOnTwitter-2">转发到推特</span>
+                </label>
+            </div>
+            <div class="vote-no-modal-footer">
+                <button id="cancelButton" class="cancel-btn" onclick="closeVoteModal()">取消</button>
+                <button id="confirmButton" class="confirm-btn" onclick="confirmVoteModal()">确定</button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
