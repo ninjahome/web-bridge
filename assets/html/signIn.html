@@ -64,11 +64,15 @@
         border-radius: 12px;
     }
 
-    .web3-idTips{
-        color: #898989;
-        font-size: 16px;
-        display: block;
+    .web3-id-label span {
+        font-size: 18px;
         margin: 0 16px;
+    }
+
+    .web3-idTips{
+        display: block;
+        color: #898989;
+        font-size: 16px !important;
     }
 
     button {
@@ -120,6 +124,7 @@
         width: 46px;
         height: 46px;
         margin: 0 8px;
+
     }
 
     .services .service span {
@@ -127,31 +132,28 @@
         font-size: 14px;
     }
 
-    .logo-container.active{
+    .logo-container.active {
         display: flex;
     }
 
     .logo-container {
         display: none;
         position: relative;
-        align-items: center;
-        justify-content: center;
     }
 
-    .logo-container img {
-        border: 2px solid #76A8F1; /* 边框样式 */
-        border-radius: 50%;
-    }
 
     .connected-icon {
         position: absolute;
-        bottom: -1px; /* 根据需要调整位置 */
-        left: 12px; /* 根据需要调整位置 */
-        width: 16px; /* 小图标大小 */
-        height: 16px; /* 小图标大小 */
+        bottom: 0; /* 根据需要调整位置 */
+        left: 4px; /* 根据需要调整位置 */
+        width: 20px; /* 小图标大小 */
+        height: 20px; /* 小图标大小 */
         background-color: #76A8F1; /* 小图标颜色，这里是绿色 */
         border-radius: 50%; /* 圆形图标 */
         background-image: url('/assets/file/connected.png'); /* 背景图片路径 */
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
     }
 
     .web2-binding,
