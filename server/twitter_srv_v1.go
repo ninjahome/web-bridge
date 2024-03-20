@@ -135,12 +135,15 @@ func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) 
 	}
 
 	if !util.IsOverTwitterLimit(combinedTxt) {
-		return &TweetRequest{
+		req := &TweetRequest{
 			Text: combinedTxt,
-			Media: &Media{
+		}
+		if len(mediaIDs) > 0 {
+			req.Media = &Media{
 				MediaIDs: mediaIDs,
-			},
-		}, nil
+			}
+		}
+		return req, nil
 	}
 
 	var txtLen = len(njTweet.Txt)
