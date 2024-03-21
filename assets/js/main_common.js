@@ -317,7 +317,7 @@ async function __showVoteButton(tweetCard, tweet, callback) {
     if (!voteContractMeta) {
         await initVoteContractMeta();
     }
-    tweetCard.querySelector('.tweet-action-vote-val').textContent = voteContractMeta.votePriceInEth;
+    // tweetCard.querySelector('.tweet-action-vote-val').textContent = voteContractMeta.votePriceInEth;
     voteBtn.onclick = () => voteToTheTweet(tweet, callback);
 }
 
