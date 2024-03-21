@@ -564,6 +564,11 @@ function checkMetamaskErr(err) {
         return null;
     }
 
+    if (err.code === 4100){
+        showDialog(DLevel.Warning, "open metamask first");
+        return
+    }
+
     let code = err.code;
     if (!err.data || !err.data.message) {
         code = code + err.message;
