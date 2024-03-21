@@ -115,24 +115,48 @@
         .top-topic-btn {
             background-color: transparent;
             border: none;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: lighter;
-            padding: 8px 12px;
+            position: relative; /* 设置相对定位以便绝对定位子元素 */
+            cursor: pointer;
+
+        }
+
+        .top-topic-btn span {
+            position: relative; /* 相对定位 */
+            z-index: 2; /* 确保文本在渐变的上方 */
+        }
+
+        /* 添加伪元素模拟渐变边框效果 */
+        .top-topic-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            display: block;
+            z-index: 2; /* 确保文本在渐变的上方 */
         }
 
         /* 鼠标经过按钮时的样式 */
-        .top-topic-btn:hover {
-            background-color: #F7F8F9;
-            border-radius: 999px;
-            height: 42px;
+        .top-topic-btn:hover::after {
+            z-index: 1; /* 伪元素在内容之下 */
+            background: linear-gradient(to bottom, #72A6F1, #ffffff); /* 鼠标悬停时的渐变色 */
         }
 
         /* 按钮被点击时的样式 */
         .top-topic-btn.active {
-            background-color: #F7F8F9;
-            border-radius: 999px;
-            color: #4848D8;
+            height: 20px;
+            font-size: 16px;
+            color: #271D1E;
             font-weight: bold;
+
+        }
+
+        .top-topic-btn.active::after {
+            z-index: 1; /* 伪元素在内容之下 */
+            background: linear-gradient(to bottom, #72A6F1, #ffffff); /* 活动状态下的渐变色 */
         }
 
     </style>
@@ -1485,11 +1509,11 @@
         <div id="middle-div-leaderboard" class="content-in-middle-area">
 
             <div class="topic-switch">
-                <button class="top-topic-btn" onclick="initTopPage()" id="tittle-top-vote">总得票排行榜</button>
-                <button class="top-topic-btn" onclick="switchToTopKol()" id="tittle-top-best-writer">最佳创作者排行榜
-                </button>
-                <button class="top-topic-btn" onclick="switchToTopVoter()" id="tittle-top-best-voter">大户荣誉榜
-                </button>
+                <div class="top-topic-btn" onclick="initTopPage()" id="tittle-top-vote"><span>总得票排行榜</span></div>
+                <div class="top-topic-btn" onclick="switchToTopKol()" id="tittle-top-best-writer"><span>最佳创作者排行榜</span>
+                </div>
+                <div class="top-topic-btn" onclick="switchToTopVoter()" id="tittle-top-best-voter"><span>大户荣誉榜</span>
+                </div>
             </div>
 
             <div id="tweetTemplateForTop" class="tweet-card" style="display: none;">
