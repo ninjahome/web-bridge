@@ -148,7 +148,7 @@ async function TweetsQuery(param, newest, cacheObj) {
         }
         const tweetArray = await PostToSrvByJson("/tweetQuery", param);
 
-        cacheObj.moreOldTweets = tweetArray || newest || tweetArray.length !== 0;
+        cacheObj.moreOldTweets = newest || (tweetArray&&tweetArray.length !== 0);
 
         cachedToMem(tweetArray, cacheObj);
 
