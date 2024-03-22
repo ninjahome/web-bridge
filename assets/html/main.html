@@ -27,7 +27,7 @@
             box-sizing: border-box;
         }
 
-        h1, h2,h3,h4 {
+        h1, h2, h3, h4 {
             margin: 0;
         }
 
@@ -251,7 +251,7 @@
         }
 
         .tweet-info,
-        .vote-count{
+        .vote-count {
             white-space: nowrap;
             font-size: 16px;
             color: #232326;
@@ -270,15 +270,17 @@
         .vote-numberOne {
             color: #FDBE51;
         }
+
         .vote-numberTwo {
             color: #5191fd;
         }
+
         .vote-numberThree {
-            color:#FD7851;
+            color: #FD7851;
         }
 
         .vote-numberOther {
-            color:#B5B5B6;
+            color: #B5B5B6;
         }
 
 
@@ -316,7 +318,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.9);
+            background-color: rgba(0, 0, 0, 0.9);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -578,7 +580,7 @@
         }
 
         .team-membersName,
-        .user-voted-count{
+        .user-voted-count {
             line-height: 80px;
             height: 80px;
         }
@@ -1032,6 +1034,7 @@
         .bonus-for-points-sub-tittle .bonus-for-points-tittle {
             margin-left: 16px;
         }
+
         .lottery-game-info {
             position: relative;
         }
@@ -1065,7 +1068,7 @@
         }
 
         .lottery-amount {
-           font-size: 48px;
+            font-size: 48px;
             font-weight: 700;
             padding: 0;
             color: #271D1E;
@@ -1086,7 +1089,6 @@
             left: 0;
             height: 104px;
         }
-
 
 
         .lottery-stats-label {
@@ -1132,6 +1134,7 @@
             margin-top: 184px;
             transform: rotate(2deg); /* 添加旋转 */
         }
+
         .countdown .countdownDays {
             position: absolute;
             top: 212px;
@@ -1210,21 +1213,21 @@
             color: #4EA0F2;
         }
 
-        .rule-info-btn{
+        .rule-info-btn {
             border: none;
             background-color: transparent;
             color: #898989;
             padding: 0;
         }
 
-       .rule-info {
+        .rule-info {
             font-size: 14px;
             margin-top: 16px;
             border-top: 1px solid #E4E4DF;
             padding-top: 16px;
         }
 
-        .rule-info  p {
+        .rule-info p {
             margin: 6px 0;
         }
 
@@ -1254,6 +1257,7 @@
             padding: 16px;
             border-radius: 6px;
         }
+
         .user-settings {
             border: 1px solid #F2F4F6;
             background: linear-gradient(to bottom, rgba(114, 166, 241, 0.55), #ffffff);
@@ -1358,6 +1362,7 @@
             align-items: center;
             white-space: nowrap;
         }
+
         .income-text {
             display: flex;
             justify-content: space-between;
@@ -1412,7 +1417,7 @@
             padding: 5px;
         }
 
-        .about-twitter div span{
+        .about-twitter div span {
             color: #271D1E;
             font-size: 18px;
             font-weight: 500;
@@ -1592,9 +1597,12 @@
                 <div style="display: flex; justify-content: space-between; align-items: center">
                     <button onclick="loadImgFromLocal()" class="tweets-fileImg"><img
                                 src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
-                    <input type="file" id="fileInput" style="display: none;" accept=".jpg, .png" multiple onchange="previewImage()">
-                    <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()" class="d-radius" style="margin: 8px">
-                        <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">
+                    <input type="file" id="fileInput" style="display: none;" accept=".jpg, .png" multiple
+                           onchange="previewImage()">
+                    <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()" class="d-radius"
+                            style="margin: 8px">
+                        <img src="/assets/file/Twitter-logo.png" alt="twitter"
+                             style="width: 24px; height: 24px; margin-right: 6px">
                         <span id="tweet-post-with-eth-btn-txt">发布推文</span>
                     </button>
                 </div>
@@ -1603,7 +1611,8 @@
             <div id="tweetTemplateForHomePage" class="tweet-card" style="display: block;">
                 <div class="tweet-footer">
                     <div class="tweet-info">
-                        <span class="vote-count"> <span class="vote-number">0</span><span id="label-vote-no-home">次投票</span></span>
+                        <span class="vote-count"> <span class="vote-number">0</span><span
+                                    id="label-vote-no-home">次投票</span></span>
                     </div>
                     <div class="tweet-action">
                         <button class="tweet-action-vote">
@@ -1620,17 +1629,20 @@
         <div id="middle-div-leaderboard" class="content-in-middle-area">
             <div class="topic-switch">
                 <div class="top-topic-btn" onclick="initTopPage()" id="tittle-top-vote"><span>总得票排行榜</span></div>
-                <div class="top-topic-btn" onclick="switchToTopKol()" id="tittle-top-best-writer"><span>最佳创作者排行榜</span>
+                <div class="top-topic-btn" onclick="switchToTopKol()" id="tittle-top-best-writer">
+                    <span>最佳创作者排行榜</span>
                 </div>
-                <div class="top-topic-btn" onclick="switchToTopVoter()" id="tittle-top-best-voter"><span>大户荣誉榜</span>
+                <div class="top-topic-btn" onclick="switchToTopVoter()" id="tittle-top-best-voter">
+                    <span>大户荣誉榜</span>
                 </div>
             </div>
 
             <div id="tweetTemplateForTop" class="tweet-card" style="display: none;">
-               <div class="tweet-info vote-countTop">
+                <div class="tweet-info vote-countTop">
                         <span class="vote-count">
                             <span class="vote-number vote-numberOne">0</span>
-                            <span id="label-vote-no-top" style="font-weight: 300; font-size: 14px; color: #898989; display: block ">次投票</span>
+                            <span id="label-vote-no-top"
+                                  style="font-weight: 300; font-size: 14px; color: #898989; display: block ">次投票</span>
                         </span>
                 </div>
                 <div class="tweet-footer">
@@ -1654,7 +1666,7 @@
                         <span class="username twitterUserName" style="font-weight: lighter"></span>
                     </div>
                 </div>
-                <div class="user-voted-count vote-number vote-numberOne">123</div>
+                <div class="user-voted-count vote-number">123</div>
             </li>
             <div class="team-card" id="team-card-in-top-template" style="display: none">
                 <div class="team-leader-info">
@@ -1718,15 +1730,17 @@
                 <div class="tweet-footer">
                     <div class="tweet-info">
                         <span class="vote-count"><span id="user-tweet-label-total-vote">总票数</span><span
-                                    class="total-vote-number" style="font-size: 18px; font-weight: 500; margin-left: 4px">0</span></span>
+                                    class="total-vote-number"
+                                    style="font-size: 18px; font-weight: 500; margin-left: 4px">0</span></span>
                         <span class="vote-count"><span id="user-tweet-label-my-vote">我的票数</span><span
-                                    class="user-vote-number" style="font-size: 18px; font-weight: 500; margin-left: 4px">0</span></span>
+                                    class="user-vote-number"
+                                    style="font-size: 18px; font-weight: 500; margin-left: 4px">0</span></span>
                     </div>
                     <div class="tweet-action">
                         <button class="tweet-action-vote">
                             <span id="user-tweet-btn-vote">投票</span>
                             <img src="/assets/file/tweet-action-vote-eth.png"
-                                                               style="width: 22px;height: auto" alt=""/>
+                                 style="width: 22px;height: auto" alt=""/>
 
                         </button>
                     </div>
@@ -1763,15 +1777,21 @@
                     </div>
 
                     <div class="about-ninja">
-                        <span><span id="dessage-web3-token" class="user-ninja-noun">0.00 </span><br><span id="user-setting-points" style="color: #898989; font-size: 14px">积分()</span></span>
-                        <span><span id="dessage-my-vote" class="user-ninja-noun">0</span><br><span id="user-setting-my-voted" style="color: #898989; font-size: 14px">投票数</span></span>
-                        <span><span id="dessage-be-vote" class="user-ninja-noun">0</span><br><span id="user-setting-be-voted" style="color: #898989; font-size: 14px">被投票数</span></span>
+                        <span><span id="dessage-web3-token" class="user-ninja-noun">0.00 </span><br><span
+                                    id="user-setting-points"
+                                    style="color: #898989; font-size: 14px">积分()</span></span>
+                        <span><span id="dessage-my-vote" class="user-ninja-noun">0</span><br><span
+                                    id="user-setting-my-voted"
+                                    style="color: #898989; font-size: 14px">投票数</span></span>
+                        <span><span id="dessage-be-vote" class="user-ninja-noun">0</span><br><span
+                                    id="user-setting-be-voted"
+                                    style="color: #898989; font-size: 14px">被投票数</span></span>
                     </div>
                 </div>
             </div>
             <div class="middle-div-income-inner">
                 <h3 style="margin-left: 54px;margin-top: 24px">收入信息</h3>
-                <div class="income-tweet-area" >
+                <div class="income-tweet-area">
                     <div class="income-body">
                         <div class="income-text">
                             <div>
@@ -1783,12 +1803,13 @@
                                 <br><span id="user-setting-tweet-income-tittle" style="color: #898989; font-size: 14px">推文收入(eth)</span>
                                 </span>
                                 <br>
-                                <span><span id="user-setting-tweet-no" style="color: #898989; font-size: 14px">推文总数</span>:
+                                <span><span id="user-setting-tweet-no"
+                                            style="color: #898989; font-size: 14px">推文总数</span>:
                                     <span class="tweet-no-has-income" id="tweet-no-has-income">0</span> <span
                                             id="user-setting-tweet-no-suffix">篇</span></span>
 
+                            </div>
                         </div>
-                    </div>
 
                         <div>
                             <button class="ticket-count-btn rule-info-btn" onclick="incomeWithdrawHistory()"
@@ -1849,12 +1870,13 @@
             <div class="tweet-text-info">
                 <div style="background-color: rgba(192,211,240,0.5); padding: 8px 14px; border-radius: 12px">
                     <span style="font-size: 14px">推文信息</span>
-                    <img src="/assets/file/open-icon.png" >
+                    <img src="/assets/file/open-icon.png">
                 </div>
-                <div  class="tweet-footer">
+                <div class="tweet-footer">
                     <div class="tweet-info">
                         <span class="tweet-info"><span
-                                    class="tweet-vote-number" style="font-size: 18px">0</span><span id="tweet-detail-vote-no">次投票</span></span>
+                                    class="tweet-vote-number" style="font-size: 18px">0</span><span
+                                    id="tweet-detail-vote-no">次投票</span></span>
                     </div>
                     <div class="tweet-action">
                         <button class="tweet-action-vote">
@@ -1867,9 +1889,14 @@
                 </div>
             </div>
             <div class="tweet-detail-info">
-                <span class="tweet-info"><span id="tweet-detail-creator" style="font-size: 14px; font-weight: 400; color: #898989">作者Web3 ID</span>:<span class="tweet-web3_id">0x00a7539cc7cc54f08a761175aa678005ef91f4dc</span></span>
-                <span class="tweet-info"><span id="tweet-detail-hash" style="font-size: 14px; font-weight: 400; color: #898989">推文Hash</span>:<span class="tweet-prefixed-hash">0xad5fa0cd63cd872bfa31f9a61085aa36193f57fdfe31bfb601efdee51821af3f</span></span>
-                <span class="tweet-info"><span id="tweet-detail-signature" style="font-size: 14px; font-weight: 400; color: #898989">推文数字签名</span>:<span
+                <span class="tweet-info"><span id="tweet-detail-creator"
+                                               style="font-size: 14px; font-weight: 400; color: #898989">作者Web3 ID</span>:<span
+                            class="tweet-web3_id">0x00a7539cc7cc54f08a761175aa678005ef91f4dc</span></span>
+                <span class="tweet-info"><span id="tweet-detail-hash"
+                                               style="font-size: 14px; font-weight: 400; color: #898989">推文Hash</span>:<span
+                            class="tweet-prefixed-hash">0xad5fa0cd63cd872bfa31f9a61085aa36193f57fdfe31bfb601efdee51821af3f</span></span>
+                <span class="tweet-info"><span id="tweet-detail-signature"
+                                               style="font-size: 14px; font-weight: 400; color: #898989">推文数字签名</span>:<span
                             class="tweet-signature">0x08abe2bcddad20cf2bf5a929cfb81e1dce20ba29c4d6d65d343b105c6abe3cc57f995519620298c93f060eb65080e74996c239f74524ccd0b40693e8f6c03c261b</span></span>
 
                 <div>
@@ -1912,7 +1939,8 @@
                         <div class="tweet-action">
                             <button class="tweet-action-vote">
                                 <span id="tweet-detail-vote">投票</span>
-                                <img src="/assets/file/tweet-action-vote-eth.png" style="width: 22px;height: auto" alt=""/>
+                                <img src="/assets/file/tweet-action-vote-eth.png" style="width: 22px;height: auto"
+                                     alt=""/>
                             </button>
                         </div>
                     </div>
@@ -1931,11 +1959,13 @@
                         <span class="bonus-for-points-tittle" id="bonus-for-points-tittle">积分奖池</span>
                     </div>
                     <div class="bonus-for-points-bonus">
-                        <span class="bonus-for-points-tittle"><span class="bonus-for-points-value" id="bonus-for-points-value">0.00</span> ETH</span>
+                        <span class="bonus-for-points-tittle"><span class="bonus-for-points-value"
+                                                                    id="bonus-for-points-value">0.00</span> ETH</span>
                     </div>
                 </div>
                 <div class="lottery-round"><span id="lottery-round-tittle-1">第</span><span
-                            class="lottery-game-round-no" style="font-size:18px; font-weight: 500;"> 0 </span><span id="lottery-round-tittle-2">期</span></div>
+                            class="lottery-game-round-no" style="font-size:18px; font-weight: 500;"> 0 </span><span
+                            id="lottery-round-tittle-2">期</span></div>
                 <div class="lottery-amount-div">
                     <span class="lottery-amount">0.0</span>
                     <span class="eth-symbol">eth</span>
@@ -1948,34 +1978,42 @@
                 </div>
                 <div class="countdown" id="lottery-count-down">
                     <div class="countdownDays">
-                        <div class="number days" style="padding: 0 ; display: inline-block; color: white;font-weight: 700">2</div>
+                        <div class="number days"
+                             style="padding: 0 ; display: inline-block; color: white;font-weight: 700">2
+                        </div>
                         <span id="countdown-tips-days" style="color: white">天</span>
                     </div>
                     <div class="number hours">00</div>
                     <div class="number minutes">00</div>
                     <div class="number seconds">00</div>
                 </div>
-                <span class="timeTitle" style="color: #A0A0A5; font-size: 12px" id="countdown-tips-sub-tittle">开奖时间</span>
+                <span class="timeTitle" style="color: #A0A0A5; font-size: 12px"
+                      id="countdown-tips-sub-tittle">开奖时间</span>
             </div>
             <div class="lottery-stats">
                 <div class="lottery-stats-total">
                     <div class="lottery-stats-label">
-                        <span class="lottery-stats-no" id="lottery-total-amount" style="font-weight: bold; color: #DE6633; font-size: 22px">0.00</span>
-                        <span id="lottery-info-history-bonus" style="font-size: 14px; color: #898989">历史累计奖金(eth)</span>
+                        <span class="lottery-stats-no" id="lottery-total-amount"
+                              style="font-weight: bold; color: #DE6633; font-size: 22px">0.00</span>
+                        <span id="lottery-info-history-bonus"
+                              style="font-size: 14px; color: #898989">历史累计奖金(eth)</span>
                     </div>
                     <div class="lottery-stats-label">
-                        <span class="lottery-stats-no" id="lottery-current-ticket-amount" style="font-weight: bold; color: #f1d359; font-size: 22px">0</span>
-                        <span id="lottery-info-current-tickets-no" style="font-size: 14px; color: #898989">本期总票数(张)</span>
+                        <span class="lottery-stats-no" id="lottery-current-ticket-amount"
+                              style="font-weight: bold; color: #f1d359; font-size: 22px">0</span>
+                        <span id="lottery-info-current-tickets-no"
+                              style="font-size: 14px; color: #898989">本期总票数(张)</span>
                     </div>
                 </div>
 
                 <button class="lottery-participate-btn" onclick="openLotteryMainPage()" id="lottery-info-btn-mine">
                     我的彩票
                 </button>
-                <button class="rule-info-btn" id="lottery-gameRule" style="display: block; margin: auto">
-                    游戏规则>>
+                <button class="rule-info-btn"  onclick="showGameRule()"
+                        style="display: block; margin: auto">
+                    <span id="lottery-gameRule">游戏规则</span>>>
                 </button>
-                <div class="rule-info" id="gameRuleInfo">
+                <div class="rule-info" id="gameRuleInfo" style="display: none">
                     <h4 style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-tittle">玩法规则：</h4>
                     <p style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content">
                         本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与</p>
@@ -2112,27 +2150,16 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // 获取按钮和游戏规则详情元素
-        var ruleInfoBtn = document.getElementById('lottery-gameRule');
-        var ruleInfo = document.getElementsByClassName('rule-info')[0];
 
-        // 最初隐藏游戏规则详情
-        ruleInfo.style.display = 'none';
-
-        // 为按钮添加点击事件监听器
-        ruleInfoBtn.addEventListener('click', function() {
-            // 检查游戏规则详情当前是否显示
-            if (ruleInfo.style.display === 'none') {
-                // 如果是隐藏的，则显示
-                ruleInfo.style.display = 'block';
-            } else {
-                // 如果已经显示，则隐藏
-                ruleInfo.style.display = 'none';
-            }
-        });
-    });
-
+    function showGameRule() {
+        const rule_div = document.getElementById('gameRuleInfo')
+        console.log(rule_div.style.display);
+        if (rule_div.style.display === 'none') {
+            rule_div.style.display = 'block';
+        } else {
+            rule_div.style.display = 'none';
+        }
+    }
 
     let ninjaUserObj = {{ .NinjaUsrInfoJson}};
     const targetTweet = {{.TargetTweet}};
@@ -2332,7 +2359,7 @@
                         "lottery-round-tittle-2": "",
                         "lottery-tittle-tips": "Current Prize Pool",
                         "countdown-result": "Drawing in Progress",
-                        "countdown-tips-days": "Day(s)",
+                        "countdown-tips-days": "D(s)",
                         "countdown-tips-sub-tittle": "Next Draw Time",
                         "lottery-info-history-bonus": "Total Historical Prize",
                         "lottery-info-current-tickets-no": "Total Votes This Phase",
@@ -2524,6 +2551,7 @@
         document.getElementById("lottery-info-btn-mine").textContent = i18next.t('lottery-info-btn-mine');
 
         document.getElementById("lottery-info-tittle").textContent = i18next.t('lottery-info-tittle');
+        document.getElementById("lottery-gameRule").textContent = i18next.t('lottery-info-tittle');
         document.getElementById("bonus-for-points-tittle").textContent = i18next.t('bonus-for-points-tittle');
         document.getElementById("bonus-for-points-tittle-2").textContent = i18next.t('bonus-for-points-tittle');
         document.getElementById("lottery-info-content").textContent = i18next.t('lottery-info-content');

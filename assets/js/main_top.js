@@ -130,22 +130,22 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
             hoverDiv.addEventListener('mouseleave', () => hideHoverCard(hoverDiv));
         }
 
-        const rankNo = njUsrCard.querySelector(".team-members-number");
-        rankNo.innerText = userRankStartNo;
+        const rankNo = njUsrCard.querySelector(".user-voted-count");
+        // rankNo.innerText = userRankStartNo;
         if (userRankStartNo === 1) {
-            rankNo.classList.add('team-members-topOne');
+            rankNo.classList.add('vote-numberOne');
         } else if (userRankStartNo === 2) {
-            rankNo.classList.add('team-members-topTwo');
+            rankNo.classList.add('vote-numberTwo');
         } else if (userRankStartNo === 3) {
-            rankNo.classList.add('team-members-topThree');
+            rankNo.classList.add('vote-numberThree');
         } else {
-            rankNo.classList.add('team-members-topOther');
+            rankNo.classList.add('vote-numberOther');
         }
 
         if (voter) {
-            njUsrCard.querySelector(".user-voted-count").innerText = usr.vote_count;
+            rankNo.innerText = usr.vote_count;
         } else {
-            njUsrCard.querySelector(".user-voted-count").innerText = usr.be_voted_count;
+            rankNo.innerText = usr.be_voted_count;
         }
 
         ninjaUserPark.appendChild(njUsrCard);
