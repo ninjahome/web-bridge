@@ -454,6 +454,7 @@ async function checkMetaMaskEnvironment(callback) {
 
 function metamaskAccountChanged(accounts) {
     if (accounts.length === 0) {
+        console.log('MetaMask账户已断开连接，请重新连接');
         window.location.href = "/signOut";
         return;
     }
