@@ -1595,11 +1595,11 @@
                 </div>
 
                 <div style="display: flex; justify-content: space-between; align-items: center">
-                    <button onclick="loadImgFromLocal()" class="tweets-fileImg"><img
+                    <button onclick="loadImgFromLocal('.tweet-post')" class="tweets-fileImg"><img
                                 src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
-                    <input type="file" id="fileInput" style="display: none;" accept=".jpg, .png" multiple
-                           onchange="previewImage()">
-                    <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()" class="d-radius"
+                    <input type="file" id="fileInput"  class="tweet-file-input" style="display: none;" accept=".jpg, .png" multiple
+                           onchange="previewImage('.tweet-post')">
+                    <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.tweet-post')" class="d-radius"
                             style="margin: 8px">
                         <img src="/assets/file/Twitter-logo.png" alt="twitter"
                              style="width: 24px; height: 24px; margin-right: 6px">
@@ -2009,7 +2009,7 @@
                 <button class="lottery-participate-btn" onclick="openLotteryMainPage()" id="lottery-info-btn-mine">
                     我的彩票
                 </button>
-                <button class="rule-info-btn"  onclick="showGameRule()"
+                <button class="rule-info-btn" onclick="showGameRule()"
                         style="display: block; margin: auto">
                     <span id="lottery-gameRule">游戏规则</span>>>
                 </button>
@@ -2133,10 +2133,11 @@
     </div>
 
     <div style="display: flex; justify-content: space-between; align-items: center">
-        <button onclick="loadImgFromLocal()" class="tweets-fileImg"><img
+        <button onclick="loadImgFromLocal('.modal-for-tweet-post')" class="tweets-fileImg"><img
                     src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
-        <input type="file" id="fileInput" style="display: none;" accept=".jpg, .png" multiple onchange="previewImage()">
-        <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()" class="d-radius" style="margin: 8px">
+        <input type="file" id="fileInput" class="tweet-file-input" style="display: none;" accept=".jpg, .png" multiple onchange="previewImage('.modal-for-tweet-post')">
+        <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.modal-for-tweet-post')" class="d-radius"
+                style="margin: 8px">
             <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">
             <span id="tweet-post-with-eth-btn-txt">发布推文</span>
         </button>
@@ -2232,21 +2233,6 @@
     function openKolKeyMainPage() {
         window.location.href = "/kolKey";
     }
-
-    const tweetsContentArea = document.getElementById('tweets-content-txt-area');
-
-    tweetsContentArea.addEventListener('focus', function () {
-        if (this.textContent === "What's happening!?") {
-            this.textContent = '';
-        }
-    }, false);
-
-    tweetsContentArea.addEventListener('blur', function () {
-        if (this.textContent.trim() === '') {
-            this.textContent = '';
-        }
-    }, false);
-
 
     async function setupUserBasicInfoInSetting() {
 

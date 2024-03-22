@@ -142,13 +142,13 @@ function findAtTarget(text) {
     return null;
 }
 
-async function preparePostMsg() {
-    const contentHtml = document.getElementById("tweets-content-txt-area").innerHTML.trim();
+async function preparePostMsg(parentDiv) {
+    const contentHtml = parentDiv.querySelector(".tweets-content-txt-area").innerHTML.trim();
     const formattedContent = contentHtml
         .replace(/<br\s*[\/]?>/gi, "\n") // 将 <br> 标签转换为换行符
         .replace(/<\/?p>/gi, "\n") // 将 <p> 标签转换为换行符
         .replace(/<[^>]+>/g, ''); // 移除所有其他HTML标签
-    const images = document.querySelectorAll("#twImagePreview img");
+    const images = parentDiv.querySelectorAll("#twImagePreview img");
     if (!formattedContent && images.length === 0) {
         showDialog(DLevel.Warning, "content can't be empty")
         return null;
@@ -201,9 +201,11 @@ function updatePaymentStatusToSrv(tweet) {
     })
 }
 
-async function postTweetWithPayment() {
+async function postTweetWithPayment(parentID) {
     try {
-        const tweetObj = await preparePostMsg();
+        const parentDiv = document.querySelector(parentID)
+
+        const tweetObj = await preparePostMsg(parentDiv);
         if (!tweetObj) {
             return;
         }
@@ -218,7 +220,7 @@ async function postTweetWithPayment() {
 
         showWaiting("updating tweet status")
         await updatePaymentStatusToSrv(basicTweet)
-        clearDraftTweetContent();
+        clearDraftTweetContent(parentDiv);
 
         if (curScrollContentID === 0) {
             __loadTweetsAtHomePage(true).then(() => {
@@ -260,10 +262,10 @@ function closePostTweetDiv() {
     document.getElementById('modal-overlay').style.display = 'none';
 }
 
-function clearDraftTweetContent() {
-    document.getElementById("tweets-content-txt-area").innerHTML = '';
-    document.getElementById("twImagePreview").innerHTML = '';
-    document.getElementById("twImagePreview").style.display = 'none'
+function clearDraftTweetContent(parentDiv) {
+    parentDiv.querySelector(".tweets-content-txt-area").innerHTML = '';
+    parentDiv.querySelector(".img-wrapper-container").innerHTML = '';
+    parentDiv.querySelector(".img-wrapper-container").style.display = 'none'
 }
 
 function showFullTweetContent() {
@@ -287,20 +289,22 @@ function showFullTweetContent() {
     }
 }
 
-function loadImgFromLocal() {
-    const images = document.querySelectorAll("#twImagePreview img");
+function loadImgFromLocal(parentId) {
+    const parentDiv = document.querySelector(parentId);
+    const images = parentDiv.querySelectorAll("#twImagePreview img");
     if (images.length >= maxImgPerTweet) {
         showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
         return;
     }
-    document.getElementById('fileInput').click();
+    parentDiv.querySelector('.tweet-file-input').click();
 }
 
-function previewImage() {
-    let files = document.getElementById('fileInput').files;
-    const imagePreviewDiv = document.getElementById('twImagePreview');
+function previewImage(parentId) {
+    const parentDiv = document.querySelector(parentId);
+    let files = parentDiv.querySelector('.tweet-file-input').files;
+    const imagePreviewDiv = parentDiv.querySelector('.img-wrapper-container');
     imagePreviewDiv.style.display = 'block';
-    const images = document.querySelectorAll("#twImagePreview img");
+    const images = parentDiv.querySelectorAll("#twImagePreview img");
     const validLen = maxImgPerTweet - images.length;
     if (validLen <= 0) {
         return;
@@ -308,7 +312,7 @@ function previewImage() {
 
     files = Array.from(files).slice(0, validLen);
     files.forEach(file => {
-        const imgWrapper = document.getElementById('img-wrapper-template').cloneNode(true);
+        const imgWrapper = parentDiv.querySelector('.img-wrapper').cloneNode(true);
         imgWrapper.style.display = 'block';
         imgWrapper.id = "";
         const img = imgWrapper.querySelector('.img-preview');
@@ -328,5 +332,5 @@ function previewImage() {
         };
         reader.readAsDataURL(file);
     });
-    document.getElementById('fileInput').value = '';
+    parentDiv.querySelector('.tweet-file-input').value = '';
 }
