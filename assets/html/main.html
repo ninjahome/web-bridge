@@ -283,8 +283,8 @@
 
 
         .vote-number {
-            font-size: 28px;
-            font-weight: 700;
+            font-size: 20px;
+            font-weight: 500;
             line-height: 30px;
         }
 
@@ -378,6 +378,7 @@
 
         .tweet-card:hover {
             background-color: rgba(114, 166, 241, 0.03);
+            background-color: white;
         }
 
         .twitterAvatar {
@@ -846,6 +847,11 @@
             max-width: 500px; /* 最大宽度 */
         }
 
+        .tweet-post {
+            padding: 24px 16px;
+            border-bottom: 8px solid #F4F5F6;
+        }
+
         .tweets-content-txt-area {
             margin: 0 auto;
             display: block; /* 确保元素为块级元素 */
@@ -859,15 +865,16 @@
             border-radius: 6px;
             resize: none; /* 禁止调整大小 */
             position: relative;
+            background-color: #F4F5F6;
         }
 
         /* 设置所有输入框和可编辑内容的光标颜色 */
         input, textarea, [contenteditable] {
-            caret-color: #4848D8;
+            caret-color: #4EA0F2;
         }
 
         .tweets-content-txt-area:focus {
-            border-color: rgba(72, 72, 216, 0.45); /* 选中时的边框颜色 */
+            border-color: rgba(78, 160, 242, 0.45); /* 选中时的边框颜色 */
             outline: none;
         }
 
@@ -898,8 +905,8 @@
             display: flex;
             align-items: center;
             float: right;
-            background-color: #4848D8;
-            color: white; /* 字体颜色 */
+            background: linear-gradient(to right, rgba(114, 166, 241, 0.55), #ffffff);
+            color: #222223; /* 字体颜色 */
             border: none; /* 无边框 */
             padding: 8px 16px; /* 内边距 */
             cursor: pointer; /* 鼠标样式 */
@@ -907,7 +914,7 @@
         }
 
         #tweet-post-with-eth-btn:hover {
-            background-color: #3333BE; /* 悬停时背景颜色 */
+            background: linear-gradient(to right, rgba(114, 166, 241, 0.9), #ffffff)
         }
 
         .show-post-tweet-div {
@@ -1211,7 +1218,6 @@
         }
 
        .rule-info {
-           display: none;
             font-size: 14px;
             margin-top: 16px;
             border-top: 1px solid #E4E4DF;
@@ -1572,7 +1578,29 @@
     </div>
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
-            <div id="tweetTemplateForHomePage" class="tweet-card" style="display: none;">
+            <div class="tweet-post">
+                <div class="tweets-content-txt-area" id="tweets-content-txt-area" contenteditable="true"
+                     data-placeholder="What's happening!?">
+                </div>
+                <div class="img-wrapper" id="img-wrapper-template">
+                    <img src="" class="img-preview">
+                    <button class="delete-btn">x</button>
+                </div>
+                <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center">
+                    <button onclick="loadImgFromLocal()" class="tweets-fileImg"><img
+                                src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
+                    <input type="file" id="fileInput" style="display: none;" accept=".jpg, .png" multiple onchange="previewImage()">
+                    <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment()" class="d-radius" style="margin: 8px">
+                        <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">
+                        <span id="tweet-post-with-eth-btn-txt">发布推文</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="tweetTemplateForHomePage" class="tweet-card" style="display: block;">
                 <div class="tweet-footer">
                     <div class="tweet-info">
                         <span class="vote-count"> <span class="vote-number">0</span><span id="label-vote-no-home">次投票</span></span>
@@ -1947,7 +1975,7 @@
                 <button class="rule-info-btn" id="lottery-gameRule" style="display: block; margin: auto">
                     游戏规则>>
                 </button>
-                <div class="rule-info">
+                <div class="rule-info" id="gameRuleInfo">
                     <h4 style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-tittle">玩法规则：</h4>
                     <p style="margin-top: 6px;margin-bottom: 4px" id="lottery-info-content">
                         本游戏是一个彩票游戏，每48小时开奖一次任何人都可参与</p>
@@ -2084,6 +2112,27 @@
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // 获取按钮和游戏规则详情元素
+        var ruleInfoBtn = document.getElementById('lottery-gameRule');
+        var ruleInfo = document.getElementsByClassName('rule-info')[0];
+
+        // 最初隐藏游戏规则详情
+        ruleInfo.style.display = 'none';
+
+        // 为按钮添加点击事件监听器
+        ruleInfoBtn.addEventListener('click', function() {
+            // 检查游戏规则详情当前是否显示
+            if (ruleInfo.style.display === 'none') {
+                // 如果是隐藏的，则显示
+                ruleInfo.style.display = 'block';
+            } else {
+                // 如果已经显示，则隐藏
+                ruleInfo.style.display = 'none';
+            }
+        });
+    });
+
 
     let ninjaUserObj = {{ .NinjaUsrInfoJson}};
     const targetTweet = {{.TargetTweet}};
