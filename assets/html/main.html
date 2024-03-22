@@ -134,6 +134,7 @@
             font-size: 14px;
             position: relative; /* 设置相对定位以便绝对定位子元素 */
             cursor: pointer;
+            z-index: 2;
 
         }
 
@@ -156,7 +157,7 @@
 
         /* 鼠标经过按钮时的样式 */
         .top-topic-btn:hover::after {
-            z-index: 1; /* 伪元素在内容之下 */
+            z-index: -1; /* 伪元素在内容之下 */
             background: linear-gradient(to bottom, #72A6F1, #ffffff); /* 鼠标悬停时的渐变色 */
         }
 
@@ -170,7 +171,7 @@
         }
 
         .top-topic-btn.active::after {
-            z-index: 1; /* 伪元素在内容之下 */
+            z-index: -1; /* 伪元素在内容之下 */
             background: linear-gradient(to bottom, #72A6F1, #ffffff); /* 活动状态下的渐变色 */
         }
 
@@ -368,7 +369,6 @@
         .tweet-card {
             display: block;
             min-height: 100px;
-            max-height: 400px;
             overflow: hidden;
             background-color: #fff;
             border: 1px solid #F7F8F9;
@@ -807,9 +807,9 @@
         .confirm-btn {
             margin: 0 8px;
             padding: 10px 32px;
-            border-radius: 9999px;
+            border-radius: 12px;
             border: none;
-            background-color: #4848D8;
+            background-color: #271D1E;
             font-size: 14px;
             color: #ffffff;
         }
