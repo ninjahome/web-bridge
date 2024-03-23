@@ -215,7 +215,7 @@ function createModalElement() {
     loadingText.style.left = '50%';
     loadingText.style.transform = 'translate(-50%, -50%)';
     loadingText.style.fontSize = '10px'; // Adjust font size as needed
-    loadingText.style.color = '#4848D8'; // Ensure text color is visible
+    loadingText.style.color = '#4EA0F2'; // Ensure text color is visible
 
     container.appendChild(loadingText);
 
