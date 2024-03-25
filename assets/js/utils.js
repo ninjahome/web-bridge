@@ -195,7 +195,7 @@ function createModalElement() {
     const spinner = document.createElement('div');
     spinner.id = 'loading-spinner';
     spinner.style.border = '6px solid #DDDDDE';
-    spinner.style.borderTop = '6px solid #4848D8';
+    spinner.style.borderTop = '6px solid #4EA0F2';
     spinner.style.borderRadius = '50%';
     spinner.style.width = '40px';
     spinner.style.height = '40px';
