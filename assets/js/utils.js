@@ -380,7 +380,7 @@ function createDialogElement(imageSrc) {
              <img src="${imageSrc}" alt="dialog image" style="max-width: 100%; height: auto; margin-bottom: 2px">
             <p id="dialog-message" style="margin-top: 0; margin-bottom: 16px">Message</p>
             <div style="display: flex; flex-direction: row; justify-content: center">
-                <button id="dialog-close" style="margin:0 8px; padding: 8px 42px; border-radius: 9999px; background-color: transparent; border: 1px solid rgb(221, 221, 222);font-size: 14px; color: #7E7F82">关闭</button>
+                <button id="dialog-close" style="margin:0 8px; padding: 8px 42px; border-radius: 12px; background-color: transparent; border: 1px solid rgb(221, 221, 222);font-size: 14px; color: #7E7F82">关闭</button>
                 <button id="dialog-confirm" style="margin:0 8px; padding: 8px 42px; border-radius: 9999px; border: none;font-size: 14px; color: #ffffff; background-color: #4848D8">确定</button>
             </div>
         </div>
