@@ -60,6 +60,7 @@ func NewMainService() *MainService {
 
 			if request.ContentLength > util.MaxReqContentLen {
 				err := fmt.Errorf("content length too large (%d>%d)", request.ContentLength, util.MaxReqContentLen)
+				util.LogInst().Err(err).Msg("request invalid")
 				http.Error(writer, err.Error(), http.StatusRequestEntityTooLarge)
 				return
 			}
