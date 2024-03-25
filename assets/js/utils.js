@@ -612,17 +612,37 @@ function createThumbnail(originalImageSrc, maxWidth, maxHeight) {
                 targetHeight = maxHeight;
                 targetWidth = maxHeight * aspectRatio;
             }
+            const thumbnailDataUrl = __createCanvas(img, targetWidth,targetHeight);
+            resolve(thumbnailDataUrl);
+        };
 
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+        img.onerror = function() {
+            reject(new Error('Could not load image'));
+        };
+    });
+}
+function __createCanvas(img,targetWidth,targetHeight){
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
 
-            canvas.width = targetWidth;
-            canvas.height = targetHeight;
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
 
-            ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+    ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
 
-            const thumbnailDataUrl = canvas.toDataURL('image/png');
+    return  canvas.toDataURL('image/png');
+}
 
+function createThumbnail2(originalImageSrc, percentSize) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = originalImageSrc;
+
+        img.onload = function() {
+            let targetWidth = img.width*percentSize;
+            let targetHeight = img.height*percentSize;
+
+            const thumbnailDataUrl = __createCanvas(img, targetWidth,targetHeight);
             resolve(thumbnailDataUrl);
         };
 
@@ -638,3 +658,4 @@ const __defaultLogo = '/assets/file/logo.png';
 const maxTextLenPerImg = 1000;
 const maxImgPerTweet = 4;
 const defaultTextLenForTweet  = 100;
+const mostImgSize = 1024*1024;

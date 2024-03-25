@@ -72,7 +72,7 @@ func (sp *SignDataByEth) ParseNinjaTweet() (*database.NinjaTweet, error) {
 			tweetContent.ImageRaw = append(tweetContent.ImageRaw, imgData.RawData)
 			err = database.DbInst().SaveRawImg(imgData.Hash, imgData.RawData)
 			if err != nil {
-				util.LogInst().Err(err).Msg("save tweet img failed")
+				util.LogInst().Err(err).Int("img-len", len(imgData.RawData)).Msg("save tweet img failed")
 			}
 		}
 	}

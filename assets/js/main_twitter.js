@@ -323,8 +323,17 @@ function previewImage(parentId) {
 
         const reader = new FileReader();
         reader.onload = async function (e) {
-            img.setAttribute('data-raw', e.target.result);
-            img.src = await createThumbnail(e.target.result, 400, 400);
+            let rawImg = e.target.result;
+            if (rawImg.length>2*mostImgSize){
+                showDialog(DLevel.Warning,"too big image");
+                return;
+            }
+            if (rawImg.length>=mostImgSize){
+                rawImg = await createThumbnail2(rawImg, (mostImgSize/rawImg.length-0.1));
+            }
+            console.log(rawImg.length);
+            img.setAttribute('data-raw', rawImg);
+            img.src = await createThumbnail(rawImg, 400, 400);
             const msg = ethers.utils.toUtf8Bytes(e.target.result);
             const hash = ethers.utils.sha256(msg);
             img.setAttribute('data-hash', hash);
