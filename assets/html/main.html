@@ -1494,13 +1494,17 @@
     <style about="tweet details">
 
         .tweet-detail-info {
-            display: flex;
+            display: none;
             margin-top: 16px;
             flex-direction: column;
             padding: 16px;
             background-color: #F4F5F6;
             border-radius: 6px;
             margin-left: 60px;
+        }
+
+        .tweet-text-info-img {
+            transform: rotate(-90deg);
         }
 
         .back-button {
@@ -1615,7 +1619,7 @@
     </div>
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
-            <div class="tweet-post">
+            <div class="tweet-post" id="tweet-post-on-top">
                 <div class="tweets-content-txt-area" id="tweets-content-txt-area" contenteditable="true"
                      data-placeholder="What's happening!?">
                 </div>
@@ -1900,9 +1904,9 @@
 
             </div>
             <div class="tweet-text-info">
-                <div style="background-color: rgba(192,211,240,0.5); padding: 8px 14px; border-radius: 12px">
+                <div style="background-color: rgba(192,211,240,0.5); padding: 8px 14px; border-radius: 12px" onclick="showTweetDetailInfo()">
                     <span style="font-size: 14px">推文信息</span>
-                    <img src="/assets/file/open-icon.png">
+                    <img id="tweet-text-info-img" class ="tweet-text-info-img" src="/assets/file/open-icon.png">
                 </div>
                 <div class="tweet-footer">
                     <div class="tweet-info">
@@ -1920,7 +1924,7 @@
 
                 </div>
             </div>
-            <div class="tweet-detail-info">
+            <div class="tweet-detail-info" id="tweet-detail-info"  style="display: none">
                 <span class="tweet-info"><span id="tweet-detail-creator"
                                                style="font-size: 14px; font-weight: 400; color: #898989">作者Web3 ID</span>:<span
                             class="tweet-web3_id">0x00a7539cc7cc54f08a761175aa678005ef91f4dc</span></span>

@@ -279,11 +279,20 @@ function quitFromService() {
         window.location.href = "/signIn";
     })
 }
-
+function showTweetDetailInfo(){
+    const div = document.getElementById('tweet-detail-info')
+    if (div.style.display === 'none'){
+        div.style.display = 'flex';
+        document.getElementById('tweet-text-info-img').classList.remove('tweet-text-info-img');
+    }else{
+        document.getElementById('tweet-text-info-img').classList.add('tweet-text-info-img');
+        div.style.display = 'none';
+    }
+}
 async function showTweetDetail(parentEleID, tweet) {
     const detail = document.querySelector('#tweet-detail');
     detail.style.display = 'block';
-
+    document.getElementById('tweet-post-on-top').style.display='none';
     const parentNode = document.getElementById(parentEleID);
     if (!parentNode) {
         return;
@@ -298,6 +307,7 @@ async function showTweetDetail(parentEleID, tweet) {
 
     detail.querySelector('.back-button').onclick = () => {
         parentNode.style.display = 'block';
+        document.getElementById('tweet-post-on-top').style.display='block';
         detail.style.display = 'none';
         detail.querySelector('.team-members').innerHTML = '';
         detail.querySelector('.team-members').style.display = 'none';
