@@ -8,6 +8,8 @@
     <script src="/assets/conf.js"></script>
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
     <script src="/assets/js/utils.js"></script>
+    <script src="/assets/js/i18next.min.js"></script>
+    <script src="/assets/js/i18nextBrowserLanguageDetector.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -134,13 +136,13 @@
 
         </div>
         <div class="profile-infoBlockchain" id="blockchain-info">
-            <h2 style="margin-bottom: 6px; font-size: 18px">Web3元身份</h2>
-            <p><strong>Ethereum 地址:</strong> <span id="eth-address">0x87a43eeda49f2ec52c581573489743f86d8c8649</span></p>
-            <p style="font-size: 14px">绑定时间:<span id="signup-time" style="font-size: 14px">2024-1-11</span></p>
+            <h2 style="margin-bottom: 6px; font-size: 18px" id="label-meta-id">Web3元身份</h2>
+            <p><strong><span id="label-eth-address">Ethereum 地址</span>:</strong> <span id="eth-address">0x87a43eeda49f2ec52c581573489743f86d8c8649</span></p>
+            <p style="font-size: 14px"><span id="label-bind-time">绑定时间</span>:<span id="signup-time" style="font-size: 14px">2024-1-11</span></p>
         </div>
         <div class="profile-action">
-            <button onclick="bindWeb3Id()">绑定web3身份</button>
-            <button onclick="backToHome()" style="background-color: transparent; color: #7E7F82; margin-top: 8px; height: 32px; font-size: 14px" >暂时不绑定</button>
+            <button onclick="bindWeb3Id()" id="btn-bind-now">绑定web3身份</button>
+            <button onclick="backToHome()" style="background-color: transparent; color: #7E7F82; margin-top: 8px; height: 32px; font-size: 14px" id="btn-not-bind-now">暂时不绑定</button>
         </div>
     </div>
 </div>
@@ -183,12 +185,12 @@
         try {
             const accounts = await metamaskObj.request({method: 'eth_accounts'})
             if (accounts.length === 0) {
-                showDialog(DLevel.Tips, "请登录metamask")
+                showDialog(DLevel.Tips, "sign in metamask")
                 return
             }
             const curAccId = accounts[0]
             if (curAccId !== _curNinjaEthAddr) {
-                showDialog(DLevel.Warning, "请打开metamask并确切换到：" + _curNinjaEthAddr);
+                showDialog(DLevel.Warning, "switch metamask：" + _curNinjaEthAddr);
                 return;
             }
 
@@ -216,5 +218,49 @@
 
     document.addEventListener("DOMContentLoaded", initPages);
 </script>
+
+
+<script about="zh-en">
+    i18next
+        .use(i18nextBrowserLanguageDetector)
+        .init({
+            fallbackLng: 'en',
+            debug: true,
+            resources: {
+                en: {
+                    translation: {
+                        "title": "SignUp Page",
+                        "btn-bind-now": "Bind Web3 ID",
+                        "btn-not-bind-now": "Not Now",
+                        "label-bind-time": "binding time",
+                        "label-eth-address": "Ethereum Address",
+                        "label-meta-id": "Web3 ID",
+                    }
+                },
+                zh: {
+                    translation: {
+                        "title": "绑定页面",
+                        "btn-bind-now": "绑定web3身份",
+                        "btn-not-bind-now": "暂时不绑定",
+                        "label-bind-time": "绑定时间",
+                        "label-eth-address": "Ethereum 地址",
+                        "label-meta-id": "Web3元身份",
+                    }
+                }
+            }
+        }, function(err, t) {
+            updateContent();
+        });
+
+    function updateContent() {
+        document.title = i18next.t('title');
+        document.getElementById('btn-not-bind-now').textContent = i18next.t('btn-not-bind-now');
+        document.getElementById('btn-bind-now').textContent = i18next.t('btn-bind-now');
+        document.getElementById('label-bind-time').textContent = i18next.t('label-bind-time');
+        document.getElementById('label-eth-address').textContent = i18next.t('label-eth-address');
+        document.getElementById('label-meta-id').textContent = i18next.t('label-meta-id');
+    }
+</script>
+
 </body>
 </html>
