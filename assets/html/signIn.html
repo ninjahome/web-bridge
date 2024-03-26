@@ -170,6 +170,97 @@
         padding: 0 8px;
     }
 
+
+    .service-nostr,
+    .service-LensProtocol,
+    .service-avatars {
+        transition: box-shadow 0.3s ease; /* 添加过渡效果使阴影变化更平滑 */
+        border-radius: 50%;
+    }
+
+    .service-nostr :hover {
+        border-radius: 50%;
+        transition: box-shadow 0.3s ease; /* 添加过渡效果使阴影变化更平滑 */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 鼠标悬停时添加阴影 */
+        cursor: pointer;
+    }
+
+    .service-LensProtocol :hover {
+        border-radius: 50%;
+        transition: box-shadow 0.3s ease; /* 添加过渡效果使阴影变化更平滑 */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 鼠标悬停时添加阴影 */
+        cursor: pointer;
+    }
+    .service-avatars :hover {
+        border-radius: 50%;
+        transition: box-shadow 0.3s ease; /* 添加过渡效果使阴影变化更平滑 */
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 鼠标悬停时添加阴影 */
+        cursor: pointer;
+    }
+
+    ul {
+        list-style: none;
+    }
+
+    .styles_apps {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        grid-gap: 2rem 2rem;
+        gap: 2rem 2rem;
+        padding: 2rem;
+        background-color: white;
+        width: 100%;
+        max-width: 312px;
+        border-radius: 12px;
+        box-shadow: rgba(0, 0, 0, 0.08) 0 8px 28px;
+    }
+
+    .styles_apps li {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .styles-nostr {
+        display: none;
+        position: absolute;
+        bottom: -84px;
+        right: -79px;
+        z-index: 10;
+    }
+
+    .styles-avatars {
+        display: none;
+        position: absolute;
+        bottom: -84px;
+        right: -197px;
+        z-index: 10;
+    }
+
+    .styles-LensProtocol {
+        display: none;
+        position: absolute;
+        bottom: -84px;
+        right: -137px;
+        z-index: 10;
+    }
+
+    .service-nostr :hover .styles-nostr {
+        display: block;
+        cursor: pointer;
+    }
+
+    .service-nostr :hover .styles-LensProtocol {
+        display: block;
+        cursor: pointer;
+    }
+
+    .service-nostr :hover .styles-avatars {
+        display: block;
+        cursor: pointer;
+    }
+
 </style>
 <body>
 <div class="right-container">
@@ -222,20 +313,20 @@
                     <h4>Web3</h4>
                 </div>
                 <div class="services">
-                    <div class="service" style="font-size: 18px; font-weight: bold">
+                    <div class="service service-nostr" style="font-size: 18px; font-weight: bold">
                         <img src="/assets/file/nostr.png" alt="Web2 Logo 3">
                         <div class="logo-container" id="logo-container-nostr"><span class="connected-icon"></span> </div>
                     </div>
-                    <div class="service" style="font-size: 18px; font-weight: bold">
+                    <div class="service service-LensProtocol" style="font-size: 18px; font-weight: bold">
                         <img src="/assets/file/LensProtocol-logo.png" alt="Web2 Logo 3">
                         <div class="logo-container" id="logo-container-lensProtocol"><span class="connected-icon"></span> </div>
                     </div>
-                    <div class="service" style="font-size: 18px; font-weight: bold">
+                    <div class="service service-avatars" style="font-size: 18px; font-weight: bold">
                         <img src="/assets/file/avatars-logo.png" alt="Web2 Logo 3">
                         <div class="logo-container" id="logo-container-avatars"><span class="connected-icon"></span> </div>
                     </div>
                 </div>
-            </div>
+               </div>
             <!-- 区块链绑定 -->
             <div class="blockchain-binding">
                 <div class="title-container">
@@ -261,7 +352,82 @@
                 </div>
             </div>
         </div>
+        <div class="styles-avatars">
+            <ul class="styles_apps">
+                <Li>
+                    <img src="/assets/file/Warpcast.png">
+                    <p>Warpcast</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/supercast.png">
+                    <p>Supercast</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/farcord.png">
+                    <p>Farcord</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/yup.png">
+                    <p>Yup</p>
+                </Li>
+            </ul>
+        </div>
+        <div class="styles-LensProtocol">
+            <ul class="styles_apps">
+                <Li>
+                    <img src="/assets/file/Dumpling.png">
+                    <p>Dumpling</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/Kaira.png">
+                    <p>Kaira</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/Orb.png">
+                    <p>Orb</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/Buttrfly.png">
+                    <p>Buttrfly</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/Focalize.png">
+                    <p>Focalize</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/Hey.png">
+                    <p>Hey</p>
+                </Li>
+            </ul>
+        </div>
+        <div class="styles-nostr">
+            <ul class="styles_apps">
+                <Li>
+                    <img src="/assets/file/rabbit.png">
+                    <p>Rabbit</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/nos.png">
+                    <p>Nos</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/coracle.png">
+                    <p>Coracle</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/damus.png">
+                    <p>Damus</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/primal.png">
+                    <p>Primal</p>
+                </Li>
+            </ul>
+        </div>
+
+
     </div>
+
 
 </div>
 
