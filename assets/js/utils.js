@@ -205,7 +205,7 @@ function createModalElement() {
     const message = document.createElement('div');
     message.id = 'loading-message';
     message.style.marginTop = '10px';
-    message.textContent = 'Loading...';
+    message.textContent = '';
 
     // Add text in the center of the container
     const loadingText = document.createElement('div');
