@@ -205,11 +205,11 @@ function createModalElement() {
     const message = document.createElement('div');
     message.id = 'loading-message';
     message.style.marginTop = '10px';
-    message.textContent = '';
+    message.textContent = ' ';
 
     // Add text in the center of the container
     const loadingText = document.createElement('div');
-    loadingText.textContent = 'Loading';
+    loadingText.textContent = ' ';
     loadingText.style.position = 'absolute';
     loadingText.style.top = '48.75%';
     loadingText.style.left = '50%';
