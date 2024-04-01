@@ -139,13 +139,19 @@
 
                 <div class="app-enter-point">
                     <div class="main-dapp-twitter">
-                        <button>Launch DApp(Dessage Twitter)</button>
+                        <button onclick="launchDessageTwitterApp()">Launch DApp(Dessage Twitter)</button>
                     </div>
                     <div class="other-dapp-im">
-                        <span>Dessage IM</span>
-                        <button>Android 下载</button>
-                        <button>Ios 下载</button>
-                        <button>Web 入口</button>
+                        <span>Dessage IM APP</span>
+                        <a href="https://ninjahome.github.io/dessage.apk">
+                            <img src="/assets/file/android_icon.png" style="width: 40px; height: 40px" alt="ios icon">
+                            <span>android下载</span>
+                        </a>
+                        <a href="https://testflight.apple.com/join/8rZ1eH4s">
+                            <img src="/assets/file/ios_icon.png" style="width: 40px; height: 40px" alt="ios icon">
+                            <span>ios下载</span>
+                        </a>
+
                     </div>
                 </div>
             </div>
@@ -228,5 +234,11 @@
     <a href="https://github.com/ninjahome" target="_blank"><img src="/assets/file/GitHub-logo.png" alt="GitHub"></a>
 </footer>
 
+<script>
+
+    function launchDessageTwitterApp(){
+        window.location.href="/app";
+    }
+</script>
 </body>
 </html>

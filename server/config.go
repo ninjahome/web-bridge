@@ -53,7 +53,8 @@ var (
 
 	cfgHtmlFileRouter = map[string]string{
 		"/signIn": "html/signIn.html",
-		"/":       "html/signIn.html",
+		"/":       "html/index.html",
+		"/app":    "html/signIn.html",
 	}
 
 	_globalCfg *SysConf
