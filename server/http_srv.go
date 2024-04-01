@@ -41,16 +41,11 @@ func NewMainService() *MainService {
 	r.PathPrefix("/" + staticFileDir + "/").Handler(http.StripPrefix("/"+staticFileDir+"/", http.FileServer(http.Dir(staticFileDir))))
 
 	for route, fileName := range cfgHtmlFileRouter {
-		r.HandleFunc(route, func(w http.ResponseWriter, r *http.Request) {
-			bh.assetsStaticFile(w, r, fileName)
+		var url, file = route, fileName
+		r.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+			bh.assetsStaticFile(w, r, file)
 		})
 	}
-
-	r.HandleFunc("/user_profile/{web3-id}", func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		web3ID := vars["web3-id"]
-		userProfile(w, r, web3ID)
-	})
 
 	for route, twService := range cfgActionRouter {
 		var url, action = route, twService
