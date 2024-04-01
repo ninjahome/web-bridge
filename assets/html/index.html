@@ -17,10 +17,10 @@
 
         .header {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             align-items: center;
-            background-color: #333;
-            color: #fff;
+            background-color: rgba(255, 255, 255, 0.5);
+            color: #141415;
             position: fixed;
             width: 100%;
             top: 0;
@@ -40,15 +40,6 @@
             color: #fff;
             text-decoration: none;
             margin-left: 20px;
-        }
-
-        main {
-            margin-top: 60px; /* 确保main的内容不被顶部导航栏遮挡 */
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* 使main中的内容在水平方向上居中 */
-            width: 100%;
         }
 
         section {
@@ -79,17 +70,17 @@
 
 
         .ninja-protocol-page {
-            display: flex;
-            justify-content: space-between; /* 使左右两侧内容在主轴方向上平均分布 */
             width: 100%; /* 确保占满整个section的宽度 */
-            padding: 20px; /* 根据需要调整 */
+            height: 910px;
+            background-image: url("/assets/file/ninja-protocol-map.png");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: cover; /* 确保背景图完全覆盖元素 */
         }
 
-        .ninja-protocol-left, .ninja-protocol-right {
-            width: 48%; /* 使两边各自占据大约一半的宽度，根据实际内容调整 */
-            display: flex;
-            flex-direction: column; /* 如果需要，可以让子内容在垂直方向上排列 */
-            justify-content: start; /* 从顶部开始排列子元素 */
+        .ninja-protocol-right {
+            width: 1200px; /* 使两边各自占据大约一半的宽度，根据实际内容调整 */
+            margin: auto;
         }
 
         /* 如果需要，可以进一步调整内容的样式 */
@@ -112,29 +103,27 @@
 </head>
 <body>
 
-<header class="header">
-    <div class="logo-container">
-        <img src="/assets/file/logo.png" alt="Logo" class="logo">
-        <span>Ninja 协议</span>
-    </div>
-    <nav class="navbar">
-        <a href="#ninja">ninja协议</a>
-        <a href="#docs">文档</a>
-        <a href="#dapp">Dapp</a>
-        <a href="#roadmap">路线图</a>
-        <a href="https://github.com/ninjahome/web-bridge/wiki" target="_blank">社区</a>
-    </nav>
-</header>
+
 
 <main>
-    <section id="ninja">
+    <header class="header">
+        <div class="logo-container">
+            <img src="/assets/file/logo.png" alt="Logo" class="logo">
+            <span>Ninja 协议</span>
+        </div>
+        <nav class="navbar">
+            <a href="#ninja">ninja协议</a>
+            <a href="#docs">文档</a>
+            <a href="#dapp">Dapp</a>
+            <a href="#roadmap">路线图</a>
+            <a href="https://github.com/ninjahome/web-bridge/wiki" target="_blank">社区</a>
+        </nav>
+    </header>
+    <div id="ninja">
         <div class="ninja-protocol-page">
-            <div class="ninja-protocol-left">
-                <img src="/assets/file/ninja-protocol-map.png" alt="ninja protocol map">
-            </div>
             <div class="ninja-protocol-right">
                 <span id="vision-tittle">愿景</span>
-                <span id="vision-content">成为打通一切web2应用生态、web3协议及公链的通信协议</span>
+                <span id="vision-content" style="display:block;font-size: 42px; width: 698px; word-wrap: break-word; overflow-wrap: break-word;">成为打通一切web2应用生态、web3协议及公链的通信协议</span>
                 <span id="vision-note">Ninja是一个开放的、抗审查的、全球化的、天然实现跨链的通信标准协议，任何人可以在Ninja之上搭建社交平台，任何人也都可以在Ninja生态中运行传输节点。</span>
 
                 <div class="app-enter-point">
@@ -156,7 +145,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
     <section id="docs">
         <div class="protocol-detail">
