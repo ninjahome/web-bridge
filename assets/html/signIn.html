@@ -19,7 +19,7 @@
         box-sizing: border-box;
     }
 
-    h1, h2,h3,h4 {
+    h1, h2, h3, h4 {
         margin: 0;
     }
 
@@ -69,7 +69,7 @@
         margin: 0 16px;
     }
 
-    .web3-idTips{
+    .web3-idTips {
         display: block;
         color: #898989;
         font-size: 16px !important;
@@ -85,7 +85,7 @@
         background-color: #1B1B1D;
         border: none;
         margin-bottom: 16px;
-        font-family: "Baloo Chettan 2","Alibaba PuHuiTi", Helvetica, Arial, sans-serif ;
+        font-family: "Baloo Chettan 2", "Alibaba PuHuiTi", Helvetica, Arial, sans-serif;
     }
 
     .title-container {
@@ -181,20 +181,21 @@
     .service-nostr :hover {
         border-radius: 50%;
         transition: box-shadow 0.3s ease; /* 添加过渡效果使阴影变化更平滑 */
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 鼠标悬停时添加阴影 */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 鼠标悬停时添加阴影 */
         cursor: pointer;
     }
 
     .service-LensProtocol :hover {
         border-radius: 50%;
         transition: box-shadow 0.3s ease; /* 添加过渡效果使阴影变化更平滑 */
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 鼠标悬停时添加阴影 */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 鼠标悬停时添加阴影 */
         cursor: pointer;
     }
+
     .service-avatars :hover {
         border-radius: 50%;
         transition: box-shadow 0.3s ease; /* 添加过渡效果使阴影变化更平滑 */
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* 鼠标悬停时添加阴影 */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 鼠标悬停时添加阴影 */
         cursor: pointer;
     }
 
@@ -269,7 +270,8 @@
         <div class="login-section">
             <h2>获取web3ID</h2>
             <div class="web3-id-label d-radius2" id="web3-id-label">
-                <strong style="margin-left: 16px; margin-bottom: 4px; display: inline-block; font-size: 14px">Web3 ID:</strong>
+                <strong style="margin-left: 16px; margin-bottom: 4px; display: inline-block; font-size: 14px">Web3
+                    ID:</strong>
                 <span id="web3-id"></span>
                 <span id="web3-id-tips" class="web3-idTips">链接MetaMask以获取Web3 ID</span>
             </div>
@@ -283,7 +285,9 @@
                 </button>
             </div>
         </div>
-        <div id="error-div" style="display: flex; flex-direction: column; align-items: center;"><span id="error-txt" style="color: #DD324A"></span></div>
+        <div id="error-div" style="display: flex; flex-direction: column; align-items: center;"><span id="error-txt"
+                                                                                                      style="color: #DD324A"></span>
+        </div>
         <div class="binding-section">
             <p style="color: #1B1B1D" id="title-of-bridge-list">社交元身份桥接表</p>
             <!-- Web2 绑定 -->
@@ -294,15 +298,18 @@
                 <div class="services">
                     <div class="service">
                         <img src="/assets/file/GitHub-logo.png" alt="Web2 Logo 1">
-                        <div class="logo-container" id="logo-container-github"><span class="connected-icon"></span> </div>
+                        <div class="logo-container" id="logo-container-github"><span class="connected-icon"></span>
+                        </div>
                     </div>
                     <div class="service">
                         <img src="/assets/file/Twitter-logo.png" alt="twitter">
-                        <div class="logo-container" id="logo-container-twitter"><span class="connected-icon"></span> </div>
+                        <div class="logo-container" id="logo-container-twitter"><span class="connected-icon"></span>
+                        </div>
                     </div>
                     <div class="service">
                         <img src="/assets/file/Tele-logo.png" alt="Web2 Logo 3">
-                        <div class="logo-container" id="logo-container-telegram"><span class="connected-icon"></span> </div>
+                        <div class="logo-container" id="logo-container-telegram"><span class="connected-icon"></span>
+                        </div>
                     </div>
 
                 </div>
@@ -313,20 +320,25 @@
                     <h4>Web3</h4>
                 </div>
                 <div class="services">
-                    <div class="service service-nostr" style="font-size: 18px; font-weight: bold">
+                    <div class="service service-nostr" style="font-size: 18px; font-weight: bold"
+                         onmouseenter="showAppList('styles-nostr',false)" onmouseleave="showAppList('styles-nostr',true)">
                         <img src="/assets/file/nostr.png" alt="Web2 Logo 3">
-                        <div class="logo-container" id="logo-container-nostr"><span class="connected-icon"></span> </div>
+                        <div class="logo-container" id="logo-container-nostr"><span class="connected-icon"></span></div>
                     </div>
-                    <div class="service service-LensProtocol" style="font-size: 18px; font-weight: bold">
+                    <div class="service service-LensProtocol" style="font-size: 18px; font-weight: bold"
+                         onmouseenter="showAppList('styles-LensProtocol',false)" onmouseleave="showAppList('styles-LensProtocol',true)">
                         <img src="/assets/file/LensProtocol-logo.png" alt="Web2 Logo 3">
-                        <div class="logo-container" id="logo-container-lensProtocol"><span class="connected-icon"></span> </div>
+                        <div class="logo-container" id="logo-container-lensProtocol"><span
+                                    class="connected-icon"></span></div>
                     </div>
-                    <div class="service service-avatars" style="font-size: 18px; font-weight: bold">
+                    <div class="service service-avatars" style="font-size: 18px; font-weight: bold"
+                         onmouseenter="showAppList('styles-avatars',false)" onmouseleave="showAppList('styles-avatars',true)">
                         <img src="/assets/file/avatars-logo.png" alt="Web2 Logo 3">
-                        <div class="logo-container" id="logo-container-avatars"><span class="connected-icon"></span> </div>
+                        <div class="logo-container" id="logo-container-avatars"><span class="connected-icon"></span>
+                        </div>
                     </div>
                 </div>
-               </div>
+            </div>
             <!-- 区块链绑定 -->
             <div class="blockchain-binding">
                 <div class="title-container">
@@ -335,24 +347,26 @@
                 <div class="services">
                     <div class="service">
                         <img src="/assets/file/Arbitrum-logo.png" alt="Blockchain Logo 1">
-                        <div class="logo-container" id="logo-container-arbitrum"><span class="connected-icon"></span> </div>
+                        <div class="logo-container" id="logo-container-arbitrum"><span class="connected-icon"></span>
+                        </div>
                     </div>
                     <div class="service">
                         <img src="/assets/file/Solana-logo.png" alt="Blockchain Logo 2">
-                        <div class="logo-container" id="logo-container-solana"><span class="connected-icon"></span> </div>
+                        <div class="logo-container" id="logo-container-solana"><span class="connected-icon"></span>
+                        </div>
                     </div>
                     <div class="service">
                         <img src="/assets/file/Bitcoin-logo.png" alt="Blockchain Logo 2">
-                        <div class="logo-container" id="logo-container-btc"><span class="connected-icon"></span> </div>
+                        <div class="logo-container" id="logo-container-btc"><span class="connected-icon"></span></div>
                     </div>
                     <div class="service">
                         <img src="/assets/file/Ethereum-logo.png" alt="Blockchain Logo 2">
-                        <div class="logo-container" id="logo-container-eth"><span class="connected-icon"></span> </div>
+                        <div class="logo-container" id="logo-container-eth"><span class="connected-icon"></span></div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="styles-avatars">
+        <div class="styles-avatars" id="styles-avatars">
             <ul class="styles_apps">
                 <Li>
                     <img src="/assets/file/Warpcast.png">
@@ -372,7 +386,7 @@
                 </Li>
             </ul>
         </div>
-        <div class="styles-LensProtocol">
+        <div class="styles-LensProtocol" id="styles-LensProtocol">
             <ul class="styles_apps">
                 <Li>
                     <img src="/assets/file/Dumpling.png">
@@ -400,7 +414,7 @@
                 </Li>
             </ul>
         </div>
-        <div class="styles-nostr">
+        <div class="styles-nostr" id="styles-nostr">
             <ul class="styles_apps">
                 <Li>
                     <img src="/assets/file/rabbit.png">
@@ -454,7 +468,7 @@
     }
 
     function showSignBtn(web3ID) {
-        document.querySelectorAll(".logo-container").forEach(item=> item.classList.remove("active"));
+        document.querySelectorAll(".logo-container").forEach(item => item.classList.remove("active"));
         const web3IdTips = document.getElementById("web3-id-tips");
         const signInDiv = document.getElementById("sign-in-div");
         const metamaskDiv = document.getElementById("metamask-div");
@@ -476,11 +490,11 @@
         document.getElementById("logo-container-eth").classList.add("active")
 
         const savedUserInfo = NJUserBasicInfo.loadNjBasic(web3ID);
-        if (!savedUserInfo){
+        if (!savedUserInfo) {
             return;
         }
         let tw_data = TwitterBasicInfo.loadTwBasicInfo(savedUserInfo.tw_id)
-        if(!tw_data){
+        if (!tw_data) {
             return;
         }
 
@@ -562,7 +576,7 @@
                 hideLoading();
             })
         } catch (err) {
-            showError("sign in err:\n"+err.message);
+            showError("sign in err:\n" + err.message);
             hideLoading();
         }
     }
@@ -582,13 +596,13 @@
                         "title": "SignIn Page",
                         "bridge-title": "Social Meta-Identity Mapping Table",
                         "road-map-title": "Road Map",
-                        "road-map-step1":"Client-Side Bridging to Web2.0",
-                        "road-map-step2":"Ninja Identity Linking Web2.0, Web3.0, and Blockchain",
-                        "road-map-step3":"Access Layer Protocol",
-                        "road-map-step4":"Routing Layer Protocol",
-                        "road-map-step5":"Launching The Trustless Distributed Routing Network",
-                        "road-map-step6":"Toolset Compatible with Web2.0 Clients and Servers",
-                        "bridge-list-sub-tittle":"Blockchain",
+                        "road-map-step1": "Client-Side Bridging to Web2.0",
+                        "road-map-step2": "Ninja Identity Linking Web2.0, Web3.0, and Blockchain",
+                        "road-map-step3": "Access Layer Protocol",
+                        "road-map-step4": "Routing Layer Protocol",
+                        "road-map-step5": "Launching The Trustless Distributed Routing Network",
+                        "road-map-step6": "Toolset Compatible with Web2.0 Clients and Servers",
+                        "bridge-list-sub-tittle": "Blockchain",
                     }
                 },
                 zh: {
@@ -596,17 +610,17 @@
                         "title": "登录页面",
                         "bridge-title": "社交元身份桥接表",
                         "road-map-title": "研发规划路线",
-                        "road-map-step1":"客户端桥接Web2.0",
-                        "road-map-step2":"Ninja身份跨Web2.0 Web3.0 区块链",
-                        "road-map-step3":"接入层协议",
-                        "road-map-step4":"路由层协议",
-                        "road-map-step5":"启动无需信任的分布式路由网络",
-                        "road-map-step6":"兼容Web2.0客户端和服务器的工具集合",
-                        "bridge-list-sub-tittle":"区块链",
+                        "road-map-step1": "客户端桥接Web2.0",
+                        "road-map-step2": "Ninja身份跨Web2.0 Web3.0 区块链",
+                        "road-map-step3": "接入层协议",
+                        "road-map-step4": "路由层协议",
+                        "road-map-step5": "启动无需信任的分布式路由网络",
+                        "road-map-step6": "兼容Web2.0客户端和服务器的工具集合",
+                        "bridge-list-sub-tittle": "区块链",
                     }
                 }
             }
-        }, function(err, t) {
+        }, function (err, t) {
             updateContent();
         });
 
@@ -615,6 +629,16 @@
         document.getElementById('title-of-bridge-list').textContent = i18next.t('bridge-title');
         document.getElementById('bridge-list-sub-tittle').textContent = i18next.t('bridge-list-sub-tittle');
     }
+
+    function showAppList(listID,isHide) {
+        if (isHide){
+            document.getElementById(listID).style.display = 'none';
+
+        }else{
+            document.getElementById(listID).style.display = 'block';
+        }
+    }
+
 </script>
 </body>
 </html>
