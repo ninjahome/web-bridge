@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ninja Protocol</title>
     <style about="main frame">
+
         * {
             margin: 0;
             padding: 0;
@@ -12,7 +13,26 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Baloo Chettan 2", Helvetica, Arial, sans-serif, "Alibaba PuHuiTi";
+        }
+
+        ul li {
+            list-style: none;
+            margin-top: 24px;
+            padding: 24px;
+            background-color: rgba(216, 216, 216, 0.15);
+            border-radius: 12px;
+        }
+
+        ul li h3 {
+            margin-bottom: 8px;
+        }
+
+        p{
+            font-weight: 300;
+            font-size: 14px;
+            line-height: 24px;
+            letter-spacing: 1px; /* 设置字母间距为100px */
         }
 
         .header {
@@ -36,23 +56,42 @@
             width: 50px; /* 根据实际Logo大小调整 */
         }
 
-        .navbar a {
-            color: #fff;
+        /* 去掉链接的下划线 */
+        a {
             text-decoration: none;
-            margin-left: 20px;
+            color: white;
+            display: inline-block;
+            vertical-align: middle; /* 垂直居中对齐 */
         }
 
-        section {
-            margin-bottom: 20px;
-            min-height: 400px; /* 固定高度，根据需要调整 */
-            width: 1200px; /* 固定宽度，根据需要调整 */
+        /* 图片垂直居中对齐 */
+        .other-dapp-im img {
+            vertical-align: middle; /* 垂直居中对齐 */
+            width: 24px;
+            height: 24px;
+        }
+        .navbar a {
+            color: #141415;
+        }
+
+        .protocol-detail,
+        .dapp-header,
+        .dapp-details{
+            width: 1200px;
+            margin: auto;
+            padding: 24px;
+        }
+
+        .dapp-header {
+            color: white;
             display: flex;
-            justify-content: center; /* 使section中的内容在水平方向上居中 */
-            align-items: center; /* 使section中的内容在垂直方向上居中 */
-            background-color: #f0f0f0; /* 背景颜色，便于区分section */
-            border-radius: 10px; /* 边框圆角 */
+            justify-content: space-evenly;
+            align-items: center;
         }
 
+        .dapp-header img {
+            margin-right: 24px;
+        }
         .footer {
             display: flex;
             justify-content: center;
@@ -71,7 +110,7 @@
 
         .ninja-protocol-page {
             width: 100%; /* 确保占满整个section的宽度 */
-            height: 910px;
+            height: 680px;
             background-image: url("/assets/file/ninja-protocol-map.png");
             background-repeat: no-repeat;
             background-position: center center;
@@ -79,9 +118,49 @@
         }
 
         .ninja-protocol-right {
+            height: 680px;
             width: 1200px; /* 使两边各自占据大约一半的宽度，根据实际内容调整 */
             margin: auto;
+            display: flex;
+            justify-content: center;
+            flex-wrap: nowrap;
+            flex-direction: column;
         }
+
+        .ninja-protocol-right span {
+            display: block;
+            width: 680px;
+            overflow-wrap: break-word;
+            margin-bottom: 12px;
+        }
+
+        .dapp-btn {
+            height: 52px;
+            color: white;
+            font-size: 16px;
+            background-color: #141415;
+            border: none;
+            border-radius: 12px;
+            padding: 0 24px;
+            margin: 12px 0;
+        }
+
+        .dapp-btn:hover {
+            background-color: #6495da;
+        }
+
+        .dapp-download {
+            width: 120px;
+            height: 42px;
+            border-radius: 12px;
+            background-color: rgba(20, 20, 21, 0.5);
+            margin: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer; /* 添加鼠标指针样式 */
+        }
+
 
         /* 如果需要，可以进一步调整内容的样式 */
         .ninja-protocol-left img {
@@ -97,6 +176,35 @@
 
         .ninja-protocol-right li {
             margin-bottom: 10px; /* 给列表项之间一些间距 */
+        }
+
+        .roadmap-schedule {
+            height: 233px;
+            display: flex;
+            align-content: center;
+            align-items: center;
+            justify-content: space-around;
+            background-image: url("/assets/file/roadmap-img.png");
+        }
+
+        .roadmap-schedule .schedule {
+            position: relative;
+        }
+
+        .schedule h3 {
+            margin-bottom: 22px;
+        }
+
+        .schedule h3::after {
+            content: '';
+            position: absolute;
+            top: 26px;
+            left: 0;
+            width: 72px;
+            height: 4px;
+            border-radius: 12px;
+            display: block;
+            background-color: #141415 ;
         }
 
     </style>
@@ -123,23 +231,27 @@
         <div class="ninja-protocol-page">
             <div class="ninja-protocol-right">
                 <span id="vision-tittle">愿景</span>
-                <span id="vision-content" style="display:block;font-size: 42px; width: 698px; word-wrap: break-word; overflow-wrap: break-word;">成为打通一切web2应用生态、web3协议及公链的通信协议</span>
-                <span id="vision-note">Ninja是一个开放的、抗审查的、全球化的、天然实现跨链的通信标准协议，任何人可以在Ninja之上搭建社交平台，任何人也都可以在Ninja生态中运行传输节点。</span>
+                <span id="vision-content" style="font-weight: 600; font-size: 42px;">成为打通一切web2应用生态、web3协议及公链的通信协议</span>
+                <span id="vision-note" style="font-weight: 300; font-size: 16px;">Ninja是一个开放的、抗审查的、全球化的、天然实现跨链的通信标准协议，任何人可以在Ninja之上搭建社交平台，任何人也都可以在Ninja生态中运行传输节点。</span>
 
                 <div class="app-enter-point">
                     <div class="main-dapp-twitter">
-                        <button onclick="launchDessageTwitterApp()">Launch DApp(Dessage Twitter)</button>
+                        <button onclick="launchDessageTwitterApp()" class="dapp-btn">Launch DApp(Dessage Twitter)</button>
                     </div>
                     <div class="other-dapp-im">
-                        <span>Dessage IM APP</span>
-                        <a href="https://ninjahome.github.io/dessage.apk">
-                            <img src="/assets/file/android_icon.png" style="width: 40px; height: 40px" alt="ios icon">
-                            <span>android下载</span>
-                        </a>
-                        <a href="https://testflight.apple.com/join/8rZ1eH4s">
-                            <img src="/assets/file/ios_icon.png" style="width: 40px; height: 40px" alt="ios icon">
-                            <span>ios下载</span>
-                        </a>
+                        <p>Dessage IM APP</p>
+                        <div class="dapp-download">
+                            <a href="https://ninjahome.github.io/dessage.apk" style="text-decoration: none; color: white">
+                                <img src="/assets/file/android.svg" alt=" ">
+                                <p style="display: inline-block">android下载</p>
+                            </a>
+                        </div>
+                        <div class="dapp-download">
+                            <a href="https://testflight.apple.com/join/8rZ1eH4s" style="text-decoration: none; color: white">
+                                <img src="/assets/file/apple.svg" alt="ios icon">
+                                <p style="display: inline-block">ios下载</p>
+                            </a>
+                        </div>
 
                     </div>
                 </div>
@@ -151,70 +263,98 @@
         <div class="protocol-detail">
             <div class="system-item">
                 <img src="/assets/file/account-system.png" alt="account system">
-                <span id="technical_principles">新账号体系</span>
-                <span>
+                <h3 id="technical_principles">新账号体系</h3>
+                <p>
                    一个私钥对应多个地址身份， 任何人可以在Ninja上建立自己的公私钥账号体系，公钥是与他人社交互动时用户的公开身份，私钥是唯一的掌握自己社交数据所有权的凭证，通过输入其他用户的公钥地址即可与之通信，公私钥体系确保了用户可以通过Ninja协议实现真正的端对端加密通信。Ninja亦可兼容其他主流通信协议（如Nostr、Farcaster等）并可实现跨协议跨应用的通信，也支持用户输入某个公链地址（如以太坊地址、比特币地址等）找到好友进行通信。最终Ninja通过建立通信协议标准也可在服务器层面兼容目前主流的web2生态（如telegram、discord等）
-                </span>
+                </p>
             </div>
             <div class="system-item">
                 <img src="/assets/file/system-arch.png" alt="system arch">
-                <span>架构</span>
-                <span>
+                <h3>架构</h3>
+                <p>
                     通过融合路由网络协议与区块链技术，实现天然可信的信息传递与实时结算。通过开放多样的的接入层和统一的数据传输与加解密规则，满足开发者的多种需求，开发者可以根据自己的应用场景开发客户端与接入层，再发生跨域服务的时候，才需要调用全域路由服务并支付路由费用。通过DAO自治与token激励，实现协议规则的去中心化以及共有共治，在协议开发的一定阶段，数据结构的定义，加解密方式的设定，路由费用以及路由的原则，节点上下线规则等协议全部通过DAO投票方式进行并对作出贡献者进行token激励。
-                </span>
+                </p>
             </div>
 
             <div class="system-item">
                 <img src="/assets/file/token-node.png" alt="token system">
-                <span>代币</span>
-                <span>
+                <h3>代币</h3>
+                <p>
                     Ninja将会在不久的将来发行自己的代币，主要是用来激励早期参与者，以及在整个生态中激励所有的节点和参与者。同时在协议相关的诸多功能上以及在基于Ninja协议开发的各类应用中延展出的各类功能和场景中都会使用Ninja的代币进行结算，敬请期待。
-                </span>
+                </p>
             </div>
         </div>
     </section>
     <section id="dapp">
-        <div class="dapp-header">
-
-            <span>Dessage 第一款给予ninja协议的DApp</span>
-            <span>
-                端对端加密的基于分布式传输的通信（支持多链跨链通信，支持跨社交协议、跨应用的沟通），解决用户web3原生场景的社交需求，并可实现用户与主流web2应用生态（如telegram、discord等）之间的端对端加密通信
-            </span>
-            <span>多链链上社交图谱整合，构建web3用户的链上元身份 </span>
-            <img src="/assets/file/dessage-feature.png" alt="dessage dapp">
-            <span>Zk身份投影，为用户挖掘出链上社交图谱的价值</span>
-            <span>数据主权变现</span>
+        <div style="background-color:#141415 ">
+            <div class="dapp-header">
+                <img src="/assets/file/dessage-feature.png" alt="dessage dapp">
+                <div>
+                    <p>Dessage 第一款给予ninja协议的DApp</p>
+                    <p>
+                        端对端加密的基于分布式传输的通信（支持多链跨链通信，支持跨社交协议、跨应用的沟通），解决用户web3原生场景的社交需求，并可实现用户与主流web2应用生态（如telegram、discord等）之间的端对端加密通信
+                    </p>
+                    <p>多链链上社交图谱整合，构建web3用户的链上元身份 </p>
+                    <p>Zk身份投影，为用户挖掘出链上社交图谱的价值</p>
+                    <p>数据主权变现</p>
+                </div>
+            </div>
         </div>
-        <div class="dapp-details">
-            <span>Dessage是如何实现端对端加密的多链跨链通信的？</span>
-            <span>
-                由于Ninja协议的特性保证了所有Ninja用户相互之间的通信是端对端加密且抗审查的、分布式的，因此基于Ninja协议的应用Dessage天然具有上述特点。而为了使各公链的用户相互之间以及跨链用户之间可以实现通信，各个公链的用户可以使用自己在各公链中的账户通过相应的智能合约签名以证明自己对该公链账户的所有权，并将自己的该公链账户与自己的Ninja账户进行绑定，从而可以方便其他用户通过该公链地址找到自己并与自己通信。（举例：NJ12345是Alice的Ninja地址，0x12345是Alice的Eth地址，Alice可以通过使用0x12345的私钥在以太坊智能合约上签名以证明自己对0x12345的所有权，并将0x12345与NJ12345绑定，从而使得其他以太坊用户搜索0x12345地址并发起通信时，可以直接在Ninja协议上与Alice实现通信。）同时Dessage可实现与其他社交协议（如Nostr）和其他社交应用之间的跨协议跨应用无缝通信，给用户带来更开放更多元的体验。
-            </span>
-            <span>Dessage是如何实现与web2应用（如telegram）之间的加密通信的？</span>
-            <span>借助Ninja协议建立的通信标准，Dessage可与telegram的服务器通过Ninja协议进行通信，使用户可以无感知的通过telegram与桥接在Ninja协议上的任何其他应用生态进行无缝通信。</span>
-            <span>什么是元身份及社交图谱?</span>
-            <span>对于每个用户而言，可能在某一公链上会有多个账号，同时在多个公链上都会有多个账号，每个账号有不同的链上行为信息共同构成了用户的完整链上图谱。通过将用户自身在各个公链的账号加密绑定到Ninja账号，用户所有的链上图谱将会在Ninja中完整呈现，这便是用户的元身份，而各个链上的身份只是这个元身份在对应链上的投影，只是用户完整身份的一部分，用户只要掌握了自己在Ninja上的私钥，就掌握了自己完整的身份。而由这个完整的元身份所描绘出的整个链上社交关系网络则是对用户非常有价值的链上社交图谱。</span>
 
-            <span>什么是ZK身份投影协议?</span>
-            <span>当用户建立起自己的元身份后，便可充分享受自己的身份数据主权带来的价值。出于对自己完整身份的隐私性考虑，用户在每次需要某一个身份侧面时，只需要进入Ninja在各链上的身份投影合约，该合约将会以ZK的方式输出该用户这一身份侧面下的分数（举例：Alice想在以太坊链上输出自己的社交活跃度分数或者资产状况分数，她可进入Ninja在以太坊上的身份投影合约进行打分，该合约就会以ZK的方式通过Alice绑定在Ninja上的各公链地址共同给出Alice相应的分数）而这样的身份投影分数将会给用户与其他dapp的交互带来很多便利。</span>
-            <span>什么是数据主权变现?</span>
-            <span>基于用户的元身份和社交图谱，用户有多种数据主权变现的渠道，Dessage为用户提供了如下几种变现渠道：<br />自定义的付费聊天模式及付费群聊模式，可将用户自身的社交价值变现基于区块链地址的社交图谱广告投放模式，为广告主精准匹配目标用户，为受众用户最大化收获个人价值挖矿模式，配合Ninja协议生态的各类节点，为消息转发和路由提供匿踪和容灾备份，获得token奖励元身份投影价值，通过将用户的链上元身份拆解成不同的侧面，可以帮助用户在对应领域获得相应数据价值</span>
-            <span></span>
+        <div class="dapp-details">
+            <Ul class="QA">
+                <li>
+                    <h3>Dessage是如何实现端对端加密的多链跨链通信的？</h3>
+                    <p>
+                        由于Ninja协议的特性保证了所有Ninja用户相互之间的通信是端对端加密且抗审查的、分布式的，因此基于Ninja协议的应用Dessage天然具有上述特点。而为了使各公链的用户相互之间以及跨链用户之间可以实现通信，各个公链的用户可以使用自己在各公链中的账户通过相应的智能合约签名以证明自己对该公链账户的所有权，并将自己的该公链账户与自己的Ninja账户进行绑定，从而可以方便其他用户通过该公链地址找到自己并与自己通信。（举例：NJ12345是Alice的Ninja地址，0x12345是Alice的Eth地址，Alice可以通过使用0x12345的私钥在以太坊智能合约上签名以证明自己对0x12345的所有权，并将0x12345与NJ12345绑定，从而使得其他以太坊用户搜索0x12345地址并发起通信时，可以直接在Ninja协议上与Alice实现通信。）同时Dessage可实现与其他社交协议（如Nostr）和其他社交应用之间的跨协议跨应用无缝通信，给用户带来更开放更多元的体验。
+                    </p>
+                </li>
+                <li>
+                    <h3>Dessage是如何实现与web2应用（如telegram）之间的加密通信的？</h3>
+                    <p>借助Ninja协议建立的通信标准，Dessage可与telegram的服务器通过Ninja协议进行通信，使用户可以无感知的通过telegram与桥接在Ninja协议上的任何其他应用生态进行无缝通信。</p>
+
+                </li>
+                <li>
+                    <h3>什么是元身份及社交图谱?</h3>
+                    <p>对于每个用户而言，可能在某一公链上会有多个账号，同时在多个公链上都会有多个账号，每个账号有不同的链上行为信息共同构成了用户的完整链上图谱。通过将用户自身在各个公链的账号加密绑定到Ninja账号，用户所有的链上图谱将会在Ninja中完整呈现，这便是用户的元身份，而各个链上的身份只是这个元身份在对应链上的投影，只是用户完整身份的一部分，用户只要掌握了自己在Ninja上的私钥，就掌握了自己完整的身份。而由这个完整的元身份所描绘出的整个链上社交关系网络则是对用户非常有价值的链上社交图谱。</p>
+                </li>
+                <li>
+                    <h3>什么是ZK身份投影协议?</h3>
+                    <p>当用户建立起自己的元身份后，便可充分享受自己的身份数据主权带来的价值。出于对自己完整身份的隐私性考虑，用户在每次需要某一个身份侧面时，只需要进入Ninja在各链上的身份投影合约，该合约将会以ZK的方式输出该用户这一身份侧面下的分数（举例：Alice想在以太坊链上输出自己的社交活跃度分数或者资产状况分数，她可进入Ninja在以太坊上的身份投影合约进行打分，该合约就会以ZK的方式通过Alice绑定在Ninja上的各公链地址共同给出Alice相应的分数）而这样的身份投影分数将会给用户与其他dapp的交互带来很多便利。</p>
+                </li>
+                <li>
+                    <h3>什么是数据主权变现?</h3>
+                    <p>基于用户的元身份和社交图谱，用户有多种数据主权变现的渠道，Dessage为用户提供了如下几种变现渠道：<br />自定义的付费聊天模式及付费群聊模式，可将用户自身的社交价值变现基于区块链地址的社交图谱广告投放模式，为广告主精准匹配目标用户，为受众用户最大化收获个人价值挖矿模式，配合Ninja协议生态的各类节点，为消息转发和路由提供匿踪和容灾备份，获得token奖励元身份投影价值，通过将用户的链上元身份拆解成不同的侧面，可以帮助用户在对应领域获得相应数据价值</p>
+                </li>
+            </Ul>
+             <span></span>
         </div>
     </section>
     <section id="roadmap">
-        <div>
-            <img src="/assets/file/road_map.png" alt="road map">
-            <span>2024 Q1</span>
-            <span>beta版上线，实现所有通信相关的功能</span>
-            <span>2024 Q2</span>
-            <span>获得初期用户，搭建完成元身份生态系统及Zk身份投影协议</span>
-            <span>2024 Q3</span>
-            <span>协同Ninja协议的tokenomic系统，完善应用内生态激励系统及相关功能</span>
-            <span>2024 Q4</span>
-            <span>大量铺开应用场景，打开与其他各类Dapp的协同接口</span>
-        </div>
+        <ul class="roadmap-schedule" >
+            <li class="schedule" style="background-color: transparent; margin: 0; padding: 0">
+                <h3>2024 Q1</h3>
+                <p><strong>beta版上线</strong><br>实现所有通信相关的功能</p>
+            </li>
+            <li class="schedule" style="background-color: transparent; margin: 0; padding: 0">
+                <h3>2024 Q2</h3>
+                <p><strong>获得初期用户</strong><br>搭建完成元身份生态系统及Zk身份投影协议</p>
+            </li>
+            <li class="schedule" style="background-color: transparent; margin: 0; padding: 0">
+                <h3>2024 Q3</h3>
+                <p><strong>协同Ninja协议的tokenomic系统</strong><br>完善应用内生态激励系统及相关功能</p>
+            </li>
+            <li class="schedule" style="background-color: transparent; margin: 0; padding: 0">
+                <h3>2024 Q4</h3>
+                <p><strong>大量铺开应用场景</strong><br>打开与其他各类Dapp的协同接口</p>
+
+            </li>
+          </ul>
     </section>
+    <div class="main-dapp-twitter" style="margin: auto; display: flex; flex-direction: column; align-items: center; padding: 48px 0">
+        <h3>现在开始体验</h3>
+        <button onclick="launchDessageTwitterApp()" class="dapp-btn">Launch DApp(Dessage Twitter)</button>
+    </div>
 </main>
 
 <footer class="footer">
