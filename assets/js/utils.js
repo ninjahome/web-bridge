@@ -633,29 +633,32 @@ function __createCanvas(img,targetWidth,targetHeight){
     return  canvas.toDataURL('image/png');
 }
 
-function createThumbnail2(originalImageSrc, percentSize) {
-    return new Promise((resolve, reject) => {
+function compressImage(file, quality, callback) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
         const img = new Image();
-        img.src = originalImageSrc;
-
-        img.onload = function() {
-            let targetWidth = img.width*percentSize;
-            let targetHeight = img.height*percentSize;
-
-            const thumbnailDataUrl = __createCanvas(img, targetWidth,targetHeight);
-            resolve(thumbnailDataUrl);
+        img.onload = function () {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+            // 压缩图片
+            canvas.toBlob(function (blob) {
+                // 获取压缩后的图片Blob
+                const compressedFile = new File([blob], file.name, {type: "image/jpeg", lastModified: Date.now()});
+                // 调用回调函数，返回压缩后的图片文件
+                callback(compressedFile);
+            }, 'image/jpeg', quality);
         };
-
-        img.onerror = function() {
-            reject(new Error('Could not load image'));
-        };
-    });
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
 }
-
 
 
 const __defaultLogo = '/assets/file/logo.png';
 const maxTextLenPerImg = 1000;
 const maxImgPerTweet = 4;
 const defaultTextLenForTweet  = 100;
-const mostImgSize = 1024*1024;
+const MaxImgSize = (1<<21) * 1.33;

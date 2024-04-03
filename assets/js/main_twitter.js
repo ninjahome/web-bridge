@@ -321,25 +321,27 @@ function previewImage(parentId) {
             imagePreviewDiv.removeChild(imgWrapper);
         };
 
-        const reader = new FileReader();
-        reader.onload = async function (e) {
-            let rawImg = e.target.result;
-            if (rawImg.length>2*mostImgSize){
-                showDialog(DLevel.Warning,"too big image");
-                return;
-            }
-            if (rawImg.length>=mostImgSize){
-                rawImg = await createThumbnail2(rawImg, (mostImgSize/rawImg.length-0.1));
-            }
-            console.log(rawImg.length);
-            img.setAttribute('data-raw', rawImg);
-            img.src = await createThumbnail(rawImg, 400, 400);
-            const msg = ethers.utils.toUtf8Bytes(e.target.result);
-            const hash = ethers.utils.sha256(msg);
-            img.setAttribute('data-hash', hash);
-            imagePreviewDiv.appendChild(imgWrapper);
-        };
-        reader.readAsDataURL(file);
+        compressImage(file, 0.75,function (compressedFile){
+            const reader = new FileReader();
+            reader.onload = async function (e) {
+                let rawImg = e.target.result;
+                console.log("raw image size :", rawImg.length);
+                if (rawImg.length > MaxImgSize) {
+                    showDialog(DLevel.Warning, "image must less than 2M");
+                    return;
+                }
+                img.setAttribute('data-raw', rawImg);
+                img.src = await createThumbnail(rawImg, 400, 400);
+                console.log("thumbnail image size :", img.src.length);
+
+                const msg = ethers.utils.toUtf8Bytes(rawImg);
+                const hash = ethers.utils.sha256(msg);
+                img.setAttribute('data-hash', hash);
+                imagePreviewDiv.appendChild(imgWrapper);
+            };
+            reader.readAsDataURL(compressedFile);
+        });
     });
+
     parentDiv.querySelector('.tweet-file-input').value = '';
 }

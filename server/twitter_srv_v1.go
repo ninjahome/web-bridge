@@ -8,6 +8,7 @@ import (
 	"github.com/dghubble/oauth1"
 	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
+	"golang.org/x/image/draw"
 	"image"
 	"image/jpeg"
 	_ "image/png"
@@ -24,6 +25,7 @@ const (
 	accessPointMedia  = "https://upload.twitter.com/1.1/media/upload.json"
 	accessPointSearch = "https://api.twitter.com/1.1/users/search.json"
 	MaxImgInTweet     = 4
+	MaxImgDataSize    = 1 << 20
 )
 
 func checkTwitterRights(twitterUid string, r *http.Request) (*database.TwUserAccessToken, error) {
@@ -102,6 +104,67 @@ func searchTwitterUsr(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 
 	util.LogInst().Debug().Str("q", keyWords).Int("user-no", len(users)).Msg("search twitter user")
 }
+func resizeImage(img image.Image, targetWidth, targetHeight int) (image.Image, error) {
+	srcBounds := img.Bounds()
+
+	// 创建一个新的目标尺寸的空图片
+	dstImg := image.NewRGBA(image.Rect(0, 0, targetWidth, targetHeight))
+
+	// 使用高质量的缩放算法缩放图片
+	draw.CatmullRom.Scale(dstImg, dstImg.Bounds(), img, srcBounds, draw.Over, nil)
+
+	return dstImg, nil
+}
+
+// 处理base64编码的图片字符串，获取图片对象，并缩放图片
+func processBase64Image(hash, base64Str string) (image.Image, error) {
+	// 移除数据URI方案的前缀（如果存在）
+	prefixIdx := strings.IndexByte(base64Str, ',') + 1
+	base64Data := base64Str[prefixIdx:]
+	prefix := base64Str[:prefixIdx]
+
+	// 解码base64字符串
+	imgData, err := base64.StdEncoding.DecodeString(base64Data)
+	if err != nil {
+		return nil, fmt.Errorf("decode image base64 failed: %v", err)
+	}
+
+	// 解码图片数据
+	img, _, err := image.Decode(bytes.NewReader(imgData))
+	if err != nil {
+		return nil, fmt.Errorf("decode image failed: %v", err)
+	}
+
+	//var buf bytes.Buffer
+	//if err := jpeg.Encode(&buf, img, nil); err != nil {
+	//	return nil, fmt.Errorf("encode resized image failed: %v", err)
+	//}
+	//
+	//compressedBase64 := prefix + base64.StdEncoding.EncodeToString(buf.Bytes())
+	util.LogInst().Info().Int("img-len", len(base64Str)).Msg("raw image is fine")
+	if len(base64Str) <= MaxImgDataSize {
+		return img, database.DbInst().SaveRawImg(hash, base64Str)
+	}
+
+	factor := float64(MaxImgDataSize) / float64(len(base64Str))
+	srcBounds := img.Bounds()
+	targetWidth := int(float64(srcBounds.Dx()) * factor)
+	targetHeight := int(float64(srcBounds.Dy()) * factor)
+
+	resizedImg, err := resizeImage(img, targetWidth, targetHeight)
+	if err != nil {
+		return nil, fmt.Errorf("resize image failed: %v", err)
+	}
+	var buf2 bytes.Buffer
+	if err := jpeg.Encode(&buf2, resizedImg, nil); err != nil {
+		return nil, fmt.Errorf("encode resized image failed: %v", err)
+	}
+
+	resizedBase64 := prefix + base64.StdEncoding.EncodeToString(buf2.Bytes())
+	util.LogInst().Info().Int("img-len", len(resizedBase64)).Msg("resize image success")
+
+	return resizedImg, database.DbInst().SaveRawImg(hash, resizedBase64)
+}
 
 func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) (*TweetRequest, error) {
 	var token = ut.GetToken()
@@ -113,15 +176,8 @@ func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) 
 		return nil, fmt.Errorf("images must be less than 5")
 	}
 
-	for _, base64Data := range njTweet.ImageRaw {
-		base64Data = base64Data[strings.IndexByte(base64Data, ',')+1:]
-		imgData, err := base64.StdEncoding.DecodeString(base64Data)
-		if err != nil {
-			util.LogInst().Err(err).Msg("decode tweet image failed")
-			return nil, err
-		}
-
-		img, _, err := image.Decode(bytes.NewReader(imgData))
+	for i, base64Data := range njTweet.ImageRaw {
+		img, err := processBase64Image(njTweet.ImageHash[i], base64Data)
 		if err != nil {
 			util.LogInst().Err(err).Msg("parse tweet image to image object failed")
 			return nil, err
