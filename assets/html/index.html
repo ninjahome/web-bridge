@@ -10,7 +10,6 @@
     <script src="/assets/js/i18next.min.js"></script>
     <script src="/assets/js/i18nextBrowserLanguageDetector.min.js"></script>
     <style about="main frame">
-
         * {
             margin: 0;
             padding: 0;
@@ -74,7 +73,7 @@
         .other-dapp-im {
             display: flex;
             align-items: center;
-            color: white;
+            color: #141415;
         }
 
         /* 图片垂直居中对齐 */
@@ -153,27 +152,36 @@
             width: 1200px; /* 使两边各自占据大约一半的宽度，根据实际内容调整 */
             margin: auto;
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
-            flex-wrap: nowrap;
+            align-items: flex-start;
             flex-direction: column;
+            align-content: flex-end;
+            position: relative;
         }
 
         .ninja-protocol-right span {
             display: block;
-            width: 700px;
+            width: 680px;
             overflow-wrap: break-word;
             margin-bottom: 12px;
         }
 
+        .app-enter-point {
+            position: absolute;
+            bottom: 48px;
+            right: 282px;
+        }
         .dapp-btn {
             height: 52px;
-            color: white;
+            color: #141415;
             font-size: 16px;
-            background-color: #141415;
+            background-color: white;
             border: none;
             border-radius: 12px;
             padding: 0 24px;
             margin: 12px 0;
+            box-shadow: rgba(100, 149, 218, 0.35) 0 8px 28px;
         }
 
         .dapp-btn:hover {
@@ -186,16 +194,30 @@
             align-items: center;
             cursor: pointer; /* 添加鼠标指针样式 */
         }
+        .dapp-download p{
+            color: #141415;
+        }
 
         .dapp-download p:hover{
             color: #6495da;
         }
 
+        .system-item {
+            display: flex;
+            justify-content: flex-start;
+            margin: 48px 0;
+
+        }
+
+        .system-item img {
+            margin-right: 24px;
+        }
         /* 如果需要，可以进一步调整内容的样式 */
         .ninja-protocol-left img {
             max-width: 100%; /* 确保图片不会超出其容器的宽度 */
             height: auto; /* 保持图片的原始宽高比 */
         }
+
 
         /* 调整列表样式 */
         .ninja-protocol-right ul {
@@ -258,11 +280,10 @@
     <div id="ninja">
         <div class="ninja-protocol-page">
             <div class="ninja-protocol-right">
-                <span id="vision-tittle">愿景</span>
-                <span id="vision-content"
-                      style="font-weight: 600; font-size: 42px; line-height: 52px">成为打通一切web2应用生态、web3协议及公链的通信协议</span>
-                <span id="vision-note" style="font-weight: 300; font-size: 16px; color: rgba(20,20,21,0.5)">Ninja是一个开放的、抗审查的、全球化的、天然实现跨链的通信标准协议，任何人可以在Ninja之上搭建社交平台，任何人也都可以在Ninja生态中运行传输节点。</span>
-
+                    <span id="vision-tittle" style="margin-bottom: 0; width: 42px; background-color: #4EA0F2;border-radius: 4px; display: flex; justify-content: center; align-items: center;">愿景</span>
+                    <span id="vision-content"
+                          style="font-weight: 600; font-size: 42px; line-height: 52px">成为打通一切web2应用生态、web3协议及公链的通信协议</span>
+                    <span id="vision-note" style="font-weight: 300; font-size: 16px; color: rgba(20,20,21,0.5)">Ninja是一个开放的、抗审查的、全球化的、天然实现跨链的通信标准协议，任何人可以在Ninja之上搭建社交平台，任何人也都可以在Ninja生态中运行传输节点。</span>
                 <div class="app-enter-point">
                     <div class="main-dapp-twitter">
                         <button onclick="launchDessageTwitterApp()" class="dapp-btn">Launch DApp(Dessage Twitter)
@@ -272,14 +293,14 @@
                         <p>Dessage IM APP</p>
                         <div class="dapp-download">
                             <a href="https://ninjahome.github.io/dessage.apk"
-                               style="text-decoration: none; color: white">
+                               style="text-decoration: none">
                                 <img src="/assets/file/android.svg" alt=" ">
                                 <p style="display: inline-block" id="download-android">android下载</p>
                             </a>
                         </div>
                         <div class="dapp-download">
                             <a href="https://testflight.apple.com/join/8rZ1eH4s"
-                               style="text-decoration: none; color: white">
+                               style="text-decoration: none">
                                 <img src="/assets/file/apple.svg" alt="ios icon">
                                 <p style="display: inline-block" id="download-ios">ios下载</p>
                             </a>
@@ -288,33 +309,40 @@
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
     </div>
 
     <section id="docs">
         <div class="protocol-detail">
             <div class="system-item">
                 <img src="/assets/file/account-system.png" alt="account system">
-                <h3 id="technical_principles">新账号体系</h3>
-                <p id="technical_content_1">
-                    一个私钥对应多个地址身份，
-                    任何人可以在Ninja上建立自己的公私钥账号体系，公钥是与他人社交互动时用户的公开身份，私钥是唯一的掌握自己社交数据所有权的凭证，通过输入其他用户的公钥地址即可与之通信，公私钥体系确保了用户可以通过Ninja协议实现真正的端对端加密通信。Ninja亦可兼容其他主流通信协议（如Nostr、Farcaster等）并可实现跨协议跨应用的通信，也支持用户输入某个公链地址（如以太坊地址、比特币地址等）找到好友进行通信。最终Ninja通过建立通信协议标准也可在服务器层面兼容目前主流的web2生态（如telegram、discord等）
-                </p>
+                <div>
+                    <h3 id="technical_principles">新账号体系</h3>
+                    <p id="technical_content_1">
+                        一个私钥对应多个地址身份，
+                        任何人可以在Ninja上建立自己的公私钥账号体系，公钥是与他人社交互动时用户的公开身份，私钥是唯一的掌握自己社交数据所有权的凭证，通过输入其他用户的公钥地址即可与之通信，公私钥体系确保了用户可以通过Ninja协议实现真正的端对端加密通信。Ninja亦可兼容其他主流通信协议（如Nostr、Farcaster等）并可实现跨协议跨应用的通信，也支持用户输入某个公链地址（如以太坊地址、比特币地址等）找到好友进行通信。最终Ninja通过建立通信协议标准也可在服务器层面兼容目前主流的web2生态（如telegram、discord等）
+                    </p>
+                </div>
+
             </div>
             <div class="system-item">
                 <img src="/assets/file/system-arch.png" alt="system arch">
+                <div>
                 <h3 id="technical_arch">架构</h3>
                 <p id="technical_content_2">
                     通过融合路由网络协议与区块链技术，实现天然可信的信息传递与实时结算。通过开放多样的的接入层和统一的数据传输与加解密规则，满足开发者的多种需求，开发者可以根据自己的应用场景开发客户端与接入层，再发生跨域服务的时候，才需要调用全域路由服务并支付路由费用。通过DAO自治与token激励，实现协议规则的去中心化以及共有共治，在协议开发的一定阶段，数据结构的定义，加解密方式的设定，路由费用以及路由的原则，节点上下线规则等协议全部通过DAO投票方式进行并对作出贡献者进行token激励。
                 </p>
+                </div>
             </div>
 
             <div class="system-item">
                 <img src="/assets/file/token-node.png" alt="token system">
+                <div>
                 <h3  id="technical_token">代币</h3>
                 <p id="technical_content_3">
                     Ninja将会在不久的将来发行自己的代币，主要是用来激励早期参与者，以及在整个生态中激励所有的节点和参与者。同时在协议相关的诸多功能上以及在基于Ninja协议开发的各类应用中延展出的各类功能和场景中都会使用Ninja的代币进行结算，敬请期待。
                 </p>
+                </div>
             </div>
         </div>
     </section>
