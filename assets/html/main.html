@@ -1068,7 +1068,7 @@
             line-height: 14px;
             font-size: 12px;
             background-color: #F3A46D;
-            border:1px solid #141415 ;
+            border: 1px solid #141415;
         }
 
         .lottery-amount {
@@ -1314,18 +1314,11 @@
             padding: 5px 0;
             position: absolute;
             z-index: 1;
-            top: 52px;
+            top: 28px;
             right: 0;
             box-shadow: 0 12px 18px 0 rgba(0, 0, 0, 0.3);
-            opacity: 0;
-            transition: opacity 0.5s ease, visibility 0s linear 0.5s;
-
-        }
-
-        .user-settings-tab:hover .user-tooltip {
-            visibility: visible;
             opacity: 1;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.5s ease, visibility 0s linear 0.5s;
         }
 
         .user-settings-icon {
@@ -1502,9 +1495,11 @@
             border-radius: 6px;
             margin-left: 60px;
         }
+
         .tweet-text-info-img {
             transform: rotate(-90deg);
         }
+
         .back-button {
             background-color: #F7F8F9;
             padding: 12px 24px;
@@ -1618,7 +1613,7 @@
     </div>
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
-            <div class="tweet-post"  id="tweet-post-on-top">
+            <div class="tweet-post" id="tweet-post-on-top">
                 <div class="tweets-content-txt-area" id="tweets-content-txt-area" contenteditable="true"
                      data-placeholder="What's happening!?">
                 </div>
@@ -1632,7 +1627,8 @@
                 <div style="display: flex; justify-content: space-between; align-items: center">
                     <button onclick="loadImgFromLocal('.tweet-post')" class="tweets-fileImg"><img
                                 src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
-                    <input type="file" id="fileInput"  class="tweet-file-input" style="display: none;" accept=".jpg, .png" multiple
+                    <input type="file" id="fileInput" class="tweet-file-input" style="display: none;"
+                           accept=".jpg, .png" multiple
                            onchange="previewImage('.tweet-post')">
                     <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.tweet-post')" class="d-radius"
                             style="margin: 8px">
@@ -1789,8 +1785,10 @@
                 <div class="user-settings-tab">
                     <button onclick="refreshTwitterInfo()" class="user-syncTwitter" id="user-setting-sync-twitter">
                     </button>
-                    <button class="user-settings-icon"></button>
-                    <div class="user-setting-action user-tooltip">
+                    <button class="user-settings-icon" onmouseenter="showSettingBtn(true)"
+                            onmouseleave="showSettingBtn(false)"></button>
+                    <div class="user-setting-action user-tooltip" id="user-tooltip" onmouseenter="showSettingBtn(true)"
+                         onmouseleave="showSettingBtn(false)">
                         <ul>
                             <li><a onclick="quitFromService() " id="user-setting-quit">退出</a></li>
                             <li><a onclick="clearCachedData()" id="user-setting-clear">清除缓存</a></li>
@@ -1903,9 +1901,10 @@
 
             </div>
             <div class="tweet-text-info">
-                <div style="background-color: rgba(192,211,240,0.5); padding: 8px 14px; border-radius: 12px"  onclick="showTweetDetailInfo()">
+                <div style="background-color: rgba(192,211,240,0.5); padding: 8px 14px; border-radius: 12px"
+                     onclick="showTweetDetailInfo()">
                     <span style="font-size: 14px">推文信息</span>
-                    <img  id="tweet-text-info-img" class ="tweet-text-info-img" src="/assets/file/open-icon.png">
+                    <img id="tweet-text-info-img" class="tweet-text-info-img" src="/assets/file/open-icon.png">
                 </div>
                 <div class="tweet-footer">
                     <div class="tweet-info">
@@ -1923,7 +1922,7 @@
 
                 </div>
             </div>
-            <div class="tweet-detail-info"  id="tweet-detail-info"  style="display: none">
+            <div class="tweet-detail-info" id="tweet-detail-info" style="display: none">
                 <span class="tweet-info"><span id="tweet-detail-creator"
                                                style="font-size: 14px; font-weight: 400; color: #898989">作者Web3 ID</span>:<span
                             class="tweet-web3_id">0x00a7539cc7cc54f08a761175aa678005ef91f4dc</span></span>
@@ -2170,7 +2169,8 @@
     <div style="display: flex; justify-content: space-between; align-items: center">
         <button onclick="loadImgFromLocal('.modal-for-tweet-post')" class="tweets-fileImg"><img
                     src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
-        <input type="file" id="fileInput" class="tweet-file-input" style="display: none;" accept=".jpg, .png" multiple onchange="previewImage('.modal-for-tweet-post')">
+        <input type="file" id="fileInput" class="tweet-file-input" style="display: none;" accept=".jpg, .png" multiple
+               onchange="previewImage('.modal-for-tweet-post')">
         <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.modal-for-tweet-post')" class="d-radius"
                 style="margin: 8px">
             <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">

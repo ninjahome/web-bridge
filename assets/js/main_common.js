@@ -148,7 +148,7 @@ async function TweetsQuery(param, newest, cacheObj) {
         }
         const tweetArray = await PostToSrvByJson("/tweetQuery", param);
 
-        cacheObj.moreOldTweets = newest || (tweetArray&&tweetArray.length !== 0);
+        cacheObj.moreOldTweets = newest || (tweetArray && tweetArray.length !== 0);
 
         cachedToMem(tweetArray, cacheObj);
 
@@ -263,6 +263,15 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     return contentArea;
 }
 
+function showSettingBtn(show) {
+    const settingDiv = document.getElementById("user-tooltip")
+    if (show) {
+        settingDiv.style.visibility = 'visible';
+    } else {
+        settingDiv.style.visibility = 'hidden';
+    }
+}
+
 function refreshTwitterInfo() {
     showWaiting("tips", "loading from twitter server");
     loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true).then(async () => {
@@ -279,20 +288,22 @@ function quitFromService() {
         window.location.href = "/signIn";
     })
 }
-function showTweetDetailInfo(){
+
+function showTweetDetailInfo() {
     const div = document.getElementById('tweet-detail-info')
-    if (div.style.display === 'none'){
+    if (div.style.display === 'none') {
         div.style.display = 'flex';
         document.getElementById('tweet-text-info-img').classList.remove('tweet-text-info-img');
-    }else{
+    } else {
         document.getElementById('tweet-text-info-img').classList.add('tweet-text-info-img');
         div.style.display = 'none';
     }
 }
+
 async function showTweetDetail(parentEleID, tweet) {
     const detail = document.querySelector('#tweet-detail');
     detail.style.display = 'block';
-    document.getElementById('tweet-post-on-top').style.display='none';
+    document.getElementById('tweet-post-on-top').style.display = 'none';
     const parentNode = document.getElementById(parentEleID);
     if (!parentNode) {
         return;
@@ -308,7 +319,7 @@ async function showTweetDetail(parentEleID, tweet) {
     detail.querySelector('.back-button').onclick = () => {
         parentNode.style.display = 'block';
         detail.style.display = 'none';
-        document.getElementById('tweet-post-on-top').style.display='block';
+        document.getElementById('tweet-post-on-top').style.display = 'block';
         detail.querySelector('.team-members').innerHTML = '';
         detail.querySelector('.team-members').style.display = 'none';
     }
