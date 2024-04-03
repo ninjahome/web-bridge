@@ -252,7 +252,7 @@ async function showPostTweetDiv() {
     document.getElementById('modal-overlay').style.display = 'block';
 
 
-    const postBtn = document.getElementById("tweet-post-with-eth-btn-txt");
+    const postBtn = document.getElementById("tweet-post-with-eth-btn-txt-2");
     postBtn.innerText = i18next.t('btn-tittle-post-tweet') + "(" + voteContractMeta.votePriceInEth + " eth)"
 }
 

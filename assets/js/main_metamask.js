@@ -43,6 +43,10 @@ async function initBlockChainContract(provider) {
         lotteryGameContract = new ethers.Contract(conf.gameLottery, gameContractABI, signer);
 
         initVoteContractMeta().then(r => {
+            const postBtn = document.getElementById("tweet-post-with-eth-btn-txt-1");
+            if (postBtn){
+                postBtn.innerText = i18next.t('btn-tittle-post-tweet') + "(" + voteContractMeta.votePriceInEth + " eth)"
+            }
         });
 
         initGameContractMeta().then(r => {
