@@ -4,9 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ninja Protocol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Chettan+2:wght@400..800&display=swap" rel="stylesheet">
     <script src="/assets/js/i18next.min.js"></script>
     <script src="/assets/js/i18nextBrowserLanguageDetector.min.js"></script>
     <style about="main frame">
+
+        @font-face {
+            font-family: '"Baloo Chettan 2" Helvetica'; /* 设置字体的名称 */
+            src: url('fonts/your-font.woff') format('woff'), /* 设置字体文件的路径和格式 */
+            url('fonts/your-font.woff2') format('woff2'); /* 添加其他格式的字体文件 */
+            /* 可以根据需要添加其他字体属性，比如font-weight、font-style等 */
+        }
+
+        body {
+            font-family: 'YourFontName', sans-serif; /* 使用你定义的字体 */
+        }
+
 
         * {
             margin: 0;
@@ -67,6 +82,12 @@
             vertical-align: middle; /* 垂直居中对齐 */
         }
 
+        .other-dapp-im {
+            display: flex;
+            align-items: center;
+            color: white;
+        }
+
         /* 图片垂直居中对齐 */
         .other-dapp-im img {
             vertical-align: middle; /* 垂直居中对齐 */
@@ -84,7 +105,6 @@
         }
 
         .protocol-detail,
-        .dapp-header,
         .dapp-details {
             width: 1200px;
             margin: auto;
@@ -92,15 +112,27 @@
         }
 
         .dapp-header {
+            width: 1540px;
+            margin: auto;
+            padding-right: 170px;
+            position: relative;
             color: white;
             display: flex;
-            justify-content: space-evenly;
+            justify-content: flex-start;
             align-items: center;
         }
 
-        .dapp-header img {
-            margin-right: 24px;
+        .dapp-header div {
+            width: 600px;
+            position: absolute;
+            top: 18%;
+            right: 169px;
         }
+
+        .dapp-header div p {
+           margin: 4px 0;
+        }
+
 
         .footer {
             display: flex;
@@ -120,7 +152,7 @@
 
         .ninja-protocol-page {
             width: 100%; /* 确保占满整个section的宽度 */
-            height: 680px;
+            height: 720px;
             background-image: url("/assets/file/ninja-protocol-map.png");
             background-repeat: no-repeat;
             background-position: center center;
@@ -128,7 +160,7 @@
         }
 
         .ninja-protocol-right {
-            height: 680px;
+            height: 720px;
             width: 1200px; /* 使两边各自占据大约一半的宽度，根据实际内容调整 */
             margin: auto;
             display: flex;
@@ -139,7 +171,7 @@
 
         .ninja-protocol-right span {
             display: block;
-            width: 680px;
+            width: 700px;
             overflow-wrap: break-word;
             margin-bottom: 12px;
         }
@@ -160,17 +192,15 @@
         }
 
         .dapp-download {
-            width: 220px;
-            height: 42px;
-            border-radius: 12px;
-            background-color: rgba(20, 20, 21, 0.5);
             margin: 4px;
             display: flex;
             align-items: center;
-            justify-content: center;
             cursor: pointer; /* 添加鼠标指针样式 */
         }
 
+        .dapp-download p:hover{
+            color: #6495da;
+        }
 
         /* 如果需要，可以进一步调整内容的样式 */
         .ninja-protocol-left img {
@@ -241,8 +271,8 @@
             <div class="ninja-protocol-right">
                 <span id="vision-tittle">愿景</span>
                 <span id="vision-content"
-                      style="font-weight: 600; font-size: 42px;">成为打通一切web2应用生态、web3协议及公链的通信协议</span>
-                <span id="vision-note" style="font-weight: 300; font-size: 16px;">Ninja是一个开放的、抗审查的、全球化的、天然实现跨链的通信标准协议，任何人可以在Ninja之上搭建社交平台，任何人也都可以在Ninja生态中运行传输节点。</span>
+                      style="font-weight: 600; font-size: 42px; line-height: 52px">成为打通一切web2应用生态、web3协议及公链的通信协议</span>
+                <span id="vision-note" style="font-weight: 300; font-size: 16px; color: rgba(20,20,21,0.5)">Ninja是一个开放的、抗审查的、全球化的、天然实现跨链的通信标准协议，任何人可以在Ninja之上搭建社交平台，任何人也都可以在Ninja生态中运行传输节点。</span>
 
                 <div class="app-enter-point">
                     <div class="main-dapp-twitter">
@@ -302,7 +332,7 @@
     <section id="dapp">
         <div style="background-color:#141415 ">
             <div class="dapp-header">
-                <img src="/assets/file/dessage-feature.png" alt="dessage dapp">
+                <img src="/assets/file/dDApp-img.png" alt="dessage dapp">
                 <div>
                     <p id="dessage-tittle">Dessage 第一款给予ninja协议的DApp</p>
                     <p id="dessage-feature-1">
