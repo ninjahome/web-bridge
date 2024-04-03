@@ -236,13 +236,22 @@
             margin-bottom: 10px; /* 给列表项之间一些间距 */
         }
 
+
         .roadmap-schedule {
+            margin: auto;
             height: 233px;
             display: flex;
-            align-content: center;
-            align-items: center;
-            justify-content: space-around;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            justify-content: space-evenly;
+            align-items: flex-start;
             background-image: url("/assets/file/roadmap-img.png");
+            padding-top: 68px;
+        }
+        .roadmap-schedule li {
+            word-wrap: break-word; /* 当单词太长时换行 */
+            max-width: 288px; /* 文字容器的最大宽度 */
+
         }
 
         .roadmap-schedule .schedule {
