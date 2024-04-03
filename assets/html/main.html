@@ -702,7 +702,7 @@
     </style>
     <style about="tweet vote div">
         .vote-chose-modal-class {
-            display: none; /* 默认隐藏 */
+            display: block; /* 默认隐藏 */
             position: fixed; /* 固定位置 */
             z-index: 1; /* 置于顶层 */
             left: 0;
@@ -722,8 +722,8 @@
             background-color: #fefefe;
             margin: 15% auto; /* 15% 从顶部开始 */
             padding: 16px 32px 32px;
-            border-radius: 24px;
-            width: 387px; /* 宽度 */
+            border-radius: 12px;
+            width: 390px; /* 宽度 */
         }
 
         .vote-no-modal-header {
@@ -789,14 +789,15 @@
 
         .vote-no-modal-footer {
             display: flex;
-            justify-content: space-between;
-            margin-top: 32px;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 24px;
         }
 
         .cancel-btn {
             margin: 0 8px;
             padding: 10px 32px;
-            border-radius: 9999px;
+            border-radius: 12px;
             background-color: transparent;
             border: 1px solid rgb(221, 221, 222);
             font-size: 14px;
@@ -817,7 +818,7 @@
 
         .vote-no-modal-footer .cancel-btn,
         .vote-no-modal-footer .confirm-btn {
-            padding: 10px 58px;
+            padding: 12px 52px;
         }
     </style>
     <style about="tweet post div">
@@ -2140,11 +2141,16 @@
                 <button id="increaseVote" onclick="increaseVote()"
                         style="border-bottom-right-radius: 12px;border-top-right-radius: 12px">+
                 </button>
+
             </div>
-            <label style="color: #898989; font-size: 14px; margin-left: 54px">
-                <input type="checkbox" id="shareOnTwitter">
-                <span id="btn-tittle-share-when-vote">转发到推特</span>
-            </label>
+            <div style="display:flex; justify-content: space-between; align-items: center">
+                <label style="color: #898989; font-size: 14px; margin-left: 54px">
+                    <input type="checkbox" id="shareOnTwitter">
+                    <span id="btn-tittle-share-when-vote">转发到推特</span>
+                </label>
+                <span style="color: #898989; font-size: 14px">0.05ETH/票</span>
+            </div>
+
         </div>
         <div class="vote-no-modal-footer">
             <button id="cancelButton" class="cancel-btn" onclick="closeVoteModal()">取消</button>
