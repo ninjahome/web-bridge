@@ -72,7 +72,9 @@
 
         .other-dapp-im {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
+            justify-content: flex-start;
+            flex-direction: column;
             color: #141415;
         }
 
@@ -93,7 +95,8 @@
         }
 
         .protocol-detail,
-        .dapp-details {
+        .dapp-details,
+        .main-Dapp{
             width: 1200px;
             margin: auto;
             padding: 24px;
@@ -162,16 +165,20 @@
 
         .ninja-protocol-right span {
             display: block;
-            width: 680px;
+            width: 660px;
             overflow-wrap: break-word;
             margin-bottom: 12px;
         }
 
         .app-enter-point {
             position: absolute;
-            bottom: 48px;
-            right: 282px;
+            bottom: 140px;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
         }
+
         .dapp-btn {
             height: 52px;
             color: #141415;
@@ -179,7 +186,7 @@
             background-color: white;
             border: none;
             border-radius: 12px;
-            padding: 0 24px;
+            padding: 0 72px;
             margin: 12px 0;
             box-shadow: rgba(100, 149, 218, 0.35) 0 8px 28px;
         }
@@ -189,17 +196,17 @@
         }
 
         .dapp-download {
+            padding: 12px 24px;
+            border-radius: 12px;
+            background-color: #141415;
             margin: 4px;
             display: flex;
             align-items: center;
             cursor: pointer; /* 添加鼠标指针样式 */
         }
-        .dapp-download p{
-            color: #141415;
-        }
 
-        .dapp-download p:hover{
-            color: #6495da;
+        .dapp-download:hover{
+            background-color: #6495da;
         }
 
         .system-item {
@@ -258,6 +265,17 @@
             background-color: #141415;
         }
 
+        .main-Dapp {
+            display: flex;
+            justify-content:space-around;
+
+        }
+        .launch-btn {
+            background-color: #141415;
+            color:white;
+            box-shadow: none;
+            padding: 0 48px;
+        }
     </style>
 </head>
 <body>
@@ -280,33 +298,15 @@
     <div id="ninja">
         <div class="ninja-protocol-page">
             <div class="ninja-protocol-right">
-                    <span id="vision-tittle" style="margin-bottom: 0; width: 42px; background-color: #4EA0F2;border-radius: 4px; display: flex; justify-content: center; align-items: center;">愿景</span>
+                    <span id="vision-tittle" style="margin-bottom: 0; width: 42px; background-color: #4EA0F2;border-radius: 4px; display: flex; justify-content: center; align-items: center;"></span>
                     <span id="vision-content"
-                          style="font-weight: 600; font-size: 42px; line-height: 52px">成为打通一切web2应用生态、web3协议及公链的通信协议</span>
-                    <span id="vision-note" style="font-weight: 300; font-size: 16px; color: rgba(20,20,21,0.5)">Ninja是一个开放的、抗审查的、全球化的、天然实现跨链的通信标准协议，任何人可以在Ninja之上搭建社交平台，任何人也都可以在Ninja生态中运行传输节点。</span>
-                <div class="app-enter-point">
+                          style="font-weight: 500; font-size: 42px; line-height: 52px">成为打通一切web2应用生态、web3协议及公链的通信协议</span>
+                 <div class="app-enter-point">
                     <div class="main-dapp-twitter">
-                        <button onclick="launchDessageTwitterApp()" class="dapp-btn">Launch DApp(Dessage Twitter)
+                        <button onclick="launchDessageTwitterApp()" class="dapp-btn">Launch DApp
                         </button>
                     </div>
-                    <div class="other-dapp-im">
-                        <p>Dessage IM APP</p>
-                        <div class="dapp-download">
-                            <a href="https://ninjahome.github.io/dessage.apk"
-                               style="text-decoration: none">
-                                <img src="/assets/file/android.svg" alt=" ">
-                                <p style="display: inline-block" id="download-android">android下载</p>
-                            </a>
-                        </div>
-                        <div class="dapp-download">
-                            <a href="https://testflight.apple.com/join/8rZ1eH4s"
-                               style="text-decoration: none">
-                                <img src="/assets/file/apple.svg" alt="ios icon">
-                                <p style="display: inline-block" id="download-ios">ios下载</p>
-                            </a>
-                        </div>
 
-                    </div>
                 </div>
             </div>
             </div>
@@ -416,10 +416,32 @@
             </li>
         </ul>
     </section>
-    <div class="main-dapp-twitter"
-         style="margin: auto; display: flex; flex-direction: column; align-items: center; padding: 48px 0">
-        <h3 id="launch-app-tittle">现在开始体验</h3>
-        <button onclick="launchDessageTwitterApp()" class="dapp-btn">Launch DApp(Dessage Twitter)</button>
+    <div class="main-Dapp" >
+        <div>
+            <h3 id="launch-app-tittle">Dessage Twitter</h3>
+            <button onclick="launchDessageTwitterApp()" class="dapp-btn launch-btn" >Launch DApp</button>
+        </div>
+        <div style="border-left: 1px solid #d3d5d6; margin: 24px 0;"></div> <!-- 垂直分割线 -->
+        <div class="other-dapp-im">
+            <h3>Dessage IM APP</h3>
+            <div style="display: flex; flex-direction: column">
+                <div class="dapp-download">
+                    <a href="https://ninjahome.github.io/dessage.apk"
+                       style="text-decoration: none">
+                        <img src="/assets/file/android.svg" alt=" ">
+                        <p style="display: inline-block" id="download-android">android下载</p>
+                    </a>
+                </div>
+                <div class="dapp-download">
+                    <a href="https://testflight.apple.com/join/8rZ1eH4s"
+                       style="text-decoration: none">
+                        <img src="/assets/file/apple.svg" alt="ios icon">
+                        <p style="display: inline-block" id="download-ios">ios下载</p>
+                    </a>
+                </div>
+            </div>
+
+        </div>
     </div>
 </main>
 
@@ -544,7 +566,7 @@
         document.getElementById('navi-road-map').textContent = i18next.t('navi-road-map');
         document.getElementById('navi-community').textContent = i18next.t('navi-community');
 
-        document.getElementById('vision-tittle').textContent = i18next.t('vision-tittle');
+        // document.getElementById('vision-tittle').textContent = i18next.t('vision-tittle');
         document.getElementById('vision-content').textContent = i18next.t('vision-content');
         document.getElementById('vision-note').textContent = i18next.t('vision-note');
 
