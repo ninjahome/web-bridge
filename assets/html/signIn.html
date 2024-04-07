@@ -47,6 +47,9 @@
         top: 25vh; /* 调整为视口高度的50%，意味着顶部距离视口顶部的距离为视口高度的一半 */
         right: 20vw; /* 调整为视口宽度的50%，意味着右侧距离视口右侧的距离为视口宽度的一半 */
         transform: translate(25%, -20%); /* 使用transform来精确调整.container的中心位置 */
+    }
+
+    .containerLogin {
         border-radius: 32px;
         background-color: rgba(255, 255, 255, 0.9);
         padding: 72px 56px;
@@ -260,11 +263,25 @@
         display: block;
         cursor: pointer;
     }
+    .NinjaBack {
+        margin-top: 12px;
+    }
+
+    .NinjaBack a{
+        font-weight: 500;
+        color: #141415;
+    }
+
+    .NinjaBack a:hover{
+        color: #4EA0F2;
+    }
 
 </style>
 <body>
 <div class="right-container">
     <div class="container">
+
+    <div class="containerLogin">
         <!-- 登录部分 -->
         <div class="login-section">
             <h2>获取web3ID</h2>
@@ -438,7 +455,8 @@
             </ul>
         </div>
     </div>
-    <div><span>Powered By <a href="/">Ninja Protocol</a></span></div>
+        <div class="NinjaBack" style="float: right"><span style="color: #898989">Powered By <a href="/" >Ninja Protocol</a></span></div>
+    </div>
 </div>
 
 <script>
