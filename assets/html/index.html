@@ -19,6 +19,8 @@
 
         body {
             font-family: "Baloo Chettan 2", Helvetica, Arial, sans-serif, "Alibaba PuHuiTi";
+            background-color: #141415;
+            color: white;
         }
 
         ul li {
@@ -44,8 +46,8 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            background-color: rgba(255, 255, 255, 0.5);
-            color: #141415;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
             position: fixed;
             width: 100%;
             top: 0;
@@ -75,7 +77,6 @@
             align-items: flex-start;
             justify-content: flex-start;
             flex-direction: column;
-            color: #141415;
         }
 
         /* 图片垂直居中对齐 */
@@ -86,7 +87,7 @@
         }
 
         .navbar a {
-            color: #141415;
+            color: white;
             margin: 0 32px;
         }
 
@@ -116,7 +117,7 @@
         .dapp-header div {
             width: 600px;
             position: absolute;
-            top: 18%;
+            top: 30%;
             right: 169px;
         }
 
@@ -144,7 +145,7 @@
         .ninja-protocol-page {
             width: 100%; /* 确保占满整个section的宽度 */
             height: 720px;
-            background-image: url("/assets/file/ninja-protocol-map.png");
+            background-image: url("/assets/file/ninja-protocol-map-black.png");
             background-repeat: no-repeat;
             background-position: center center;
             background-size: cover; /* 确保背景图完全覆盖元素 */
@@ -181,9 +182,9 @@
 
         .dapp-btn {
             height: 52px;
-            color: #141415;
+            color: white;
             font-size: 16px;
-            background-color: white;
+            background: linear-gradient(to right, #9DFBCE, #503DFF);
             border: none;
             border-radius: 12px;
             padding: 0 72px;
@@ -198,27 +199,48 @@
         .dapp-download {
             padding: 12px 24px;
             border-radius: 12px;
-            background-color: #141415;
             margin: 4px;
             display: flex;
             align-items: center;
+            justify-content: center;
             cursor: pointer; /* 添加鼠标指针样式 */
+        }
+
+        .dapp-download-ios{
+            background: linear-gradient(to right, #9DFBCE, #503DFF);
+        }
+        .dapp-download-an{
+            background: linear-gradient(to right, #9DFBCE, #503DFF);
         }
 
         .dapp-download:hover{
             background-color: #6495da;
         }
 
-        .system-item {
+        .system-item-account {
             display: flex;
             justify-content: flex-start;
-            margin: 48px 0;
-
+            margin: 24px 0;
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 24px;
+            border-radius: 12px;
         }
 
-        .system-item img {
+        .system-item-account img {
             margin-right: 24px;
         }
+
+        .system-item-arch,
+        .system-item-node{
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 24px;
+            border-radius: 12px;
+        }
+        .system-item-arch img,
+        .system-item-node img{
+            margin-bottom: 24px;
+        }
+
         /* 如果需要，可以进一步调整内容的样式 */
         .ninja-protocol-left img {
             max-width: 100%; /* 确保图片不会超出其容器的宽度 */
@@ -245,7 +267,7 @@
             align-content: flex-start;
             justify-content: space-evenly;
             align-items: flex-start;
-            background-image: url("/assets/file/roadmap-img.png");
+            background-image: url("/assets/file/roadmap-img-blck.png");
             padding-top: 68px;
         }
         .roadmap-schedule li {
@@ -271,7 +293,7 @@
             height: 4px;
             border-radius: 12px;
             display: block;
-            background-color: #141415;
+            background-color: white;
         }
 
         .main-Dapp {
@@ -279,8 +301,9 @@
             justify-content:space-around;
 
         }
+
         .launch-btn {
-            background-color: #141415;
+            background: linear-gradient(to right, #9DFBCE, #503DFF);
             color:white;
             box-shadow: none;
             padding: 0 48px;
@@ -323,7 +346,7 @@
 
     <section id="docs">
         <div class="protocol-detail">
-            <div class="system-item">
+            <div class="system-item-account">
                 <img src="/assets/file/account-system.png" alt="account system">
                 <div>
                     <h3 id="technical_principles">新账号体系</h3>
@@ -334,31 +357,34 @@
                 </div>
 
             </div>
-            <div class="system-item">
-                <img src="/assets/file/system-arch.png" alt="system arch">
-                <div>
-                <h3 id="technical_arch">架构</h3>
-                <p id="technical_content_2">
-                    通过融合路由网络协议与区块链技术，实现天然可信的信息传递与实时结算。通过开放多样的的接入层和统一的数据传输与加解密规则，满足开发者的多种需求，开发者可以根据自己的应用场景开发客户端与接入层，再发生跨域服务的时候，才需要调用全域路由服务并支付路由费用。通过DAO自治与token激励，实现协议规则的去中心化以及共有共治，在协议开发的一定阶段，数据结构的定义，加解密方式的设定，路由费用以及路由的原则，节点上下线规则等协议全部通过DAO投票方式进行并对作出贡献者进行token激励。
-                </p>
+            <div style="display: flex;justify-content: space-between;gap: 24px">
+                <div class="system-item-arch">
+                    <img src="/assets/file/system-arch.png" alt="system arch">
+                    <div>
+                        <h3 id="technical_arch">架构</h3>
+                        <p id="technical_content_2">
+                            通过融合路由网络协议与区块链技术，实现天然可信的信息传递与实时结算。通过开放多样的的接入层和统一的数据传输与加解密规则，满足开发者的多种需求，开发者可以根据自己的应用场景开发客户端与接入层，再发生跨域服务的时候，才需要调用全域路由服务并支付路由费用。通过DAO自治与token激励，实现协议规则的去中心化以及共有共治，在协议开发的一定阶段，数据结构的定义，加解密方式的设定，路由费用以及路由的原则，节点上下线规则等协议全部通过DAO投票方式进行并对作出贡献者进行token激励。
+                        </p>
+                    </div>
+                </div>
+
+                <div class="system-item-node">
+                    <img src="/assets/file/token-node.png" alt="token system">
+                    <div>
+                        <h3  id="technical_token">代币</h3>
+                        <p id="technical_content_3">
+                            Ninja将会在不久的将来发行自己的代币，主要是用来激励早期参与者，以及在整个生态中激励所有的节点和参与者。同时在协议相关的诸多功能上以及在基于Ninja协议开发的各类应用中延展出的各类功能和场景中都会使用Ninja的代币进行结算，敬请期待。
+                        </p>
+                    </div>
                 </div>
             </div>
 
-            <div class="system-item">
-                <img src="/assets/file/token-node.png" alt="token system">
-                <div>
-                <h3  id="technical_token">代币</h3>
-                <p id="technical_content_3">
-                    Ninja将会在不久的将来发行自己的代币，主要是用来激励早期参与者，以及在整个生态中激励所有的节点和参与者。同时在协议相关的诸多功能上以及在基于Ninja协议开发的各类应用中延展出的各类功能和场景中都会使用Ninja的代币进行结算，敬请期待。
-                </p>
-                </div>
-            </div>
         </div>
     </section>
     <section id="dapp">
         <div style="background-color:#141415 ">
             <div class="dapp-header">
-                <img src="/assets/file/dDApp-img.png" alt="dessage dapp">
+                <img src="/assets/file/dDApp-img-black.png" alt="dessage dapp">
                 <div>
                     <p id="dessage-tittle">Dessage 第一款给予ninja协议的DApp</p>
                     <p id="dessage-feature-1">
@@ -434,14 +460,14 @@
         <div class="other-dapp-im">
             <h3>Dessage IM APP</h3>
             <div style="display: flex; flex-direction: column">
-                <div class="dapp-download">
+                <div class="dapp-download dapp-download-an">
                     <a href="https://ninjahome.github.io/dessage.apk"
                        style="text-decoration: none">
                         <img src="/assets/file/android.svg" alt=" ">
                         <p style="display: inline-block" id="download-android">android下载</p>
                     </a>
                 </div>
-                <div class="dapp-download">
+                <div class="dapp-download dapp-download-ios">
                     <a href="https://testflight.apple.com/join/8rZ1eH4s"
                        style="text-decoration: none">
                         <img src="/assets/file/apple.svg" alt="ios icon">
