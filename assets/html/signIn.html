@@ -47,9 +47,6 @@
         top: 25vh; /* 调整为视口高度的50%，意味着顶部距离视口顶部的距离为视口高度的一半 */
         right: 20vw; /* 调整为视口宽度的50%，意味着右侧距离视口右侧的距离为视口宽度的一半 */
         transform: translate(25%, -20%); /* 使用transform来精确调整.container的中心位置 */
-    }
-
-    .containerLogin {
         border-radius: 32px;
         background-color: rgba(255, 255, 255, 0.9);
         padding: 72px 56px;
@@ -264,7 +261,10 @@
         cursor: pointer;
     }
     .NinjaBack {
-        margin-top: 12px;
+        margin-top: 24px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
     }
 
     .NinjaBack a{
@@ -275,13 +275,16 @@
     .NinjaBack a:hover{
         color: #4EA0F2;
     }
+    .NinjaBack img{
+       margin: 0 2px 0 8px;
+        height:20px;
+        width: 20px;
+    }
 
 </style>
 <body>
 <div class="right-container">
     <div class="container">
-
-    <div class="containerLogin">
         <!-- 登录部分 -->
         <div class="login-section">
             <h2>获取web3ID</h2>
@@ -454,11 +457,9 @@
                 </Li>
             </ul>
         </div>
+        <div style="color: #898989" class="NinjaBack">Powered By <img src="/assets/file/path-to-home-icon.png"><a href="/" >Ninja Protocol</a></div>
     </div>
-        <div class="NinjaBack" style="float: right"><span style="color: #898989">Powered By <a href="/" >Ninja Protocol</a></span></div>
     </div>
-</div>
-
 <script>
     class SignInData {
         constructor(ethAddr, signTim) {

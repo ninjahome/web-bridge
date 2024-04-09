@@ -60,8 +60,10 @@
             align-items: center;
         }
 
+
         .logo {
             width: 42px; /* 根据实际Logo大小调整 */
+            margin-right: 8px;
         }
 
         /* 去掉链接的下划线 */
@@ -190,6 +192,7 @@
             padding: 0 72px;
             margin: 12px 0;
             box-shadow: rgba(100, 149, 218, 0.35) 0 8px 28px;
+            cursor: pointer;
         }
 
         .dapp-btn:hover {
@@ -206,15 +209,19 @@
             cursor: pointer; /* 添加鼠标指针样式 */
         }
 
-        .dapp-download-ios{
+        .dapp-download-ios {
             background: linear-gradient(to right, #9DFBCE, #503DFF);
         }
-        .dapp-download-an{
+
+        .dapp-download-an {
             background: linear-gradient(to right, #6B81F8, #F25A7B);
         }
 
-        .dapp-download:hover{
-            background-color: #6495da;
+        .dapp-download-ios:hover,
+        .dapp-download-an:hover,
+        .dapp-btn:hover{
+            background: none;
+            background-color: #4EA0F2;
         }
 
         .system-item-account {
@@ -307,6 +314,7 @@
             color:white;
             box-shadow: none;
             padding: 0 48px;
+            cursor: pointer; /* 添加鼠标指针样式 */
         }
     </style>
 </head>
