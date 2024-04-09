@@ -144,6 +144,10 @@ function findAtTarget(text) {
 
 async function preparePostMsg(parentDiv) {
     const contentHtml = parentDiv.querySelector(".tweets-content-txt-area").innerHTML.trim();
+    if (contentHtml.length <=4){
+        showDialog(DLevel.Warning,"too short content");
+        return;
+    }
     const formattedContent = contentHtml
         .replace(/<br\s*[\/]?>/gi, "\n") // 将 <br> 标签转换为换行符
         .replace(/<\/?p>/gi, "\n") // 将 <p> 标签转换为换行符
