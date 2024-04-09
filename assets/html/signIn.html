@@ -555,8 +555,8 @@
             await metamaskObj.request({method: "eth_requestAccounts"})
             window.location.reload();
         } catch (error) {
-            console.error("Metamask login failed:", error);
-            showError(error);
+            console.error("Metamask login failed:", error.message.toString());
+            showError(error.message);
         }
     }
 
