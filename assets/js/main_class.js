@@ -1,11 +1,10 @@
 class TweetContentToPost {
-    constructor(tweet_content, createAt, web3Id, twitterID, tweet_id, signature) {
+    constructor(tweet_content, createAt, web3Id, twitterID, slogan) {
         this.text = tweet_content;
         this.create_time = createAt;
         this.web3_id = web3Id;
         this.twitter_id = twitterID;
-        this.tweet_id = tweet_id;
-        this.signature = signature;
+        this.slogan = slogan;
     }
 }
 
@@ -99,10 +98,11 @@ class TeamDetailOnBlockChain {
         this.voteCount = voteCount;
     }
 }
+
 const dbKeyCachedRawImg = "__db_key_cached_tweet_raw_img__"
 
 class ImageRawData {
-    constructor(hash,rawData,thumbnail){
+    constructor(hash, rawData, thumbnail) {
         this.hash = hash;
         this.raw_data = rawData;
         this.thumb_nail = thumbnail;
@@ -113,7 +113,7 @@ class ImageRawData {
     }
 
     static DBKey(hash) {
-        return dbKeyCachedRawImg+hash;
+        return dbKeyCachedRawImg + hash;
     }
 
     static load(hash) {

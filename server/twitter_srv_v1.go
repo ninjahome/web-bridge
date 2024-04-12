@@ -169,7 +169,7 @@ func processBase64Image(hash, base64Str string) (image.Image, error) {
 func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) (*TweetRequest, error) {
 	var token = ut.GetToken()
 
-	var appendStr = _globalCfg.GetNjProtocolAd(njTweet.CreateAt)
+	var appendStr = _globalCfg.GetNjProtocolAd(njTweet.CreateAt, njTweet.Slogan)
 	var combinedTxt = njTweet.Txt + appendStr
 	mediaIDs := make([]string, 0)
 	if len(njTweet.Images) > MaxImgInTweet {

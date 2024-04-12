@@ -144,8 +144,8 @@ function findAtTarget(text) {
 
 async function preparePostMsg(parentDiv) {
     const contentHtml = parentDiv.querySelector(".tweets-content-txt-area").innerHTML.trim();
-    if (contentHtml.length <=4){
-        showDialog(DLevel.Warning,"too short content");
+    if (contentHtml.length <= 4) {
+        showDialog(DLevel.Warning, "too short content");
         return;
     }
     const formattedContent = contentHtml
@@ -179,9 +179,9 @@ async function preparePostMsg(parentDiv) {
         showDialog(DLevel.Warning, "tweet content too long");
         return
     }
-
+    const slogan = i18next.t('slogan_1') + gameContractMeta.totalBonus + "ETH" + i18next.t('slogan_2')
     const tweet = new TweetContentToPost(formattedContent,
-        (new Date()).getTime(), ninjaUserObj.eth_addr, ninjaUserObj.tw_id);
+        (new Date()).getTime(), ninjaUserObj.eth_addr, ninjaUserObj.tw_id, slogan);
     const message = JSON.stringify(tweet);
 
     const signature = await metamaskObj.request({
@@ -325,7 +325,7 @@ function previewImage(parentId) {
             imagePreviewDiv.removeChild(imgWrapper);
         };
 
-        compressImage(file, 0.75,function (compressedFile){
+        compressImage(file, 0.75, function (compressedFile) {
             const reader = new FileReader();
             reader.onload = async function (e) {
                 let rawImg = e.target.result;
