@@ -633,27 +633,107 @@ function __createCanvas(img,targetWidth,targetHeight){
     return  canvas.toDataURL('image/png');
 }
 
-function compressImage(file, quality, callback) {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        const img = new Image();
-        img.onload = function () {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0, img.width, img.height);
-            // 压缩图片
-            canvas.toBlob(function (blob) {
-                // 获取压缩后的图片Blob
-                const compressedFile = new File([blob], file.name, {type: "image/jpeg", lastModified: Date.now()});
-                // 调用回调函数，返回压缩后的图片文件
-                callback(compressedFile);
-            }, 'image/jpeg', quality);
+// function compressImage2(file, quality, callback) {
+//     const reader = new FileReader();
+//     reader.onload = function (e) {
+//         const img = new Image();
+//         img.onload = function () {
+//             const canvas = document.createElement('canvas');
+//             const ctx = canvas.getContext('2d');
+//             canvas.width = img.width;
+//             canvas.height = img.height;
+//             ctx.drawImage(img, 0, 0, img.width, img.height);
+//             // 压缩图片
+//             canvas.toBlob(function (blob) {
+//                 // 获取压缩后的图片Blob
+//                 const compressedFile = new File([blob], file.name, {type: "image/jpeg", lastModified: Date.now()});
+//                 // 调用回调函数，返回压缩后的图片文件
+//                 callback(compressedFile);
+//             }, 'image/jpeg', quality);
+//         };
+//         img.src = e.target.result;
+//     };
+//     reader.readAsDataURL(file);
+// // }
+// function compressImage(file, quality) {
+//     return new Promise((resolve, reject) => {
+//         const reader = new FileReader();
+//         reader.onload = function (e) {
+//             const img = new Image();
+//             img.onload = function () {
+//                 const canvas = document.createElement('canvas');
+//                 const ctx = canvas.getContext('2d');
+//                 canvas.width = img.width;
+//                 canvas.height = img.height;
+//                 ctx.drawImage(img, 0, 0, img.width, img.height);
+//
+//                 // 压缩图片
+//                 canvas.toBlob(function (blob) {
+//                     // 获取压缩后的图片Blob
+//                     const compressedFile = new File([blob], file.name, {type: "image/jpeg", lastModified: Date.now()});
+//                     // 使用resolve返回压缩后的图片文件和Blob
+//                     resolve({
+//                         compressedFile: compressedFile,
+//                         blob: blob
+//                     });
+//                 }, 'image/jpeg', quality);
+//             };
+//             img.onerror = function () {
+//                 reject(new Error('Could not load image'));
+//             };
+//             img.src = e.target.result;
+//         };
+//         reader.onerror = function () {
+//             reject(new Error('Could not read file'));
+//         };
+//         reader.readAsDataURL(file);
+//     });
+// }
+
+function blobToBase64(blob) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            // 当读取完成，reader.result 包含了Base64编码的数据URL
+            resolve(reader.result);
         };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
+        reader.onerror = (error) => {
+            reject(error);
+        };
+        reader.readAsDataURL(blob); // 开始将blob转换为data URL
+    });
+}
+
+function compressBlob(image, quality) {
+    return new Promise((resolve, reject) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = image.width;
+        canvas.height = image.height;
+        ctx.drawImage(image, 0, 0, image.width, image.height);
+        canvas.toBlob((blob) => {
+            resolve(blob);
+        }, 'image/jpeg', quality);
+    });
+}
+function readFileAsBlob(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                resolve(img);
+            };
+            img.onerror = (error) => {
+                reject(error);
+            };
+            img.src = event.target.result;
+        };
+        reader.onerror = (error) => {
+            reject(error);
+        };
+        reader.readAsDataURL(file);
+    });
 }
 
 
@@ -662,3 +742,5 @@ const maxTextLenPerImg = 1000;
 const maxImgPerTweet = 4;
 const defaultTextLenForTweet  = 100;
 const MaxImgSize = (1<<21) * 1.33;
+const MaxThumbnailSize = (1<<18);
+const CompressQuality = 0.8;
