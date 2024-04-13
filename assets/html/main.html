@@ -2148,7 +2148,8 @@
                     <input type="checkbox" id="shareOnTwitter">
                     <span id="btn-tittle-share-when-vote">转发到推特</span>
                 </label>
-                <span style="color: #898989; font-size: 14px">0.05ETH/票</span>
+                <span style="color: #898989; font-size: 14px "><span id="vote-price-in-modal">0.05ETH</span> /<span
+                            id="vote-price-in-modal-uint">票</span></span>
             </div>
 
         </div>
@@ -2410,9 +2411,10 @@
                         "lottery-info-content-15": "6. During Chapter 1, the first 10 KOLs to reach 100 votes can receive the Elder Medal. When any tweet posted by these 10 KOLs receives votes, the Elder can earn twice the points for votes compared to ordinary creators.",
                         "bonus-for-points-tittle": "Points Prize Pool",
                         "voter-slogan": "Come to this blockchain social network to grab lottery tickets!",
-                        "slogan_1":"Current Prize Pool: ",
-                        "tweet-detail-in-details":"Tweet Info",
-                        "slogan_2":"ETH，Vote on this tweet and participate in the prize pool. link:",
+                        "slogan_1": "Current Prize Pool: ",
+                        "tweet-detail-in-details": "Tweet Info",
+                        "slogan_2": "ETH，Vote on this tweet and participate in the prize pool. link:",
+                        "vote-price-in-modal-uint": "Vote",
                     }
                 },
                 zh: {
@@ -2493,9 +2495,10 @@
                         "lottery-info-content-14": "要发布参与游戏的推文，需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益",
                         "lottery-info-content-15": "6.chapter 1进行中，获得投票数率先达到100的前10位KOL可以获得元老勋章，这10位KOL的所有推文被投票时，元老可以获得2倍于普通创作的被投票积分。",
                         "bonus-for-points-tittle": "积分奖池",
-                        "slogan_1":"当前彩池: ",
-                        "tweet-detail-in-details":"推文信息",
-                        "slogan_2":"ETH，给本推文投票并参与彩池 链接:",
+                        "slogan_1": "当前彩池: ",
+                        "tweet-detail-in-details": "推文信息",
+                        "slogan_2": "ETH，给本推文投票并参与彩池 链接:",
+                        "vote-price-in-modal-uint": "票",
                     }
                 }
             }
@@ -2549,16 +2552,13 @@
 
         document.getElementById('user-setting-quit').textContent = i18next.t('user-setting-quit');
         document.getElementById('user-setting-clear').textContent = i18next.t('user-setting-clear');
-        // document.getElementById('user-setting-sync-twitter').textContent = i18next.t('user-setting-sync-twitter');
         document.getElementById('user-setting-points').textContent = i18next.t('user-setting-points');
         document.getElementById('user-setting-my-voted').textContent = i18next.t('user-setting-my-voted');
         document.getElementById('user-setting-be-voted').textContent = i18next.t('user-setting-be-voted');
-        // document.getElementById('user-setting-tweet-income').textContent = i18next.t('user-setting-tweet-income');
         document.getElementById('user-setting-tweet-no').textContent = i18next.t('user-setting-tweet-no');
         document.getElementById('user-setting-tweet-income-tittle').textContent = i18next.t('user-setting-tweet-income');
         document.getElementById('user-setting-withdraw-history').textContent = i18next.t('withdraw-history');
         document.getElementById('user-setting-withdraw').textContent = i18next.t('withdraw');
-        // document.getElementById('user-setting-game-income').textContent = i18next.t('user-setting-game-income');
         document.getElementById('user-setting-lottery-income-tittle').textContent = i18next.t('user-setting-lottery-income-tittle');
         document.getElementById('user-setting-withdraw-history2').textContent = i18next.t('withdraw-history');
         document.getElementById('user-setting-withdraw2').textContent = i18next.t('withdraw');
@@ -2569,17 +2569,14 @@
         document.getElementById('twee-switch-area-his-vote').textContent = i18next.t('twee-switch-area-his-vote');
         document.getElementById('nj-user-tweet-vote-no').textContent = i18next.t('user-setting-my-voted');
         document.getElementById('nj-user-tweet-his-vote-no').textContent = i18next.t('nj-user-tweet-his-vote-no');
-        // document.getElementById('nj-user-tweet-vote-action').textContent = i18next.t('btn-tittle-vote-no');
 
         document.getElementById('lottery-round-tittle-1').textContent = i18next.t('lottery-round-tittle-1');
         document.getElementById('lottery-round-tittle-2').textContent = i18next.t('lottery-round-tittle-2');
-        // document.getElementById('lottery-tittle-tips').textContent = i18next.t('lottery-tittle-tips');
         document.getElementById("countdown-result").textContent = i18next.t('countdown-result');
         document.getElementById("countdown-tips-days").textContent = i18next.t('countdown-tips-days');
         document.getElementById("countdown-tips-sub-tittle").textContent = i18next.t('countdown-tips-sub-tittle');
         document.getElementById("lottery-info-history-bonus").textContent = i18next.t('lottery-info-history-bonus');
         document.getElementById("lottery-info-current-tickets-no").textContent = i18next.t('lottery-info-current-tickets-no');
-        // document.getElementById("lottery-stats-unit-2").textContent = i18next.t('lottery-stats-unit-2');
         document.getElementById("lottery-info-btn-mine").textContent = i18next.t('lottery-info-btn-mine');
 
         document.getElementById("lottery-info-tittle").textContent = i18next.t('lottery-info-tittle');
@@ -2607,6 +2604,7 @@
         document.getElementById("tweet-post-with-eth-btn-txt-2").textContent = i18next.t('btn-tittle-post-tweet');
 
         document.getElementById("tweet-detail-in-details").textContent = i18next.t('tweet-detail-in-details');
+        document.getElementById("vote-price-in-modal-uint").textContent = i18next.t('vote-price-in-modal-uint');
     }
 </script>
 </body>

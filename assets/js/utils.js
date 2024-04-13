@@ -1,4 +1,3 @@
-
 function formatTime(createTime) {
     const date = new Date(createTime);
 
@@ -240,8 +239,9 @@ style.innerHTML = `
 `;
 document.head.appendChild(style);
 let isShowingTips = false;
+
 function showWaiting(message, timeout) {
-    if (isShowingTips){
+    if (isShowingTips) {
         changeLoadingTips(message);
         return;
     }
@@ -268,7 +268,7 @@ function changeLoadingTips(content) {
 }
 
 function hideLoading() {
-    if (!isShowingTips){
+    if (!isShowingTips) {
         return;
     }
     isShowingTips = false;
@@ -325,7 +325,7 @@ class TwitterBasicInfo {
 class NJUserBasicInfo {
 
     constructor(address, eth_addr, create_at, tw_id, update_at,
-                tweet_count, vote_count, be_voted_count,is_elder) {
+                tweet_count, vote_count, be_voted_count, is_elder) {
         this.address = address;
         this.eth_addr = eth_addr;
         this.create_at = create_at;
@@ -345,7 +345,7 @@ class NJUserBasicInfo {
         }
         const nuObj = JSON.parse(storedData);
         return new NJUserBasicInfo(nuObj.address, nuObj.eth_addr, nuObj.create_at, nuObj.tw_id,
-            nuObj.update_at, nuObj.tweet_count, nuObj.vote_count, nuObj.be_voted_count,nuObj.is_elder);
+            nuObj.update_at, nuObj.tweet_count, nuObj.vote_count, nuObj.be_voted_count, nuObj.is_elder);
     }
 
     static cacheNJUsrObj(obj) {
@@ -435,6 +435,15 @@ function showDialog(type, msg, confirmCB, cancelCB) {
 
 let metamaskObj = null;
 
+async function checkIfMetaMaskSignOut() {
+    const accounts = await metamaskObj.request({method: 'eth_accounts'})
+    if (accounts.length === 0) {
+        window.location.href = "/signIn";
+        return false;
+    }
+    return true;
+}
+
 async function checkMetaMaskEnvironment(callback) {
 
     if (typeof window.ethereum === 'undefined') {
@@ -443,6 +452,10 @@ async function checkMetaMaskEnvironment(callback) {
     }
 
     metamaskObj = window.ethereum;
+    if (await checkIfMetaMaskSignOut() === false) {
+        return;
+    }
+
     metamaskObj.on('accountsChanged', metamaskAccountChanged);
     metamaskObj.on('chainChanged', function (chainID) {
         checkCurrentChainID(chainID, callback)
@@ -455,10 +468,10 @@ async function checkMetaMaskEnvironment(callback) {
 function metamaskAccountChanged(accounts) {
     if (accounts.length === 0) {
         console.log('MetaMask账户已断开连接，请重新连接');
-        window.location.href = "/signOut";
+        window.location.href = "/signIn";
         return;
     }
-    window.location.href = "/signOut";
+    window.location.href = "/signIn";
 }
 
 async function checkCurrentChainID(chainId, callback) {
@@ -471,7 +484,7 @@ async function checkCurrentChainID(chainId, callback) {
     }
 
     showDialog(DLevel.Tips, "switch to arbitrum", switchToWorkChain, function () {
-        window.location.href = "/signOut";
+        window.location.href = "/signIn";
     });
 }
 
@@ -549,11 +562,11 @@ function decreaseVote() {
     voteCountElement.value = newVoteCount.toString();
 }
 
-async function __shareVoteToTweet(create_time, vote_count,slogan) {
+async function __shareVoteToTweet(create_time, vote_count, slogan) {
     await PostToSrvByJson("/shareVoteAction", {
         create_time: create_time,
         vote_count: Number(vote_count),
-        slogan:slogan,
+        slogan: slogan,
     });
 }
 
@@ -565,7 +578,7 @@ function checkMetamaskErr(err) {
         return null;
     }
 
-    if (err.code === 4100){
+    if (err.code === 4100) {
         showDialog(DLevel.Warning, "open metamask first");
         return
     }
@@ -599,7 +612,7 @@ function createThumbnail(originalImageSrc, maxWidth, maxHeight) {
         const img = new Image();
         img.src = originalImageSrc;
 
-        img.onload = function() {
+        img.onload = function () {
             const originalWidth = img.width;
             const originalHeight = img.height;
             const aspectRatio = originalWidth / originalHeight;
@@ -612,16 +625,17 @@ function createThumbnail(originalImageSrc, maxWidth, maxHeight) {
                 targetHeight = maxHeight;
                 targetWidth = maxHeight * aspectRatio;
             }
-            const thumbnailDataUrl = __createCanvas(img, targetWidth,targetHeight);
+            const thumbnailDataUrl = __createCanvas(img, targetWidth, targetHeight);
             resolve(thumbnailDataUrl);
         };
 
-        img.onerror = function() {
+        img.onerror = function () {
             reject(new Error('Could not load image'));
         };
     });
 }
-function __createCanvas(img,targetWidth,targetHeight){
+
+function __createCanvas(img, targetWidth, targetHeight) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
@@ -630,7 +644,7 @@ function __createCanvas(img,targetWidth,targetHeight){
 
     ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
 
-    return  canvas.toDataURL('image/png');
+    return canvas.toDataURL('image/png');
 }
 
 function compressImageByFile(file, quality) {
@@ -706,7 +720,7 @@ function compressBlob(image, quality) {
         canvas.width = image.width;
         canvas.height = image.height;
         ctx.drawImage(image, 0, 0, image.width, image.height);
-        canvas.toBlob( (blob) => {
+        canvas.toBlob((blob) => {
             resolve(blob);
         }, 'image/jpeg', quality);
     });
@@ -736,7 +750,7 @@ function readFileAsBlob(file) {
 const __defaultLogo = '/assets/file/logo.png';
 const maxTextLenPerImg = 1000;
 const maxImgPerTweet = 4;
-const defaultTextLenForTweet  = 100;
-const MaxRawImgSize = (1<<20) ;
-const MaxThumbnailSize = (1<<18);
+const defaultTextLenForTweet = 100;
+const MaxRawImgSize = (1 << 20);
+const MaxThumbnailSize = (1 << 18);
 const CompressQuality = 0.75;
