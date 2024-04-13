@@ -1904,7 +1904,7 @@
             <div class="tweet-text-info">
                 <div style="background-color: rgba(192,211,240,0.5); padding: 8px 14px; border-radius: 12px"
                      onclick="showTweetDetailInfo()">
-                    <span style="font-size: 14px">推文信息</span>
+                    <span style="font-size: 14px" id="tweet-detail-in-details">推文信息</span>
                     <img id="tweet-text-info-img" class="tweet-text-info-img" src="/assets/file/open-icon.png">
                 </div>
                 <div class="tweet-footer">
@@ -2411,6 +2411,7 @@
                         "bonus-for-points-tittle": "Points Prize Pool",
                         "voter-slogan": "Come to this blockchain social network to grab lottery tickets!",
                         "slogan_1":"Current Prize Pool: ",
+                        "tweet-detail-in-details":"Tweet Info",
                         "slogan_2":"ETH，Vote on this tweet and participate in the prize pool. link:",
                     }
                 },
@@ -2493,6 +2494,7 @@
                         "lottery-info-content-15": "6.chapter 1进行中，获得投票数率先达到100的前10位KOL可以获得元老勋章，这10位KOL的所有推文被投票时，元老可以获得2倍于普通创作的被投票积分。",
                         "bonus-for-points-tittle": "积分奖池",
                         "slogan_1":"当前彩池: ",
+                        "tweet-detail-in-details":"推文信息",
                         "slogan_2":"ETH，给本推文投票并参与彩池 链接:",
                     }
                 }
@@ -2603,6 +2605,8 @@
         document.getElementById("user-tweet-btn-goon-pay").textContent = i18next.t('user-tweet-btn-goon-pay');
         document.getElementById("tweet-post-with-eth-btn-txt-1").textContent = i18next.t('btn-tittle-post-tweet');
         document.getElementById("tweet-post-with-eth-btn-txt-2").textContent = i18next.t('btn-tittle-post-tweet');
+
+        document.getElementById("tweet-detail-in-details").textContent = i18next.t('tweet-detail-in-details');
     }
 </script>
 </body>

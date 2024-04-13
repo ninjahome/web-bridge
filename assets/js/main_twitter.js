@@ -326,27 +326,33 @@ function previewImage(parentId) {
         };
 
         readFileAsBlob(file).then(async blob => {
-
-            const compressedBlob = await compressBlob(blob, CompressQuality);
-            const rawImg = await blobToBase64(compressedBlob);
-            console.log('image Base64 String:', rawImg.length);
-
-            if (rawImg.length > MaxImgSize) {
-                showDialog(DLevel.Warning, "image must less than 2M");
-                return;
+            let rawBase64Str = blob.src;
+            console.log("blob size:", rawBase64Str.length);
+            if (rawBase64Str.length > MaxRawImgSize){
+                let quality = MaxRawImgSize / rawBase64Str.length * 0.75;
+                if (quality > CompressQuality) {
+                    quality = CompressQuality;
+                }
+                const compressedBlob = await compressBlob(blob, quality);
+                rawBase64Str = await blobToBase64(compressedBlob);
+                console.log('image Base64 String:', rawBase64Str.length, compressedBlob.size);
             }
 
-            img.setAttribute('data-raw', rawImg);
-            const msg = ethers.utils.toUtf8Bytes(rawImg);
+            img.setAttribute('data-raw', rawBase64Str);
+            const msg = ethers.utils.toUtf8Bytes(rawBase64Str);
             const hash = ethers.utils.sha256(msg);
             img.setAttribute('data-hash', hash);
 
-            if (rawImg.length > MaxThumbnailSize) {
-                const thumbNailBlob = await compressBlob(compressedBlob, CompressQuality);
-                img.src = await blobToBase64(compressedBlob);
-                console.log("thumbNail size:", img.src.length);
-            }else{
-                img.src = rawImg;
+            if (blob.src.length > MaxThumbnailSize) {
+                let quality = MaxThumbnailSize / blob.src.length * 0.75;
+                if (quality > CompressQuality) {
+                    quality = CompressQuality;
+                }
+                const thumbNailBlob = await compressBlob(blob, quality);
+                img.src = await blobToBase64(thumbNailBlob);
+                console.log("thumbNail size:", img.src.length, thumbNailBlob.size);
+            } else {
+                img.src = blob.src;
             }
             imagePreviewDiv.appendChild(imgWrapper);
         });

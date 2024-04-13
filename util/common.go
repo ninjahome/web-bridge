@@ -21,7 +21,7 @@ import (
 )
 
 const (
-	MaxReqContentLen = 1024 * 1024 * 5
+	MaxReqContentLen = 1 << 23
 	MaxTwitterLen    = 280
 )
 
