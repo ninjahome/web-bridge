@@ -13,6 +13,12 @@ async function initVoteContractMeta() {
     voteContractMeta = new TweetVoteContractSetting(postPrice, votePrice, votePriceInEth,
         maxVote.toNumber(), pluginAddr, pluginStop, kolRate, feeRate);
     TweetVoteContractSetting.sycToDb(voteContractMeta);
+    const postBtn = document.getElementById("tweet-post-with-eth-btn-txt-1");
+    const votePriceInModal = document.getElementById("vote-price-in-modal");
+    if (postBtn) {
+        postBtn.innerText = i18next.t('btn-tittle-post-tweet') + "(" + voteContractMeta.votePriceInEth + " ETH)"
+        votePriceInModal.innerText = voteContractMeta.votePriceInEth + " ETH"
+    }
 }
 
 async function initGameContractMeta() {
@@ -30,6 +36,10 @@ async function initGameContractMeta() {
 
     gameContractMeta = new GameBasicInfo(currentRoundNo,
         totalBonusInEth, voteNo, curBonusInEth, dTime, bonusForPoint);
+
+    setupGameInfo(true).then(r => {
+    });
+
 }
 
 async function initBlockChainContract(provider) {
@@ -44,18 +54,9 @@ async function initBlockChainContract(provider) {
         tweetVoteContract = new ethers.Contract(conf.tweetVote, tweetVoteContractABI, signer);
         lotteryGameContract = new ethers.Contract(conf.gameLottery, gameContractABI, signer);
 
-        initVoteContractMeta().then(r => {
-            const postBtn = document.getElementById("tweet-post-with-eth-btn-txt-1");
-            const votePriceInModal = document.getElementById("vote-price-in-modal");
-            if (postBtn) {
-                postBtn.innerText = i18next.t('btn-tittle-post-tweet') + "(" + voteContractMeta.votePriceInEth + " ETH)"
-                votePriceInModal.innerText = voteContractMeta.votePriceInEth + " ETH"
-            }
-        });
+        await initVoteContractMeta();
 
-        initGameContractMeta().then(r => {
-            setupGameInfo(true);
-        });
+        await initGameContractMeta();
 
     } catch (error) {
         console.error("block chain err: ", error);
