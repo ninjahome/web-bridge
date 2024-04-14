@@ -394,11 +394,11 @@
             </div>
             <div style="display: flex;justify-content: space-between;gap: 24px;margin-top: 24px">
                 <div class="structure">
-                    <img src="/assets/file/structure-img.png" alt="structure">
+                    <img src="/assets/file/structure-img.png" alt="structure" id="structure-img">
                 </div>
 
                 <div class="cosplay">
-                    <img src="/assets/file/pay.png" alt="pay">
+                    <img src="/assets/file/pay.png" alt="pay" id="cosplay-img">
                 </div>
             </div>
 
@@ -529,7 +529,7 @@
         .use(i18nextBrowserLanguageDetector)
         .init({
             fallbackLng: 'en',
-            debug: true,
+            debug: false,
             resources: {
                 en: {
                     translation: {
@@ -572,6 +572,8 @@
                         "road-map-t-4": "Expand application scenarios extensively.",
                         "road-map-c-4": "Open collaborative interfaces with various other Dapps.",
                         "launch-app-tittle": "Start experiencing now",
+                        "structure-img":"/assets/file/structure-img_en.png",
+                        "cosplay-img":"/assets/file/pay_en.png",
                     }
                 },
                 zh: {
@@ -615,10 +617,13 @@
                         "road-map-t-4": "大量铺开应用场景",
                         "road-map-c-4": "打开与其他各类Dapp的协同接口",
                         "launch-app-tittle": "现在开始体验",
+                        "structure-img":"/assets/file/structure-img.png",
+                        "cosplay-img":"/assets/file/pay.png",
                     }
                 }
             }
         }, function (err, t) {
+            console.log("translation t=>",t);
             updateContent();
         });
 
@@ -630,10 +635,7 @@
         document.getElementById('navi-doc').textContent = i18next.t('navi-doc');
         document.getElementById('navi-road-map').textContent = i18next.t('navi-road-map');
         document.getElementById('navi-community').textContent = i18next.t('navi-community');
-
-        // document.getElementById('vision-tittle').textContent = i18next.t('vision-tittle');
         document.getElementById('vision-content').textContent = i18next.t('vision-content');
-        // document.getElementById('vision-note').textContent = i18next.t('vision-note');
 
         document.getElementById('download-android').textContent = i18next.t('download-android');
         document.getElementById('download-ios').textContent = i18next.t('download-ios');
@@ -672,6 +674,9 @@
         document.getElementById('road-map-c-4').textContent = i18next.t('road-map-c-4');
 
         document.getElementById('launch-app-tittle').textContent = i18next.t('launch-app-tittle');
+
+        document.getElementById('structure-img').src  = i18next.t('structure-img');
+        document.getElementById('cosplay-img').src  = i18next.t('cosplay-img');
 
     }
 
