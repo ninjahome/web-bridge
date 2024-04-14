@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ninja Protocol</title>
+    <link rel="icon" href="/assets/file/favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Chettan+2:wght@400..800&display=swap" rel="stylesheet">
@@ -99,7 +100,7 @@
 
         .protocol-detail,
         .dapp-details,
-        .main-Dapp{
+        .main-Dapp {
             width: 1200px;
             margin: auto;
             padding: 24px;
@@ -124,7 +125,7 @@
         }
 
         .dapp-header div p {
-           margin: 4px 0;
+            margin: 4px 0;
         }
 
 
@@ -219,7 +220,7 @@
 
         .dapp-download-ios:hover,
         .dapp-download-an:hover,
-        .dapp-btn:hover{
+        .dapp-btn:hover {
             background: none;
             background-color: #4EA0F2;
         }
@@ -240,13 +241,14 @@
         .system-item-arch,
         .system-item-node,
         .cosplay,
-        .structure{
+        .structure {
             background-color: rgba(255, 255, 255, 0.05);
             padding: 24px;
             border-radius: 12px;
         }
+
         .system-item-arch img,
-        .system-item-node img{
+        .system-item-node img {
             margin-bottom: 24px;
         }
 
@@ -279,6 +281,7 @@
             background-image: url("/assets/file/roadmap-img-blck.png");
             padding-top: 68px;
         }
+
         .roadmap-schedule li {
             word-wrap: break-word; /* 当单词太长时换行 */
             max-width: 288px; /* 文字容器的最大宽度 */
@@ -307,13 +310,13 @@
 
         .main-Dapp {
             display: flex;
-            justify-content:space-around;
+            justify-content: space-around;
 
         }
 
         .launch-btn {
             background: linear-gradient(to right, #9DFBCE, #503DFF);
-            color:white;
+            color: white;
             box-shadow: none;
             padding: 0 48px;
             cursor: pointer; /* 添加鼠标指针样式 */
@@ -334,16 +337,17 @@
             <a href="#docs"><span id="navi-doc">文档</span></a>
             <a href="#dapp">Dapp</a>
             <a href="#roadmap"><span id="navi-road-map">路线图</span></a>
-            <a href="https://github.com/ninjahome/web-bridge/wiki" target="_blank"><span id="navi-community">社区</span></a>
+            <a href="#community"><span id="navi-community">社区</span></a>
         </nav>
     </header>
     <div id="ninja">
         <div class="ninja-protocol-page">
             <div class="ninja-protocol-right">
-                    <span id="vision-tittle" style="margin-bottom: 0; width: 42px; background-color: #4EA0F2;border-radius: 4px; display: flex; justify-content: center; align-items: center;"></span>
-                    <span id="vision-content"
-                          style="font-weight: 500; font-size: 42px; line-height: 52px">成为打通一切web2应用生态、web3协议及公链的通信协议</span>
-                 <div class="app-enter-point">
+                <span id="vision-tittle"
+                      style="margin-bottom: 0; width: 42px; background-color: #4EA0F2;border-radius: 4px; display: flex; justify-content: center; align-items: center;"></span>
+                <span id="vision-content"
+                      style="font-weight: 500; font-size: 42px; line-height: 52px">成为打通一切web2应用生态、web3协议及公链的通信协议</span>
+                <div class="app-enter-point">
                     <div class="main-dapp-twitter">
                         <button onclick="launchDessageTwitterApp()" class="dapp-btn">Launch DApp
                         </button>
@@ -351,7 +355,7 @@
 
                 </div>
             </div>
-            </div>
+        </div>
     </div>
 
     <section id="docs">
@@ -381,7 +385,7 @@
                 <div class="system-item-node">
                     <img src="/assets/file/token-node.png" alt="token system">
                     <div>
-                        <h3  id="technical_token">代币</h3>
+                        <h3 id="technical_token">代币</h3>
                         <p id="technical_content_3">
                             Ninja将会在不久的将来发行自己的代币，主要是用来激励早期参与者，以及在整个生态中激励所有的节点和参与者。同时在协议相关的诸多功能上以及在基于Ninja协议开发的各类应用中延展出的各类功能和场景中都会使用Ninja的代币进行结算，敬请期待。
                         </p>
@@ -453,27 +457,31 @@
         <ul class="roadmap-schedule">
             <li class="schedule" style="background-color: transparent; margin: 0; padding: 0">
                 <h3>2024 Q1</h3>
-                <p><strong id="road-map-t-1">beta版上线</strong><br><span id="road-map-c-1">实现所有通信相关的功能</span></p>
+                <p><strong id="road-map-t-1">beta版上线</strong><br><span
+                            id="road-map-c-1">实现所有通信相关的功能</span></p>
             </li>
             <li class="schedule" style="background-color: transparent; margin: 0; padding: 0">
                 <h3>2024 Q2</h3>
-                <p><strong id="road-map-t-2">获得初期用户</strong><br><span id="road-map-c-2">搭建完成元身份生态系统及Zk身份投影协议</span></p>
+                <p><strong id="road-map-t-2">获得初期用户</strong><br><span
+                            id="road-map-c-2">搭建完成元身份生态系统及Zk身份投影协议</span></p>
             </li>
             <li class="schedule" style="background-color: transparent; margin: 0; padding: 0">
                 <h3>2024 Q3</h3>
-                <p><strong id="road-map-t-3">协同Ninja协议的token系统</strong><br><span id="road-map-c-3">完善应用内生态激励系统及相关功能</span></p>
+                <p><strong id="road-map-t-3">协同Ninja协议的token系统</strong><br><span id="road-map-c-3">完善应用内生态激励系统及相关功能</span>
+                </p>
             </li>
             <li class="schedule" style="background-color: transparent; margin: 0; padding: 0">
                 <h3>2024 Q4</h3>
-                <p><strong id="road-map-t-4">大量铺开应用场景</strong><br><span id="road-map-c-4">打开与其他各类Dapp的协同接口</span></p>
+                <p><strong id="road-map-t-4">大量铺开应用场景</strong><br><span
+                            id="road-map-c-4">打开与其他各类Dapp的协同接口</span></p>
 
             </li>
         </ul>
     </section>
-    <div class="main-Dapp" >
+    <div class="main-Dapp">
         <div>
             <h3 id="launch-app-tittle">Dessage Twitter</h3>
-            <button onclick="launchDessageTwitterApp()" class="dapp-btn launch-btn" >Launch DApp</button>
+            <button onclick="launchDessageTwitterApp()" class="dapp-btn launch-btn">Launch DApp</button>
         </div>
         <div style="border-left: 1px solid #d3d5d6; margin: 24px 0;"></div> <!-- 垂直分割线 -->
         <div class="other-dapp-im">
@@ -499,10 +507,13 @@
     </div>
 </main>
 
-<footer class="footer">
-    <a href="https://telegram.org" target="_blank"><img src="/assets/file/Tele-logo.png" alt="Telegram"></a>
-    <a href="https://twitter.com" target="_blank"><img src="/assets/file/Twitter-logo.png" alt="Twitter"></a>
-    <a href="https://github.com/ninjahome" target="_blank"><img src="/assets/file/GitHub-logo.png" alt="GitHub"></a>
+<footer class="footer" id="community">
+    <a href="https://t.me/Dessagegroup" target="_blank"><img src="/assets/file/Tele-logo.png" alt="Telegram"></a>
+    <a href="https://discord.gg/SZVJuRngqP" target="_blank"><img src="/assets/file/discord.png" alt="Discord"></a>
+    <a href="https://twitter.com/Dessage2023" target="_blank"><img src="/assets/file/Twitter-logo.png"
+                                                                   alt="Twitter"></a>
+    <a href="https://github.com/ninjahome/web-bridge/wiki" target="_blank"><img src="/assets/file/GitHub-logo.png"
+                                                                                alt="GitHub"></a>
 </footer>
 
 <script>
@@ -532,35 +543,35 @@
                         "download-android": "android download",
                         "download-ios": "ios download",
                         "technical_principles": "New Account System",
-                        "technical_content_1":"By integrating routing network protocols with blockchain technology, this approach achieves inherently trustworthy information transfer and real-time settlement. Through offering a variety of accessible layers and unified data transmission and encryption/decryption rules, it caters to the diverse needs of developers. Developers can design clients and access layers based on their specific application scenarios, requiring the invocation of the global routing service and the payment of routing fees only when cross-domain services are necessary. Through DAO (Decentralized Autonomous Organization) governance and token incentives, the decentralization of protocol rules and collective ownership and management are realized. At certain stages of protocol development, decisions regarding the definition of data structures, the setting of encryption/decryption methods, routing fees and principles, and the rules for node registration and deregistration are all made through DAO voting, with token incentives provided to those who contribute.",
-                        "technical_arch":"Architecture",
-                        "technical_content_2":"By integrating routing network protocols with blockchain technology, we achieve naturally trustworthy information transmission and real-time settlement. Through the provision of diverse access layers and unified data transmission and encryption/decryption rules, we meet the varied needs of developers. Developers can create clients and access layers based on their application scenarios, and only need to invoke the global routing service and pay routing fees when cross-domain services occur. Through DAO governance and token incentives, we realize the decentralization of protocol rules and collective governance. At certain stages of protocol development, the definition of data structures, the setting of encryption/decryption methods, routing fees and principles, and the rules for node activation and deactivation are all determined through DAO voting, with token incentives provided to contributors.",
-                        "technical_token":"Token",
-                        "technical_content_3":"Ninja will issue its own tokens in the near future, primarily to incentivize early participants, as well as all nodes and participants within the ecosystem. Additionally, Ninja tokens will be used for settlement in many protocol-related functions and in various features and scenarios extended from applications developed based on the Ninja protocol. Please look forward to it. ",
-                        "dessage-tittle":"Dessage, the first DApp based on the Ninja protocol.",
-                        "dessage-feature-1":"End-to-end encrypted communication based on distributed transmission (supports multi-chain cross-chain communication, supports cross-social protocol, and cross-application communication), addressing users' social needs in native Web3 scenarios, and enabling end-to-end encrypted communication between users and mainstream Web2 application ecosystems (such as Telegram, Discord, etc.).",
-                        "dessage-feature-2":"Integration of multi-chain on-chain social graphs, constructing the on-chain meta-identity for Web3 users.",
-                        "dessage-feature-3":"Zero-knowledge identity projection, unlocking the value of on-chain social graphs for users.",
-                        "dessage-feature-4":"Monetization of data sovereignty.",
-                        "dapp-details-tittle-1":"How does Dessage achieve end-to-end encrypted multi-chain cross-chain communication?",
-                        "dapp-details-content-1":"Due to the characteristics of the Ninja protocol, which ensure that all communications between Ninja users are end-to-end encrypted, censorship-resistant, and distributed, applications based on the Ninja protocol, like Dessage, inherently possess these features. To enable communication between users of various public blockchains and across chains, users of each public blockchain can use their accounts on those blockchains to sign with corresponding smart contracts. This signature proves their ownership of the accounts and links their blockchain accounts to their Ninja accounts, making it easier for other users to find and communicate with them using the blockchain addresses. (For example: NJ12345 is Alice's Ninja address, and 0x12345 is Alice's Ethereum address. Alice can prove her ownership of 0x12345 by signing on an Ethereum smart contract using the private key associated with 0x12345 and linking 0x12345 with NJ12345. This allows other Ethereum users to search for the 0x12345 address and initiate communication with Alice directly via the Ninja protocol.) Additionally, Dessage facilitates seamless cross-protocol and cross-application communication with other social protocols (like Nostr) and social applications, offering users a more open and diverse experience.",
-                        "dapp-details-tittle-2":"How does Dessage achieve encrypted communication with Web2 applications (such as Telegram)?",
-                        "dapp-details-content-2":"Leveraging the communication standard established by the Ninja protocol, Dessage can communicate with Telegram's servers via the Ninja protocol, enabling users to seamlessly communicate with any other application ecosystem bridged on the Ninja protocol without noticing the underlying complexity.",
-                        "dapp-details-tittle-3":"What are meta-identity and social graphs?",
-                        "dapp-details-content-3":"For each user, there may be multiple accounts on a single public blockchain, and similarly, multiple accounts across various blockchains. The on-chain behavior information of each account collectively constitutes the user's complete on-chain graph. By cryptographically linking the user's accounts on various public blockchains to their Ninja account, all of the user's on-chain graphs will be fully represented within Ninja. This constitutes the user's meta-identity, with the identities on individual blockchains merely serving as projections of this meta-identity on respective chains, and only part of the user's complete identity. By controlling the private key to their Ninja account, a user secures their complete identity. The entire on-chain social network outlined by this complete meta-identity is a highly valuable on-chain social graph for the user.",
-                        "dapp-details-tittle-4":"What is the ZK Identity Projection Protocol?",
-                        "dapp-details-content-4":"Once users establish their meta-identity, they can fully enjoy the value brought by the sovereignty of their identity data. Considering the privacy of their complete identity, users only need to access the identity projection contracts on Ninja for each chain when they need to utilize a specific aspect of their identity. These contracts will output the user's score for that identity aspect in a Zero-Knowledge (ZK) manner (for example: If Alice wants to output her social activity score or asset status score on the Ethereum blockchain, she can enter the identity projection contract on Ethereum through Ninja. This contract will then use the addresses bound to Ninja across various public blockchains to collectively provide Alice's corresponding score in a ZK manner). Such identity projection scores will bring convenience to users in their interactions with other dapps.",
-                        "dapp-details-tittle-5":"What is the monetization of data sovereignty?",
-                        "dapp-details-content-5":"Based on the user's meta-identity and social graph, there are various channels for data sovereignty monetization. Dessage offers the following monetization channels to users: customized paid chat and group chat modes, allowing users to monetize their social value; advertising models based on blockchain address social graphs, providing precise targeting for advertisers and maximizing personal value for the audience; a mining mode that works in tandem with various nodes in the Ninja protocol ecosystem, providing anonymity and disaster recovery backup for message forwarding and routing, with token rewards; and the value of meta-identity projection, by breaking down the user's on-chain meta-identity into different aspects, helps users gain corresponding data value in specific fields.",
-                        "road-map-t-1":"Beta version launch",
-                        "road-map-c-1":"Implement all communication-related functions",
-                        "road-map-t-2":"Acquire initial users",
-                        "road-map-c-2":"Complete the construction of the meta-identity ecosystem and the ZK identity projection protocol.",
-                        "road-map-t-3":"Token system of the Ninja protocol.",
-                        "road-map-c-3":"Refine the in-app ecological incentive system and related functionalities.",
-                        "road-map-t-4":"Expand application scenarios extensively.",
-                        "road-map-c-4":"Open collaborative interfaces with various other Dapps.",
-                        "launch-app-tittle":"Start experiencing now",
+                        "technical_content_1": "By integrating routing network protocols with blockchain technology, this approach achieves inherently trustworthy information transfer and real-time settlement. Through offering a variety of accessible layers and unified data transmission and encryption/decryption rules, it caters to the diverse needs of developers. Developers can design clients and access layers based on their specific application scenarios, requiring the invocation of the global routing service and the payment of routing fees only when cross-domain services are necessary. Through DAO (Decentralized Autonomous Organization) governance and token incentives, the decentralization of protocol rules and collective ownership and management are realized. At certain stages of protocol development, decisions regarding the definition of data structures, the setting of encryption/decryption methods, routing fees and principles, and the rules for node registration and deregistration are all made through DAO voting, with token incentives provided to those who contribute.",
+                        "technical_arch": "Architecture",
+                        "technical_content_2": "By integrating routing network protocols with blockchain technology, we achieve naturally trustworthy information transmission and real-time settlement. Through the provision of diverse access layers and unified data transmission and encryption/decryption rules, we meet the varied needs of developers. Developers can create clients and access layers based on their application scenarios, and only need to invoke the global routing service and pay routing fees when cross-domain services occur. Through DAO governance and token incentives, we realize the decentralization of protocol rules and collective governance. At certain stages of protocol development, the definition of data structures, the setting of encryption/decryption methods, routing fees and principles, and the rules for node activation and deactivation are all determined through DAO voting, with token incentives provided to contributors.",
+                        "technical_token": "Token",
+                        "technical_content_3": "Ninja will issue its own tokens in the near future, primarily to incentivize early participants, as well as all nodes and participants within the ecosystem. Additionally, Ninja tokens will be used for settlement in many protocol-related functions and in various features and scenarios extended from applications developed based on the Ninja protocol. Please look forward to it. ",
+                        "dessage-tittle": "Dessage, the first DApp based on the Ninja protocol.",
+                        "dessage-feature-1": "End-to-end encrypted communication based on distributed transmission (supports multi-chain cross-chain communication, supports cross-social protocol, and cross-application communication), addressing users' social needs in native Web3 scenarios, and enabling end-to-end encrypted communication between users and mainstream Web2 application ecosystems (such as Telegram, Discord, etc.).",
+                        "dessage-feature-2": "Integration of multi-chain on-chain social graphs, constructing the on-chain meta-identity for Web3 users.",
+                        "dessage-feature-3": "Zero-knowledge identity projection, unlocking the value of on-chain social graphs for users.",
+                        "dessage-feature-4": "Monetization of data sovereignty.",
+                        "dapp-details-tittle-1": "How does Dessage achieve end-to-end encrypted multi-chain cross-chain communication?",
+                        "dapp-details-content-1": "Due to the characteristics of the Ninja protocol, which ensure that all communications between Ninja users are end-to-end encrypted, censorship-resistant, and distributed, applications based on the Ninja protocol, like Dessage, inherently possess these features. To enable communication between users of various public blockchains and across chains, users of each public blockchain can use their accounts on those blockchains to sign with corresponding smart contracts. This signature proves their ownership of the accounts and links their blockchain accounts to their Ninja accounts, making it easier for other users to find and communicate with them using the blockchain addresses. (For example: NJ12345 is Alice's Ninja address, and 0x12345 is Alice's Ethereum address. Alice can prove her ownership of 0x12345 by signing on an Ethereum smart contract using the private key associated with 0x12345 and linking 0x12345 with NJ12345. This allows other Ethereum users to search for the 0x12345 address and initiate communication with Alice directly via the Ninja protocol.) Additionally, Dessage facilitates seamless cross-protocol and cross-application communication with other social protocols (like Nostr) and social applications, offering users a more open and diverse experience.",
+                        "dapp-details-tittle-2": "How does Dessage achieve encrypted communication with Web2 applications (such as Telegram)?",
+                        "dapp-details-content-2": "Leveraging the communication standard established by the Ninja protocol, Dessage can communicate with Telegram's servers via the Ninja protocol, enabling users to seamlessly communicate with any other application ecosystem bridged on the Ninja protocol without noticing the underlying complexity.",
+                        "dapp-details-tittle-3": "What are meta-identity and social graphs?",
+                        "dapp-details-content-3": "For each user, there may be multiple accounts on a single public blockchain, and similarly, multiple accounts across various blockchains. The on-chain behavior information of each account collectively constitutes the user's complete on-chain graph. By cryptographically linking the user's accounts on various public blockchains to their Ninja account, all of the user's on-chain graphs will be fully represented within Ninja. This constitutes the user's meta-identity, with the identities on individual blockchains merely serving as projections of this meta-identity on respective chains, and only part of the user's complete identity. By controlling the private key to their Ninja account, a user secures their complete identity. The entire on-chain social network outlined by this complete meta-identity is a highly valuable on-chain social graph for the user.",
+                        "dapp-details-tittle-4": "What is the ZK Identity Projection Protocol?",
+                        "dapp-details-content-4": "Once users establish their meta-identity, they can fully enjoy the value brought by the sovereignty of their identity data. Considering the privacy of their complete identity, users only need to access the identity projection contracts on Ninja for each chain when they need to utilize a specific aspect of their identity. These contracts will output the user's score for that identity aspect in a Zero-Knowledge (ZK) manner (for example: If Alice wants to output her social activity score or asset status score on the Ethereum blockchain, she can enter the identity projection contract on Ethereum through Ninja. This contract will then use the addresses bound to Ninja across various public blockchains to collectively provide Alice's corresponding score in a ZK manner). Such identity projection scores will bring convenience to users in their interactions with other dapps.",
+                        "dapp-details-tittle-5": "What is the monetization of data sovereignty?",
+                        "dapp-details-content-5": "Based on the user's meta-identity and social graph, there are various channels for data sovereignty monetization. Dessage offers the following monetization channels to users: customized paid chat and group chat modes, allowing users to monetize their social value; advertising models based on blockchain address social graphs, providing precise targeting for advertisers and maximizing personal value for the audience; a mining mode that works in tandem with various nodes in the Ninja protocol ecosystem, providing anonymity and disaster recovery backup for message forwarding and routing, with token rewards; and the value of meta-identity projection, by breaking down the user's on-chain meta-identity into different aspects, helps users gain corresponding data value in specific fields.",
+                        "road-map-t-1": "Beta version launch",
+                        "road-map-c-1": "Implement all communication-related functions",
+                        "road-map-t-2": "Acquire initial users",
+                        "road-map-c-2": "Complete the construction of the meta-identity ecosystem and the ZK identity projection protocol.",
+                        "road-map-t-3": "Token system of the Ninja protocol.",
+                        "road-map-c-3": "Refine the in-app ecological incentive system and related functionalities.",
+                        "road-map-t-4": "Expand application scenarios extensively.",
+                        "road-map-c-4": "Open collaborative interfaces with various other Dapps.",
+                        "launch-app-tittle": "Start experiencing now",
                     }
                 },
                 zh: {
@@ -575,35 +586,35 @@
                         "download-android": "android下载",
                         "download-ios": "ios下载",
                         "technical_principles": "新账号体系",
-                        "technical_content_1":"一个私钥对应多个地址身份， 任何人可以在Ninja上建立自己的公私钥账号体系，公钥是与他人社交互动时用户的公开身份，私钥是唯一的掌握自己社交数据所有权的凭证，通过输入其他用户的公钥地址即可与之通信，公私钥体系确保了用户可以通过Ninja协议实现真正的端对端加密通信。Ninja亦可兼容其他主流通信协议（如Nostr、Farcaster等）并可实现跨协议跨应用的通信，也支持用户输入某个公链地址（如以太坊地址、比特币地址等）找到好友进行通信。最终Ninja通过建立通信协议标准也可在服务器层面兼容目前主流的web2生态（如telegram、discord等）",
-                        "technical_arch":"架构",
-                        "technical_content_2":"通过融合路由网络协议与区块链技术，实现天然可信的信息传递与实时结算。通过开放多样的的接入层和统一的数据传输与加解密规则，满足开发者的多种需求，开发者可以根据自己的应用场景开发客户端与接入层，再发生跨域服务的时候，才需要调用全域路由服务并支付路由费用。通过DAO自治与token激励，实现协议规则的去中心化以及共有共治，在协议开发的一定阶段，数据结构的定义，加解密方式的设定，路由费用以及路由的原则，节点上下线规则等协议全部通过DAO投票方式进行并对作出贡献者进行token激励。",
-                        "technical_token":"代币",
-                        "technical_content_3":"Ninja将会在不久的将来发行自己的代币，主要是用来激励早期参与者，以及在整个生态中激励所有的节点和参与者。同时在协议相关的诸多功能上以及在基于Ninja协议开发的各类应用中延展出的各类功能和场景中都会使用Ninja的代币进行结算，敬请期待。",
-                        "dessage-tittle":"Dessage 第一款给予ninja协议的DApp",
-                        "dessage-feature-1":"端对端加密的基于分布式传输的通信（支持多链跨链通信，支持跨社交协议、跨应用的沟通），解决用户web3原生场景的社交需求，并可实现用户与主流web2应用生态（如telegram、discord等）之间的端对端加密通信",
-                        "dessage-feature-2":"多链链上社交图谱整合，构建web3用户的链上元身份",
-                        "dessage-feature-3":"Zk身份投影，为用户挖掘出链上社交图谱的价值",
-                        "dessage-feature-4":"数据主权变现",
-                        "dapp-details-tittle-1":"Dessage是如何实现端对端加密的多链跨链通信的？",
-                        "dapp-details-content-1":"由于Ninja协议的特性保证了所有Ninja用户相互之间的通信是端对端加密且抗审查的、分布式的，因此基于Ninja协议的应用Dessage天然具有上述特点。而为了使各公链的用户相互之间以及跨链用户之间可以实现通信，各个公链的用户可以使用自己在各公链中的账户通过相应的智能合约签名以证明自己对该公链账户的所有权，并将自己的该公链账户与自己的Ninja账户进行绑定，从而可以方便其他用户通过该公链地址找到自己并与自己通信。（举例：NJ12345是Alice的Ninja地址，0x12345是Alice的Eth地址，Alice可以通过使用0x12345的私钥在以太坊智能合约上签名以证明自己对0x12345的所有权，并将0x12345与NJ12345绑定，从而使得其他以太坊用户搜索0x12345地址并发起通信时，可以直接在Ninja协议上与Alice实现通信。）同时Dessage可实现与其他社交协议（如Nostr）和其他社交应用之间的跨协议跨应用无缝通信，给用户带来更开放更多元的体验。",
-                        "dapp-details-tittle-2":"Dessage是如何实现与web2应用（如telegram）之间的加密通信的？",
-                        "dapp-details-content-2":"借助Ninja协议建立的通信标准，Dessage可与telegram的服务器通过Ninja协议进行通信，使用户可以无感知的通过telegram与桥接在Ninja协议上的任何其他应用生态进行无缝通信。",
-                        "dapp-details-tittle-3":"什么是元身份及社交图谱?",
-                        "dapp-details-content-3":"对于每个用户而言，可能在某一公链上会有多个账号，同时在多个公链上都会有多个账号，每个账号有不同的链上行为信息共同构成了用户的完整链上图谱。通过将用户自身在各个公链的账号加密绑定到Ninja账号，用户所有的链上图谱将会在Ninja中完整呈现，这便是用户的元身份，而各个链上的身份只是这个元身份在对应链上的投影，只是用户完整身份的一部分，用户只要掌握了自己在Ninja上的私钥，就掌握了自己完整的身份。而由这个完整的元身份所描绘出的整个链上社交关系网络则是对用户非常有价值的链上社交图谱。",
-                        "dapp-details-tittle-4":"什么是ZK身份投影协议?",
-                        "dapp-details-content-4":"当用户建立起自己的元身份后，便可充分享受自己的身份数据主权带来的价值。出于对自己完整身份的隐私性考虑，用户在每次需要某一个身份侧面时，只需要进入Ninja在各链上的身份投影合约，该合约将会以ZK的方式输出该用户这一身份侧面下的分数（举例：Alice想在以太坊链上输出自己的社交活跃度分数或者资产状况分数，她可进入Ninja在以太坊上的身份投影合约进行打分，该合约就会以ZK的方式通过Alice绑定在Ninja上的各公链地址共同给出Alice相应的分数）而这样的身份投影分数将会给用户与其他dapp的交互带来很多便利。",
-                        "dapp-details-tittle-5":"什么是数据主权变现?",
-                        "dapp-details-content-5":"基于用户的元身份和社交图谱，用户有多种数据主权变现的渠道，Dessage为用户提供了如下几种变现渠道：自定义的付费聊天模式及付费群聊模式，可将用户自身的社交价值变现基于区块链地址的社交图谱广告投放模式，为广告主精准匹配目标用户，为受众用户最大化收获个人价值挖矿模式，配合Ninja协议生态的各类节点，为消息转发和路由提供匿踪和容灾备份，获得token奖励元身份投影价值，通过将用户的链上元身份拆解成不同的侧面，可以帮助用户在对应领域获得相应数据价值",
-                        "road-map-t-1":"beta版上线",
-                        "road-map-c-1":"实现所有通信相关的功能",
-                        "road-map-t-2":"获得初期用户",
-                        "road-map-c-2":"搭建完成元身份生态系统及Zk身份投影协议",
-                        "road-map-t-3":"Ninja协议的token系统",
-                        "road-map-c-3":"完善应用内生态激励系统及相关功能",
-                        "road-map-t-4":"大量铺开应用场景",
-                        "road-map-c-4":"打开与其他各类Dapp的协同接口",
-                        "launch-app-tittle":"现在开始体验",
+                        "technical_content_1": "一个私钥对应多个地址身份， 任何人可以在Ninja上建立自己的公私钥账号体系，公钥是与他人社交互动时用户的公开身份，私钥是唯一的掌握自己社交数据所有权的凭证，通过输入其他用户的公钥地址即可与之通信，公私钥体系确保了用户可以通过Ninja协议实现真正的端对端加密通信。Ninja亦可兼容其他主流通信协议（如Nostr、Farcaster等）并可实现跨协议跨应用的通信，也支持用户输入某个公链地址（如以太坊地址、比特币地址等）找到好友进行通信。最终Ninja通过建立通信协议标准也可在服务器层面兼容目前主流的web2生态（如telegram、discord等）",
+                        "technical_arch": "架构",
+                        "technical_content_2": "通过融合路由网络协议与区块链技术，实现天然可信的信息传递与实时结算。通过开放多样的的接入层和统一的数据传输与加解密规则，满足开发者的多种需求，开发者可以根据自己的应用场景开发客户端与接入层，再发生跨域服务的时候，才需要调用全域路由服务并支付路由费用。通过DAO自治与token激励，实现协议规则的去中心化以及共有共治，在协议开发的一定阶段，数据结构的定义，加解密方式的设定，路由费用以及路由的原则，节点上下线规则等协议全部通过DAO投票方式进行并对作出贡献者进行token激励。",
+                        "technical_token": "代币",
+                        "technical_content_3": "Ninja将会在不久的将来发行自己的代币，主要是用来激励早期参与者，以及在整个生态中激励所有的节点和参与者。同时在协议相关的诸多功能上以及在基于Ninja协议开发的各类应用中延展出的各类功能和场景中都会使用Ninja的代币进行结算，敬请期待。",
+                        "dessage-tittle": "Dessage 第一款给予ninja协议的DApp",
+                        "dessage-feature-1": "端对端加密的基于分布式传输的通信（支持多链跨链通信，支持跨社交协议、跨应用的沟通），解决用户web3原生场景的社交需求，并可实现用户与主流web2应用生态（如telegram、discord等）之间的端对端加密通信",
+                        "dessage-feature-2": "多链链上社交图谱整合，构建web3用户的链上元身份",
+                        "dessage-feature-3": "Zk身份投影，为用户挖掘出链上社交图谱的价值",
+                        "dessage-feature-4": "数据主权变现",
+                        "dapp-details-tittle-1": "Dessage是如何实现端对端加密的多链跨链通信的？",
+                        "dapp-details-content-1": "由于Ninja协议的特性保证了所有Ninja用户相互之间的通信是端对端加密且抗审查的、分布式的，因此基于Ninja协议的应用Dessage天然具有上述特点。而为了使各公链的用户相互之间以及跨链用户之间可以实现通信，各个公链的用户可以使用自己在各公链中的账户通过相应的智能合约签名以证明自己对该公链账户的所有权，并将自己的该公链账户与自己的Ninja账户进行绑定，从而可以方便其他用户通过该公链地址找到自己并与自己通信。（举例：NJ12345是Alice的Ninja地址，0x12345是Alice的Eth地址，Alice可以通过使用0x12345的私钥在以太坊智能合约上签名以证明自己对0x12345的所有权，并将0x12345与NJ12345绑定，从而使得其他以太坊用户搜索0x12345地址并发起通信时，可以直接在Ninja协议上与Alice实现通信。）同时Dessage可实现与其他社交协议（如Nostr）和其他社交应用之间的跨协议跨应用无缝通信，给用户带来更开放更多元的体验。",
+                        "dapp-details-tittle-2": "Dessage是如何实现与web2应用（如telegram）之间的加密通信的？",
+                        "dapp-details-content-2": "借助Ninja协议建立的通信标准，Dessage可与telegram的服务器通过Ninja协议进行通信，使用户可以无感知的通过telegram与桥接在Ninja协议上的任何其他应用生态进行无缝通信。",
+                        "dapp-details-tittle-3": "什么是元身份及社交图谱?",
+                        "dapp-details-content-3": "对于每个用户而言，可能在某一公链上会有多个账号，同时在多个公链上都会有多个账号，每个账号有不同的链上行为信息共同构成了用户的完整链上图谱。通过将用户自身在各个公链的账号加密绑定到Ninja账号，用户所有的链上图谱将会在Ninja中完整呈现，这便是用户的元身份，而各个链上的身份只是这个元身份在对应链上的投影，只是用户完整身份的一部分，用户只要掌握了自己在Ninja上的私钥，就掌握了自己完整的身份。而由这个完整的元身份所描绘出的整个链上社交关系网络则是对用户非常有价值的链上社交图谱。",
+                        "dapp-details-tittle-4": "什么是ZK身份投影协议?",
+                        "dapp-details-content-4": "当用户建立起自己的元身份后，便可充分享受自己的身份数据主权带来的价值。出于对自己完整身份的隐私性考虑，用户在每次需要某一个身份侧面时，只需要进入Ninja在各链上的身份投影合约，该合约将会以ZK的方式输出该用户这一身份侧面下的分数（举例：Alice想在以太坊链上输出自己的社交活跃度分数或者资产状况分数，她可进入Ninja在以太坊上的身份投影合约进行打分，该合约就会以ZK的方式通过Alice绑定在Ninja上的各公链地址共同给出Alice相应的分数）而这样的身份投影分数将会给用户与其他dapp的交互带来很多便利。",
+                        "dapp-details-tittle-5": "什么是数据主权变现?",
+                        "dapp-details-content-5": "基于用户的元身份和社交图谱，用户有多种数据主权变现的渠道，Dessage为用户提供了如下几种变现渠道：自定义的付费聊天模式及付费群聊模式，可将用户自身的社交价值变现基于区块链地址的社交图谱广告投放模式，为广告主精准匹配目标用户，为受众用户最大化收获个人价值挖矿模式，配合Ninja协议生态的各类节点，为消息转发和路由提供匿踪和容灾备份，获得token奖励元身份投影价值，通过将用户的链上元身份拆解成不同的侧面，可以帮助用户在对应领域获得相应数据价值",
+                        "road-map-t-1": "beta版上线",
+                        "road-map-c-1": "实现所有通信相关的功能",
+                        "road-map-t-2": "获得初期用户",
+                        "road-map-c-2": "搭建完成元身份生态系统及Zk身份投影协议",
+                        "road-map-t-3": "Ninja协议的token系统",
+                        "road-map-c-3": "完善应用内生态激励系统及相关功能",
+                        "road-map-t-4": "大量铺开应用场景",
+                        "road-map-c-4": "打开与其他各类Dapp的协同接口",
+                        "launch-app-tittle": "现在开始体验",
                     }
                 }
             }
