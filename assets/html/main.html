@@ -41,13 +41,17 @@
 
         .container {
             display: flex; /* 启用flex布局 */
+            justify-content: center;
+
             height: 100vh; /* 容器高度设置为视窗高度 */
             width: 80%;
-            margin-left: auto; /* 左边距自动 */
+            margin: auto; /* 左边距自动 */
         }
 
         .left-menu-area {
             width: 196px;
+            height: 99vh;
+            float: right;
             margin-top: 8px;
             background-color: #ffffff; /* 背景色，可根据需要调整 */
             padding: 16px; /* 内边距 */
@@ -1574,42 +1578,44 @@
 </head>
 <body>
 <div class="container">
-    <div class="left-menu-area">
-        <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
-             onclick="menuOnClicked.call(document.getElementById('settings-menu-item'), 4)"
-             style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
-        <ul class="menu-list-left-area">
-            <li onclick="menuOnClicked.call(this,0)" data-icon-active="/assets/file/path-to-home-active-icon.png"
-                data-icon-inactive="/assets/file/path-to-home-icon.png" class="menu-item-left-area active"
-                data-content="middle-div-home">
-                <img src="/assets/file/path-to-home-active-icon.png" alt="Home" class="menu-icon"/> <span
-                        id="left-menu-item-home">主页</span>
-            </li>
-            <li onclick="menuOnClicked.call(this,1)" data-icon-active="/assets/file/path-to-leaderboard-active-icon.png"
-                data-icon-inactive="/assets/file/path-to-leaderboard-icon.png" class="menu-item-left-area"
-                data-content="middle-div-leaderboard">
-                <img src="/assets/file/path-to-leaderboard-icon.png" alt="Home" class="menu-icon"/> <span
-                        id="left-menu-item-top">排行榜</span>
-            </li>
+    <div style="width: 348px">
+        <div class="left-menu-area">
+            <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
+                 onclick="menuOnClicked.call(document.getElementById('settings-menu-item'), 4)"
+                 style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
+            <ul class="menu-list-left-area">
+                <li onclick="menuOnClicked.call(this,0)" data-icon-active="/assets/file/path-to-home-active-icon.png"
+                    data-icon-inactive="/assets/file/path-to-home-icon.png" class="menu-item-left-area active"
+                    data-content="middle-div-home">
+                    <img src="/assets/file/path-to-home-active-icon.png" alt="Home" class="menu-icon"/> <span
+                            id="left-menu-item-home">主页</span>
+                </li>
+                <li onclick="menuOnClicked.call(this,1)" data-icon-active="/assets/file/path-to-leaderboard-active-icon.png"
+                    data-icon-inactive="/assets/file/path-to-leaderboard-icon.png" class="menu-item-left-area"
+                    data-content="middle-div-leaderboard">
+                    <img src="/assets/file/path-to-leaderboard-icon.png" alt="Home" class="menu-icon"/> <span
+                            id="left-menu-item-top">排行榜</span>
+                </li>
 
-            <li onclick="menuOnClicked.call(this,2)" data-icon-active="/assets/file/path-to-twitter-active-icon.png"
-                data-icon-inactive="/assets/file/path-to-twitter-icon.png" class="menu-item-left-area"
-                data-content="middle-div-user-tweets">
-                <img src="/assets/file/path-to-twitter-icon.png" alt="Home" class="menu-icon"/> <span
-                        id="left-menu-item-my-tweet">推文</span>
-            </li>
-            <li onclick="menuOnClicked.call(this,3)" data-icon-active="/assets/file/path-to-user-active-icon.png"
-                data-icon-inactive="/assets/file/path-to-user-icon.png" class="menu-item-left-area"
-                data-content="middle-div-about-user">
-                <img src="/assets/file/path-to-user-icon.png" alt="Home" class="menu-icon"/> <span
-                        id="left-menu-item-my-setting">我的</span>
-            </li>
-        </ul>
-        <button class="show-post-tweet-div" onclick="showPostTweetDiv()" id="btn-post-tweet-on-left-menu">
-            发推
-        </button>
+                <li onclick="menuOnClicked.call(this,2)" data-icon-active="/assets/file/path-to-twitter-active-icon.png"
+                    data-icon-inactive="/assets/file/path-to-twitter-icon.png" class="menu-item-left-area"
+                    data-content="middle-div-user-tweets">
+                    <img src="/assets/file/path-to-twitter-icon.png" alt="Home" class="menu-icon"/> <span
+                            id="left-menu-item-my-tweet">推文</span>
+                </li>
+                <li onclick="menuOnClicked.call(this,3)" data-icon-active="/assets/file/path-to-user-active-icon.png"
+                    data-icon-inactive="/assets/file/path-to-user-icon.png" class="menu-item-left-area"
+                    data-content="middle-div-about-user">
+                    <img src="/assets/file/path-to-user-icon.png" alt="Home" class="menu-icon"/> <span
+                            id="left-menu-item-my-setting">我的</span>
+                </li>
+            </ul>
+            <button class="show-post-tweet-div" onclick="showPostTweetDiv()" id="btn-post-tweet-on-left-menu">
+                发推
+            </button>
+        </div>
     </div>
-    <div id="tweet-header-template" style="display: none">
+   <div id="tweet-header-template" style="display: none">
         <div class="tweet-first-half">
             <div>
                 <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar">
