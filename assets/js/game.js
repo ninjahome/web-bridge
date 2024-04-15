@@ -351,7 +351,7 @@ async function procTicketPayment(no, ifShare) {
         return;
     }
 
-    const val = gameSettings.tickPrice.mul(no);
+    const val = gameSettings.tickPrice * BigInt(no);
     try {
         showWaiting("prepare to pay")
         const txResponse = await lotteryGameContract.buyTicketFromOuter(no, {value: val});
