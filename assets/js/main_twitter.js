@@ -206,6 +206,12 @@ function updatePaymentStatusToSrv(tweet) {
 }
 
 async function postTweetWithPayment(parentID) {
+
+    if (!ninjaUserObj.tw_id) {
+        showDialog(DLevel.Warning, "bind twitter first", bindingTwitter);
+        return;
+    }
+
     try {
         const parentDiv = document.querySelector(parentID)
 
@@ -294,6 +300,12 @@ function showFullTweetContent() {
 }
 
 function loadImgFromLocal(parentId) {
+
+    if (!ninjaUserObj.tw_id) {
+        showDialog(DLevel.Warning, "bind twitter first", bindingTwitter);
+        return;
+    }
+
     const parentDiv = document.querySelector(parentId);
     const images = parentDiv.querySelectorAll("#twImagePreview img");
     if (images.length >= maxImgPerTweet) {
@@ -327,22 +339,20 @@ function previewImage(parentId) {
 
         readFileAsBlob(file).then(async blob => {
             let rawBase64Str = blob.src;
-            console.log("blob size:", rawBase64Str.length);
-            if (rawBase64Str.length > MaxRawImgSize){
+            // console.log("blob size:", rawBase64Str.length);
+            if (rawBase64Str.length > MaxRawImgSize) {
                 let quality = MaxRawImgSize / rawBase64Str.length * 0.75;
                 if (quality > CompressQuality) {
                     quality = CompressQuality;
                 }
                 const compressedBlob = await compressBlob(blob, quality);
                 rawBase64Str = await blobToBase64(compressedBlob);
-                console.log('image Base64 String:', rawBase64Str.length, compressedBlob.size);
+                // console.log('image Base64 String:', rawBase64Str.length, compressedBlob.size);
             }
 
             img.setAttribute('data-raw', rawBase64Str);
-
-            const msg = ethers.encodeBytes32String(rawBase64Str);
-            const hash = ethers.keccak256(msg);
-            console.log(hash);
+            const hash = ethers.hashMessage(rawBase64Str);
+            // console.log(hash);
             img.setAttribute('data-hash', hash);
 
             if (blob.src.length > MaxThumbnailSize) {
@@ -352,7 +362,7 @@ function previewImage(parentId) {
                 }
                 const thumbNailBlob = await compressBlob(blob, quality);
                 img.src = await blobToBase64(thumbNailBlob);
-                console.log("thumbNail size:", img.src.length, thumbNailBlob.size);
+                // console.log("thumbNail size:", img.src.length, thumbNailBlob.size);
             } else {
                 img.src = blob.src;
             }
