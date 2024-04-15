@@ -217,9 +217,9 @@ func (c *SysConf) getHistoryBonus() (*big.Float, error) {
 }
 
 func (c *SysConf) GetNjVoteAd(NjTwID int64, web3Id, slogan string) string {
-	return fmt.Sprintf("\n"+slogan+c.UrlHome+"/buyFromShare?"+SharedID+"=%d&&"+SharedUsr+"=%s", NjTwID, web3Id)
+	return fmt.Sprintf(slogan+c.UrlHome+"/buyFromShare?"+SharedID+"=%d&&"+SharedUsr+"=%s", NjTwID, web3Id)
 }
 
 func (c *SysConf) GetNjProtocolAd(NjTwID int64, slogan string) string {
-	return fmt.Sprintf("\n"+slogan+c.UrlHome+"/buyRights?"+NjTweetID+"=%d", NjTwID)
+	return fmt.Sprintf(slogan+c.UrlHome+"/buyRights?"+NjTweetID+"=%d", NjTwID)
 }
