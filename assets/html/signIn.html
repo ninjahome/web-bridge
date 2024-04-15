@@ -523,8 +523,8 @@
             showSignBtn(null);
             return;
         }
-        metamaskObj = window.ethereum;
-        metamaskObj.on('accountsChanged', function (accounts) {
+
+        window.ethereum.on('accountsChanged', function (accounts) {
             showError(null);
             if (accounts.length > 0) {
                 showSignBtn(accounts[0]);
@@ -534,7 +534,7 @@
         });
 
         try {
-            const accounts = await metamaskObj.request({method: 'eth_accounts'})
+            const accounts = await window.ethereum.request({method: 'eth_accounts'})
             if (accounts.length === 0) {
                 showSignBtn(null);
                 return
@@ -547,12 +547,12 @@
     }
 
     async function connectToMetamask() {
-        if (!metamaskObj) {
+        if (!window.ethereum) {
             window.open('https://metamask.io/download/', '_blank');
             return;
         }
         try {
-            await metamaskObj.request({method: "eth_requestAccounts"})
+            await window.ethereum.request({method: "eth_requestAccounts"})
             window.location.reload();
         } catch (error) {
             console.error("Metamask login failed:", error.message.toString());
@@ -571,7 +571,7 @@
         const signParam = new SignInData(web3Id)
         const message = JSON.stringify(signParam);
         try {
-            const signature = await metamaskObj.request({
+            const signature = await window.ethereum.request({
                 method: 'personal_sign',
                 params: [message, web3Id],
             })

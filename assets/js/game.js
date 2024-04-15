@@ -26,9 +26,7 @@ class GameRoundInfo {
 
     static fromBlockChainObj(obj) {
         const curBonusInEth = ethers.formatUnits(obj.bonus, 'ether');
-        console.log(obj.discoverTime);
-        const dTime = Number(obj.discoverTime) * 1000;//obj.discoverTime.toNumber() * 1000;
-        console.log(dTime);
+        const dTime = Number(obj.discoverTime) * 1000;
         const bonusForWinner = ethers.formatUnits(obj.bonusForWinner, 'ether');
 
         return new GameRoundInfo(obj.randomHash, dTime, obj.winner, obj.winTicketID,
@@ -105,9 +103,6 @@ async function loadGameSettings() {
             await lotteryGameContract.systemSettings();
         const totalBonusInEth = ethers.formatUnits(totalBonus, 'ether');
         const tickPriceInEth = ethers.formatUnits(tickPriceForOuter, 'ether');
-        console.log(tickPriceInEth);
-        console.log(totalBonusInEth);
-
         gameSettings = new GameSettings(currentRoundNo, totalBonusInEth, voteNo,
             tickPriceForOuter, tickPriceInEth, isOpenToOuter);
 

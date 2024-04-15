@@ -433,8 +433,6 @@ function showDialog(type, msg, confirmCB, cancelCB) {
     }
 }
 
-let metamaskObj = null;
-
 async function checkIfMetaMaskSignOut() {
     const accounts = await window.ethereum.request({method: 'eth_accounts'})
     if (accounts.length === 0) {
@@ -482,10 +480,7 @@ async function checkCurrentChainID(chainId, callback) {
 
         return;
     }
-
     const provider = new ethers.BrowserProvider(window.ethereum);
-    console.log(provider)
-    console.log(await provider.getSigner())
     if (callback) {
         await callback(provider);
     }

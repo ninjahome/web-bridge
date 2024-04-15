@@ -21,7 +21,7 @@ async function loadUserIncomeFromKey() {
     showWaiting("loading from blockchain");
     try {
         const balance = await kolKeyContract.AllIncomeOfAllKol(ninjaUserObjWeb3ID);
-        const balanceInEth = ethers.utils.formatUnits(balance, 'ether');
+        const balanceInEth = ethers.formatUnits(balance, 'ether');
         console.log(balanceInEth);
     } catch (err) {
 
@@ -43,7 +43,7 @@ async function loadKeyDetails() {
     showWaiting("loading from blockchain");
     try {
         const balance = await kolKeyContract.AllIncomeOfAllKol(ninjaUserObjWeb3ID);
-        const balanceInEth = ethers.utils.formatUnits(balance, 'ether');
+        const balanceInEth = ethers.formatUnits(balance, 'ether');
         console.log(balanceInEth);
     } catch (err) {
 

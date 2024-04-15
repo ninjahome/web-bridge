@@ -9,9 +9,9 @@ async function initVoteContractMeta() {
         postPrice, votePrice, maxVote, pluginAddr, pluginStop, kolRate, feeRate
     ] = await tweetVoteContract.systemSettings();
 
-    const votePriceInEth = ethers.utils.formatUnits(votePrice, 'ether');
-    voteContractMeta = new TweetVoteContractSetting(postPrice, votePrice, votePriceInEth,
-        maxVote.toNumber(), pluginAddr, pluginStop, kolRate, feeRate);
+    const votePriceInEth = ethers.formatUnits(votePrice, 'ether');
+    voteContractMeta = new TweetVoteContractSetting(Number(postPrice), Number(votePrice), votePriceInEth,
+        Number(maxVote), pluginAddr, pluginStop, Number(kolRate), Number(feeRate));
     TweetVoteContractSetting.sycToDb(voteContractMeta);
     const postBtn = document.getElementById("tweet-post-with-eth-btn-txt-1");
     const votePriceInModal = document.getElementById("vote-price-in-modal");
@@ -29,10 +29,10 @@ async function initGameContractMeta() {
     // console.log(price, bonusPoint);
     const gameInfo = await lotteryGameContract.gameInfoRecord(currentRoundNo);
 
-    const curBonusInEth = ethers.utils.formatUnits(gameInfo.bonus, 'ether');
-    const dTime = gameInfo.discoverTime.toNumber() * 1000;
-    const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
-    const bonusForPoint = ethers.utils.formatUnits(bonusPoint, 'ether');
+    const curBonusInEth = ethers.formatUnits(gameInfo.bonus, 'ether');
+    const dTime = Number(gameInfo.discoverTime) * 1000;
+    const totalBonusInEth = ethers.formatUnits(totalBonus, 'ether');
+    const bonusForPoint = ethers.formatUnits(bonusPoint, 'ether');
 
     gameContractMeta = new GameBasicInfo(currentRoundNo,
         totalBonusInEth, voteNo, curBonusInEth, dTime, bonusForPoint);
@@ -49,7 +49,7 @@ async function initBlockChainContract(provider) {
             lotteryGameContract = null
             return
         }
-        const signer = provider.getSigner(ninjaUserObj.eth_addr);
+        const signer = await provider.getSigner(ninjaUserObj.eth_addr);
         const conf = __globalContractConf.get(__globalTargetChainNetworkID);
         tweetVoteContract = new ethers.Contract(conf.tweetVote, tweetVoteContractABI, signer);
         lotteryGameContract = new ethers.Contract(conf.gameLottery, gameContractABI, signer);
@@ -98,14 +98,14 @@ async function procPaymentForPostedTweet(tweet, callback) {
 }
 
 async function procTweetVotePayment(voteCount, tweet, callback) {
-    if (!tweetVoteContract || !voteContractMeta || !voteContractMeta.votePrice || !voteContractMeta.votePrice.mul) {
+    if (!tweetVoteContract || !voteContractMeta || !voteContractMeta.votePrice ) {
         showDialog(DLevel.Tips, "please wait for metamask syncing data")
         return;
     }
 
     try {
         showWaiting("prepare to pay");
-        const amount = voteContractMeta.votePrice.mul(voteCount);
+        const amount = BigInt(voteContractMeta.votePrice) * BigInt(voteCount);
 
         const txResponse = await tweetVoteContract.voteToTweets(
             tweet.prefixed_hash,
@@ -135,12 +135,12 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
 async function reloadGameBalance() {
     const b = await lotteryGameContract.balance(ninjaUserObj.eth_addr);
     // console.log(b);
-    document.getElementById('lottery-game-income').innerText = ethers.utils.formatUnits(b, 'ether');
+    document.getElementById('lottery-game-income').innerText = ethers.formatUnits(b, 'ether');
 }
 
 async function reloadTweetBalance() {
     const b = await tweetVoteContract.balance(ninjaUserObj.eth_addr);
-    document.getElementById("tweet-income-amount").innerText = ethers.utils.formatUnits(b, 'ether');
+    document.getElementById("tweet-income-amount").innerText = ethers.formatUnits(b, 'ether');
 }
 
 async function withdrawLotteryGameIncome() {

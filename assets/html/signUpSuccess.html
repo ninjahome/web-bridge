@@ -183,7 +183,7 @@
 
     async function bindWeb3Id() {
         try {
-            const accounts = await metamaskObj.request({method: 'eth_accounts'})
+            const accounts = await window.ethereum.request({method: 'eth_accounts'})
             if (accounts.length === 0) {
                 showDialog(DLevel.Tips, "sign in metamask")
                 return
@@ -196,7 +196,7 @@
 
             const bindParam = new Web3BindingData(_curNinjaEthAddr, twitterObj.id, _bindingDate)
             const message = JSON.stringify(bindParam);
-            const signature = await metamaskObj.request({
+            const signature = await window.ethereum.request({
                 method: 'personal_sign',
                 params: [message, _curNinjaEthAddr],
             })

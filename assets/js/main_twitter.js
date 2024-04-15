@@ -184,7 +184,7 @@ async function preparePostMsg(parentDiv) {
         (new Date()).getTime(), ninjaUserObj.eth_addr, ninjaUserObj.tw_id, slogan);
     const message = JSON.stringify(tweet);
 
-    const signature = await metamaskObj.request({
+    const signature = await window.ethereum.request({
         method: 'personal_sign', params: [message, ninjaUserObj.eth_addr],
     });
     if (!signature) {
@@ -339,8 +339,10 @@ function previewImage(parentId) {
             }
 
             img.setAttribute('data-raw', rawBase64Str);
-            const msg = ethers.utils.toUtf8Bytes(rawBase64Str);
-            const hash = ethers.utils.sha256(msg);
+
+            const msg = ethers.encodeBytes32String(rawBase64Str);
+            const hash = ethers.keccak256(msg);
+            console.log(hash);
             img.setAttribute('data-hash', hash);
 
             if (blob.src.length > MaxThumbnailSize) {

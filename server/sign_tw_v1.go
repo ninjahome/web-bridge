@@ -132,8 +132,8 @@ func twitterSignCallBackV1(w http.ResponseWriter, r *http.Request, _ *database2.
 	}
 	bodyString := string(bodyBytes)
 	if resp.StatusCode != http.StatusOK {
-		http.Error(w, bodyString, http.StatusInternalServerError)
 		util.LogInst().Warn().Msg(bodyString)
+		http.Redirect(w, r, "/main", http.StatusFound)
 		return
 	}
 
