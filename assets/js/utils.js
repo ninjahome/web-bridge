@@ -436,7 +436,7 @@ function showDialog(type, msg, confirmCB, cancelCB) {
 let metamaskObj = null;
 
 async function checkIfMetaMaskSignOut() {
-    const accounts = await metamaskObj.request({method: 'eth_accounts'})
+    const accounts = await window.ethereum.request({method: 'eth_accounts'})
     if (accounts.length === 0) {
         window.location.href = "/signIn";
         return false;
@@ -451,16 +451,15 @@ async function checkMetaMaskEnvironment(callback) {
         return
     }
 
-    metamaskObj = window.ethereum;
     if (await checkIfMetaMaskSignOut() === false) {
         return;
     }
 
-    metamaskObj.on('accountsChanged', metamaskAccountChanged);
-    metamaskObj.on('chainChanged', function (chainID) {
+    window.ethereum.on('accountsChanged', metamaskAccountChanged);
+    window.ethereum.on('chainChanged', function (chainID) {
         checkCurrentChainID(chainID, callback)
     });
-    const chainID = await metamaskObj.request({method: 'eth_chainId'});
+    const chainID = await window.ethereum.request({method: 'eth_chainId'});
 
     await checkCurrentChainID(chainID, callback);
 }
@@ -475,17 +474,21 @@ function metamaskAccountChanged(accounts) {
 }
 
 async function checkCurrentChainID(chainId, callback) {
-    if (__globalTargetChainNetworkID === chainId) {
-        const provider = new ethers.providers.Web3Provider(metamaskObj);
-        if (callback) {
-            await callback(provider);
-        }
+    if (__globalTargetChainNetworkID !== chainId) {
+
+        showDialog(DLevel.Tips, "switch to arbitrum", switchToWorkChain, function () {
+            window.location.href = "/signIn";
+        });
+
         return;
     }
 
-    showDialog(DLevel.Tips, "switch to arbitrum", switchToWorkChain, function () {
-        window.location.href = "/signIn";
-    });
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    console.log(provider)
+    console.log(await provider.getSigner())
+    if (callback) {
+        await callback(provider);
+    }
 }
 
 async function switchToWorkChain() {
@@ -497,7 +500,7 @@ async function switchToWorkChain() {
 
 async function switchChain(chainId) {
     try {
-        await metamaskObj.request({
+        await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
             params: [{chainId}],
         });
@@ -517,7 +520,7 @@ async function switchChain(chainId) {
 async function addChain(chainId) {
     try {
         const chainParams = __globalMetaMaskNetworkParam.get(chainId);
-        await metamaskObj.request({
+        await window.ethereum.request({
             method: 'wallet_addEthereumChain',
             params: [chainParams],
         });

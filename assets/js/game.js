@@ -25,9 +25,11 @@ class GameRoundInfo {
     }
 
     static fromBlockChainObj(obj) {
-        const curBonusInEth = ethers.utils.formatUnits(obj.bonus, 'ether');
-        const dTime = obj.discoverTime.toNumber() * 1000;
-        const bonusForWinner = ethers.utils.formatUnits(obj.bonusForWinner, 'ether');
+        const curBonusInEth = ethers.formatUnits(obj.bonus, 'ether');
+        console.log(obj.discoverTime);
+        const dTime = Number(obj.discoverTime) * 1000;//obj.discoverTime.toNumber() * 1000;
+        console.log(dTime);
+        const bonusForWinner = ethers.formatUnits(obj.bonusForWinner, 'ether');
 
         return new GameRoundInfo(obj.randomHash, dTime, obj.winner, obj.winTicketID,
             curBonusInEth, obj.randomVal, bonusForWinner);
@@ -74,7 +76,7 @@ async function initGameContract(provider) {
         return;
     }
 
-    const signer = provider.getSigner(ninjaUserObj.eth_addr);
+    const signer = await provider.getSigner(ninjaUserObj.eth_addr);
     const conf = __globalContractConf.get(__globalTargetChainNetworkID);
     lotteryGameContract = new ethers.Contract(conf.gameLottery, gameContractABI, signer);
 
@@ -101,9 +103,10 @@ async function loadGameSettings() {
     try {
         const [currentRoundNo, totalBonus, voteNo, tickPriceForOuter, isOpenToOuter] =
             await lotteryGameContract.systemSettings();
-
-        const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
-        const tickPriceInEth = ethers.utils.formatUnits(tickPriceForOuter, 'ether');
+        const totalBonusInEth = ethers.formatUnits(totalBonus, 'ether');
+        const tickPriceInEth = ethers.formatUnits(tickPriceForOuter, 'ether');
+        console.log(tickPriceInEth);
+        console.log(totalBonusInEth);
 
         gameSettings = new GameSettings(currentRoundNo, totalBonusInEth, voteNo,
             tickPriceForOuter, tickPriceInEth, isOpenToOuter);
@@ -119,7 +122,7 @@ async function loadGameSettings() {
 async function loadPersonalMeta() {
     try {
         const balance = await lotteryGameContract.balance(ninjaUserObj.eth_addr);
-        const balanceInEth = ethers.utils.formatUnits(balance, 'ether');
+        const balanceInEth = ethers.formatUnits(balance, 'ether');
 
         const tickets = await lotteryGameContract.tickList(gameSettings.roundNo, ninjaUserObj.eth_addr);
         if (tickets.length === 0) {
@@ -249,7 +252,7 @@ function hideInfoOfThisRound() {
 
 function fullFillGameCard(obj, cardDiv, showHideBtn) {
     cardDiv.style.display = 'block';
-    cardDiv.querySelector('.one-round-bonus-val').textContent = ethers.utils.formatUnits(obj.bonus, 'ether');
+    cardDiv.querySelector('.one-round-bonus-val').textContent = ethers.formatUnits(obj.bonus, 'ether');
 
     const dTime = new Date(obj.discoverTime * 1000);
     cardDiv.querySelector('.one-round-discover-val').textContent = dTime.toString();
@@ -260,7 +263,7 @@ function fullFillGameCard(obj, cardDiv, showHideBtn) {
     cardDiv.querySelector('.history-game-winner-ticket').textContent = obj.winTicketID;
     if (showHideBtn) {
         cardDiv.querySelector('.load-history-btn').style.display = 'block';
-    }else{
+    } else {
         cardDiv.querySelector('.load-history-btn').style.display = 'none';
     }
 }
@@ -272,7 +275,7 @@ async function loadHistoryData() {
     const moreBtn = document.querySelector('.history-data-list-more-btn');
     const isShowing = parentDiv.style.display === 'block';
 
-    if (isShowing){
+    if (isShowing) {
         this.textContent = i18next.t('all-history-query-btn');
         parentDiv.style.display = 'none';
         parentDiv.innerHTML = '';
