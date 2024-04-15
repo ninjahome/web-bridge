@@ -71,18 +71,14 @@ const cachedTopVotedKolUser = new MemCachedTweets();
 async function switchToTopKol() {
     curScrollContentID = 12;
     initTopDivStatus("top-hot-Kol", 1);
-    await __loadMostVotedKolUserInfo("top-hot-Kol", cachedTopVotedKolUser, true, false);
+    await loadMostVoterOrVotedUser("top-hot-Kol", cachedTopVotedKolUser, true, false);
 }
 
 async function loadOlderMostVotedKol() {
-    if (cachedTopVotedKolUser.latestID === 0) {
-        console.log("no need to load older data");
-        return;
-    }
-    return __loadMostVotedKolUserInfo("top-hot-Kol", cachedTopVotedKolUser, false, false);
+    return loadMostVoterOrVotedUser("top-hot-Kol", cachedTopVotedKolUser, false, false);
 }
 
-async function __loadMostVotedKolUserInfo(parkID, cache, newest, voter) {
+async function loadMostVoterOrVotedUser(parkID, cache, newest, voter) {
     if (newest) {
         cache.latestID = 0;
     }
@@ -102,7 +98,6 @@ async function __loadMostVotedKolUserInfo(parkID, cache, newest, voter) {
     } else {
         cache.latestID = userArray[userArray.length - 1].be_voted_count;
     }
-
     await fillMostKolOrVoterPark(parkID, newest, userArray, voter);
 }
 
@@ -159,13 +154,9 @@ const cachedTopVoterUser = new MemCachedTweets();
 async function switchToTopVoter() {
     curScrollContentID = 13;
     initTopDivStatus("top-hot-voter", 2);
-    await __loadMostVotedKolUserInfo("top-hot-voter", cachedTopVoterUser, true, true);
+    await loadMostVoterOrVotedUser("top-hot-voter", cachedTopVoterUser, true, true);
 }
 
 async function loadOlderMostVoter() {
-    if (cachedTopVoterUser.latestID === 0) {
-        console.log("no need to load older data");
-        return;
-    }
-    return __loadMostVotedKolUserInfo("top-hot-voter", cachedTopVoterUser, false, true);
+    return loadMostVoterOrVotedUser("top-hot-voter", cachedTopVoterUser, false, true);
 }

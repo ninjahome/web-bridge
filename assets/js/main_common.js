@@ -30,11 +30,11 @@ function contentScroll() {
             cacheObj = cachedUserTweets;
             uiCallback = loadOlderMostVotedTweet;
             break;
-        case 13:
+        case 12:
             cacheObj = cachedTopVotedKolUser;
             uiCallback = loadOlderMostVotedKol;
             break;
-        case 14:
+        case 13:
             cacheObj = cachedTopVoterUser;
             uiCallback = loadOlderMostVoter;
             break;
