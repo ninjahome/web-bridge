@@ -582,7 +582,7 @@ function checkMetamaskErr(err) {
     }
 
     let code = err.code;
-    if (code === "CALL_EXCEPTION" && err.action === "estimateGas"){
+    if (code === "CALL_EXCEPTION" && err.action === "estimateGas" && !err.reason){
         showDialog(DLevel.Warning, "insufficient funds");
         return;
     }
