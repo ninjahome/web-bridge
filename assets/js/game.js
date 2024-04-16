@@ -242,7 +242,7 @@ function fullFillGameCard(obj, cardDiv, showHideBtn) {
     cardDiv.style.display = 'block';
     cardDiv.querySelector('.one-round-bonus-val').textContent = ethers.formatUnits(obj.bonus, 'ether');
 
-    const dTime = new Date(obj.discoverTime * 1000);
+    const dTime = new Date(Number(obj.discoverTime) * 1000);
     cardDiv.querySelector('.one-round-discover-val').textContent = dTime.toString();
 
     cardDiv.querySelector('.history-game-random').textContent = obj.randomVal;
@@ -259,26 +259,31 @@ function fullFillGameCard(obj, cardDiv, showHideBtn) {
 let __toRoundNo = 0;
 
 async function loadHistoryData() {
-    const parentDiv = document.querySelector('.history-data-list');
-    const moreBtn = document.querySelector('.history-data-list-more-btn');
-    const isShowing = parentDiv.style.display === 'block';
+    try {
+        const parentDiv = document.querySelector('.history-data-list');
+        const moreBtn = document.querySelector('.history-data-list-more-btn');
+        const isShowing = parentDiv.style.display === 'block';
 
-    if (isShowing) {
-        this.textContent = i18next.t('all-history-query-btn');
-        parentDiv.style.display = 'none';
+        if (isShowing) {
+            this.textContent = i18next.t('all-history-query-btn');
+            parentDiv.style.display = 'none';
+            parentDiv.innerHTML = '';
+            moreBtn.style.display = 'none';
+            return;
+        }
+        this.textContent = i18next.t('hide-history-data-btn');
+
+        moreBtn.style.display = 'block';
+        __toRoundNo = Number(gameSettings.roundNo) - 1;
+
+        parentDiv.style.display = 'block';
         parentDiv.innerHTML = '';
-        moreBtn.style.display = 'none';
-        return;
+
+        await __loadHistoryData(parentDiv);
+    } catch (err) {
+        console.log(err);
+        showDialog(DLevel.Warning, err.toString());
     }
-    this.textContent = i18next.t('hide-history-data-btn');
-
-    moreBtn.style.display = 'block';
-    __toRoundNo = gameSettings.roundNo - 1;
-
-    parentDiv.style.display = 'block';
-    parentDiv.innerHTML = '';
-
-    await __loadHistoryData(parentDiv);
 }
 
 async function moreHistoryData() {
@@ -298,8 +303,21 @@ async function __loadHistoryData(parentDiv) {
         const from = __toRoundNo > 20 ? (__toRoundNo - 20) : 0;
         showWaiting("syncing history game data from block chain")
 
-        const obj = await lotteryGameContract.historyRoundInfo(from, __toRoundNo);
-        let reversedArray = obj.slice().reverse();
+        const arrayProxy = await lotteryGameContract.historyRoundInfo(from, __toRoundNo);
+
+        const resultArray = arrayProxy.map(entry => ({
+            randomHash: entry.randomHash,
+            discoverTime: entry.discoverTime, // 将BigNumber转换为数字
+            winner: entry.winner,
+            winTicketID: entry.winTicketID,
+            bonus: entry.bonus,
+            bonusForWinner: entry.bonusForWinner,
+            randomVal: entry.randomVal
+        }));
+
+        console.log(resultArray);
+
+        let reversedArray = resultArray.slice().reverse();
 
         for (const gameInfo of reversedArray) {
             const div = document.getElementById('history-data-one-round-template').cloneNode(true);
@@ -314,6 +332,7 @@ async function __loadHistoryData(parentDiv) {
         }
 
     } catch (err) {
+        console.log(err)
         showDialog(DLevel.Warning, "load history data err:" + err.toString());
     } finally {
         hideLoading();
@@ -364,6 +383,7 @@ async function procTicketPayment(no, ifShare) {
         await __loadPageData();
 
     } catch (err) {
+        console.log(err)
         checkMetamaskErr(err);
     } finally {
         hideLoading();

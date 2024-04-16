@@ -33,7 +33,7 @@ async function setupGameInfo(startCounter) {
         countDown.querySelector(".minutes").textContent = minutes;
         countDown.querySelector(".seconds").textContent = seconds;
 
-        if (apiCounter >= 20) {
+        if (apiCounter >= TimeIntervalForBlockChain) {
             apiCounter = 0;
             initGameContractMeta().then(r => {
                 setupGameInfo(false);

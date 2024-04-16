@@ -757,3 +757,4 @@ const defaultTextLenForTweet = 100;
 const MaxRawImgSize = (1 << 20);
 const MaxThumbnailSize = (1 << 18);
 const CompressQuality = 0.75;
+const TimeIntervalForBlockChain = 60;
