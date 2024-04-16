@@ -179,7 +179,7 @@ async function preparePostMsg(parentDiv) {
         showDialog(DLevel.Warning, "tweet content too long");
         return
     }
-    const slogan = i18next.t('slogan_1') + gameContractMeta.totalBonus + "ETH" + i18next.t('slogan_2')
+    const slogan = i18next.t('slogan_1') + gameContractMeta.totalBonus +  i18next.t('slogan_2')
     const tweet = new TweetContentToPost(formattedContent,
         (new Date()).getTime(), ninjaUserObj.eth_addr, ninjaUserObj.tw_id, slogan);
     const message = JSON.stringify(tweet);

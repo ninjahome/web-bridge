@@ -425,6 +425,13 @@ function showUserWinHistory() {
 }
 
 async function withdrawBonus() {
+
+    if (personalData.balance <= 0.00001){
+        console.log(personalData.balance)
+        showDialog(DLevel.Warning,"Insufficient Balance");
+        return;
+    }
+
     try {
         showWaiting("calling to block chain");
 

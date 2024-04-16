@@ -578,10 +578,15 @@ function checkMetamaskErr(err) {
 
     if (err.code === 4100) {
         showDialog(DLevel.Warning, "open metamask first");
-        return
+        return;
     }
 
     let code = err.code;
+    if (code === "CALL_EXCEPTION" && err.action === "estimateGas"){
+        showDialog(DLevel.Warning, "insufficient funds");
+        return;
+    }
+
     if (!err.data || !err.data.message) {
         code = code + err.message;
     } else {
