@@ -36,10 +36,6 @@ async function initGameContractMeta() {
 
     gameContractMeta = new GameBasicInfo(currentRoundNo,
         totalBonusInEth, voteNo, curBonusInEth, dTime, bonusForPoint);
-
-    setupGameInfo(true).then(r => {
-    });
-
 }
 
 async function initBlockChainContract(provider) {
@@ -55,9 +51,9 @@ async function initBlockChainContract(provider) {
         lotteryGameContract = new ethers.Contract(conf.gameLottery, gameContractABI, signer);
 
         await initVoteContractMeta();
-
         await initGameContractMeta();
-
+        setupGameInfo();
+        initTimerOfCounterDown();
     } catch (error) {
         console.error("block chain err: ", error);
         checkMetamaskErr(error);

@@ -10,13 +10,16 @@ function formatTime(createTime) {
     return `${hours}:${minutes}:${seconds} ${day}/${month}`;
 }
 
-function startCountdown(targetTime, callback) {
-    const countdownInterval = setInterval(() => {
+let CountdownTargetTime = 0
+function resetCounter(tt){
+    CountdownTargetTime = tt;
+}
+function startCountdown(callback) {
+    return setInterval(() => {
         const now = new Date().getTime();
-        const timeLeft = targetTime - now;
+        const timeLeft = CountdownTargetTime - now;
 
         if (timeLeft <= 0) {
-            clearInterval(countdownInterval);
             callback('', '', '', '', true);
             return;
         }
@@ -757,4 +760,4 @@ const defaultTextLenForTweet = 100;
 const MaxRawImgSize = (1 << 20);
 const MaxThumbnailSize = (1 << 18);
 const CompressQuality = 0.75;
-const TimeIntervalForBlockChain = 60;
+const TimeIntervalForBlockChain = 30;

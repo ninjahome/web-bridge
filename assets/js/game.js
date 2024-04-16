@@ -55,11 +55,25 @@ class PersonalData {
 }
 
 async function initGamePage() {
-    await checkMetaMaskEnvironment(initGameContract);
-    const address = __globalContractConf.get(__globalTargetChainNetworkID).gameLottery;
-    document.querySelector('.contract-address-value').textContent = address;
-    syncWinnerHistoryData().then(r => {
-    });
+
+    try {
+        await checkMetaMaskEnvironment(initGameContract);
+        const address = __globalContractConf.get(__globalTargetChainNetworkID).gameLottery;
+        document.querySelector('.contract-address-value').textContent = address;
+
+        await __loadPageData();
+
+        syncWinnerHistoryData().then(r => {
+        });
+
+        initGamingCounter();
+
+    } catch (err) {
+        console.log(err);
+        showDialog(DLevel.Warning, "load game settings from block chain failed");
+    } finally {
+        hideLoading();
+    }
 }
 
 function showContractUrl() {
@@ -77,13 +91,10 @@ async function initGameContract(provider) {
     const signer = await provider.getSigner(ninjaUserObj.eth_addr);
     const conf = __globalContractConf.get(__globalTargetChainNetworkID);
     lotteryGameContract = new ethers.Contract(conf.gameLottery, gameContractABI, signer);
-
-    await __loadPageData();
 }
 
 async function __loadPageData() {
     await loadGameSettings()
-    setupSystemData();
     await setupCurrentRoundData();
     await loadPersonalMeta()
 }
@@ -91,20 +102,16 @@ async function __loadPageData() {
 async function loadGameSettings() {
 
     showWaiting("syncing system data from block chain")
-    try {
-        const [currentRoundNo, totalBonus, voteNo, tickPriceForOuter, isOpenToOuter] =
-            await lotteryGameContract.systemSettings();
-        const totalBonusInEth = ethers.formatUnits(totalBonus, 'ether');
-        const tickPriceInEth = ethers.formatUnits(tickPriceForOuter, 'ether');
-        gameSettings = new GameSettings(currentRoundNo, totalBonusInEth, voteNo,
-            tickPriceForOuter, tickPriceInEth, isOpenToOuter);
+    const [currentRoundNo, totalBonus, voteNo, tickPriceForOuter, isOpenToOuter] =
+        await lotteryGameContract.systemSettings();
+    const totalBonusInEth = ethers.formatUnits(totalBonus, 'ether');
+    const tickPriceInEth = ethers.formatUnits(tickPriceForOuter, 'ether');
+    gameSettings = new GameSettings(currentRoundNo, totalBonusInEth, voteNo,
+        tickPriceForOuter, tickPriceInEth, isOpenToOuter);
 
-    } catch (err) {
-        console.log(err);
-        showDialog(DLevel.Warning, "load game settings from block chain failed");
-    } finally {
-        hideLoading()
-    }
+    document.querySelector(".history-total-bonus").textContent = gameSettings.bonus;
+    document.querySelector(".round-number").textContent = gameSettings.roundNo;
+    document.querySelector(".ticket-price-for-outer-user").textContent = gameSettings.tickPriceInEth;
 }
 
 async function loadPersonalMeta() {
@@ -125,47 +132,51 @@ async function loadPersonalMeta() {
         }
 
         personalData = new PersonalData(balanceInEth, tickets, mapTickets);
+
+        document.getElementById("personal-balance-val").textContent = personalData.balance;
+        document.getElementById("personal-ticket-no-val").textContent = personalData.tickets.length;
+
     } catch (err) {
         console.log(err);
         showDialog(DLevel.Warning, "load personal data from block chain failed")
     }
 }
 
-function setupSystemData() {
-    document.querySelector(".history-total-bonus").textContent = gameSettings.bonus;
-    document.querySelector(".round-number").textContent = gameSettings.roundNo;
-    document.querySelector(".ticket-price-for-outer-user").textContent = gameSettings.tickPriceInEth;
+function initGamingCounter() {
+    let apiCounter = 0;
+
+    const elem = document.getElementById("prize-pool-discover-time");
+    startCountdown(async function (days, hours, minutes, seconds, finished) {
+        if (finished) {
+            elem.innerText = i18next.t('game-status-with-draw');
+        } else {
+            elem.innerText = days + i18next.t('game-status-day') + hours + i18next.t('game-status-hour') + minutes
+                + i18next.t('game-status-minute') + seconds + i18next.t('game-status-second');
+        }
+
+        apiCounter += 1;
+        if (apiCounter < TimeIntervalForBlockChain) {
+            return;
+        }
+
+        apiCounter = 0;
+        await setupCurrentRoundData();
+    });
 }
 
 async function setupCurrentRoundData() {
     try {
-
         const gameInfo = await lotteryGameContract.gameInfoRecord(gameSettings.roundNo);
         const data = GameRoundInfo.fromBlockChainObj(gameInfo);
+        resetCounter(data.dTime);
 
         document.getElementById("prize-pool-bonus-val").textContent = data.curBonus;
         document.getElementById("prize-pool-random-hash").textContent = data.hash;
         document.getElementById("prize-pool-tick-no").textContent = gameSettings.voteNo;
-
-        const elem = document.getElementById("prize-pool-discover-time");
-        startCountdown(data.dTime, function (days, hours, minutes, seconds, finished) {
-            if (finished) {
-                elem.innerText = i18next.t('game-status-with-draw');
-                return;
-            }
-
-            elem.innerText = days + i18next.t('game-status-day') + hours + i18next.t('game-status-hour') + minutes
-                + i18next.t('game-status-minute') + seconds + i18next.t('game-status-second');
-        });
     } catch (err) {
         console.log(err);
         showDialog(DLevel.Warning, "load game data from block chain failed");
     }
-}
-
-function setupPersonalData() {
-    document.getElementById("personal-balance-val").textContent = personalData.balance;
-    document.getElementById("personal-ticket-no-val").textContent = personalData.tickets.length;
 }
 
 function showPersonalTicket() {
@@ -341,7 +352,8 @@ async function __loadHistoryData(parentDiv) {
 
 async function buyTicket() {
     if (!gameSettings) {
-        await loadGameSettings();
+        showDialog(DLevel.Tips, "blockchain data need to sync, reload this page first please.")
+        return;
     }
 
     if (!gameSettings.isOpen) {
@@ -461,7 +473,6 @@ async function withdrawBonus() {
         showDialog(DLevel.Success, "withdraw success");
 
         loadPersonalMeta().then(r => {
-            setupPersonalData();
         });
 
     } catch (err) {
