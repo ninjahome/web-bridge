@@ -552,10 +552,16 @@
             return;
         }
         try {
-            await window.ethereum.request({method: "eth_requestAccounts"})
-            window.location.reload();
+            const accounts =  await window.ethereum.request({method: "eth_requestAccounts"})
+            // console.log(accounts)
+            showSignBtn(accounts[0]);
+            // window.location.reload();
         } catch (error) {
-            console.error("Metamask login failed:", error.message.toString());
+            console.error("Metamask login failed:", error.code,error.message.toString());
+            if (error.code === -32002) {
+                showError("Please click the metamask plugin and sign in ")
+                return;
+            }
             showError(error.message);
         }
     }
