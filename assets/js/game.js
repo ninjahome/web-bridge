@@ -78,21 +78,14 @@ async function initGameContract(provider) {
     const conf = __globalContractConf.get(__globalTargetChainNetworkID);
     lotteryGameContract = new ethers.Contract(conf.gameLottery, gameContractABI, signer);
 
-    __loadPageData();
+    await __loadPageData();
 }
 
-function __loadPageData() {
-
-    loadGameSettings().then(async r => {
-        setupSystemData();
-
-        setupCurrentRoundData().then(r => {
-        });
-
-        loadPersonalMeta().then(r => {
-            setupPersonalData();
-        });
-    });
+async function __loadPageData() {
+    await loadGameSettings()
+    setupSystemData();
+    await setupCurrentRoundData();
+    await loadPersonalMeta()
 }
 
 async function loadGameSettings() {
@@ -368,7 +361,7 @@ async function procTicketPayment(no, ifShare) {
                 console.log("share to twitter success")
             });
         }
-        __loadPageData();
+        await __loadPageData();
 
     } catch (err) {
         checkMetamaskErr(err);
@@ -426,9 +419,9 @@ function showUserWinHistory() {
 
 async function withdrawBonus() {
 
-    if (personalData.balance <= 0.00001){
+    if (personalData.balance <= 0.00001) {
         console.log(personalData.balance)
-        showDialog(DLevel.Warning,"Insufficient Balance");
+        showDialog(DLevel.Warning, "Insufficient Balance");
         return;
     }
 
