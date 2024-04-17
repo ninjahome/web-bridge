@@ -11,9 +11,11 @@ function formatTime(createTime) {
 }
 
 let CountdownTargetTime = 0
-function resetCounter(tt){
+
+function resetCounter(tt) {
     CountdownTargetTime = tt;
 }
+
 function startCountdown(callback) {
     return setInterval(() => {
         const now = new Date().getTime();
@@ -585,7 +587,7 @@ function checkMetamaskErr(err) {
     }
 
     let code = err.code;
-    if (code === "CALL_EXCEPTION" && err.action === "estimateGas" && !err.reason){
+    if (code === "CALL_EXCEPTION" && err.action === "estimateGas" && !err.reason) {
         showDialog(DLevel.Warning, "insufficient funds");
         return;
     }
