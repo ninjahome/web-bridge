@@ -99,7 +99,7 @@ async function showHoverCard(event, twitterObj, web3ID) {
     const offsetTop = 56; // 悬浮卡片将在触发元素的上方显示，距离10像素
 
     // 应用偏移量
-    hoverCard.style.left = `${rect.right + offsetLeft}px`; // 使用rect.right加上偏移量作为left值
+    hoverCard.style.left = `${rect.left + offsetLeft}px`; // 使用rect.right加上偏移量作为left值
     hoverCard.style.top = `${rect.top + window.scrollY + offsetTop}px`; // 使用rect.top加上滚动偏移和偏移量作为top值
 
     hoverCard.style.display = 'block';
