@@ -94,11 +94,17 @@ async function showHoverCard(event, twitterObj, web3ID) {
     } else {
         document.getElementById('hover-name').textContent = web3ID;
     }
+    // 设置偏移量
+    const offsetLeft = 106; // 悬浮卡片将在触发元素的右侧显示，距离10像素
+    const offsetTop = 56; // 悬浮卡片将在触发元素的上方显示，距离10像素
 
+    // 应用偏移量
+    hoverCard.style.left = `${rect.right + offsetLeft}px`; // 使用rect.right加上偏移量作为left值
+    hoverCard.style.top = `${rect.top + window.scrollY + offsetTop}px`; // 使用rect.top加上滚动偏移和偏移量作为top值
 
     hoverCard.style.display = 'block';
-    hoverCard.style.left = `${rect.left}px`;
-    hoverCard.style.top = `${rect.bottom + window.scrollY}px`;
+    // hoverCard.style.left = `${rect.left}px`;
+    // hoverCard.style.top = `${rect.bottom + window.scrollY}px`;
 
     if (!njUsrInfo) {
         console.log("failed to load web3 user:", web3ID);
