@@ -101,7 +101,7 @@ async function __loadPageData() {
 
 async function loadGameSettings() {
 
-    showWaiting("syncing system data from block chain")
+    // showWaiting("syncing system data from block chain")
     const [currentRoundNo, totalBonus, voteNo, tickPriceForOuter, isOpenToOuter] =
         await lotteryGameContract.systemSettings();
     const totalBonusInEth = ethers.formatUnits(totalBonus, 'ether');
@@ -118,8 +118,11 @@ async function loadPersonalMeta() {
     try {
         const balance = await lotteryGameContract.balance(ninjaUserObj.eth_addr);
         const balanceInEth = ethers.formatUnits(balance, 'ether');
+        document.getElementById("personal-balance-val").textContent = balanceInEth;
 
         const tickets = await lotteryGameContract.tickList(gameSettings.roundNo, ninjaUserObj.eth_addr);
+        document.getElementById("personal-ticket-no-val").textContent = tickets.length;
+
         if (tickets.length === 0) {
             personalData = new PersonalData(balanceInEth, [], []);
             return;
@@ -130,12 +133,7 @@ async function loadPersonalMeta() {
             const tickId = tickets[i];
             mapTickets.set(tickId, true);
         }
-
         personalData = new PersonalData(balanceInEth, tickets, mapTickets);
-
-        document.getElementById("personal-balance-val").textContent = personalData.balance;
-        document.getElementById("personal-ticket-no-val").textContent = personalData.tickets.length;
-
     } catch (err) {
         console.log(err);
         showDialog(DLevel.Warning, "load personal data from block chain failed")
@@ -160,6 +158,7 @@ function initGamingCounter() {
         }
 
         apiCounter = 0;
+        await loadGameSettings();
         await setupCurrentRoundData();
     });
 }
@@ -452,7 +451,7 @@ function showUserWinHistory() {
 async function withdrawBonus() {
 
     if (personalData.balance <= 0.00001) {
-        console.log(personalData.balance)
+        // console.log(personalData.balance)
         showDialog(DLevel.Warning, "Insufficient Balance");
         return;
     }
