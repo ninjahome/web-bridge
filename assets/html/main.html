@@ -800,7 +800,7 @@
         }
 
         .cancel-btn,
-        .confirm-btn{
+        .confirm-btn {
             margin: 0 8px;
             padding: 10px 42px;
             border-radius: 12px;
@@ -1573,6 +1573,7 @@
 
         .team-member-card-header {
             cursor: pointer;
+            height: 100%;
         }
     </style>
 </head>
@@ -1590,7 +1591,8 @@
                     <img src="/assets/file/path-to-home-active-icon.png" alt="Home" class="menu-icon"/> <span
                             id="left-menu-item-home">主页</span>
                 </li>
-                <li onclick="menuOnClicked.call(this,1)" data-icon-active="/assets/file/path-to-leaderboard-active-icon.png"
+                <li onclick="menuOnClicked.call(this,1)"
+                    data-icon-active="/assets/file/path-to-leaderboard-active-icon.png"
                     data-icon-inactive="/assets/file/path-to-leaderboard-icon.png" class="menu-item-left-area"
                     data-content="middle-div-leaderboard">
                     <img src="/assets/file/path-to-leaderboard-icon.png" alt="Home" class="menu-icon"/> <span
@@ -1615,7 +1617,7 @@
             </button>
         </div>
     </div>
-   <div id="tweet-header-template" style="display: none">
+    <div id="tweet-header-template" style="display: none">
         <div class="tweet-first-half">
             <div>
                 <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar">
@@ -1718,13 +1720,15 @@
             <div class="tweets-park top-div" id="top-most-voted-tweet"></div>
             <li id="team-member-card-template" style="display: none">
                 <div class="team-member-card-header">
+
+
                     <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
                     <img src="/assets/file/elder_icon.png" alt="flag" class="elderFlagOnAvatar"
                          style="left: 82px; top:49px">
                     <div class="team-membersName"><span class="name twitterName ">nan</span>
                         <span class="username twitterUserName" style="font-weight: lighter"></span>
                     </div>
-                </div>
+                    </div>
                 <div class="user-voted-count vote-number">123</div>
             </li>
             <div class="team-card" id="team-card-in-top-template" style="display: none">
@@ -1968,15 +1972,17 @@
             </div>
         </div>
         <div id="nj-user-profile" class="nj-user-profile" style="display: none">
-            <button id="back-button-user-profile" class="back-button" style="margin: 16px"><img src="/assets/file/header-back-icon.png"
-                                                                           alt=" ">返回
+            <button id="back-button-user-profile" class="back-button" style="margin: 16px"><img
+                        src="/assets/file/header-back-icon.png"
+                        alt=" ">返回
             </button>
             <div class="nj-user-summary">
                 <div class="tweet-header-in-profile">
                     <div class="tweet-header-img"></div>
                     <div class="tweet-nameID-info">
                         <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar tweet-twitterAvatar ">
-                        <img src="/assets/file/elder_icon.png" alt="flag" class="elderFlagOnAvatar" style="width: 24px; top:40px; left:40px">
+                        <img src="/assets/file/elder_icon.png" alt="flag" class="elderFlagOnAvatar"
+                             style="width: 24px; top:40px; left:40px">
                         <div class="name twitterName">ws</div>
                         <div class="username twitterUserName" style="margin-left: 0; margin-top: 4px">@wsliss</div>
                         <div class="web3id">0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2</div>

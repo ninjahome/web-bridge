@@ -80,7 +80,7 @@ function clearCachedData() {
     window.location.href = "/signIn";
 }
 
-async function showHoverCard(event, twitterObj, web3ID) {
+async function showHoverCard(event, twitterObj, web3ID, offset) {
 
     const hoverCard = document.getElementById('hover-card');
     const rect = event.currentTarget.getBoundingClientRect();
@@ -95,9 +95,16 @@ async function showHoverCard(event, twitterObj, web3ID) {
         document.getElementById('hover-name').textContent = web3ID;
     }
 
+    let x = 0;
+    let y = 0;
+    if (offset) {
+        x = offset.X;
+        y = offset.Y
+    }
+
     hoverCard.style.display = 'block';
-    hoverCard.style.left = `${rect.left}px`;
-    hoverCard.style.top = `${rect.bottom + window.scrollY}px`;
+    hoverCard.style.left = `${rect.left + x}px`;
+    hoverCard.style.top = `${rect.bottom + window.scrollY + y}px`;
 
     if (!njUsrInfo) {
         console.log("failed to load web3 user:", web3ID);

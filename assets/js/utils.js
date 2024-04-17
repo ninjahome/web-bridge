@@ -754,6 +754,12 @@ function readFileAsBlob(file) {
     });
 }
 
+class DessagePoint {
+    constructor(x, y) {
+        this.X = x;
+        this.Y = y;
+    }
+}
 
 const __defaultLogo = '/assets/file/logo.png';
 const maxTextLenPerImg = 1000;

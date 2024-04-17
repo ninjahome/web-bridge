@@ -113,14 +113,16 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
     for (const usr of data) {
         NJUserBasicInfo.cacheNJUsrObj(usr);
         const njUsrCard = document.getElementById("team-member-card-template").cloneNode(true);
-        njUsrCard.style.display = '';
+        njUsrCard.style.display = 'block';
+        njUsrCard.id = '';
         const avatarImg = njUsrCard.querySelector(".twitterAvatar");
         if (!usr.tw_id) {
             avatarImg.src = __defaultLogo;
             njUsrCard.querySelector(".twitterName").innerText = usr.eth_addr;
         } else {
             const twitterObj = await __setOnlyHeader(njUsrCard, usr.tw_id, usr.eth_addr);
-            const hoverDiv = njUsrCard.querySelector(".team-member-card-header");
+            const hoverDiv = njUsrCard.querySelector(".team-membersAvatar");
+            // const offset = new DessagePoint(106, 0);
             hoverDiv.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, usr.eth_addr));
             hoverDiv.addEventListener('mouseleave', () => hideHoverCard(hoverDiv));
         }
