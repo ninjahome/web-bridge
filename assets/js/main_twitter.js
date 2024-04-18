@@ -165,7 +165,7 @@ async function preparePostMsg(parentDiv) {
         return new ImageRawData(hash, raw, thumbnail);
     });
 
-    console.log("formattedContent length:=>", formattedContent.length, images.length);
+    // console.log("formattedContent length:=>", formattedContent.length, images.length);
     let validTxtLen = maxTextLenPerImg * (maxImgPerTweet - images.length);
     if (validTxtLen < 0) {
         showDialog(DLevel.Warning, "too many images to post");
