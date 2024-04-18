@@ -100,8 +100,6 @@ async function __loadPageData() {
 }
 
 async function loadGameSettings() {
-
-    // showWaiting("syncing system data from block chain")
     const [currentRoundNo, totalBonus, voteNo, tickPriceForOuter, isOpenToOuter] =
         await lotteryGameContract.systemSettings();
     const totalBonusInEth = ethers.formatUnits(totalBonus, 'ether');
@@ -267,7 +265,6 @@ function fullFillGameCard(obj, cardDiv, showHideBtn) {
 }
 
 let __toRoundNo = 0;
-
 async function loadHistoryData() {
     try {
         const parentDiv = document.querySelector('.history-data-list');
@@ -434,7 +431,7 @@ function showUserWinHistory() {
             winnerCard.querySelector('.one-round-bonus-val').textContent = obj.bonus;
             winnerCard.querySelector('.one-round-ticket-id').textContent = obj.win_ticket_id;
             winnerCard.querySelector('.one-round-round-val').textContent = obj.round_no;
-            winnerCard.querySelector('.one-round-discover-val').textContent = formatTime(Number(obj.discover_time*1000));
+            winnerCard.querySelector('.one-round-discover-val').textContent = formatTime(Number(obj.discover_time * 1000));
             winnerCard.querySelector('.one-round-bonus-for-me').textContent = obj.bonus_for_winner;
 
             historyDiv.appendChild(winnerCard);
