@@ -1,5 +1,4 @@
-const tweetVoteContractABI =`
-[
+const tweetVoteContractABI =`[
     {
         "inputs": [],
         "stateMutability": "payable",
@@ -637,6 +636,24 @@ const tweetVoteContractABI =`
             }
         ],
         "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "bytes32[]",
+                "name": "tweetHashs",
+                "type": "bytes32[]"
+            },
+            {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "migrateTweetOwner",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {

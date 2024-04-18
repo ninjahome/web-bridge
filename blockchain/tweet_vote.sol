@@ -180,6 +180,20 @@ contract TweetVote is TweetVoteAmin {
         emit TweetPublished(msg.sender, hash);
     }
 
+    function migrateTweetOwner(bytes32[] memory tweetHashs, address newOwner)
+    public
+    inRun
+    {
+        for (uint256 idx = 0; idx < tweetHashs.length; idx++) {
+            bytes32 hash = tweetHashs[idx];
+            require(
+                ownersOfAllTweets[hash] == msg.sender,
+                "no right to migrate"
+            );
+            ownersOfAllTweets[hash] = newOwner;
+        }
+    }
+
     /*
      * @dev Allows a user to vote on a tweet.
      * @param tweetHash The hash of the tweet being voted on.
