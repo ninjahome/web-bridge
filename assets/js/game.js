@@ -60,7 +60,7 @@ async function initGamePage() {
         await checkMetaMaskEnvironment(initGameContract);
         const address = __globalContractConf.get(__globalTargetChainNetworkID).gameLottery;
         document.querySelector('.contract-address-value').textContent = address;
-
+        showWaiting("loading from blockchain");
         await __loadPageData();
 
         syncWinnerHistoryData().then(r => {
