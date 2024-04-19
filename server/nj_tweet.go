@@ -43,7 +43,7 @@ type TweetPaymentStatus struct {
 	Status     database.TxStatus `json:"status,omitempty"`
 }
 
-func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
+func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 	status := &TweetPaymentStatus{}
 	var err = util.ReadRequest(r, status)
 	if err != nil {
@@ -57,7 +57,7 @@ func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, _ *database.Nin
 		return
 	}
 
-	err = database.DbInst().UpdateTweetPaymentStatus(status.CreateTime, status.Status)
+	err = database.DbInst().UpdateTweetPaymentStatus(status.CreateTime, status.Status, nu.EthAddr)
 	if err != nil {
 		util.LogInst().Err(err).Int64("create_time", status.CreateTime).
 			Str("status", status.Status.String()).

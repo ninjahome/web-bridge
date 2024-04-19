@@ -142,6 +142,29 @@ func (dm *DbManager) GetRawImg(hash string) (*TweetImgRaw, error) {
 	return &imgRaw, nil // 返回TweetImgRaw结构体中的Raw字段
 }
 
+func (dm *DbManager) updateNjUserForTweet(web3ID string, opCtx context.Context) error {
+	docRef := dm.fileCli.Collection(DBTableNJUser).Doc(strings.ToLower(web3ID))
+	var nu NinjaUsrInfo
+	doc, err := docRef.Get(opCtx)
+	if err != nil {
+		util.LogInst().Err(err).Str("web3-id", web3ID).Msg("query nj user failed")
+		return err
+	}
+	err = doc.DataTo(&nu)
+	if err != nil {
+		util.LogInst().Err(err).Str("web3-id", web3ID).Msg("parse nj user failed")
+		return err
+	}
+	nu.TweetCount += 1
+	nu.Points += __dbConf.PointForPost
+	_, err = docRef.Update(opCtx, []firestore.Update{
+		{Path: "tweet_count", Value: nu.TweetCount},
+		{Path: "points", Value: nu.Points},
+	})
+
+	return nil
+}
+
 func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
@@ -154,25 +177,6 @@ func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 		util.LogInst().Err(err).Msg("save ninja tweet failed:" + content.String())
 		return err
 	}
-
-	docRef := dm.fileCli.Collection(DBTableNJUser).Doc(strings.ToLower(content.Web3ID))
-	var nu NinjaUsrInfo
-	doc, err := docRef.Get(opCtx)
-	if err != nil {
-		util.LogInst().Err(err).Str("web3-id", content.Web3ID).Msg("query nj user failed")
-		return err
-	}
-	err = doc.DataTo(&nu)
-	if err != nil {
-		util.LogInst().Err(err).Str("web3-id", content.Web3ID).Msg("parse nj user failed")
-		return err
-	}
-	nu.TweetCount += 1
-	nu.Points += __dbConf.PointForPost
-	_, err = docRef.Update(opCtx, []firestore.Update{
-		{Path: "tweet_count", Value: nu.TweetCount},
-		{Path: "points", Value: nu.Points},
-	})
 
 	return err
 }
@@ -223,13 +227,21 @@ func (dm *DbManager) NjTweetDetails(createAt int64) (*NinjaTweet, error) {
 	return &obj, err
 }
 
-func (dm *DbManager) UpdateTweetPaymentStatus(createAt int64, s TxStatus) error {
+func (dm *DbManager) UpdateTweetPaymentStatus(createAt int64, s TxStatus, web3ID string) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
 	tweetsDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(fmt.Sprintf("%d", createAt))
 	_, err := tweetsDoc.Update(opCtx, []firestore.Update{
 		{Path: "payment_status", Value: s},
 	})
+
+	if s == TxStSuccess {
+		err = dm.updateNjUserForTweet(web3ID, opCtx)
+		if err != nil {
+			return err
+		}
+	}
+
 	return err
 }
 
