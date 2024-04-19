@@ -1658,7 +1658,7 @@
                     <button onclick="loadImgFromLocal('.tweet-post')" class="tweets-fileImg"><img
                                 src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
                     <input type="file" id="fileInput" class="tweet-file-input" style="display: none;"
-                           accept=".jpg, .png" multiple
+                           accept=".jpg, .png, .webp" multiple
                            onchange="previewImage('.tweet-post')">
                     <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.tweet-post')" class="d-radius"
                             style="margin: 8px">
@@ -1728,7 +1728,7 @@
                     <div class="team-membersName"><span class="name twitterName ">nan</span>
                         <span class="username twitterUserName" style="font-weight: lighter"></span>
                     </div>
-                    </div>
+                </div>
                 <div class="user-voted-count vote-number">123</div>
             </li>
             <div class="team-card" id="team-card-in-top-template" style="display: none">
@@ -2210,7 +2210,8 @@
     <div style="display: flex; justify-content: space-between; align-items: center">
         <button onclick="loadImgFromLocal('.modal-for-tweet-post')" class="tweets-fileImg"><img
                     src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
-        <input type="file" id="fileInput" class="tweet-file-input" style="display: none;" accept=".jpg, .png" multiple
+        <input type="file" id="fileInput" class="tweet-file-input" style="display: none;" accept=".jpg, .png, .webp"
+               multiple
                onchange="previewImage('.modal-for-tweet-post')">
         <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.modal-for-tweet-post')" class="d-radius"
                 style="margin: 8px 0">

@@ -225,12 +225,13 @@ async function postTweetWithPayment(parentID) {
         if (!basicTweet) {
             return;
         }
-        hideLoading();
-        await procPaymentForPostedTweet(basicTweet);
-
+        clearDraftTweetContent(parentDiv);
+        const paySuccess = await procPaymentForPostedTweet(basicTweet);
+        if (!paySuccess){
+            return;
+        }
         showWaiting("updating tweet status")
         await updatePaymentStatusToSrv(basicTweet)
-        clearDraftTweetContent(parentDiv);
 
         if (curScrollContentID === 0) {
             __loadTweetsAtHomePage(true).then(() => {

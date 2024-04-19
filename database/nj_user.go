@@ -17,6 +17,7 @@ type NinjaUsrInfo struct {
 	Address      string `json:"address" firestore:"address"`
 	EthAddr      string `json:"eth_addr" firestore:"eth_addr"`
 	CreateAt     int64  `json:"create_at" firestore:"create_at"`
+	SignInAt     int64  `json:"signIn_at" firestore:"signIn_at"`
 	TwID         string `json:"tw_id" firestore:"tw_id"`
 	UpdateAt     int64  `json:"update_at"`
 	TweetCount   int    `json:"tweet_count" firestore:"tweet_count"`
@@ -63,7 +64,11 @@ func (dm *DbManager) NjUserSignIn(ethAddr string) *NinjaUsrInfo {
 			util.LogInst().Err(err).Str("eth-addr", ethAddr).Msg("parse firestore data  to NinjaUsrInfo failed")
 			return nil
 		}
-		util.LogInst().Debug().Str("eth-addr", ethAddr).Msg("firestore load ninja user info success")
+		_, _ = docRef.Update(opCtx, []firestore.Update{
+			{Path: "signIn_at", Value: time.Now().UnixMilli()},
+		})
+		nu.SignInAt = time.Now().UnixMilli()
+		util.LogInst().Debug().Str("eth-addr", ethAddr).Int64("sign-at", nu.SignInAt).Msg("firestore load ninja user info success")
 		return nu
 	}
 

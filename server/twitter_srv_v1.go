@@ -9,7 +9,9 @@ import (
 	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"golang.org/x/image/draw"
+	_ "golang.org/x/image/webp"
 	"image"
+	_ "image/gif"
 	"image/jpeg"
 	_ "image/png"
 	"io"
@@ -135,12 +137,6 @@ func processBase64Image(hash, base64Str string) (image.Image, error) {
 		return nil, fmt.Errorf("decode image failed: %v", err)
 	}
 
-	//var buf bytes.Buffer
-	//if err := jpeg.Encode(&buf, img, nil); err != nil {
-	//	return nil, fmt.Errorf("encode resized image failed: %v", err)
-	//}
-	//
-	//compressedBase64 := prefix + base64.StdEncoding.EncodeToString(buf.Bytes())
 	util.LogInst().Info().Int("img-len", len(base64Str)).Msg("raw image is fine")
 	if len(base64Str) <= MaxImgDataSize {
 		return img, database.DbInst().SaveRawImg(hash, base64Str)

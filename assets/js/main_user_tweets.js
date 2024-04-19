@@ -61,12 +61,15 @@ function __checkPayment(tweetCard, tweet) {
 
     retryButton.classList.add('show');
     retryButton.onclick = () => procPaymentForPostedTweet(tweet, function (newObj) {
-        updatePaymentStatusToSrv(newObj).then();
         __globalTweetMemCache.set(newObj.create_time, newObj);
-        if (newObj.payment_status !== TXStatus.NoPay) {
-            retryButton.classList.remove('show');
-            deleteButton.classList.remove('show');
+
+        if (newObj.payment_status !== TXStatus.Success) {
+            return;
         }
+
+        retryButton.classList.remove('show');
+        deleteButton.classList.remove('show');
+        updatePaymentStatusToSrv(newObj).then();
     });
 
     deleteButton.classList.add('show');
@@ -84,6 +87,7 @@ function __checkPayment(tweetCard, tweet) {
 
 async function removeUnPaidTweets(createTime) {
     try {
+        showWaiting("deleting tweet......")
         await PostToSrvByJson("/removeUnpaidTweet",
             {create_time: createTime, status: TXStatus.NoPay});
         __globalTweetMemCache.delete(createTime);
@@ -91,6 +95,8 @@ async function removeUnPaidTweets(createTime) {
     } catch (e) {
         showDialog(DLevel.Error, "remove unpaid tweet failed:" + e.toString());
         return false;
+    }finally {
+        hideLoading();
     }
 }
 

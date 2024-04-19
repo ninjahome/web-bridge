@@ -63,7 +63,7 @@ async function initBlockChainContract(provider) {
 async function procPaymentForPostedTweet(tweet, callback) {
     if (!tweetVoteContract) {
         showDialog(DLevel.Tips, "please change metamask to arbitrum network")
-        return;
+        return false;
     }
 
     try {
@@ -79,22 +79,26 @@ async function procPaymentForPostedTweet(tweet, callback) {
         const txReceipt = await txResponse.wait();
 
         tweet.payment_status = txReceipt.status ? TXStatus.Success : TXStatus.Failed;
-
+        if (callback) {
+            callback(tweet);
+        }
+        return true;
     } catch (err) {
         const newErr = checkMetamaskErr(err);
         if (newErr && newErr.includes("duplicate post")) {
             tweet.payment_status = TXStatus.Success;
+            if (callback) {
+                callback(tweet);
+            }
         }
+        return false;
     } finally {
         hideLoading();
-        if (callback) {
-            callback(tweet);
-        }
     }
 }
 
 async function procTweetVotePayment(voteCount, tweet, callback) {
-    if (!tweetVoteContract || !voteContractMeta || !voteContractMeta.votePrice ) {
+    if (!tweetVoteContract || !voteContractMeta || !voteContractMeta.votePrice) {
         showDialog(DLevel.Tips, "please wait for metamask syncing data")
         return;
     }
