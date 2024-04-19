@@ -577,7 +577,7 @@ function checkMetamaskErr(err) {
     console.error("Transaction error: ", err);
     hideLoading();
 
-    if (err.code === 4001) {
+    if (err.code === 4001 ||err.code === "ACTION_REJECTED") {
         return null;
     }
 
