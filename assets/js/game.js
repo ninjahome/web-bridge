@@ -100,7 +100,7 @@ async function __loadPageData() {
 }
 
 async function loadGameSettings() {
-    const [currentRoundNo, totalBonus, voteNo, tickPriceForOuter, isOpenToOuter] =
+    const [currentRoundNo, totalBonus, voteNo, tickPriceForOuter, bonusForPoints, isOpenToOuter] =
         await lotteryGameContract.systemSettings();
     const totalBonusInEth = ethers.formatUnits(totalBonus, 'ether');
     const tickPriceInEth = ethers.formatUnits(tickPriceForOuter, 'ether');
