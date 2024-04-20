@@ -18,7 +18,7 @@ func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
+	para.IsOwner = nu.EthAddr == para.Web3ID
 	tweets, err := database.DbInst().QueryTweetsByFilter(_globalCfg.TweetsPageSize, &para)
 	if err != nil {
 		util.LogInst().Err(err).Str("param", para.String()).

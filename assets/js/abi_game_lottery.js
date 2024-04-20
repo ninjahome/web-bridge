@@ -652,6 +652,11 @@ const gameContractABI =`
                 "internalType": "uint256",
                 "name": "randomVal",
                 "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "ticketNo",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -720,6 +725,11 @@ const gameContractABI =`
                     {
                         "internalType": "uint256",
                         "name": "randomVal",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "ticketNo",
                         "type": "uint256"
                     }
                 ],

@@ -158,7 +158,7 @@ func (dm *DbManager) CheckKolElder() {
 	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
 
 		randomDoc := dm.fileCli.Collection(DBTableNJUser)
-		var query = randomDoc.Where("be_voted_count", ">=", 100).
+		var query = randomDoc.Where("be_voted_count", ">=", __dbConf.ElderNoFirstGot).
 			OrderBy("be_voted_count", firestore.Desc).
 			Limit(10)
 

@@ -231,9 +231,11 @@ function __njUserVoteOrPostedTweetsStatus(isPosted) {
 }
 
 async function loadPostedTweetsOfNjUsr() {
+    showWaiting("loading");
     curScrollContentID = 51;
     __njUserVoteOrPostedTweetsStatus(true);
     await __loadTweetAtUserPost(true, currentNinjaUsrLoading.eth_addr, cachedNinjaUserPostedTweets, fillNinjaUserPostedTweetsList)
+    hideLoading();
 }
 
 async function fillNinjaUserPostedTweetsList(clear) {
@@ -261,10 +263,12 @@ async function olderNinjaUsrVotedTweets() {
 }
 
 async function loadVotedTweetsOfNjUsr() {
+    showWaiting("loading");
     curScrollContentID = 52;
     __njUserVoteOrPostedTweetsStatus(false);
     await __loadTweetIDsUserVoted(true, currentNinjaUsrLoading.eth_addr,
         cachedNinjaUserVotedTweets, cachedNinjaVoteStatusForUser, fillNinjaUserVotedTweetsList);
+    hideLoading();
 }
 
 

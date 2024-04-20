@@ -56,6 +56,7 @@ type TweetQueryParm struct {
 	Web3ID   string   `json:"web3_id"`
 	VotedIDs []int64  `json:"voted_ids"`
 	HashArr  []string `json:"hash_arr"`
+	IsOwner  bool     `json:"is_owner"`
 }
 
 type TweetImgRaw struct {
@@ -84,6 +85,9 @@ func (p *TweetQueryParm) createFilter(pageSize int, doc *firestore.CollectionRef
 		query = query.Where("payment_status", "==", TxStSuccess)
 	} else {
 		query = query.Where("web3_id", "==", p.Web3ID)
+		if p.IsOwner == false {
+			query = query.Where("payment_status", "==", TxStSuccess)
+		}
 	}
 
 	if p.StartID == 0 {
