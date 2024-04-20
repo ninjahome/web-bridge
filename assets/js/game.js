@@ -14,7 +14,7 @@ class GameSettings {
 }
 
 class GameRoundInfo {
-    constructor(hash, dTime, winner, winTicketID, curBonus, random, winnerBonus) {
+    constructor(hash, dTime, winner, winTicketID, curBonus, random, winnerBonus,ticketsNo) {
         this.hash = hash;
         this.dTime = dTime;
         this.winner = winner;
@@ -22,6 +22,7 @@ class GameRoundInfo {
         this.curBonus = curBonus;
         this.random = random;
         this.bonusForWinner = winnerBonus;
+        this.ticketsNo = ticketsNo;
     }
 
     static fromBlockChainObj(obj) {
@@ -30,7 +31,7 @@ class GameRoundInfo {
         const bonusForWinner = ethers.formatUnits(obj.bonusForWinner, 'ether');
 
         return new GameRoundInfo(obj.randomHash, dTime, obj.winner, obj.winTicketID,
-            curBonusInEth, obj.randomVal, bonusForWinner);
+            curBonusInEth, obj.randomVal, bonusForWinner,Number(obj.ticketNo));
     }
 }
 
@@ -319,7 +320,8 @@ async function __loadHistoryData(parentDiv) {
             winTicketID: entry.winTicketID,
             bonus: entry.bonus,
             bonusForWinner: entry.bonusForWinner,
-            randomVal: entry.randomVal
+            randomVal: entry.randomVal,
+            ticketNo: entry.ticketNo,
         }));
 
         console.log(resultArray);
