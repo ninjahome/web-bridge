@@ -386,7 +386,8 @@ async function procTicketPayment(no, ifShare) {
         });
         showDialog(DLevel.Success, "buy success");
         if (ifShare) {
-            __shareVoteToTweet(0, no, i18next.t('voter-slogan')).then(r => {
+            const slogan = i18next.t('slogan_1') + gameSettings.bonus  +" ETH. "+i18next.t('voter-slogan')
+                __shareVoteToTweet(0, no, slogan).then(r => {
                 console.log("share to twitter success")
             });
         }

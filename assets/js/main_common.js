@@ -392,7 +392,8 @@ async function voteToTheTweet(obj, callback) {
             reloadSelfNjData().then(() => {
             });
             if (shareToTweet && ninjaUserObj.tw_id) {
-                __shareVoteToTweet(create_time, vote_count, i18next.t('voter-slogan')).then(() => {
+                const slogan = i18next.t('slogan_1') + gameContractMeta.totalBonus +" ETH. "+ i18next.t('voter-slogan');
+                __shareVoteToTweet(create_time, vote_count, slogan).then(() => {
                 });
             }
             if (callback) {
