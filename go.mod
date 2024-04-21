@@ -10,6 +10,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/sessions v1.2.2
 	github.com/hopwesley/fdlimit v1.0.0
+	github.com/rivo/uniseg v0.2.0
 	github.com/rs/zerolog v1.31.0
 	github.com/spf13/cobra v1.8.0
 	golang.org/x/crypto v0.16.0

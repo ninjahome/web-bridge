@@ -577,7 +577,7 @@ function checkMetamaskErr(err) {
     console.error("Transaction error: ", err);
     hideLoading();
 
-    if (err.code === 4001 ||err.code === "ACTION_REJECTED") {
+    if (err.code === 4001 || err.code === "ACTION_REJECTED") {
         return null;
     }
 
@@ -761,10 +761,44 @@ class DessagePoint {
     }
 }
 
+function safeSubstring(str, maxLength) {
+    // 如果请求的最大长度大于等于原始字符串长度，直接返回原始字符串
+    if (maxLength >= str.length) {
+        return str;
+    }
+
+    let result = '';
+    let currentLength = 0;
+
+    // 使用正则表达式匹配中文字符、英文单词、标点符号等
+    let pattern = /[\u4e00-\u9fa5]|[a-zA-Z0-9]+|[\uff00-\uffff]/g;
+    let tokens = str.match(pattern);
+
+    for (let i = 0; tokens && i < tokens.length; i++) {
+        let token = tokens[i];
+        let tokenLength = Array.from(token).length; // 计算当前token的长度
+
+        if (currentLength + tokenLength <= maxLength) {
+            result += token;
+            currentLength += tokenLength;
+        } else {
+            // 如果token为英文单词且长度允许，尝试添加部分单词
+            if (tokenLength > 1 && /[a-zA-Z0-9]+/.test(token) && currentLength < maxLength) {
+                result += token.substring(0, maxLength - currentLength);
+            }
+            break;
+        }
+    }
+
+    return result;
+}
+
+
+
 const __defaultLogo = '/assets/file/logo.png';
-const maxTextLenPerImg = 1000;
+const maxTweetLenPerPage = (1 << 10);
 const maxImgPerTweet = 4;
-const defaultTextLenForTweet = 100;
+const defaultTextLenForTweet = 280;
 const MaxRawImgSize = (1 << 20);
 const MaxThumbnailSize = (1 << 18);
 const CompressQuality = 0.75;

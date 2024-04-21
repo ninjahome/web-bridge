@@ -8,12 +8,15 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/rivo/uniseg"
 	"html/template"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
+	"unicode"
 )
 
 import (
@@ -23,6 +26,7 @@ import (
 const (
 	MaxReqContentLen = 1 << 23
 	MaxTwitterLen    = 280
+	urlWeight        = 23
 )
 
 var (
@@ -106,8 +110,59 @@ func ReadRequest(request *http.Request, obj any) error {
 	return json.Unmarshal(b.Bytes(), obj)
 }
 
-func IsOverTwitterLimit(text string) bool {
-	return len(text) > MaxTwitterLen
+var urlRegex = regexp.MustCompile(`https?://\S+`)
+
+// ParseTweet calculates the length of a tweet text based on Twitter's specific rules.
+func ParseTweet(text string) (int, bool) {
+	weightedLength := 0
+	urls := urlRegex.FindAllStringIndex(text, -1)
+
+	// Subtract urls and add fixed url length
+	lastIndex := 0
+	for _, loc := range urls {
+		// Add the text before the URL
+		weightedLength += calculateWeight(text[lastIndex:loc[0]])
+		// Add fixed URL length
+		weightedLength += urlWeight
+		lastIndex = loc[1]
+	}
+	// Add the rest of the text after the last URL
+	weightedLength += calculateWeight(text[lastIndex:])
+
+	// Check if the tweet is valid based on its weighted length
+	isValid := weightedLength <= MaxTwitterLen
+	return weightedLength, isValid
+}
+
+// calculateWeight calculates the weight of the text.
+func calculateWeight(text string) int {
+	weight := 0
+	gr := uniseg.NewGraphemes(text)
+	for gr.Next() {
+		r := gr.Runes()
+		if isCJK(r) {
+			weight += 2 // CJK characters have weight 2
+		} else {
+			weight += 1 // Non-CJK characters have weight 1
+		}
+	}
+	return weight
+}
+
+// isCJK checks if the rune slice is a CJK character.
+func isCJK(runes []rune) bool {
+	for _, r := range runes {
+		if unicode.Is(unicode.Han, r) {
+			return true
+		}
+	}
+	return false
+}
+
+func IsValidTwitterContent(text string) bool {
+	characterCount, valid := ParseTweet(text)
+	LogInst().Debug().Int("text-len", len(text)).Str("text", text).Int("rune-len", characterCount).Msg("tweet text length")
+	return valid
 }
 
 func TruncateString(raw, append string) string {

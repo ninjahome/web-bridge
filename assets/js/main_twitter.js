@@ -142,21 +142,59 @@ function findAtTarget(text) {
     return null;
 }
 
-async function preparePostMsg(parentDiv) {
-    const contentHtml = parentDiv.querySelector(".tweets-content-txt-area").innerHTML.trim();
-    if (contentHtml.length <= 4) {
-        showDialog(DLevel.Warning, "too short content");
-        return;
+async function convertTweetContentToImg(formattedContent) {
+    try {
+        const target = document.getElementById('hidden-tweet-txt');
+
+        target.innerText = formattedContent;
+        const canvas = await html2canvas(target);
+        const imgURL = canvas.toDataURL("image/png");
+        // document.getElementById('outputImage').src = imgURL;//debug infos
+        target.innerText = "";
+        return imgURL;
+    } catch (e) {
+        console.log(e);
     }
+}
+
+function getCompositedTxt(formattedContent, slogan, sloganLen) {
+    let prefix = safeSubstring(formattedContent, defaultTextLenForTweet - 4 - sloganLen) + "...";
+    let compositedTxt = prefix + slogan;
+    const twtLen = twttr.txt.getTweetLength(compositedTxt);
+    if (twtLen > defaultTextLenForTweet) {
+        prefix = safeSubstring(formattedContent, (defaultTextLenForTweet - 4 - sloganLen) / 2) + "...";
+        compositedTxt = prefix + slogan;
+    }
+    console.log(compositedTxt, twttr.txt.getTweetLength(compositedTxt));
+    return compositedTxt;
+}
+
+async function preparePostMsg(parentDiv) {
+    const contentHtml = parentDiv.querySelector(".tweets-content-txt-area").innerText.trim();
     const formattedContent = contentHtml
         .replace(/<br\s*[\/]?>/gi, "\n") // 将 <br> 标签转换为换行符
         .replace(/<\/?p>/gi, "\n") // 将 <p> 标签转换为换行符
         .replace(/<[^>]+>/g, ''); // 移除所有其他HTML标签
-    const images = parentDiv.querySelectorAll("#twImagePreview img");
-    if (!formattedContent && images.length === 0) {
-        showDialog(DLevel.Warning, "content can't be empty")
+
+    if (formattedContent < 4 && images.length === 0) {
+        showDialog(DLevel.Warning, "content too short")
         return null;
     }
+
+    const images = parentDiv.querySelectorAll("#twImagePreview img");
+    if (images.length > maxImgPerTweet) {
+        showDialog(DLevel.Warning, "too many images to post");
+        return null;
+    }
+
+    const nj_tw_id = (new Date()).getTime();
+    const domainName = "https://" + window.location.hostname;
+    const slogan = "\r\n" + i18next.t('slogan_1') + gameContractMeta.totalBonus + i18next.t('slogan_2') + domainName + "/buyRights?NjTID=" + nj_tw_id;
+    const sloganLen = twttr.txt.getTweetLength(slogan);
+
+    let compositedTxt = formattedContent + slogan;
+    let result = twttr.txt.parseTweet(compositedTxt);
+    console.log("Weighted Length:", result.weightedLength);
 
     const imageData = Array.from(images).map(img => {
         const thumbnail = img.src
@@ -165,28 +203,45 @@ async function preparePostMsg(parentDiv) {
         return new ImageRawData(hash, raw, thumbnail);
     });
 
-    // console.log("formattedContent length:=>", formattedContent.length, images.length);
-    let validTxtLen = maxTextLenPerImg * (maxImgPerTweet - images.length);
-    if (validTxtLen < 0) {
-        showDialog(DLevel.Warning, "too many images to post");
-        return;
-    }
-    if (validTxtLen === 0) {
-        validTxtLen = defaultTextLenForTweet;
+    if (result.valid === false) {
+        if (maxImgPerTweet === images.length) {
+            showDialog(DLevel.Warning, "tweet content should be short than" + (defaultTextLenForTweet - sloganLen) + " if you have 4 images");
+            return null;
+        }
+
+        const lastValidTxtLen = maxTweetLenPerPage * (maxImgPerTweet - images.length);
+        console.log("simple len :", formattedContent.length);
+        if (formattedContent.length >= lastValidTxtLen) {
+            showDialog(DLevel.Warning, "max tweet content length is:" + lastValidTxtLen + "if you have " + images.length + " images");
+            return null;
+        }
+
+        compositedTxt = getCompositedTxt(formattedContent, slogan, sloganLen);
+        let tmpSplitStr = formattedContent;
+        for (let i = 0; i < maxImgPerTweet; i++) {
+
+            const substr = tmpSplitStr.substring(0, maxTweetLenPerPage);//safeSubstring(tmpSplitStr, maxTweetLenPerPage);
+            console.log(substr, substr.length);
+            const txtImg = await convertTweetContentToImg(substr);
+            imageData.push(new ImageRawData("converted-" + i, txtImg, ""));
+            tmpSplitStr = tmpSplitStr.substring(substr.length);
+            console.log(tmpSplitStr, tmpSplitStr.length);
+            if (substr.length < maxTweetLenPerPage){
+                break
+            }
+        }
     }
 
-    if (formattedContent.length > validTxtLen) {
-        showDialog(DLevel.Warning, "tweet content too long");
-        return
-    }
-    const slogan = i18next.t('slogan_1') + gameContractMeta.totalBonus +  i18next.t('slogan_2')
+
     const tweet = new TweetContentToPost(formattedContent,
-        (new Date()).getTime(), ninjaUserObj.eth_addr, ninjaUserObj.tw_id, slogan);
-    const message = JSON.stringify(tweet);
+        nj_tw_id, ninjaUserObj.eth_addr, ninjaUserObj.tw_id, compositedTxt);
+    const message = JSON.stringify(tweet)
+
 
     const signature = await window.ethereum.request({
         method: 'personal_sign', params: [message, ninjaUserObj.eth_addr],
     });
+
     if (!signature) {
         showDialog(DLevel.Warning, "empty signature")
         return null;
@@ -227,7 +282,7 @@ async function postTweetWithPayment(parentID) {
         }
         clearDraftTweetContent(parentDiv);
         const paySuccess = await procPaymentForPostedTweet(basicTweet);
-        if (!paySuccess){
+        if (!paySuccess) {
             return;
         }
         showWaiting("updating tweet status")

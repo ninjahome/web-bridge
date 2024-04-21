@@ -19,7 +19,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"unicode/utf8"
 )
 
 const (
@@ -139,7 +138,10 @@ func processBase64Image(hash, base64Str string) (image.Image, error) {
 
 	util.LogInst().Info().Int("img-len", len(base64Str)).Msg("raw image is fine")
 	if len(base64Str) <= MaxImgDataSize {
-		return img, database.DbInst().SaveRawImg(hash, base64Str)
+		if len(hash) > 20 {
+			err = database.DbInst().SaveRawImg(hash, base64Str)
+		}
+		return img, err
 	}
 
 	factor := float64(MaxImgDataSize) / float64(len(base64Str))
@@ -158,22 +160,31 @@ func processBase64Image(hash, base64Str string) (image.Image, error) {
 
 	resizedBase64 := prefix + base64.StdEncoding.EncodeToString(buf2.Bytes())
 	util.LogInst().Info().Int("img-len", len(resizedBase64)).Msg("resize image success")
-
-	return resizedImg, database.DbInst().SaveRawImg(hash, resizedBase64)
+	if len(hash) > 20 {
+		err = database.DbInst().SaveRawImg(hash, resizedBase64)
+	}
+	return resizedImg, err
 }
 
 func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) (*TweetRequest, error) {
+
 	var token = ut.GetToken()
 
-	var appendStr = _globalCfg.GetNjProtocolAd(njTweet.CreateAt, njTweet.Slogan)
-	var combinedTxt = njTweet.Txt + appendStr
+	var combinedTxt = njTweet.TxtWithSlogan
 	mediaIDs := make([]string, 0)
 	if len(njTweet.Images) > MaxImgInTweet {
 		return nil, fmt.Errorf("images must be less than 5")
 	}
-
+	var finalHash []string
+	var finalImages []string
 	for i, base64Data := range njTweet.ImageRaw {
-		img, err := processBase64Image(njTweet.ImageHash[i], base64Data)
+		hash := njTweet.ImageHash[i]
+		if len(hash) > 20 {
+			finalHash = append(finalHash, hash)
+			finalImages = append(finalImages, njTweet.Images[i])
+		}
+
+		img, err := processBase64Image(hash, base64Data)
 		if err != nil {
 			util.LogInst().Err(err).Msg("parse tweet image to image object failed")
 			return nil, err
@@ -184,50 +195,18 @@ func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) 
 			return nil, err
 		}
 		mediaIDs = append(mediaIDs, mediaID)
+
 	}
+	njTweet.ImageHash = finalHash
+	njTweet.Images = finalImages
 
-	if !util.IsOverTwitterLimit(combinedTxt) {
-		req := &TweetRequest{
-			Text: combinedTxt,
-		}
-		if len(mediaIDs) > 0 {
-			req.Media = &Media{
-				MediaIDs: mediaIDs,
-			}
-		}
-		return req, nil
-	}
-
-	var txtLen = len(njTweet.Txt)
-	count := utf8.RuneCountInString(njTweet.Txt)
-	util.LogInst().Debug().Int("txt-len", txtLen).Int("txt-count", count).Send()
-
-	splitTxt := util.SplitIntoChunks(njTweet.Txt, _globalCfg.MaxTxtPerImg)
-	if len(splitTxt)+len(njTweet.Images) > MaxImgInTweet {
-		return nil, fmt.Errorf("txt is too long")
-	}
-
-	for _, content := range splitTxt {
-		txtImg, err := util.ConvertLongTweetToImg(content, _globalCfg.imgFont, _globalCfg.FontSize)
-		if err != nil {
-			util.LogInst().Err(err).Msg("convert txt to img failed:" + njTweet.String())
-			return nil, err
-		}
-
-		mediaID, err := uploadMedia(token, txtImg)
-		if err != nil {
-			util.LogInst().Err(err).Msg("convert txt to img failed:" + njTweet.String())
-			return nil, err
-		}
-		mediaIDs = append(mediaIDs, mediaID)
-	}
-
-	combinedTxt = util.TruncateString(njTweet.Txt, appendStr)
-	var req = &TweetRequest{
+	req := &TweetRequest{
 		Text: combinedTxt,
-		Media: &Media{
+	}
+	if len(mediaIDs) > 0 {
+		req.Media = &Media{
 			MediaIDs: mediaIDs,
-		},
+		}
 	}
 	return req, nil
 }
@@ -300,6 +279,7 @@ func uploadMedia(token *oauth1.Token, img image.Image) (string, error) {
 		util.LogInst().Err(err).Msg("jpeg Encode failed")
 		return "", err
 	}
+
 	writer.Close()
 	var result map[string]interface{}
 	err = twitterApiPost(accessPointMedia, token, &buffer, writer.FormDataContentType(), &result)

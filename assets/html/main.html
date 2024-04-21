@@ -18,6 +18,8 @@
     <script src="/assets/js/main_operate_area.js"></script>
     <script src="/assets/js/purify.min.js"></script>
     <script src="/assets/js/i18next.min.js"></script>
+    <script src="/assets/js/twitter-text-3.0.1.min.js"></script>
+    <script src="/assets/js/html2canvas.min.js"></script>
     <script src="/assets/js/i18nextBrowserLanguageDetector.min.js"></script>
     <style about="frame div">
 
@@ -1576,6 +1578,22 @@
             height: 100%;
         }
     </style>
+
+    <style>
+        .hidden-tweet-txt {
+            position: absolute;
+            left: -9999px;
+            padding: 12px;
+            width: 600px; /* 固定宽度 */
+            min-height: 200px; /* 最小高度 */
+            font-size: 24px; /* 字体大小 */
+            word-wrap: break-word; /* 如果单词太长，允许它们断行 */
+            overflow-wrap: break-word; /* 同上，保证长单词或URL可以正确断行 */
+            overflow-y: hidden; /* 隐藏垂直滚动条 */
+            white-space: pre-wrap; /* 保留空白字符的序列，但是文本会换行到下一行 */
+            line-height: 1.2; /* 行高，根据需要调整 */
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -1644,6 +1662,11 @@
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
             <div class="tweet-post" id="tweet-post-on-top">
+{{/*                <img src="" id="outputImage">*/}}
+
+                <div id="hidden-tweet-txt" class="hidden-tweet-txt">
+                </div>
+
                 <div class="tweets-content-txt-area" id="tweets-content-txt-area" contenteditable="true"
                      data-placeholder="What's happening!?">
                 </div>
@@ -1815,7 +1838,8 @@
             <div class="user-settings">
 
                 <div class="user-settings-tab">
-                    <button title="Sync Twitter Meta" onclick="refreshTwitterInfo()" class="user-syncTwitter" id="user-setting-sync-twitter">
+                    <button title="Sync Twitter Meta" onclick="refreshTwitterInfo()" class="user-syncTwitter"
+                            id="user-setting-sync-twitter">
                     </button>
                     <button class="user-settings-icon" onmouseenter="showSettingBtn(true)"
                             onmouseleave="showSettingBtn(false)"></button>
@@ -2226,12 +2250,10 @@
     <span class="tweet-image-hash"></span>
     <button onclick="CloseImgDetail.call(this)">x</button>
 </div>
-
 <script>
 
     function showGameRule() {
         const rule_div = document.getElementById('gameRuleInfo')
-        console.log(rule_div.style.display);
         if (rule_div.style.display === 'none') {
             rule_div.style.display = 'block';
         } else {
@@ -2268,6 +2290,7 @@
             await loadTweetsForHomePage();
             await showTargetTweetDetail();
         } catch (err) {
+            console.log(err);
             showDialog(DLevel.Warning, err.toString());
         } finally {
             hideLoading();

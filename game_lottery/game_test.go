@@ -105,3 +105,10 @@ func TestGenerateEncryptedRandomHash(t *testing.T) {
 	}
 	fmt.Println(decrypted.String())
 }
+
+func TestTweetLength(t *testing.T) {
+	text := "【第十三章】宠辱若惊，贵大患若身。何谓宠辱若惊？宠为下，得之若惊，失之若惊何患？故贵以身为天下，若可寄天下\\\\r\\\\nCurrent Prize Pool: 0.264ETH，Vote on this tweet and participate in the prize pool. link:https://sharp-happy-grouse.ngrok-free.app/buyRights?NjTID=1713690380862"
+	length, valid := util.ParseTweet(text)
+	fmt.Printf("Calculated Twitter length: %d\n", length)
+	fmt.Printf("Calculated Twitter valid: %t\n", valid)
+}
