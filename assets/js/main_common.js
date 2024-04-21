@@ -278,12 +278,11 @@ function showSettingBtn(show) {
     }
 }
 
-function refreshTwitterInfo() {
-    showWaiting("tips", "loading from twitter server");
-    loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true).then(async () => {
-        hideLoading();
-        await setupUserBasicInfoInSetting();
-    })
+async function refreshTwitterInfo() {
+    showWaiting("syncing twitter meta");
+    await loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true);
+    await setupUserBasicInfoInSetting();
+    hideLoading();
 }
 
 function quitFromService() {
@@ -374,6 +373,11 @@ async function __updateVoteNumberForTweet(tweetObj, newVote) {
     if (tweetCard) {
         tweetCard.querySelector('.total-vote-count').textContent = tweetObj.vote_count;
     }
+
+    tweetCard = document.getElementById("tweet-card-for-njusr-post-" + tweetObj.create_time)
+    if (tweetCard) {
+        tweetCard.querySelector('.total-vote-count').textContent = tweetObj.vote_count;
+    }
 }
 
 async function voteToTheTweet(obj, callback) {
@@ -392,7 +396,7 @@ async function voteToTheTweet(obj, callback) {
             reloadSelfNjData().then(() => {
             });
             if (shareToTweet && ninjaUserObj.tw_id) {
-                const slogan = i18next.t('slogan_1') + gameContractMeta.totalBonus +" ETH. "+ i18next.t('voter-slogan');
+                const slogan = i18next.t('slogan_1') + gameContractMeta.totalBonus + " ETH. " + i18next.t('voter-slogan');
                 __shareVoteToTweet(create_time, vote_count, slogan).then(() => {
                 });
             }

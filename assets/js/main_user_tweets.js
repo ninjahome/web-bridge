@@ -95,7 +95,7 @@ async function removeUnPaidTweets(createTime) {
     } catch (e) {
         showDialog(DLevel.Error, "remove unpaid tweet failed:" + e.toString());
         return false;
-    }finally {
+    } finally {
         hideLoading();
     }
 }
@@ -113,9 +113,18 @@ async function fillUserPostedTweetsList(clear) {
 }
 
 async function loadTweetsUserVoted() {
-    curScrollContentID = 22;
-    __myPostOrVotedTweetsStatus(false);
-    await __loadTweetIDsUserVoted(true, ninjaUserObj.eth_addr, cachedUserVotedTweets, cachedVoteStatusForUser, fillUserVotedTweetsList);
+    try {
+        curScrollContentID = 22;
+        showWaiting("loading...");
+
+        __myPostOrVotedTweetsStatus(false);
+        await __loadTweetIDsUserVoted(true, ninjaUserObj.eth_addr, cachedUserVotedTweets, cachedVoteStatusForUser, fillUserVotedTweetsList);
+    } catch (e) {
+        console.log(e);
+        showDialog(e.toString());
+    } finally {
+        hideLoading()
+    }
 }
 
 async function olderVotedTweets() {
@@ -245,9 +254,7 @@ async function fillNinjaUserPostedTweetsList(clear) {
         TweetDetailSource.NoNeed,
         function (tweetCard, tweetHeader, tweet) {
             tweetCard.querySelector('.total-vote-count').textContent = tweet.vote_count;
-
             tweetCard.querySelector('.tweet-content').style.cursor = "default";
-
             tweetCard.querySelector('.vote-count').style.display = 'none';
             __showVoteButton(tweetCard, tweet);
         });

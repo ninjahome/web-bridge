@@ -35,7 +35,11 @@ async function fillMostVotedTweet(clear, tweetArray) {
         function (tweetCard, tweetHeader, tweet) {
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
             __showVoteButton(tweetCard, tweet, function (newVote) {
-                tweetCard.querySelector('.vote-number').textContent = newVote.vote_count;
+                // tweetCard.querySelector('.vote-number').textContent = newVote.vote_count;
+                showWaiting("Re-ranking")
+                __loadMostVotedTweets(true).finally(r=>{
+                    hideLoading();
+                });
             });
         });
 }
