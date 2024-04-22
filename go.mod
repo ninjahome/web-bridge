@@ -7,6 +7,7 @@ require (
 	github.com/dghubble/oauth1 v0.7.2
 	github.com/ethereum/go-ethereum v1.13.5
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
+	github.com/gorilla/csrf v1.7.2
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/sessions v1.2.2
 	github.com/hopwesley/fdlimit v1.0.0

@@ -32,7 +32,7 @@ func newSM() *SessionManager {
 		MaxAge:   0,
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteNoneMode,
+		SameSite: http.SameSiteStrictMode,
 	}
 	return &SessionManager{
 		store: store,

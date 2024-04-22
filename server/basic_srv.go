@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/csrf"
 	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"html/template"
@@ -221,8 +222,10 @@ func mainPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo)
 	data := struct {
 		NinjaUsrInfoJson template.JS
 		TargetTweet      template.JS
+		CSRFToken        string
 	}{
 		NinjaUsrInfoJson: template.JS(nu.RawData()),
+		CSRFToken:        csrf.Token(r),
 	}
 	if tweet != nil {
 		data.TargetTweet = template.JS(tweet.String())
@@ -242,7 +245,9 @@ func showLotteryMain(w http.ResponseWriter, r *http.Request, nu *database.NinjaU
 
 	data := struct {
 		NinjaUsrInfoJson template.JS
+		CSRFToken        string
 	}{
+		CSRFToken:        csrf.Token(r),
 		NinjaUsrInfoJson: template.JS(nu.RawData()),
 	}
 	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "lottery_game.html", data)

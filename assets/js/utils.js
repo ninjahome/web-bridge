@@ -44,10 +44,17 @@ function PostToSrvByJson(url, data) {
     const requestOptions = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)
     };
+
+    const csrfToken = document.getElementById('csrf_token');
+    if (csrfToken){
+        requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
+        console.log("CSRF-Token=>",csrfToken.value);
+    }
+
     return new Promise((resolve, reject) => {
         fetch(url, requestOptions)
             .then(response => {
@@ -86,9 +93,14 @@ async function GetToSrvByJson(url) {
     const requestOptions = {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
     };
+    const csrfToken = document.getElementById('csrf_token');
+    if (csrfToken){
+        requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
+        console.log("CSRF-Token=>",csrfToken.value);
+    }
 
     try {
         const response = await fetch(url, requestOptions);
@@ -260,7 +272,9 @@ function showWaiting(message, timeout) {
 
     if (timeout) {
         setTimeout(() => {
-            document.body.removeChild(modal);
+            if (modal){
+                document.body.removeChild(modal);
+            }
         }, timeout * 1000);
     }
 }
@@ -615,81 +629,6 @@ function __incomeWithdrawHistory(address) {
     window.open(targetUrl);
 }
 
-function createThumbnail(originalImageSrc, maxWidth, maxHeight) {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = originalImageSrc;
-
-        img.onload = function () {
-            const originalWidth = img.width;
-            const originalHeight = img.height;
-            const aspectRatio = originalWidth / originalHeight;
-
-            let targetWidth, targetHeight;
-            if (originalWidth / originalHeight > maxWidth / maxHeight) {
-                targetWidth = maxWidth;
-                targetHeight = maxWidth / aspectRatio;
-            } else {
-                targetHeight = maxHeight;
-                targetWidth = maxHeight * aspectRatio;
-            }
-            const thumbnailDataUrl = __createCanvas(img, targetWidth, targetHeight);
-            resolve(thumbnailDataUrl);
-        };
-
-        img.onerror = function () {
-            reject(new Error('Could not load image'));
-        };
-    });
-}
-
-function __createCanvas(img, targetWidth, targetHeight) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-
-    canvas.width = targetWidth;
-    canvas.height = targetHeight;
-
-    ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
-
-    return canvas.toDataURL('image/png');
-}
-
-function compressImageByFile(file, quality) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const img = new Image();
-            img.onload = function () {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                ctx.drawImage(img, 0, 0, img.width, img.height);
-
-                // 压缩图片
-                canvas.toBlob(function (blob) {
-                    // 获取压缩后的图片Blob
-                    const compressedFile = new File([blob], file.name, {type: "image/jpeg", lastModified: Date.now()});
-                    // 使用resolve返回压缩后的图片文件和Blob
-                    resolve({
-                        compressedFile: compressedFile,
-                        blob: blob
-                    });
-                }, 'image/jpeg', quality);
-            };
-            img.onerror = function () {
-                reject(new Error('Could not load image'));
-            };
-            img.src = e.target.result;
-        };
-        reader.onerror = function () {
-            reject(new Error('Could not read file'));
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
 function blobToBase64(blob) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -701,22 +640,6 @@ function blobToBase64(blob) {
             reject(error);
         };
         reader.readAsDataURL(blob); // 开始将blob转换为data URL
-    });
-}
-
-function blobToImage(blob) {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        const url = URL.createObjectURL(blob);
-        img.onload = () => {
-            URL.revokeObjectURL(url);
-            resolve(img);
-        };
-        img.onerror = () => {
-            URL.revokeObjectURL(url);
-            reject(new Error('Failed to load image from blob'));
-        };
-        img.src = url;
     });
 }
 
@@ -785,37 +708,6 @@ function safeSubstring(str, maxLength) {
 
     return str.substring(0, endIndex);
 }
-
-
-function safeSubstring2(str, maxLength) {
-    // 如果请求的最大长度大于等于原始字符串长度，直接返回原始字符串
-    if (maxLength >= str.length) {
-        return str;
-    }
-
-    let result = '';
-    let currentLength = 0;
-
-    // 更新正则表达式，包括空格和换行符
-    // 确保换行符作为独立的token处理
-    let pattern = /[\u4e00-\u9fa5]|[\n]|\s|[a-zA-Z0-9]+|[\uff00-\uffff]/g;
-    let tokens = str.match(pattern);
-
-    for (let i = 0; tokens && i < tokens.length; i++) {
-        let token = tokens[i];
-        let tokenLength = token === '\n' ? 1 : Array.from(token).length; // 对于换行符，长度为1
-
-        if (currentLength + tokenLength <= maxLength) {
-            result += token;
-            currentLength += tokenLength;
-        } else {
-            break;
-        }
-    }
-
-    return result;
-}
-
 
 const __defaultLogo = '/assets/file/logo.png';
 const maxTweetLenPerPage = 500;

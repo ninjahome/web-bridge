@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/ninjahome/web-bridge/util"
 	"log"
@@ -36,7 +37,6 @@ func NewMainService() *MainService {
 	bh := &MainService{
 		router: r,
 	}
-
 	r.PathPrefix("/" + staticFileDir + "/").HandlerFunc(bh.assetsRouter)
 	r.PathPrefix("/" + staticFileDir + "/").Handler(http.StripPrefix("/"+staticFileDir+"/", http.FileServer(http.Dir(staticFileDir))))
 
@@ -46,10 +46,22 @@ func NewMainService() *MainService {
 			bh.assetsStaticFile(w, r, file)
 		})
 	}
+	CSRF := csrf.Protect([]byte(_globalCfg.SessionKey), csrf.FieldName("X-CSRF-Token"), csrf.Secure(_globalCfg.UseHttps)) // 在生产中启用 Secure
+	securedRouter := r.PathPrefix("/").Subrouter()
+	securedRouter.Use(CSRF)
 
+	// Unsecured routes (No CSRF)
+	unsecuredRouter := r.PathPrefix("/").Subrouter()
 	for route, twService := range cfgActionRouter {
 		var url, action = route, twService
-		r.HandleFunc(route, func(writer http.ResponseWriter, request *http.Request) {
+		var targetRouter = securedRouter // Default to secured router
+
+		// Determine if the route needs CSRF protection
+		if !action.NeedToken {
+			targetRouter = unsecuredRouter // No CSRF for callback APIs
+		}
+
+		var funcs = func(writer http.ResponseWriter, request *http.Request) {
 			defer httpRecover(url)
 			util.LogInst().Debug().Str("url", url).Send()
 
@@ -59,6 +71,7 @@ func NewMainService() *MainService {
 				http.Error(writer, err.Error(), http.StatusRequestEntityTooLarge)
 				return
 			}
+
 			if !action.NeedToken {
 				action.Action(writer, request, nil)
 				return
@@ -79,7 +92,8 @@ func NewMainService() *MainService {
 				return
 			}
 			action.Action(writer, request, njUserData)
-		}).Methods("GET", "POST")
+		}
+		targetRouter.HandleFunc(route, funcs)
 	}
 
 	return bh
@@ -87,15 +101,16 @@ func NewMainService() *MainService {
 
 func (bh *MainService) Start() {
 	cfg := _globalCfg
+
 	if cfg.UseHttps {
 		if cfg.SSLCertFile == "" || cfg.SSLKeyFile == "" {
 			panic("HTTPS needs ssl key and cert files")
 		}
 		fmt.Print("HTTPS Mode")
-		panic(http.ListenAndServeTLS(":443", cfg.SSLCertFile, cfg.SSLKeyFile, bh.router))
+		panic(http.ListenAndServeTLS(":443", cfg.SSLCertFile, cfg.SSLKeyFile, (bh.router)))
 	} else {
 		fmt.Print("Simple HTTP")
-		panic(http.ListenAndServe(":"+cfg.HttpPort, bh.router))
+		panic(http.ListenAndServe(":"+cfg.HttpPort, (bh.router)))
 	}
 }
 
