@@ -1580,20 +1580,44 @@
     </style>
 
     <style>
-        .hidden-tweet-txt {
+        .hidden-tweet-for-img {
             position: absolute;
             left: -9999px;
-            padding: 12px;
-            width: 600px; /* 固定宽度 */
-            min-height: 200px; /* 最小高度 */
-            font-size: 24px; /* 字体大小 */
+            width: 552px;
+            background-color: #DAE5F5;
+            margin: 20px auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column; /* 设置flex方向为垂直 */
+            align-items: center; /* 水平居中对齐子元素 */
+            justify-content: center; /* 垂直居中对齐子元素 */
+        }
+
+        .hidden-tweet-txt {
+            padding: 24px;
+            width: 90%;
+            font-size: 15px;
+            font-weight: 350;
+            border: 3px solid #cfdff1; /* 边框 */
+            resize: none;
+            min-height: 4em; /* 至少容纳3行文字的高度 */
             word-wrap: break-word; /* 如果单词太长，允许它们断行 */
             overflow-wrap: break-word; /* 同上，保证长单词或URL可以正确断行 */
             overflow-y: hidden; /* 隐藏垂直滚动条 */
-            white-space: pre-wrap; /* 保留空白字符的序列，但是文本会换行到下一行 */
-            line-height: 1.2; /* 行高，根据需要调整 */
+            white-space: pre-wrap;
+            line-height: 26px;
+            margin-bottom: 6px;
+            background-image: url("assets/file/hidden-logo.png");
+            background-position: center;
+            background-repeat: no-repeat;
         }
+
+        input, textarea, [contenteditable] {
+            caret-color: #4EA0F2;
+        }
+
     </style>
+
 </head>
 <body>
 <div class="container">
@@ -1656,15 +1680,18 @@
         <div class="image-item-in-tweet" id="image-item-in-tweet" style="display: none">
             <img src="" data-raw="" data-hash="" class="image-src-to-show" onclick="showImgRaw.call(this)">
         </div>
-        <div class="tweet-images">
-        </div>
+        <div class="tweet-images"></div>
     </div>
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
             <div class="tweet-post" id="tweet-post-on-top">
-{{/*                <img src="" id="outputImage">*/}}
+                {{/*                <img src="" id="outputImage">*/}}
 
-                <div id="hidden-tweet-txt" class="hidden-tweet-txt">
+                <div class="hidden-tweet-for-img" id="hidden-tweet-for-img">
+                    <div class="hidden-tweet-txt" id="hidden-tweet-txt" contenteditable="true"></div>
+                    <div class="hidden-appoint" style="font-size: 14px; font-weight: 400; color: #a1b2c5 ">来自
+                        Dessage
+                    </div>
                 </div>
 
                 <div class="tweets-content-txt-area" id="tweets-content-txt-area" contenteditable="true"

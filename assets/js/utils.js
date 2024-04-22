@@ -761,7 +761,33 @@ class DessagePoint {
     }
 }
 
+
 function safeSubstring(str, maxLength) {
+    if (maxLength >= str.length) {
+        return str;
+    }
+
+    // 使用正则表达式匹配中文字符、英文单词、标点符号以及空格和换行符
+    let pattern = /[\u4e00-\u9fa5]|\s+|[a-zA-Z0-9]+|[\uff00-\uffff]/g;
+    let tokens = str.match(pattern);
+    let currentLength = 0;
+    let endIndex = 0;
+
+    for (let i = 0; tokens && i < tokens.length && currentLength < maxLength; i++) {
+        let token = tokens[i];
+        let tokenLength = Array.from(token).length; // 计算当前token的实际字符长度
+        if (currentLength + tokenLength > maxLength) {
+            break;
+        }
+        currentLength += tokenLength;
+        endIndex += token.length; // 计算应包括的token在原始字符串中的长度
+    }
+
+    return str.substring(0, endIndex);
+}
+
+
+function safeSubstring2(str, maxLength) {
     // 如果请求的最大长度大于等于原始字符串长度，直接返回原始字符串
     if (maxLength >= str.length) {
         return str;
@@ -770,22 +796,19 @@ function safeSubstring(str, maxLength) {
     let result = '';
     let currentLength = 0;
 
-    // 使用正则表达式匹配中文字符、英文单词、标点符号等
-    let pattern = /[\u4e00-\u9fa5]|[a-zA-Z0-9]+|[\uff00-\uffff]/g;
+    // 更新正则表达式，包括空格和换行符
+    // 确保换行符作为独立的token处理
+    let pattern = /[\u4e00-\u9fa5]|[\n]|\s|[a-zA-Z0-9]+|[\uff00-\uffff]/g;
     let tokens = str.match(pattern);
 
     for (let i = 0; tokens && i < tokens.length; i++) {
         let token = tokens[i];
-        let tokenLength = Array.from(token).length; // 计算当前token的长度
+        let tokenLength = token === '\n' ? 1 : Array.from(token).length; // 对于换行符，长度为1
 
         if (currentLength + tokenLength <= maxLength) {
             result += token;
             currentLength += tokenLength;
         } else {
-            // 如果token为英文单词且长度允许，尝试添加部分单词
-            if (tokenLength > 1 && /[a-zA-Z0-9]+/.test(token) && currentLength < maxLength) {
-                result += token.substring(0, maxLength - currentLength);
-            }
             break;
         }
     }
@@ -794,9 +817,8 @@ function safeSubstring(str, maxLength) {
 }
 
 
-
 const __defaultLogo = '/assets/file/logo.png';
-const maxTweetLenPerPage = (1 << 10);
+const maxTweetLenPerPage = 500;
 const maxImgPerTweet = 4;
 const defaultTextLenForTweet = 280;
 const MaxRawImgSize = (1 << 20);

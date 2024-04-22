@@ -3,7 +3,6 @@ let lotteryGameContract = null;
 let voteContractMeta = TweetVoteContractSetting.load();
 let gameContractMeta = null;
 
-
 async function initVoteContractMeta() {
     const [
         postPrice, votePrice, maxVote, pluginAddr, pluginStop, kolRate, feeRate

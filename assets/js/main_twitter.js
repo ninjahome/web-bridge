@@ -113,44 +113,16 @@ async function fillTweetParkAtHomePage(clear) {
         });
 }
 
-
-let currentTargetIdx = 1
-
-async function checkAtTarget() {
-    const tweetsContentTxtArea = document.getElementById("tweets-content-txt-area");
-    const text = tweetsContentTxtArea.innerText;
-    const usrName = findAtTarget(text)
-    if (!usrName) {
-        return;
-    }
-    console.log(usrName);
-
-    const data = await GetToSrvByJson('/searchTwitterUsr?q=' + usrName);
-    if (!data) {
-        return;
-    }
-    console.log(data);
-}
-
-function findAtTarget(text) {
-    const regex = /(?:^|\s)@(\w+)/g;
-    let match;
-    if ((match = regex.exec(text)) !== null) {
-        console.log(`Found mention: ${match[currentTargetIdx]}`);
-        return match[currentTargetIdx];
-    }
-    return null;
-}
-
 async function convertTweetContentToImg(formattedContent) {
     try {
-        const target = document.getElementById('hidden-tweet-txt');
+        const target = document.getElementById('hidden-tweet-for-img');
+        const content = document.getElementById('hidden-tweet-txt');
 
-        target.innerText = formattedContent;
+        content.innerText = formattedContent;
         const canvas = await html2canvas(target);
         const imgURL = canvas.toDataURL("image/png");
         // document.getElementById('outputImage').src = imgURL;//debug infos
-        target.innerText = "";
+        content.innerText = "";
         return imgURL;
     } catch (e) {
         console.log(e);
@@ -165,37 +137,48 @@ function getCompositedTxt(formattedContent, slogan, sloganLen) {
         prefix = safeSubstring(formattedContent, (defaultTextLenForTweet - 4 - sloganLen) / 2) + "...";
         compositedTxt = prefix + slogan;
     }
-    console.log(compositedTxt, twttr.txt.getTweetLength(compositedTxt));
+    // console.log(compositedTxt, twttr.txt.getTweetLength(compositedTxt));
     return compositedTxt;
 }
 
-async function preparePostMsg(parentDiv) {
-    const contentHtml = parentDiv.querySelector(".tweets-content-txt-area").innerText.trim();
-    const formattedContent = contentHtml
-        .replace(/<br\s*[\/]?>/gi, "\n") // 将 <br> 标签转换为换行符
-        .replace(/<\/?p>/gi, "\n") // 将 <p> 标签转换为换行符
-        .replace(/<[^>]+>/g, ''); // 移除所有其他HTML标签
+async function convertContentToImages(formattedContent, imageData) {
+    let tmpSplitStr = formattedContent;
+    for (let i = 0; i < maxImgPerTweet; i++) {
+        // const substr = safeSubstring(tmpSplitStr, maxTweetLenPerPage);
+        const substr = tmpSplitStr.substring(0, maxTweetLenPerPage);
+        // console.log("substring len:", substr.length, substr);
+        const txtImg = await convertTweetContentToImg(substr);
+        imageData.push(new ImageRawData("converted-" + i, txtImg, ""));
+        tmpSplitStr = tmpSplitStr.substring(substr.length);
+        // console.log("last content len:", tmpSplitStr.length);
+        if (substr.length < maxTweetLenPerPage) {
+            break
+        }
+    }
+}
 
-    if (formattedContent < 4 && images.length === 0) {
+function parseTweetContent(parentDiv) {
+
+    const contentHtml = parentDiv.querySelector(".tweets-content-txt-area").innerHTML.trim();
+    const formattedTxt = contentHtml
+        .replace(/<div><br><\/div>/gi, "\n") //
+        .replace(/(<div><\/div>|<p><\/p>)/gi, "\n") // 合并空的 <div></div> 和 <p></p> 转换
+        .replace(/(<br\s*\/?>|<\/div>|<\/p>)/gi, "\n") // 合并所有单独的换行符转换
+        .replace(/&nbsp;/gi, " ") // 将 &nbsp; 转换为空格
+        .replace(/<[^>]+>/g, '') // 移除所有其他HTML标签
+        .replace(/\n\s*\n/g, "\n"); // 合并连续的换行符为单个换行符
+    // console.log(formattedContent);
+
+    const images = parentDiv.querySelectorAll("#twImagePreview img");
+    if (formattedTxt < 4 && images.length === 0) {
         showDialog(DLevel.Warning, "content too short")
         return null;
     }
 
-    const images = parentDiv.querySelectorAll("#twImagePreview img");
     if (images.length > maxImgPerTweet) {
         showDialog(DLevel.Warning, "too many images to post");
         return null;
     }
-
-    const nj_tw_id = (new Date()).getTime();
-    const domainName = "https://" + window.location.hostname;
-    const slogan = "\r\n" + i18next.t('slogan_1') + gameContractMeta.totalBonus + i18next.t('slogan_2') + domainName + "/buyRights?NjTID=" + nj_tw_id;
-    const sloganLen = twttr.txt.getTweetLength(slogan);
-
-    let compositedTxt = formattedContent + slogan;
-    let result = twttr.txt.parseTweet(compositedTxt);
-    console.log("Weighted Length:", result.weightedLength);
-
     const imageData = Array.from(images).map(img => {
         const thumbnail = img.src
         const raw = img.getAttribute('data-raw');
@@ -203,40 +186,59 @@ async function preparePostMsg(parentDiv) {
         return new ImageRawData(hash, raw, thumbnail);
     });
 
-    if (result.valid === false) {
-        if (maxImgPerTweet === images.length) {
-            showDialog(DLevel.Warning, "tweet content should be short than" + (defaultTextLenForTweet - sloganLen) + " if you have 4 images");
-            return null;
-        }
+    return {formattedTxt, imageData}
+}
 
-        const lastValidTxtLen = maxTweetLenPerPage * (maxImgPerTweet - images.length);
-        console.log("simple len :", formattedContent.length);
-        if (formattedContent.length >= lastValidTxtLen) {
-            showDialog(DLevel.Warning, "max tweet content length is:" + lastValidTxtLen + "if you have " + images.length + " images");
-            return null;
-        }
+function initSloganTxt(nj_tw_id) {
+    return "\r\n" + i18next.t('slogan_1')
+        + gameContractMeta.totalBonus
+        + i18next.t('slogan_2')
+        + "https://" + window.location.hostname + "/buyRights?NjTID="
+        + nj_tw_id;
+}
 
-        compositedTxt = getCompositedTxt(formattedContent, slogan, sloganLen);
-        let tmpSplitStr = formattedContent;
-        for (let i = 0; i < maxImgPerTweet; i++) {
+async function checkContentLen(tweetContent, slogan) {
 
-            const substr = tmpSplitStr.substring(0, maxTweetLenPerPage);//safeSubstring(tmpSplitStr, maxTweetLenPerPage);
-            console.log(substr, substr.length);
-            const txtImg = await convertTweetContentToImg(substr);
-            imageData.push(new ImageRawData("converted-" + i, txtImg, ""));
-            tmpSplitStr = tmpSplitStr.substring(substr.length);
-            console.log(tmpSplitStr, tmpSplitStr.length);
-            if (substr.length < maxTweetLenPerPage){
-                break
-            }
-        }
+    let compositedTxt = tweetContent.formattedTxt + slogan;
+    let result = twttr.txt.parseTweet(compositedTxt);
+    if (result.valid === true) {
+        return compositedTxt;
     }
 
+    const sloganLen = twttr.txt.getTweetLength(slogan);
+    if (maxImgPerTweet === tweetContent.imageData.length) {
+        showDialog(DLevel.Warning, "tweet content should be short than" + (defaultTextLenForTweet - sloganLen) + " if you have 4 images");
+        return null;
+    }
 
-    const tweet = new TweetContentToPost(formattedContent,
+    const lastValidTxtLen = maxTweetLenPerPage * (maxImgPerTweet - tweetContent.imageData.length);
+    if (tweetContent.formattedTxt.length >= lastValidTxtLen) {
+        showDialog(DLevel.Warning, "max tweet content length is:" + lastValidTxtLen + " if you have " + tweetContent.imageData.length + " images");
+        return null;
+    }
+
+    await convertContentToImages(tweetContent.formattedTxt, tweetContent.imageData)
+
+    return getCompositedTxt(tweetContent.formattedTxt, slogan, sloganLen);
+}
+
+async function preparePostMsg(parentDiv) {
+    const tweetContent = parseTweetContent(parentDiv);
+    if (!tweetContent) {
+        return null;
+    }
+
+    const nj_tw_id = (new Date()).getTime();
+    const slogan = initSloganTxt(nj_tw_id);
+
+    const compositedTxt = await checkContentLen(tweetContent, slogan);
+    if (!compositedTxt) {
+        return null;
+    }
+
+    const tweet = new TweetContentToPost(tweetContent.formattedTxt,
         nj_tw_id, ninjaUserObj.eth_addr, ninjaUserObj.tw_id, compositedTxt);
     const message = JSON.stringify(tweet)
-
 
     const signature = await window.ethereum.request({
         method: 'personal_sign', params: [message, ninjaUserObj.eth_addr],
@@ -247,7 +249,7 @@ async function preparePostMsg(parentDiv) {
         return null;
     }
 
-    return new SignDataForPost(message, signature, JSON.stringify(imageData));
+    return new SignDataForPost(message, signature, JSON.stringify(tweetContent.imageData));
 }
 
 function updatePaymentStatusToSrv(tweet) {
