@@ -74,7 +74,6 @@ async function __fillNormalTweet(clear, parkID, data, templateId, cardID, overla
         tweetHeader.style.display = '';
         tweetHeader.id = "";
 
-
         const sibling = tweetCard.querySelector('.tweet-footer')
         const contentArea = await setupCommonTweetHeader(tweetHeader, tweet, overlap);
 
@@ -97,7 +96,7 @@ async function __fillNormalTweet(clear, parkID, data, templateId, cardID, overla
         } else {
             showMoreBtn.textContent = i18next.t('tweet-show-more');
             showMoreBtn.style.display = 'block';
-            sibling.style.marginTop = '-12px';
+            sibling.style.marginTop = '12px';
         }
     }
 }
@@ -169,7 +168,7 @@ function parseTweetContent(parentDiv) {
         .replace(/(<br\s*\/?>|<\/div>|<\/p>)/gi, "\n") // 合并所有单独的换行符转换
         .replace(/&nbsp;/gi, " ") // 将 &nbsp; 转换为空格
         .replace(/<[^>]+>/g, '') // 移除所有其他HTML标签
-        .replace(/\n\s*\n/g, "\n"); // 合并连续的换行符为单个换行符
+        .replace(/\n+$/, '');
     // console.log(formattedContent);
 
     const images = parentDiv.querySelectorAll("#twImagePreview img");
@@ -200,7 +199,7 @@ function initSloganTxt(nj_tw_id) {
         + nj_tw_id;
 }
 
-async function checkContentLen(tweetContent, slogan) {
+async function procTweetContent(tweetContent, slogan) {
 
     let compositedTxt = tweetContent.formattedTxt + slogan;
     let result = twttr.txt.parseTweet(compositedTxt);
@@ -234,7 +233,7 @@ async function preparePostMsg(parentDiv) {
     const nj_tw_id = (new Date()).getTime();
     const slogan = initSloganTxt(nj_tw_id);
 
-    const compositedTxt = await checkContentLen(tweetContent, slogan);
+    const compositedTxt = await procTweetContent(tweetContent, slogan);
     if (!compositedTxt) {
         return null;
     }

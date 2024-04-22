@@ -1685,11 +1685,12 @@
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
             <div class="tweet-post" id="tweet-post-on-top">
-                {{/*                <img src="" id="outputImage">*/}}
+{{/*                <img src="" id="outputImage">*/}}
 
                 <div class="hidden-tweet-for-img" id="hidden-tweet-for-img">
                     <div class="hidden-tweet-txt" id="hidden-tweet-txt" contenteditable="true"></div>
-                    <div class="hidden-appoint" style="font-size: 14px; font-weight: 400; color: #a1b2c5 ">来自
+                    <div class="hidden-appoint" id="hidden-appoint-tips"
+                         style="font-size: 14px; font-weight: 400; color: #a1b2c5 ">来自
                         Dessage
                     </div>
                 </div>
@@ -2500,6 +2501,7 @@
                         "tweet-detail-in-details": "Tweet Info",
                         "slogan_2": "ETH，Vote on this tweet and participate in the prize pool. link:",
                         "vote-price-in-modal-uint": "Vote",
+                        "hidden-appoint-tips": "Powered By Dessage",
                     }
                 },
                 zh: {
@@ -2584,6 +2586,7 @@
                         "tweet-detail-in-details": "推文信息",
                         "slogan_2": "ETH，给本推文投票并参与彩池 链接:",
                         "vote-price-in-modal-uint": "票",
+                        "hidden-appoint-tips": "来自 Dessage",
                     }
                 }
             }
@@ -2690,6 +2693,7 @@
 
         document.getElementById("tweet-detail-in-details").textContent = i18next.t('tweet-detail-in-details');
         document.getElementById("vote-price-in-modal-uint").textContent = i18next.t('vote-price-in-modal-uint');
+        document.getElementById("hidden-appoint-tips").textContent = i18next.t('hidden-appoint-tips');
     }
 </script>
 </body>
