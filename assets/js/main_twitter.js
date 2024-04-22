@@ -119,7 +119,10 @@ async function convertTweetContentToImg(formattedContent) {
         const content = document.getElementById('hidden-tweet-txt');
 
         content.innerText = formattedContent;
-        const canvas = await html2canvas(target);
+        const canvas = await html2canvas(target,{
+            dpi: 300, // 设置更高的DPI
+            scale: 2  // 同时提高缩放级别
+        });
         const imgURL = canvas.toDataURL("image/png");
         // document.getElementById('outputImage').src = imgURL;//debug infos
         content.innerText = "";
