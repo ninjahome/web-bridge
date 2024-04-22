@@ -350,7 +350,6 @@ function showFullTweetContent() {
     } else {
         tweetContent.style.display = '-webkit-box';
         tweetContent.classList.add('tweet-content-collapsed');
-        tweetCard.style.maxHeight = '400px';
         this.setAttribute('data-more', 'true');
         this.innerText = i18next.t('tweet-show-more');
     }
