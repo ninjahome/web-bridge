@@ -92,11 +92,9 @@ async function __fillNormalTweet(clear, parkID, data, templateId, cardID, overla
         const showMoreBtn = tweetCard.querySelector('.show-more');
         if (contentArea.scrollHeight <= contentArea.clientHeight) {
             showMoreBtn.style.display = 'none';
-            sibling.style.marginTop = '8px';
         } else {
             showMoreBtn.textContent = i18next.t('tweet-show-more');
             showMoreBtn.style.display = 'block';
-            sibling.style.marginTop = '12px';
         }
     }
 }
@@ -320,7 +318,6 @@ async function showPostTweetDiv() {
     const modal = document.querySelector('.modal-for-tweet-post');
     modal.style.display = 'block';
     document.getElementById('modal-overlay').style.display = 'block';
-
 
     const postBtn = document.getElementById("tweet-post-with-eth-btn-txt-2");
     postBtn.innerText = i18next.t('btn-tittle-post-tweet') + "(" + voteContractMeta.votePriceInEth + " eth)"
