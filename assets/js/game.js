@@ -383,6 +383,7 @@ async function procTicketPayment(no, ifShare) {
         await PostToSrvByJson("/updatePointsForSingleBets", {
             create_time: 0,
             vote_count: Number(no),
+            tx_hash:txResponse.hash,
         });
         showDialog(DLevel.Success, "buy success");
         if (ifShare) {

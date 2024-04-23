@@ -46,7 +46,7 @@ func NewMainService() *MainService {
 			bh.assetsStaticFile(w, r, file)
 		})
 	}
-	CSRF := csrf.Protect([]byte(_globalCfg.SessionKey), csrf.FieldName("X-CSRF-Token"), csrf.Secure(_globalCfg.UseHttps)) // 在生产中启用 Secure
+	CSRF := csrf.Protect([]byte(_globalCfg.SessionKey), csrf.FieldName("X-CSRF-Token"), csrf.Secure(true)) // 在生产中启用 Secure
 	securedRouter := r.PathPrefix("/").Subrouter()
 	securedRouter.Use(CSRF)
 

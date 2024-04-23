@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	MaxIntervalForPaymentStatus = 300
+	MaxIntervalForPaymentStatus = 60
 )
 
 func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
@@ -192,6 +192,12 @@ func updatePointsForSingleBets(w http.ResponseWriter, r *http.Request, nu *datab
 	if err != nil {
 		util.LogInst().Err(err).Msg("parsing vote param failed ")
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if querySimplePaymentTransaction(vote.TxHash) == false {
+		util.LogInst().Warn().Int64("create_time", vote.CreateTime).Msg("payment status invalid")
+		http.Error(w, "payment status invalid", http.StatusBadRequest)
 		return
 	}
 

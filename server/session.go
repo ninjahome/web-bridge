@@ -31,7 +31,7 @@ func newSM() *SessionManager {
 		Path:     "/",
 		MaxAge:   86400 * 30, // 例如，设置为30天,
 		HttpOnly: true,
-		Secure:   _globalCfg.UseHttps,
+		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 	}
 	return &SessionManager{
