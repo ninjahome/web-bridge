@@ -41,14 +41,14 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			PointForBeVote: 1,
 		},
 		BCConf: &blockchain.BCConf{
-			TweeTVoteContractAddress: "0x63713037a9E337D7Db5D383070199B948598e0Da",
-			GameContract:             "0x57F0bbE85f5822911003A8fa425D5595D139FDFe",
-			KolKeyContractAddress:    "",
-			InfuraUrl:                "https://arbitrum-mainnet.infura.io/v3/", //https://arbitrum-sepolia.infura.io/v3/
-			GameTimeInMinute:         10,
-			TxCheckerInSeconds:       15,
-			ChainID:                  421614,
-			CheckTimeInSecond:        10,
+			TweetContract:         "0x63713037a9E337D7Db5D383070199B948598e0Da",
+			GameContract:          "0x57F0bbE85f5822911003A8fa425D5595D139FDFe",
+			KolKeyContractAddress: "",
+			InfuraUrl:             "https://arbitrum-mainnet.infura.io/v3/", //https://arbitrum-sepolia.infura.io/v3/
+			GameTimeInMinute:      10,
+			TxCheckerInSeconds:    15,
+			ChainID:               421614,
+			CheckTimeInSecond:     10,
 		},
 	}
 

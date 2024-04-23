@@ -8,19 +8,19 @@ import (
 )
 
 type BCConf struct {
-	TweeTVoteContractAddress string `json:"tweet_vote_contract_address"`
-	GameContract             string `json:"game_plugin_contract_address"`
-	KolKeyContractAddress    string `json:"kol_key_contract_address"`
-	InfuraUrl                string `json:"infura_url"`
-	GameTimeInMinute         int    `json:"game_time_in_minute,omitempty"`
-	TxCheckerInSeconds       int    `json:"tx_checker_in_seconds,omitempty"`
-	ChainID                  int64  `json:"chain_id,omitempty"`
-	CheckTimeInSecond        int    `json:"check_time_in_second"`
+	TweetContract         string `json:"tweet_vote_contract_address"`
+	GameContract          string `json:"game_plugin_contract_address"`
+	KolKeyContractAddress string `json:"kol_key_contract_address"`
+	InfuraUrl             string `json:"infura_url"`
+	GameTimeInMinute      int    `json:"game_time_in_minute,omitempty"`
+	TxCheckerInSeconds    int    `json:"tx_checker_in_seconds,omitempty"`
+	ChainID               int64  `json:"chain_id,omitempty"`
+	CheckTimeInSecond     int    `json:"check_time_in_second"`
 }
 
 func (c *BCConf) String() string {
 	s := "\n------block chain config------"
-	s += "\ntweet vote:" + c.TweeTVoteContractAddress
+	s += "\ntweet vote:" + c.TweetContract
 	s += "\ngame:" + c.GameContract
 	s += "\nkol key:" + c.KolKeyContractAddress
 	s += "\ninfura url:" + c.InfuraUrl

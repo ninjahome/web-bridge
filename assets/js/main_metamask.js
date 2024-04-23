@@ -80,7 +80,7 @@ async function procPaymentForPostedTweet(tweet, callback) {
         if (newErr && newErr.includes("duplicate post")) {
             tweet.payment_status = TXStatus.Success;
             if (callback) {
-                callback(tweet);
+                callback(tweet,"-1");
             }
         }
         return false;

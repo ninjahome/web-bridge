@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ninjahome/web-bridge/blockchain/ethapi"
 	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -46,7 +48,7 @@ func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 		Int("size", len(tweets)).Msg("global tweets query success")
 }
 
-func queryTransactionStatus(tx string) bool {
+func querySimplePaymentTransaction(tx string) bool {
 	cli, err := ethclient.Dial(_globalCfg.InfuraUrl)
 	if err != nil {
 		util.LogInst().Err(err).Msg("dial eth failed")
@@ -57,7 +59,7 @@ func queryTransactionStatus(tx string) bool {
 	txHash := common.HexToHash(tx)
 	receipt, err := cli.TransactionReceipt(context.Background(), txHash)
 	if err != nil {
-		util.LogInst().Err(err).Msg("query receipt failed")
+		util.LogInst().Err(err).Str("tx-hash", tx).Msg("query receipt failed")
 		return false
 	}
 	if receipt.Status != 1 {
@@ -72,6 +74,70 @@ func queryTransactionStatus(tx string) bool {
 	return time.Now().Unix() < int64(txT.Time().Unix())+MaxIntervalForPaymentStatus
 }
 
+func getContractObj() (*ethapi.TweetVote, error) {
+	cli, err := ethclient.Dial(_globalCfg.InfuraUrl)
+	if err != nil {
+		util.LogInst().Err(err).Msg("dial eth failed")
+		return nil, err
+	}
+
+	defer cli.Close()
+
+	contractAddress := common.HexToAddress(_globalCfg.TweetContract)
+	tweetContract, err := ethapi.NewTweetVote(contractAddress, cli)
+	if err != nil {
+		util.LogInst().Err(err).Str("contract-address", _globalCfg.GameContract).Msg("failed create tweet contract obj")
+		return nil, err
+	}
+
+	return tweetContract, nil
+}
+
+func queryTweetPaymentStatusFromBlockChain(twID int64, realOwner string) bool {
+	tweet, err := database.DbInst().NjTweetDetails(twID)
+	if err != nil {
+		util.LogInst().Err(err).Int64("tweet-id", twID).Msg("check tweet payment status failed")
+		return false
+	}
+	if tweet.PaymentStatus != database.TxStNotPay {
+		util.LogInst().Warn().Int64("tweet-id", twID).Msg("duplicate update for tweet status")
+		return false
+	}
+
+	if len(tweet.PrefixedHash) < 64 {
+		util.LogInst().Warn().Int64("tweet-id", twID).Msg("no prefix hash for this tweet")
+		return false
+	}
+
+	tweetObj, err := getContractObj()
+	if err != nil {
+		util.LogInst().Err(err).Int64("tweet-id", twID).Msg("create tweet contract obj failed")
+		return false
+	}
+
+	owner, err := tweetObj.OwnersOfAllTweets(nil, common.HexToHash(tweet.PrefixedHash))
+	if err != nil {
+		util.LogInst().Err(err).Msg("query tweet owner from contract failed")
+	}
+
+	return strings.ToLower(owner.String()) == realOwner
+}
+
+func checkStatus(status *database.TweetPaymentStatus, tweetOwner string) bool {
+	if status.Status != database.TxStSuccess {
+		return true
+	}
+
+	if status.CreateTime == 0 {
+		util.LogInst().Warn().Int64("create_time", status.CreateTime).Msg("invalid tweet create time")
+		return false
+	}
+	if len(status.TxHash) < 16 {
+		return queryTweetPaymentStatusFromBlockChain(status.CreateTime, tweetOwner)
+	}
+	return querySimplePaymentTransaction(status.TxHash)
+}
+
 func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 	status := &database.TweetPaymentStatus{}
 	var err = util.ReadRequest(r, status)
@@ -80,15 +146,8 @@ func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, nu *database.Ni
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if status.CreateTime == 0 {
-		util.LogInst().Warn().Int64("create_time", status.CreateTime).Msg("invalid tweet create time")
-		http.Error(w, "invalid tweet create time", http.StatusBadRequest)
-		return
-	}
-
-	if queryTransactionStatus(status.TxHash) == false {
-		util.LogInst().Warn().Int64("create_time", status.CreateTime).Msg("payment status invalid")
-		http.Error(w, "payment status invalid", http.StatusBadRequest)
+	if checkStatus(status, strings.ToLower(nu.EthAddr)) == false {
+		http.Error(w, "invalid status update", http.StatusBadRequest)
 		return
 	}
 
@@ -160,7 +219,7 @@ func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.
 		return
 	}
 
-	if queryTransactionStatus(vote.TxHash) == false {
+	if querySimplePaymentTransaction(vote.TxHash) == false {
 		util.LogInst().Warn().Int64("create_time", vote.CreateTime).Msg("payment status invalid")
 		http.Error(w, "payment status invalid", http.StatusBadRequest)
 		return

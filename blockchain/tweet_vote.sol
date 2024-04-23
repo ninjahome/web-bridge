@@ -20,7 +20,7 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
 
     address public gameContract;
     bool public gameStop = true;
-    address public kolKeyConract;
+    address public kolKeyContract;
     bool public kolKeyStop = true;
     uint256 public kolKeyIncomeRate = 5;
 
@@ -110,11 +110,11 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
             IsValidNjContract(newKolContract).checkPluginInterface(),
             "invalid kol key address"
         );
-        require(kolKeyConract != newKolContract, "no need change");
-        kolKeyConract = newKolContract;
+        require(kolKeyContract != newKolContract, "no need change");
+        kolKeyContract = newKolContract;
         kolKeyStop = false;
         emit PluginChanged(
-            kolKeyConract,
+            kolKeyContract,
             kolKeyStop,
             "kol key address changed"
         );
@@ -123,7 +123,7 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
     function adminStopKolKey(bool stop) public isOwner {
         require(kolKeyStop != stop, "no need change");
         kolKeyStop = stop;
-        emit PluginChanged(kolKeyConract, kolKeyStop, "kol key status changed");
+        emit PluginChanged(kolKeyContract, kolKeyStop, "kol key status changed");
     }
 
     function adminChangeKolKeyRate(uint8 newRate) public isOwner {
@@ -266,11 +266,11 @@ contract TweetVote is TweetVoteAmin {
 
         uint256 reminders = minusWithdrawFee(amount);
 
-        if (kolKeyConract != address(0) && kolKeyStop == false) {
-            if (KolIncomeToPoolI(kolKeyConract).kolOpenKeyPool(msg.sender)) {
+        if (kolKeyContract != address(0) && kolKeyStop == false) {
+            if (KolIncomeToPoolI(kolKeyContract).kolOpenKeyPool(msg.sender)) {
                 uint256 kolKeyPool = (reminders / 100) * kolKeyIncomeRate;
                 reminders -= kolKeyPool;
-                KolIncomeToPoolI(kolKeyConract).kolGotIncome{value: kolKeyPool}(
+                KolIncomeToPoolI(kolKeyContract).kolGotIncome{value: kolKeyPool}(
                     kolKeyIncomeSourceID,
                     msg.sender
                 );

@@ -98,3 +98,7 @@ type TeamInfos struct {
 	VoteNos []*big.Int
 	Members []common.Address
 }
+
+func queryTxAndReceipt() {
+
+}
