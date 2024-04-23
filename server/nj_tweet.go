@@ -65,13 +65,14 @@ func querySimplePaymentTransaction(tx string) bool {
 	if receipt.Status != 1 {
 		return false
 	}
-	txT, _, err := cli.TransactionByHash(context.Background(), txHash)
+
+	block, err := util.GetBlockByNumber(_globalCfg.InfuraUrl, receipt.BlockNumber)
 	if err != nil {
-		util.LogInst().Err(err).Msg("query transaction failed")
+		util.LogInst().Err(err).Msg("query block failed")
 		return false
 	}
-	util.LogInst().Debug().Str("now", time.Now().String()).Str("tx-time", txT.Time().String()).Msg("check payment status")
-	return time.Now().Unix() < int64(txT.Time().Unix())+MaxIntervalForPaymentStatus
+	util.LogInst().Debug().Int64("now", time.Now().Unix()).Int64("block-time", block.TimeStamp2.Int64()).Msg("check payment status")
+	return time.Now().Unix() < block.TimeStamp2.Int64()+MaxIntervalForPaymentStatus
 }
 
 func getContractObj() (*ethapi.TweetVote, error) {

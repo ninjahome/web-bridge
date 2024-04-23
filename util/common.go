@@ -7,10 +7,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/rivo/uniseg"
 	"html/template"
 	"io"
+	"math/big"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -181,4 +184,81 @@ func TruncateString(raw, append string) string {
 	}
 
 	return truncated + "..." + append
+}
+
+func toBlockNumArg(number *big.Int) string {
+	if number == nil {
+		return "latest"
+	}
+	if number.Sign() >= 0 {
+		return hexutil.EncodeBig(number)
+	}
+	// It's negative.
+	if number.IsInt64() {
+		return rpc.BlockNumber(number.Int64()).String()
+	}
+	// It's negative and large, which is invalid.
+	return fmt.Sprintf("<invalid %d>", number)
+}
+
+func GetBlockByNumber(url string, blockNum *big.Int) (*Block, error) {
+	noStr := toBlockNumArg(blockNum)
+	payload := bytes.NewBuffer([]byte(fmt.Sprintf(`{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["%s", false],"id":1}`, noStr)))
+
+	req, err := http.NewRequest("POST", url, payload)
+	if err != nil {
+		LogInst().Err(err).Msg("Error creating request")
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		LogInst().Err(err).Msg("Error sending request to server")
+		return nil, err
+	}
+	defer resp.Body.Close()
+	var response JsonResponse
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		LogInst().Err(err).Msg("decode response failed")
+		return nil, err
+	}
+	response.Result.TimeStamp2 = hexutil.MustDecodeBig(response.Result.Timestamp)
+	return &response.Result, nil
+}
+
+type Block struct {
+	BaseFeePerGas    string `json:"baseFeePerGas"`
+	Difficulty       string `json:"difficulty"`
+	ExtraData        string `json:"extraData"`
+	GasLimit         string `json:"gasLimit"`
+	GasUsed          string `json:"gasUsed"`
+	Hash             string `json:"hash"`
+	L1BlockNumber    string `json:"l1BlockNumber"`
+	LogsBloom        string `json:"logsBloom"`
+	Miner            string `json:"miner"`
+	MixHash          string `json:"mixHash"`
+	Nonce            string `json:"nonce"`
+	Number           string `json:"number"`
+	ParentHash       string `json:"parentHash"`
+	ReceiptsRoot     string `json:"receiptsRoot"`
+	SendCount        string `json:"sendCount"`
+	SendRoot         string `json:"sendRoot"`
+	Sha3Uncles       string `json:"sha3Uncles"`
+	Size             string `json:"size"`
+	StateRoot        string `json:"stateRoot"`
+	Timestamp        string `json:"timestamp"`
+	TimeStamp2       *big.Int
+	TotalDifficulty  string   `json:"totalDifficulty"`
+	Transactions     []string `json:"transactions"`
+	TransactionsRoot string   `json:"transactionsRoot"`
+	Uncles           []string `json:"uncles"`
+}
+
+type JsonResponse struct {
+	Jsonrpc string `json:"jsonrpc"`
+	ID      int    `json:"id"`
+	Result  Block  `json:"result"`
 }

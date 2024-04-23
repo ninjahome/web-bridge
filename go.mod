@@ -43,6 +43,7 @@ require (
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
+	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/s2a-go v0.1.7 // indirect
@@ -82,3 +83,5 @@ require (
 	google.golang.org/protobuf v1.33.0 // indirect
 	rsc.io/tmplfunc v0.0.3 // indirect
 )
+
+replace github.com/ethereum/go-ethereum v1.13.15 => github.com/OffchainLabs/go-ethereum v1.13.3
