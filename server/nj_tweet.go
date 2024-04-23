@@ -1,11 +1,19 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"net/http"
 	"strconv"
+	"time"
+)
+
+const (
+	MaxIntervalForPaymentStatus = 300
 )
 
 func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
@@ -38,13 +46,34 @@ func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 		Int("size", len(tweets)).Msg("global tweets query success")
 }
 
-type TweetPaymentStatus struct {
-	CreateTime int64             `json:"create_time"`
-	Status     database.TxStatus `json:"status,omitempty"`
+func queryTransactionStatus(tx string) bool {
+	cli, err := ethclient.Dial(_globalCfg.InfuraUrl)
+	if err != nil {
+		util.LogInst().Err(err).Msg("dial eth failed")
+		return false
+	}
+
+	defer cli.Close()
+	txHash := common.HexToHash(tx)
+	receipt, err := cli.TransactionReceipt(context.Background(), txHash)
+	if err != nil {
+		util.LogInst().Err(err).Msg("query receipt failed")
+		return false
+	}
+	if receipt.Status != 1 {
+		return false
+	}
+	txT, _, err := cli.TransactionByHash(context.Background(), txHash)
+	if err != nil {
+		util.LogInst().Err(err).Msg("query transaction failed")
+		return false
+	}
+	util.LogInst().Debug().Str("now", time.Now().String()).Str("tx-time", txT.Time().String()).Msg("check payment status")
+	return time.Now().Unix() < int64(txT.Time().Unix())+MaxIntervalForPaymentStatus
 }
 
 func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
-	status := &TweetPaymentStatus{}
+	status := &database.TweetPaymentStatus{}
 	var err = util.ReadRequest(r, status)
 	if err != nil {
 		util.LogInst().Err(err).Msg("parsing payment status param failed ")
@@ -57,7 +86,13 @@ func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, nu *database.Ni
 		return
 	}
 
-	err = database.DbInst().UpdateTweetPaymentStatus(status.CreateTime, status.Status, nu.EthAddr)
+	if queryTransactionStatus(status.TxHash) == false {
+		util.LogInst().Warn().Int64("create_time", status.CreateTime).Msg("payment status invalid")
+		http.Error(w, "payment status invalid", http.StatusBadRequest)
+		return
+	}
+
+	err = database.DbInst().UpdateTweetPaymentStatus(status, nu.EthAddr)
 	if err != nil {
 		util.LogInst().Err(err).Int64("create_time", status.CreateTime).
 			Str("status", status.Status.String()).
@@ -125,6 +160,12 @@ func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.
 		return
 	}
 
+	if queryTransactionStatus(vote.TxHash) == false {
+		util.LogInst().Warn().Int64("create_time", vote.CreateTime).Msg("payment status invalid")
+		http.Error(w, "payment status invalid", http.StatusBadRequest)
+		return
+	}
+
 	err = database.DbInst().UpdateTweetVoteStatic(vote, nu.EthAddr)
 	if err != nil {
 		util.LogInst().Err(err).Int64("create_time", vote.CreateTime).
@@ -173,7 +214,7 @@ func votedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 
 func removeUnpaidTweet(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 
-	var status TweetPaymentStatus
+	var status database.TweetPaymentStatus
 	var err = util.ReadRequest(r, &status)
 
 	if err != nil {

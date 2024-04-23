@@ -21,7 +21,7 @@ var (
 	cfgActionRouter = map[string]LogicAction{
 		"/signUpByTwitter":           {signUpByTwitterV1, true},
 		"/tw_callback":               {twitterSignCallBackV1, false},
-		"/signUpSuccessByTw":         {signUpSuccessByTw, false},
+		"/signUpSuccessByTw":         {signUpSuccessByTw, true},
 		"/signInByEth":               {signInByEth, false},
 		"/bindWeb3ID":                {bindingWeb3ID, true},
 		"/queryTwBasicById":          {queryTwBasicById, true},

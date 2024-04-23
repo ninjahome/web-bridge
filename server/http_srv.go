@@ -93,6 +93,7 @@ func NewMainService() *MainService {
 			}
 			action.Action(writer, request, njUserData)
 		}
+
 		targetRouter.HandleFunc(route, funcs)
 	}
 
@@ -107,10 +108,10 @@ func (bh *MainService) Start() {
 			panic("HTTPS needs ssl key and cert files")
 		}
 		fmt.Print("HTTPS Mode")
-		panic(http.ListenAndServeTLS(":443", cfg.SSLCertFile, cfg.SSLKeyFile, (bh.router)))
+		panic(http.ListenAndServeTLS(":443", cfg.SSLCertFile, cfg.SSLKeyFile, bh.router))
 	} else {
 		fmt.Print("Simple HTTP")
-		panic(http.ListenAndServe(":"+cfg.HttpPort, (bh.router)))
+		panic(http.ListenAndServe(":"+cfg.HttpPort, bh.router))
 	}
 }
 

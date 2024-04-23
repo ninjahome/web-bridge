@@ -21,6 +21,7 @@ const (
 	DBTableTWUserAccTokenV2   = "twitter-user-access-token_v2"
 	DBTableWeb3Bindings       = "web3-bindings"
 	DBTableTweetsPosted       = "tweets-posted"
+	DBTableTweetsStatus       = "tweets-payment-status"
 	DBTableTweetsVoted        = "tweets-voted"
 	DBTableTweetsSubStatus    = "vote-status"
 	DBTableTweetsImages       = "raw_img"

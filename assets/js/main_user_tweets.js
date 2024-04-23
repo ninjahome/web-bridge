@@ -60,16 +60,15 @@ function __checkPayment(tweetCard, tweet) {
     const deleteButton = tweetCard.querySelector('.tweetPaymentDelete');
 
     retryButton.classList.add('show');
-    retryButton.onclick = () => procPaymentForPostedTweet(tweet, function (newObj) {
+    retryButton.onclick = () => procPaymentForPostedTweet(tweet, function (newObj, txHash) {
         __globalTweetMemCache.set(newObj.create_time, newObj);
-
         if (newObj.payment_status !== TXStatus.Success) {
             return;
         }
 
         retryButton.classList.remove('show');
         deleteButton.classList.remove('show');
-        updatePaymentStatusToSrv(newObj).then();
+        updatePaymentStatusToSrv(newObj, txHash).then();
     });
 
     deleteButton.classList.add('show');

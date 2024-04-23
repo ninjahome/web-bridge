@@ -8,6 +8,7 @@ type TwAPIResponse struct {
 	TwitterData *database.TWUserInfo `json:"data"`
 	EthAddr     string               `json:"eth_addr"`
 	SignUpAt    int64                `json:"sign_up_at"`
+	CSRFToken   string
 }
 
 type TweetResponse struct {

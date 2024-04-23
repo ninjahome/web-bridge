@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dghubble/oauth1"
+	"github.com/gorilla/csrf"
 	database2 "github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"io"
@@ -188,6 +189,7 @@ func signUpSuccessByTw(w http.ResponseWriter, r *http.Request, _ *database2.Ninj
 			Description:          userData.Description,
 			ProfileImageUrlHttps: userData.ProfileImageUrlHttps,
 		},
+		CSRFToken: csrf.Token(r),
 	}
 
 	err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "signUpSuccess.html", result)

@@ -4,13 +4,10 @@ let voteContractMeta = TweetVoteContractSetting.load();
 let gameContractMeta = null;
 
 async function initVoteContractMeta() {
-    const [
-        postPrice, votePrice, maxVote, pluginAddr, pluginStop, kolRate, feeRate
-    ] = await tweetVoteContract.systemSettings();
+    const [postPrice, votePrice, maxVote, pluginAddr, pluginStop, kolRate, feeRate] = await tweetVoteContract.systemSettings();
 
     const votePriceInEth = ethers.formatUnits(votePrice, 'ether');
-    voteContractMeta = new TweetVoteContractSetting(Number(postPrice), Number(votePrice), votePriceInEth,
-        Number(maxVote), pluginAddr, pluginStop, Number(kolRate), Number(feeRate));
+    voteContractMeta = new TweetVoteContractSetting(Number(postPrice), Number(votePrice), votePriceInEth, Number(maxVote), pluginAddr, pluginStop, Number(kolRate), Number(feeRate));
     TweetVoteContractSetting.sycToDb(voteContractMeta);
     const postBtn = document.getElementById("tweet-post-with-eth-btn-txt-1");
     const votePriceInModal = document.getElementById("vote-price-in-modal");
@@ -33,8 +30,7 @@ async function initGameContractMeta() {
     const totalBonusInEth = ethers.formatUnits(totalBonus, 'ether');
     const bonusForPoint = ethers.formatUnits(bonusPoint, 'ether');
 
-    gameContractMeta = new GameBasicInfo(currentRoundNo,
-        totalBonusInEth, voteNo, curBonusInEth, dTime, bonusForPoint);
+    gameContractMeta = new GameBasicInfo(currentRoundNo, totalBonusInEth, voteNo, curBonusInEth, dTime, bonusForPoint);
 }
 
 async function initBlockChainContract(provider) {
@@ -68,19 +64,16 @@ async function procPaymentForPostedTweet(tweet, callback) {
     try {
         showWaiting("paying for tweet");
 
-        const txResponse = await tweetVoteContract.publishTweet(
-            tweet.prefixed_hash,
-            tweet.signature,
-            {value: voteContractMeta.postPrice}
-        );
+        const txResponse = await tweetVoteContract.publishTweet(tweet.prefixed_hash, tweet.signature, {value: voteContractMeta.postPrice});
 
         changeLoadingTips("packaging:" + txResponse.hash);
         const txReceipt = await txResponse.wait();
 
         tweet.payment_status = txReceipt.status ? TXStatus.Success : TXStatus.Failed;
         if (callback) {
-            callback(tweet);
+            callback(tweet, txResponse.hash);
         }
+
         return true;
     } catch (err) {
         const newErr = checkMetamaskErr(err);
@@ -106,11 +99,7 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
         showWaiting("prepare to pay");
         const amount = BigInt(voteContractMeta.votePrice) * BigInt(voteCount);
 
-        const txResponse = await tweetVoteContract.voteToTweets(
-            tweet.prefixed_hash,
-            voteCount,
-            {value: amount}
-        );
+        const txResponse = await tweetVoteContract.voteToTweets(tweet.prefixed_hash, voteCount, {value: amount});
         changeLoadingTips("packaging: " + txResponse.hash);
 
         const txReceipt = await txResponse.wait();
@@ -122,7 +111,7 @@ async function procTweetVotePayment(voteCount, tweet, callback) {
         showDialog(DLevel.Success, "transaction success");
 
         if (callback) {
-            callback(tweet.create_time, voteCount);
+            callback(tweet.create_time, voteCount, txResponse.hash);
         }
     } catch (err) {
         checkMetamaskErr(err);

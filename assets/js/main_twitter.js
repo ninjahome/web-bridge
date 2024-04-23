@@ -116,7 +116,7 @@ async function convertTweetContentToImg(formattedContent) {
         const content = document.getElementById('hidden-tweet-txt');
 
         content.innerText = formattedContent;
-        const canvas = await html2canvas(target,{
+        const canvas = await html2canvas(target, {
             dpi: 300, // 设置更高的DPI
             scale: 2  // 同时提高缩放级别
         });
@@ -252,11 +252,12 @@ async function preparePostMsg(parentDiv) {
     return new SignDataForPost(message, signature, JSON.stringify(tweetContent.imageData));
 }
 
-function updatePaymentStatusToSrv(tweet) {
+function updatePaymentStatusToSrv(tweet,tx_hash) {
     return PostToSrvByJson("/updateTweetPaymentStatus", {
         create_time: tweet.create_time,
         status: tweet.payment_status,
-        hash: tweet.prefixed_hash
+        hash: tweet.prefixed_hash,
+        tx_hash:tx_hash,
     }).then(r => {
         console.log(r);
     })
@@ -283,20 +284,18 @@ async function postTweetWithPayment(parentID) {
             return;
         }
         clearDraftTweetContent(parentDiv);
-        const paySuccess = await procPaymentForPostedTweet(basicTweet);
-        if (!paySuccess) {
-            return;
-        }
-        showWaiting("updating tweet status")
-        await updatePaymentStatusToSrv(basicTweet)
 
-        if (curScrollContentID === 0) {
-            __loadTweetsAtHomePage(true).then(() => {
-            });
-        } else if (curScrollContentID === 2) {
-            __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(() => {
-            });
-        }
+        await procPaymentForPostedTweet(basicTweet, async function (newTweet, txHash) {
+            await updatePaymentStatusToSrv(newTweet, txHash);
+            if (curScrollContentID === 0) {
+                __loadTweetsAtHomePage(true).then(() => {
+                });
+            } else if (curScrollContentID === 2) {
+                __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(() => {
+                });
+            }
+        });
+
     } catch (err) {
         checkMetamaskErr(err);
     } finally {

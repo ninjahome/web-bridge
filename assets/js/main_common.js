@@ -388,8 +388,8 @@ async function voteToTheTweet(obj, callback) {
     }
 
     openVoteModal(function (voteCount, shareToTweet) {
-        procTweetVotePayment(voteCount, obj, async function (create_time, vote_count) {
-            const newVote = await updateVoteStatusToSrv(create_time, vote_count);
+        procTweetVotePayment(voteCount, obj, async function (create_time, vote_count, txHash) {
+            const newVote = await updateVoteStatusToSrv(create_time, vote_count, txHash);
             obj.vote_count = newVote.vote_count;
             __updateVoteNumberForTweet(obj, newVote).then(() => {
             });
@@ -407,10 +407,11 @@ async function voteToTheTweet(obj, callback) {
     });
 }
 
-async function updateVoteStatusToSrv(create_time, vote_count) {
+async function updateVoteStatusToSrv(create_time, vote_count, txHash) {
     return await PostToSrvByJson("/updateTweetVoteStatus", {
         create_time: create_time,
         vote_count: Number(vote_count),
+        tx_hash: txHash,
     });
 }
 

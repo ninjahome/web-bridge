@@ -69,6 +69,12 @@ func (p *TweetQueryParm) String() string {
 	return string(bts)
 }
 
+type TweetPaymentStatus struct {
+	CreateTime int64    `json:"create_time" firestore:"create_time"`
+	TxHash     string   `json:"tx_hash" firestore:"tx_hash"`
+	Status     TxStatus `json:"status,omitempty"  firestore:"status"`
+}
+
 func (p *TweetQueryParm) createFilter(pageSize int, doc *firestore.CollectionRef, opCtx context.Context) *firestore.DocumentIterator {
 
 	if len(p.VotedIDs) > 0 {
@@ -231,22 +237,42 @@ func (dm *DbManager) NjTweetDetails(createAt int64) (*NinjaTweet, error) {
 	return &obj, err
 }
 
-func (dm *DbManager) UpdateTweetPaymentStatus(createAt int64, s TxStatus, web3ID string) error {
-	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+func (dm *DbManager) UpdateTweetPaymentStatus(status *TweetPaymentStatus, web3ID string) error {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut*2)
 	defer cancel()
-	tweetsDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(fmt.Sprintf("%d", createAt))
-	_, err := tweetsDoc.Update(opCtx, []firestore.Update{
-		{Path: "payment_status", Value: s},
-	})
+	tweetId := fmt.Sprintf("%d", status.CreateTime)
 
-	if s == TxStSuccess {
-		err = dm.updateNjUserForTweet(web3ID, opCtx)
-		if err != nil {
-			return err
-		}
+	tweetsDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(tweetId)
+	_, err := tweetsDoc.Update(opCtx, []firestore.Update{
+		{Path: "payment_status", Value: status.Status},
+	})
+	if err != nil {
+		util.LogInst().Err(err).Str("tweet", tweetId).Msg("update tweet status failed")
+		return err
 	}
 
-	return err
+	if status.Status != TxStSuccess {
+		return nil
+	}
+
+	if err := dm.checkTransactionStatus(opCtx, status); err != nil {
+		return err
+	}
+	return dm.updateNjUserForTweet(web3ID, opCtx)
+}
+
+func (dm *DbManager) checkTransactionStatus(opCtx context.Context, status *TweetPaymentStatus) error {
+	statusDoc := dm.fileCli.Collection(DBTableTweetsStatus).Doc(status.TxHash)
+	_, err := statusDoc.Get(opCtx)
+	if err == nil {
+		return fmt.Errorf("duplicate update tweet:%d with transaction:%s", status.CreateTime, status.TxHash)
+	}
+	_, err = statusDoc.Set(opCtx, status)
+	if err != nil {
+		util.LogInst().Err(err).Int64("tweet", status.CreateTime).Str("tx", status.TxHash).Msg("add tweet update failed")
+		return err
+	}
+	return nil
 }
 
 func (dm *DbManager) DelUnpaidTweet(createTime int64, addr string) error {

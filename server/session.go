@@ -29,10 +29,10 @@ func newSM() *SessionManager {
 	var store = sessions.NewCookieStore([]byte(_globalCfg.SessionKey))
 	store.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   0,
+		MaxAge:   86400 * 30, // 例如，设置为30天,
 		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteStrictMode,
+		Secure:   _globalCfg.UseHttps,
+		SameSite: http.SameSiteLaxMode,
 	}
 	return &SessionManager{
 		store: store,
