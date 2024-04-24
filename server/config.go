@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/golang/freetype"
-	"github.com/golang/freetype/truetype"
 	"github.com/ninjahome/web-bridge/blockchain"
 	"github.com/ninjahome/web-bridge/blockchain/ethapi"
 	"github.com/ninjahome/web-bridge/database"
@@ -14,7 +12,6 @@ import (
 	"html/template"
 	"math/big"
 	"net/http"
-	"os"
 )
 
 var (
@@ -71,6 +68,7 @@ type HttpConf struct {
 	SSLCertFile         string `json:"ssl_cert_file"`
 	SSLKeyFile          string `json:"ssl_key_file"`
 	SessionKey          string `json:"session_key"`
+	SessionMaxAge       int    `json:"session_max_age"`
 	htmlTemplateManager *template.Template
 }
 
@@ -85,21 +83,15 @@ func (c *HttpConf) String() string {
 }
 
 type TwitterConf struct {
-	imgFont        *truetype.Font
-	FontSize       float64 `json:"font_size"`
-	FontPath       string  `json:"font_path"`
-	MaxTxtPerImg   int     `json:"max_txt_per_img"`
-	ClientID       string  `json:"client_id"`
-	ClientSecret   string  `json:"client_secret"`
-	ConsumerKey    string  `json:"consumer_key"`
-	ConsumerSecret string  `json:"consumer_secret"`
+	ClientID       string `json:"client_id"`
+	ClientSecret   string `json:"client_secret"`
+	ConsumerKey    string `json:"consumer_key"`
+	ConsumerSecret string `json:"consumer_secret"`
 }
 
 func (c *TwitterConf) String() string {
 	s := "\n------twitter config------"
 	s += "\nclient id:" + c.ClientID
-	s += "\nfont path:" + c.FontPath
-	s += "\nfont size:" + fmt.Sprintf("%.1f", c.FontSize)
 	s += "\n--------------------------"
 	return s
 }
@@ -159,17 +151,6 @@ func InitConf(c *SysConf) {
 	_globalCfg.twOauthCfg = oauth2Config
 
 	_globalCfg.htmlTemplateManager = util.ParseTemplates("assets/html")
-
-	fontBytes, err := os.ReadFile(_globalCfg.FontPath)
-	if err != nil {
-		panic(err)
-	}
-	f, err := freetype.ParseFont(fontBytes)
-	if err != nil {
-		panic(err)
-	}
-
-	_globalCfg.imgFont = f
 }
 
 const (

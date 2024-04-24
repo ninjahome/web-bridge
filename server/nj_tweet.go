@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ninjahome/web-bridge/blockchain/ethapi"
 	"github.com/ninjahome/web-bridge/database"
@@ -62,7 +63,7 @@ func querySimplePaymentTransaction(tx string) bool {
 		util.LogInst().Err(err).Str("tx-hash", tx).Msg("query receipt failed")
 		return false
 	}
-	if receipt.Status != 1 {
+	if receipt.Status != types.ReceiptStatusSuccessful {
 		return false
 	}
 

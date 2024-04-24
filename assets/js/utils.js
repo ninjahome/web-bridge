@@ -99,7 +99,7 @@ async function GetToSrvByJson(url) {
     const csrfToken = document.getElementById('csrf_token');
     if (csrfToken){
         requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
-        console.log("CSRF-Token=>",csrfToken.value);
+        // console.log("CSRF-Token=>",csrfToken.value);
     }
 
     try {
