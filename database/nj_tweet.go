@@ -110,7 +110,7 @@ type TweetsOfUser struct {
 }
 
 func (nt *NinjaTweet) IsValid() bool {
-	return nt.CreateAt > 0 && len(nt.Txt) > 4 &&
+	return nt.CreateAt > 0 && len(nt.Txt) >= 4 &&
 		len(nt.TweetUsrId) > 0 && len(nt.Web3ID) > 0
 }
 
