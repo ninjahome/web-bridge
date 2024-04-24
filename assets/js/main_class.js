@@ -36,7 +36,7 @@ class TweetVoteContractSetting {
     }
 
     static sycToDb(obj) {
-        localStorage.setItem(TweetVoteContractSetting.DBKey(), JSON.stringify(obj));
+        setItemWithTimestamp(TweetVoteContractSetting.DBKey(), JSON.stringify(obj));
     }
 
     static DBKey() {
@@ -44,7 +44,7 @@ class TweetVoteContractSetting {
     }
 
     static load() {
-        const storedVal = localStorage.getItem(TweetVoteContractSetting.DBKey());
+        const storedVal = getItemWithTimestamp(TweetVoteContractSetting.DBKey());
         return storedVal ? JSON.parse(storedVal) : null;
     }
 }
@@ -109,7 +109,7 @@ class ImageRawData {
     }
 
     static sycToDb(obj) {
-        localStorage.setItem(ImageRawData.DBKey(obj.hash), JSON.stringify(obj));
+        setItemWithTimestamp(ImageRawData.DBKey(obj.hash), JSON.stringify(obj));
     }
 
     static DBKey(hash) {
@@ -117,7 +117,7 @@ class ImageRawData {
     }
 
     static load(hash) {
-        const storedVal = localStorage.getItem(ImageRawData.DBKey(hash));
+        const storedVal = getItemWithTimestamp(ImageRawData.DBKey(hash));
         return storedVal ? JSON.parse(storedVal) : null;
     }
 }

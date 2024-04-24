@@ -50,7 +50,7 @@ function PostToSrvByJson(url, data) {
     };
 
     const csrfToken = document.getElementById('csrf_token');
-    if (csrfToken){
+    if (csrfToken) {
         requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
         // console.log("CSRF-Token=>",csrfToken.value);
     }
@@ -97,7 +97,7 @@ async function GetToSrvByJson(url) {
         },
     };
     const csrfToken = document.getElementById('csrf_token');
-    if (csrfToken){
+    if (csrfToken) {
         requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
         // console.log("CSRF-Token=>",csrfToken.value);
     }
@@ -272,7 +272,7 @@ function showWaiting(message, timeout) {
 
     if (timeout) {
         setTimeout(() => {
-            if (modal){
+            if (modal) {
                 document.body.removeChild(modal);
             }
         }, timeout * 1000);
@@ -323,7 +323,7 @@ class TwitterBasicInfo {
     }
 
     static loadTwBasicInfo(TwitterID) {
-        const storedData = localStorage.getItem(lclDbKeyForTwitterUserData(TwitterID))
+        const storedData = getItemWithTimestamp(lclDbKeyForTwitterUserData(TwitterID))
         if (!storedData) {
             return null
         }
@@ -336,7 +336,7 @@ class TwitterBasicInfo {
         if (!obj.id) {
             throw new Error("invalid twitter basic info")
         }
-        localStorage.setItem(lclDbKeyForTwitterUserData(obj.id), JSON.stringify(obj));
+        setItemWithTimestamp(lclDbKeyForTwitterUserData(obj.id), JSON.stringify(obj));
         return obj;
     }
 }
@@ -358,7 +358,7 @@ class NJUserBasicInfo {
 
 
     static loadNjBasic(ethAddr) {
-        const storedData = localStorage.getItem(DbKeyForNjUserData(ethAddr.toLowerCase()))
+        const storedData = getItemWithTimestamp(DbKeyForNjUserData(ethAddr.toLowerCase()))
         if (!storedData) {
             return null
         }
@@ -372,7 +372,7 @@ class NJUserBasicInfo {
             throw new Error("invalid twitter basic info")
         }
 
-        localStorage.setItem(DbKeyForNjUserData(obj.eth_addr.toLowerCase()), JSON.stringify(obj));
+        setItemWithTimestamp(DbKeyForNjUserData(obj.eth_addr.toLowerCase()), JSON.stringify(obj));
     }
 }
 
@@ -707,6 +707,67 @@ function safeSubstring(str, maxLength) {
     }
 
     return str.substring(0, endIndex);
+}
+
+function checkStorage() {
+    if (!window.localStorage) {
+        console.log('localStorage is not supported by this browser.');
+        return;
+    }
+    try {
+        localStorage.setItem('test', 'test');
+        localStorage.removeItem('test');
+        console.log('Current localStorage usage: ' + localStorage.length);
+    } catch (e) {
+        if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+            // Handle the quota exceeded error
+            removeLeastRecentlyUsedItem();
+            try {
+                setItemWithTimestamp('myKey', 'myValue');  // Retry saving the data
+            } catch (retryError) {
+                console.error('Failed to save even after clearing space:', retryError);
+            }
+        }
+    }
+}
+
+function setItemWithTimestamp(key, value) {
+    const item = {
+        value: value,
+        timestamp: Date.now()
+    };
+    localStorage.setItem(key, JSON.stringify(item));
+}
+
+function getItemWithTimestamp(key) {
+    const itemStr = localStorage.getItem(key);
+    if (!itemStr) {
+        return null;
+    }
+    const item = JSON.parse(itemStr);
+    item.timestamp = Date.now();  // 更新时间戳表示最近被访问
+    localStorage.setItem(key, JSON.stringify(item));  // 重新保存更新后的项
+    return item.value;
+}
+
+function removeLeastRecentlyUsedItem() {
+    const oldestTimestamp = Date.now() - 24 * 3600 * 1000;
+    let deletedCount = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+
+        const key = localStorage.key(i);
+        const itemStr = localStorage.getItem(key);
+        const item = JSON.parse(itemStr);
+
+        if (item.timestamp < oldestTimestamp) {
+            localStorage.removeItem(key);
+            deletedCount++;
+        }
+    }
+    if (deletedCount === 0){
+        localStorage.clear();
+    }
+
 }
 
 const __defaultLogo = '/assets/file/logo.png';

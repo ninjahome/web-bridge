@@ -1260,11 +1260,11 @@
             letter-spacing: 18px; /* 设置字母间距为100px */
             padding-top: 16px;
             transform: rotate(3deg); /* 添加旋转 */
-            border-radius:12px;
+            border-radius: 12px;
             border: 1px solid #979797;
         }
 
-        .countdown-result  h2{
+        .countdown-result h2 {
             font-size: 18px;
         }
 
@@ -1698,7 +1698,7 @@
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
             <div class="tweet-post" id="tweet-post-on-top">
-{{/*                <img src="" id="outputImage">*/}}
+                {{/*                <img src="" id="outputImage">*/}}
 
                 <div class="hidden-tweet-for-img" id="hidden-tweet-for-img">
                     <div class="hidden-tweet-txt" id="hidden-tweet-txt" contenteditable="true"></div>
@@ -2323,6 +2323,9 @@
     }
 
     async function initMainPage() {
+
+        checkStorage();
+
         try {
             showWaiting("loading from block chain");
 
