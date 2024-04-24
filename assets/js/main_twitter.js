@@ -170,7 +170,7 @@ function parseTweetContent(parentDiv) {
     // console.log(formattedContent);
 
     const images = parentDiv.querySelectorAll("#twImagePreview img");
-    if (formattedTxt < 4) {
+    if (formattedTxt.length < 4) {
         showDialog(DLevel.Warning, "content too short")
         return null;
     }
