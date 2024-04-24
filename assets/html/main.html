@@ -1248,22 +1248,24 @@
         }
 
         .countdown-result {
-            display: none;
+            display: block;
             position: absolute;
-            top: 214px;
-            left: 17px;
-            font-size: 18px;
-            height: 71px;
-            width: 292px;
+            top: 222px;
+            left: 24px;
+            height: 52px;
+            width: 290px;
             color: #F3D86D;
-            background-image: url("/assets/file/countdown-result-img.png");
+            background-color: #141415;
             text-align: center; /* 文本水平居中（对于inline元素或当flex不起作用时） */
             letter-spacing: 18px; /* 设置字母间距为100px */
             padding-top: 16px;
+            transform: rotate(3deg); /* 添加旋转 */
+            border-radius:12px;
+            border: 1px solid #979797;
         }
 
-        .countdown-result h2 {
-            transform: rotate(3deg); /* 添加旋转 */
+        .countdown-result  h2{
+            font-size: 18px;
         }
 
         .lottery-participate-btn {
