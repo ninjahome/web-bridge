@@ -111,6 +111,7 @@ type SysConf struct {
 func (c *SysConf) String() any {
 	var s = "\n=======================system config==========================="
 	s += "\nlog level:" + c.LogLevel
+	s += "\nlog file:" + c.LogFile
 	s += "\nlocal mode:" + fmt.Sprintf("%t", c.LocalRun)
 	s += "\nhome:" + c.UrlHome
 	s += "\nhttp port:" + c.HttpPort
