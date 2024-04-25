@@ -770,7 +770,7 @@ function checkStorage() {
     try {
         localStorage.setItem('test', 'test');
         localStorage.removeItem('test');
-        console.log('Current localStorage usage: ' + localStorage.length);
+        // console.log('Current localStorage usage: ' + localStorage.length);
     } catch (e) {
         if (e instanceof DOMException && e.name === 'QuotaExceededError') {
             // Handle the quota exceeded error

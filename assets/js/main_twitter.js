@@ -393,7 +393,7 @@ function previewImage(parentId) {
 
         readFileAsBlob(file).then(async blob => {
             let rawBase64Str = blob.src;
-            console.log("blob size:", rawBase64Str.length);
+            // console.log("blob size:", rawBase64Str.length);
             if (rawBase64Str.length > MaxRawImgSize) {
                 rawBase64Str = await adjustImageToApproxTargetBase64Length(blob, MaxRawImgSize);
                 // rawBase64Str = await blobToBase64(compressedBlob);
