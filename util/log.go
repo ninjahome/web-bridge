@@ -21,11 +21,11 @@ func LogInst() *zerolog.Logger {
 
 		//TODO::refactor numbers
 		logFile := &lumberjack.Logger{
-			Filename:   "game.log", // 日志文件路径
-			MaxSize:    100,        // 文件最大大小（MB）
-			MaxBackups: 5,          // 保留旧文件的最大个数
-			MaxAge:     128,        // 保留旧文件的最大天数
-			Compress:   true,       // 是否压缩/归档旧文件
+			Filename:   LogFileName, // 日志文件路径
+			MaxSize:    100,         // 文件最大大小（MB）
+			MaxBackups: 5,           // 保留旧文件的最大个数
+			MaxAge:     128,         // 保留旧文件的最大天数
+			Compress:   true,        // 是否压缩/归档旧文件
 		}
 
 		writer := diode.NewWriter(os.Stderr, 1000, 10*time.Millisecond, func(missed int) {
