@@ -1,1 +1,1 @@
-scp -i ~/Documents/conf/dessage-rbc dessage-twitter.lnx assets.tar.gz config.sample.json ./game_lottery/game_lottery.lnx ./server/test/dessage-c3b5c95267fb.json ribencong@35.220.156.3:~/
+scp -i ~/Documents/conf/dessage-rbc ./bin/*.lnx ./bin/sassets.tar.gz config.sample.json  ./bin/dessage-c3b5c95267fb.json ribencong@35.220.156.3:~/

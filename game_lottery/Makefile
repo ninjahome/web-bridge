@@ -31,7 +31,7 @@ endif
 .PHONY: test
 .PHONY: contract
 
-BINDIR=$(INCLUDE)/bin
+BINDIR=../bin
 
 all: pbs ../blockchain/sol build
 
@@ -47,13 +47,13 @@ sol:
 target:=mac
 
 mac:
-	GOOS=darwin go build -ldflags '-w -s $(LD_FLAGS)' -o $(NAME).mac
+	GOOS=darwin go build -ldflags '-w -s $(LD_FLAGS)' -o $(BINDIR)/$(NAME).mac
 arm:
 	CC=aarch64-linux-gnu-gcc CGO_ENABLED=1 GOOS=linux GOARM=7 GOARCH=arm64 go build -ldflags '-w -s' -o $(BINDIR)/$(NAME).arm  -ldflags="$(LD_FLAGS)"
 linux:
-	GOOS=linux GOARCH=amd64 go build -ldflags '-w -s' -o $(NAME).lnx  -ldflags="$(LD_FLAGS)"
+	GOOS=linux GOARCH=amd64 go build -ldflags '-w -s' -o $(BINDIR)/$(NAME).lnx  -ldflags="$(LD_FLAGS)"
 win:
 	GOOS=windows GOARCH=amd64 go build -ldflags '-w -s' -o $(BINDIR)/$(NAME).exe  -ldflags="$(LD_FLAGS)"
 
 clean:
-	rm $(BINDIR)/$(NAME)
+	rm $(BINDIR)/$(NAME).*
