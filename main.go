@@ -67,6 +67,7 @@ func mainRun(_ *cobra.Command, _ []string) {
 	}
 
 	initConfig(param.config)
+	util.LogFileName = "srv.log"
 	var basisSrv = server.NewMainService()
 	go func() {
 		basisSrv.Start()

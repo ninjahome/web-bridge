@@ -1,1 +1,0 @@
-scp -i ~/Documents/conf/dessage_test dessage.key wesley@34.142.235.26:~/

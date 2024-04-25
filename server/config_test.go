@@ -30,7 +30,7 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			ConsumerSecret: "",
 		},
 		FileStoreConf: &database.FileStoreConf{
-			TweetsPageSize:  20,
+			TweetsPageSize:  30,
 			ProjectID:       database.DefaultFirestoreProjectID,
 			DatabaseID:      database.DefaultDatabaseID,
 			KeyFilePath:     "dessage-c3b5c95267fb.json",
@@ -44,10 +44,10 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			TweetContract:         "0x63713037a9E337D7Db5D383070199B948598e0Da",
 			GameContract:          "0x57F0bbE85f5822911003A8fa425D5595D139FDFe",
 			KolKeyContractAddress: "",
-			InfuraUrl:             "https://arbitrum-mainnet.infura.io/v3/", //https://arbitrum-sepolia.infura.io/v3/
-			GameTimeInMinute:      10,
+			InfuraUrl:             "https://arbitrum-mainnet.infura.io/v3/08db2487445e45fe848b3b7b6b95c080",
+			GameTimeInMinute:      5,
 			TxCheckerInSeconds:    15,
-			ChainID:               421614,
+			ChainID:               42161,
 			CheckTimeInSecond:     10,
 		},
 	}

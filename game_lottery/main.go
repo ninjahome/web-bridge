@@ -101,6 +101,7 @@ func main() {
 
 	cf := initConfig(*confFile)
 	key := readWallet(*walletFile)
+	util.LogFileName = "game.log"
 
 	gs := NewGame(key, cf)
 

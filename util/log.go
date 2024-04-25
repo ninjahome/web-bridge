@@ -14,6 +14,7 @@ import (
 var _logInstance *zerolog.Logger
 var logOnce sync.Once
 var logLevel = "debug"
+var LogFileName = "server.log"
 
 func LogInst() *zerolog.Logger {
 	logOnce.Do(func() {

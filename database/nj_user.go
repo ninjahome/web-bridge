@@ -154,7 +154,7 @@ func (dm *DbManager) MostVotedKol(pageSize int, startID int64, vote bool) ([]*Ni
 func (dm *DbManager) CheckKolElder() {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut*10)
 	defer cancel()
-	util.LogInst().Info().Msg("start to check elder status")
+	util.LogInst().Debug().Msg("start to check elder status")
 	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
 
 		randomDoc := dm.fileCli.Collection(DBTableNJUser)
@@ -169,7 +169,7 @@ func (dm *DbManager) CheckKolElder() {
 		for {
 			doc, err := iter.Next()
 			if errors.Is(err, iterator.Done) {
-				util.LogInst().Info().Msg("query kol status success")
+				util.LogInst().Debug().Msg("query kol status success")
 				break
 			}
 			if err != nil {

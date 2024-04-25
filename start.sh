@@ -1,1 +1,1 @@
-nohup ./dessage-twitter.lnx > srv.log &
+nohup ./dessage-twitter.lnx &
