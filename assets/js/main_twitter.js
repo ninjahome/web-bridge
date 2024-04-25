@@ -251,12 +251,12 @@ async function preparePostMsg(parentDiv) {
     return new SignDataForPost(message, signature, JSON.stringify(tweetContent.imageData));
 }
 
-function updatePaymentStatusToSrv(tweet,tx_hash) {
+function updatePaymentStatusToSrv(tweet, tx_hash) {
     return PostToSrvByJson("/updateTweetPaymentStatus", {
         create_time: tweet.create_time,
         status: tweet.payment_status,
         hash: tweet.prefixed_hash,
-        tx_hash:tx_hash,
+        tx_hash: tx_hash,
     }).then(r => {
         console.log(r);
     })
@@ -393,30 +393,21 @@ function previewImage(parentId) {
 
         readFileAsBlob(file).then(async blob => {
             let rawBase64Str = blob.src;
-            // console.log("blob size:", rawBase64Str.length);
+            console.log("blob size:", rawBase64Str.length);
             if (rawBase64Str.length > MaxRawImgSize) {
-                let quality = MaxRawImgSize / rawBase64Str.length;
-                if (quality > CompressQuality) {
-                    quality = CompressQuality;
-                }
-                const compressedBlob = await compressBlob(blob, quality);
-                rawBase64Str = await blobToBase64(compressedBlob);
-                // console.log('image Base64 String:', rawBase64Str.length, compressedBlob.size);
+                rawBase64Str = await adjustImageToApproxTargetBase64Length(blob, MaxRawImgSize);
+                // rawBase64Str = await blobToBase64(compressedBlob);
+                // console.log('image Base64 String:', rawBase64Str.length);
             }
 
             img.setAttribute('data-raw', rawBase64Str);
             const hash = ethers.hashMessage(rawBase64Str);
-            // console.log(hash);
             img.setAttribute('data-hash', hash);
 
             if (blob.src.length > MaxThumbnailSize) {
-                let quality = MaxThumbnailSize / blob.src.length * 0.75;
-                if (quality > CompressQuality) {
-                    quality = CompressQuality;
-                }
-                const thumbNailBlob = await compressBlob(blob, quality);
-                img.src = await blobToBase64(thumbNailBlob);
-                // console.log("thumbNail size:", img.src.length, thumbNailBlob.size);
+                img.src = await adjustImageToApproxTargetBase64Length(blob, MaxThumbnailSize);
+                // img.src = await blobToBase64(thumbNailBlob);
+                // console.log("thumbNail size:", img.src.length);
             } else {
                 img.src = blob.src;
             }

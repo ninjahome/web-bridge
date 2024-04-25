@@ -643,6 +643,59 @@ function blobToBase64(blob) {
     });
 }
 
+function adjustImageToApproxTargetBase64Length(image, targetLength) {
+    return new Promise((resolve, reject) => {
+        // 确保图片已经加载完毕
+        if (!image.complete) {
+            reject('Image has not loaded yet.');
+            return;
+        }
+
+        const originalBase64 = image.src;
+        const originalLength = originalBase64.length;
+
+        // 计算目标长度与原始长度的比例
+        const ratio = Math.sqrt(targetLength / originalLength) *0.95;  // 使用平方根减少尺寸调整幅度
+
+        const targetWidth = Math.floor(image.width * ratio);
+        const targetHeight = Math.floor(image.height * ratio);
+        const quality = 0.8;  // 初始压缩质量
+
+        // 使用估算的宽高和质量参数压缩图像
+        compressAndResizeImage(image, targetWidth, targetHeight, quality).then(resizedBase64 => {
+            // console.log("compressAndResizeImage result:=>", resizedBase64.length, targetLength)
+            if (resizedBase64.length > targetLength) {
+                // 如果调整后的长度仍然过大，尝试进一步降低质量
+                compressAndResizeImage(image, targetWidth , targetHeight , quality* 0.8).then(finalBase64 => {
+                    // console.log("compressed img at second time:",resizedBase64.length,finalBase64.length);
+                    resolve(finalBase64);
+                }).catch(reject);
+            } else {
+                // 如果长度符合要求或稍小，返回结果
+                // console.log("compressed img at first time:",resizedBase64.length)
+                resolve(resizedBase64);
+            }
+        }).catch(reject);
+    });
+}
+
+function compressAndResizeImage(image, targetWidth, targetHeight, quality) {
+    return new Promise((resolve, reject) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        ctx.drawImage(image, 0, 0, targetWidth, targetHeight);
+
+        try {
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolve(dataUrl);
+        } catch (e) {
+            reject(e);
+        }
+    });
+}
+
 
 function compressBlob(image, quality) {
     return new Promise((resolve, reject) => {
@@ -764,7 +817,7 @@ function removeLeastRecentlyUsedItem() {
             deletedCount++;
         }
     }
-    if (deletedCount === 0){
+    if (deletedCount === 0) {
         localStorage.clear();
     }
 
@@ -774,7 +827,7 @@ const __defaultLogo = '/assets/file/logo.png';
 const maxTweetLenPerPage = 500;
 const maxImgPerTweet = 4;
 const defaultTextLenForTweet = 280;
-const MaxRawImgSize = (1 << 20);
-const MaxThumbnailSize = (1 << 18);
+const MaxRawImgSize = (1 << 20) - 128;
+const MaxThumbnailSize = (1 << 17);
 const CompressQuality = 0.75;
 const TimeIntervalForBlockChain = 30;
