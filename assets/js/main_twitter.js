@@ -110,18 +110,17 @@ async function fillTweetParkAtHomePage(clear) {
         });
 }
 
-async function convertTweetContentToImg(formattedContent) {
+async function convertTweetContentToImg(formattedContent, format = 'image/jpeg', quality = 1.0) {
     try {
         const target = document.getElementById('hidden-tweet-for-img');
         const content = document.getElementById('hidden-tweet-txt');
 
         content.innerText = formattedContent;
         const canvas = await html2canvas(target, {
-            dpi: 300, // 设置更高的DPI
-            scale: 2  // 同时提高缩放级别
+            dpi: 300, // Set a higher DPI
+            scale: 2  // Increase the scaling level
         });
-        const imgURL = canvas.toDataURL("image/png");
-        // document.getElementById('outputImage').src = imgURL;//debug infos
+        const imgURL = canvas.toDataURL(format, quality);
         content.innerText = "";
         return imgURL;
     } catch (e) {
@@ -396,7 +395,7 @@ function previewImage(parentId) {
             let rawBase64Str = blob.src;
             // console.log("blob size:", rawBase64Str.length);
             if (rawBase64Str.length > MaxRawImgSize) {
-                let quality = MaxRawImgSize / rawBase64Str.length * 0.75;
+                let quality = MaxRawImgSize / rawBase64Str.length;
                 if (quality > CompressQuality) {
                     quality = CompressQuality;
                 }
