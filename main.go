@@ -15,7 +15,6 @@ import (
 )
 
 const (
-	PidFileName    = "pid"
 	ConfigFIleName = "config.json"
 )
 
@@ -67,7 +66,6 @@ func mainRun(_ *cobra.Command, _ []string) {
 	}
 
 	initConfig(param.config)
-	util.LogFileName = "srv.log"
 	var basisSrv = server.NewMainService()
 	go func() {
 		basisSrv.Start()
@@ -97,10 +95,10 @@ func initConfig(filName string) {
 }
 
 func waitShutdownSignal() {
-
+	var pidFile = os.Args[0] + ".pid"
 	pid := strconv.Itoa(os.Getpid())
 	fmt.Printf("\n>>>>>>>>>>service start at pid(%s)<<<<<<<<<<\n", pid)
-	if err := os.WriteFile(PidFileName, []byte(pid), 0644); err != nil {
+	if err := os.WriteFile(pidFile, []byte(pid), 0644); err != nil {
 		fmt.Print("failed to write running pid", err)
 	}
 	sigCh := make(chan os.Signal, 1)

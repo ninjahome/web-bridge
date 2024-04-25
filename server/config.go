@@ -98,6 +98,7 @@ func (c *TwitterConf) String() string {
 
 type SysConf struct {
 	LogLevel string `json:"log_level"`
+	LogFile  string `json:"log_file"`
 	UrlHome  string `json:"url_home"`
 	HttpPort string `json:"http_port"`
 	*HttpConf
@@ -126,7 +127,7 @@ var (
 )
 
 func InitConf(c *SysConf) {
-	util.SetLogLevel(c.LogLevel)
+	util.SetLogLevel(c.LogLevel, c.LogFile)
 	if len(c.HttpPort) == 0 {
 		c.HttpPort = "80"
 	}

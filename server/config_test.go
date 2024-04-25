@@ -13,6 +13,7 @@ import (
 func TestCreateDefaultConfigFile(t *testing.T) {
 	cfg := &SysConf{
 		LogLevel: "debug",
+		LogFile:  "srv.log",
 		HttpPort: "8880",
 		UrlHome:  "https://dessage.xyz/",
 		HttpConf: &HttpConf{
