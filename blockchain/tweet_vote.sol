@@ -123,7 +123,11 @@ contract TweetVoteAmin is ServiceFeeForWithdraw {
     function adminStopKolKey(bool stop) public isOwner {
         require(kolKeyStop != stop, "no need change");
         kolKeyStop = stop;
-        emit PluginChanged(kolKeyContract, kolKeyStop, "kol key status changed");
+        emit PluginChanged(
+            kolKeyContract,
+            kolKeyStop,
+            "kol key status changed"
+        );
     }
 
     function adminChangeKolKeyRate(uint8 newRate) public isOwner {
@@ -270,10 +274,9 @@ contract TweetVote is TweetVoteAmin {
             if (KolIncomeToPoolI(kolKeyContract).kolOpenKeyPool(msg.sender)) {
                 uint256 kolKeyPool = (reminders / 100) * kolKeyIncomeRate;
                 reminders -= kolKeyPool;
-                KolIncomeToPoolI(kolKeyContract).kolGotIncome{value: kolKeyPool}(
-                    kolKeyIncomeSourceID,
-                    msg.sender
-                );
+                KolIncomeToPoolI(kolKeyContract).kolGotIncome{
+                        value: kolKeyPool
+                    }(kolKeyIncomeSourceID, msg.sender);
             }
         }
 
