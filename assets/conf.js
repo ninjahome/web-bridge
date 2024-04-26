@@ -19,4 +19,4 @@ const __globalContractConf = new Map([
         votePrice: "0.005"
     }]]);
 
-const __globalTargetChainNetworkID = toHex(42161);
+const __globalTargetChainNetworkID = toHex(421614);

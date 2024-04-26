@@ -380,6 +380,10 @@ function previewImage(parentId) {
         return;
     }
 
+    if (files.length > validLen){
+        showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
+    }
+
     files = Array.from(files).slice(0, validLen);
     files.forEach(file => {
         const imgWrapper = parentDiv.querySelector('.img-wrapper').cloneNode(true);
