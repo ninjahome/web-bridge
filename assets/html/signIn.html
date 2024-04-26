@@ -660,11 +660,25 @@
     function showAppList(listID, isHide) {
         if (isHide) {
             document.getElementById(listID).style.display = 'none';
-
         } else {
             document.getElementById(listID).style.display = 'block';
         }
     }
+
+    function debounce(func, wait) {
+        let timeout;
+
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+    const debouncedShowAppList = debounce(showAppList, 100);
 
 </script>
 </body>
