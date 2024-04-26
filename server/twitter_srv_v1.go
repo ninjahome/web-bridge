@@ -259,7 +259,7 @@ func postTweets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInf
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(njTweet)
-	util.LogInst().Debug().Str("tweet-id", njTweet.TweetId).
+	util.LogInst().Info().Str("tweet-id", njTweet.TweetId).
 		Int64("create_time", njTweet.CreateAt).
 		Msg("Tweet posted successfully")
 }
@@ -360,7 +360,7 @@ func shareVoteAction(w http.ResponseWriter, r *http.Request, nu *database.NinjaU
 		return
 	}
 
-	util.LogInst().Debug().Str("web3-id", nu.EthAddr).
+	util.LogInst().Info().Str("web3-id", nu.EthAddr).
 		Str("tweet-id", tweetResponse.Data.ID).
 		Int64("create_time", vote.CreateTime).
 		Msg("share vote tweet successfully")

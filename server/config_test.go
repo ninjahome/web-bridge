@@ -15,7 +15,7 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 		LogLevel: "debug",
 		LogFile:  "srv.log",
 		HttpPort: "8880",
-		UrlHome:  "https://dessage.xyz/",
+		UrlHome:  "https://dessage.xyz",
 		HttpConf: &HttpConf{
 			RefreshContent: true,
 			UseHttps:       false,

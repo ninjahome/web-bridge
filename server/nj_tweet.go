@@ -44,7 +44,7 @@ func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 	bts, _ := json.Marshal(tweets)
 	w.Write(bts)
 
-	util.LogInst().Debug().Str("param", para.String()).
+	util.LogInst().Info().Str("param", para.String()).
 		Str("eth-addr", nu.EthAddr).
 		Int("size", len(tweets)).Msg("global tweets query success")
 }
@@ -167,8 +167,9 @@ func updateTweetTxStatus(w http.ResponseWriter, r *http.Request, nu *database.Ni
 	bts, _ := json.Marshal(status)
 	w.Write(bts)
 
-	util.LogInst().Debug().Int64("create_time", status.CreateTime).
+	util.LogInst().Info().Int64("create_time", status.CreateTime).
 		Str("status", status.Status.String()).
+		Str("web3-id", nu.EthAddr).
 		Msg(" update status of tweet payment success")
 }
 
@@ -213,8 +214,10 @@ func updatePointsForSingleBets(w http.ResponseWriter, r *http.Request, nu *datab
 	}
 
 	w.WriteHeader(http.StatusOK)
-	util.LogInst().Debug().Int64("create_time", vote.CreateTime).
+	util.LogInst().Info().Int64("create_time", vote.CreateTime).
 		Int("vote_count", vote.VoteCount).
+		Str("tx-hash", vote.TxHash).
+		Str("web3-id", nu.EthAddr).
 		Msg(" update points for single vote success")
 }
 
@@ -247,8 +250,9 @@ func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.
 	bts, _ := json.Marshal(vote)
 	w.Write(bts)
 
-	util.LogInst().Debug().Int64("create_time", vote.CreateTime).
+	util.LogInst().Info().Int64("create_time", vote.CreateTime).
 		Int("vote_count", vote.VoteCount).
+		Str("web3-id", nu.EthAddr).
 		Msg(" update vote count of tweet success")
 }
 

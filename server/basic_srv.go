@@ -328,6 +328,7 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request, origNu *database.Ninj
 		SignUpAt:  data.BindTime,
 		Signature: param.Signature,
 	}
+
 	newNu, err := database.DbInst().BindingWeb3ID(bindDataToStore, twUsrData)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save binding data  failed")
@@ -345,6 +346,9 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request, origNu *database.Ninj
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(newNu.RawData())
+
+	util.LogInst().Info().Str("tweet-id", data.TwID).Str("web3-id", data.EthAddr).
+		Int64("bind-time", data.BindTime).Msg("bind web3 and social id success")
 }
 
 func queryTwBasicByTweetHash(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
@@ -383,5 +387,5 @@ func queryWinHistory(w http.ResponseWriter, r *http.Request, nu *database.NinjaU
 	w.WriteHeader(http.StatusOK)
 	w.Write(bts)
 
-	util.LogInst().Info().Int("len", len(data)).Msg("query winner history success")
+	util.LogInst().Debug().Int("len", len(data)).Msg("query winner history success")
 }

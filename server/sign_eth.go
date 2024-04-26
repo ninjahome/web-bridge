@@ -57,5 +57,5 @@ func signInByEth(w http.ResponseWriter, r *http.Request, _ *database2.NinjaUsrIn
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(nu.RawData())
-	util.LogInst().Debug().Str("eth-addr", obj.EthAddr).Msg("sign in by eth success")
+	util.LogInst().Info().Str("eth-addr", obj.EthAddr).Msg("sign in by eth success")
 }

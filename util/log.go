@@ -18,7 +18,7 @@ var LogFileName = "server.log"
 
 func LogInst() *zerolog.Logger {
 	logOnce.Do(func() {
-		fmt.Println("log file name:" + LogFileName)
+		fmt.Println("\nlog file name:" + LogFileName)
 		//TODO::refactor numbers
 		logFile := &lumberjack.Logger{
 			Filename:   LogFileName, // 日志文件路径
