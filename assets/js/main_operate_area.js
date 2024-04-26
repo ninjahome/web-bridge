@@ -20,13 +20,13 @@ function initTimerOfCounterDown() {
     startCountdown(async function (days, hours, minutes, seconds, finished) {
 
         const countDown = document.getElementById("lottery-count-down");
-        const countDownResult = document.getElementById("countdown-result");
+        const countDownResult = document.getElementById("countdown-result-parent");
 
         if (finished) {
             countDownResult.style.display = 'block';
             countDown.style.display = 'none';
         } else {
-            countDown.style.display = '';
+            countDown.style.display = 'flex';
             countDownResult.style.display = 'none';
             setCounterInfo(countDown, days, hours, minutes, seconds);
         }

@@ -271,7 +271,7 @@ async function postTweetWithPayment(parentID) {
 
     try {
         const parentDiv = document.querySelector(parentID)
-
+        showWaiting("preparing dessage")
         const tweetObj = await preparePostMsg(parentDiv);
         if (!tweetObj) {
             return;
