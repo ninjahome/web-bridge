@@ -166,8 +166,8 @@ function parseTweetContent(parentDiv) {
         .replace(/&nbsp;/gi, " ") // 将 &nbsp; 转换为空格
         .replace(/<[^>]+>/g, '') // 移除所有其他HTML标签
         .replace(/\n+$/, '');
-    // console.log(formattedContent);
-
+//     console.log(formattedTxt);
+// return;
     const images = parentDiv.querySelectorAll("#twImagePreview img");
     if (formattedTxt.length < 4) {
         showDialog(DLevel.Warning, "content too short")
