@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Check if the PID file exists
-PID_FILE="pid"
+PID_FILE="dessage.pid"
 
 if [ -f "$PID_FILE" ]; then
     # Read the PID from the file

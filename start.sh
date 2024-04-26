@@ -1,1 +1,1 @@
-nohup ./bin/dessage-twitter.lnx > srv.log &
+nohup ./dessage > /dev/null &
