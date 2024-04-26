@@ -572,8 +572,8 @@
                         "road-map-t-4": "Expand application scenarios extensively.",
                         "road-map-c-4": "Open collaborative interfaces with various other Dapps.",
                         "launch-app-tittle": "Start experiencing now",
-                        "structure-img":"/assets/file/structure-img_en.png",
-                        "cosplay-img":"/assets/file/pay_en.png",
+                        "structure-img": "/assets/file/structure-img_en.png",
+                        "cosplay-img": "/assets/file/pay_en.png",
                     }
                 },
                 zh: {
@@ -617,13 +617,13 @@
                         "road-map-t-4": "大量铺开应用场景",
                         "road-map-c-4": "打开与其他各类Dapp的协同接口",
                         "launch-app-tittle": "现在开始体验",
-                        "structure-img":"/assets/file/structure-img.png",
-                        "cosplay-img":"/assets/file/pay.png",
+                        "structure-img": "/assets/file/structure-img.png",
+                        "cosplay-img": "/assets/file/pay.png",
                     }
                 }
             }
         }, function (err, t) {
-            console.log("translation t=>",t);
+            console.log("translation t=>", t, err);
             updateContent();
         });
 
@@ -675,18 +675,9 @@
 
         document.getElementById('launch-app-tittle').textContent = i18next.t('launch-app-tittle');
 
-        document.getElementById('structure-img').src  = i18next.t('structure-img');
-        document.getElementById('cosplay-img').src  = i18next.t('cosplay-img');
+        document.getElementById('structure-img').src = i18next.t('structure-img');
+        document.getElementById('cosplay-img').src = i18next.t('cosplay-img');
 
-    }
-
-    function showAppList(listID, isHide) {
-        if (isHide) {
-            document.getElementById(listID).style.display = 'none';
-
-        } else {
-            document.getElementById(listID).style.display = 'block';
-        }
     }
 
 </script>

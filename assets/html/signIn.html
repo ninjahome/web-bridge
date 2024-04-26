@@ -177,26 +177,26 @@
         border-radius: 50%;
     }
 
-    .service-nostr :hover {
-        border-radius: 50%;
-        transition: box-shadow 0.3s ease; /* 添加过渡效果使阴影变化更平滑 */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 鼠标悬停时添加阴影 */
-        cursor: pointer;
-    }
+    /*.service-nostr :hover {*/
+    /*    border-radius: 50%;*/
+    /*    transition: box-shadow 0.3s ease; !* 添加过渡效果使阴影变化更平滑 *!*/
+    /*    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); !* 鼠标悬停时添加阴影 *!*/
+    /*    cursor: pointer;*/
+    /*}*/
 
-    .service-LensProtocol :hover {
-        border-radius: 50%;
-        transition: box-shadow 0.3s ease; /* 添加过渡效果使阴影变化更平滑 */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 鼠标悬停时添加阴影 */
-        cursor: pointer;
-    }
+    /*.service-LensProtocol :hover {*/
+    /*    border-radius: 50%;*/
+    /*    transition: box-shadow 0.3s ease; !* 添加过渡效果使阴影变化更平滑 *!*/
+    /*    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); !* 鼠标悬停时添加阴影 *!*/
+    /*    cursor: pointer;*/
+    /*}*/
 
-    .service-avatars :hover {
-        border-radius: 50%;
-        transition: box-shadow 0.3s ease; /* 添加过渡效果使阴影变化更平滑 */
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 鼠标悬停时添加阴影 */
-        cursor: pointer;
-    }
+    /*.service-avatars :hover {*/
+    /*    border-radius: 50%;*/
+    /*    transition: box-shadow 0.3s ease; !* 添加过渡效果使阴影变化更平滑 *!*/
+    /*    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); !* 鼠标悬停时添加阴影 *!*/
+    /*    cursor: pointer;*/
+    /*}*/
 
     ul {
         list-style: none;
@@ -608,6 +608,13 @@
         }
     }
 
+    function showAppList(listID, isHide) {
+        if (isHide) {
+            document.getElementById(listID).style.display = 'none';
+        } else {
+            document.getElementById(listID).style.display = 'block';
+        }
+    }
 
 </script>
 
@@ -656,29 +663,6 @@
         document.getElementById('title-of-bridge-list').textContent = i18next.t('bridge-title');
         document.getElementById('bridge-list-sub-tittle').textContent = i18next.t('bridge-list-sub-tittle');
     }
-
-    function showAppList(listID, isHide) {
-        if (isHide) {
-            document.getElementById(listID).style.display = 'none';
-        } else {
-            document.getElementById(listID).style.display = 'block';
-        }
-    }
-
-    function debounce(func, wait) {
-        let timeout;
-
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    }
-    const debouncedShowAppList = debounce(showAppList, 100);
 
 </script>
 </body>
