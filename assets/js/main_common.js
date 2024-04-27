@@ -256,7 +256,7 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     tweetHeader.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
     const twitterObj = await __setOnlyHeader(tweetHeader, tweet.twitter_id, tweet.web3_id);
     const contentArea = tweetHeader.querySelector('.tweet-content');
-    console.log(tweet.text);
+    // console.log(tweet.text);
     contentArea.innerHTML = DOMPurify.sanitize(tweet.text.replace(/\n/g, "<br>"));
 
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
