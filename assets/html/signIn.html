@@ -30,8 +30,7 @@
     }
 
     .right-container {
-        position: absolute;
-        z-index: 9;
+        position: fixed;
         top: 0;
         left: 0;
         background-size: cover;
@@ -43,7 +42,7 @@
     }
 
     .container {
-        position: absolute;
+        position: fixed;
         top: 25vh; /* 调整为视口高度的50%，意味着顶部距离视口顶部的距离为视口高度的一半 */
         right: 20vw; /* 调整为视口宽度的50%，意味着右侧距离视口右侧的距离为视口宽度的一半 */
         transform: translate(25%, -20%); /* 使用transform来精确调整.container的中心位置 */
@@ -205,14 +204,15 @@
     .styles_apps {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-        grid-gap: 2rem 2rem;
-        gap: 2rem 2rem;
-        padding: 2rem;
+        grid-gap: 1.2rem 1.2rem;
+        gap: 1.2rem 1.2rem;
+        padding: 1.5rem;
         background-color: white;
         width: 100%;
         max-width: 312px;
         border-radius: 12px;
         box-shadow: rgba(0, 0, 0, 0.08) 0 8px 28px;
+        z-index: 10;
     }
 
     .styles_apps li {
@@ -225,25 +225,24 @@
     .styles-nostr {
         display: none;
         position: absolute;
-        bottom: -44px;
-        right: -79px;
-        z-index: 10;
+        bottom: -12px;
+        right: 0;
+
     }
 
     .styles-avatars {
         display: none;
         position: absolute;
-        bottom: -44px;
-        right: -197px;
-        z-index: 10;
+        bottom: -12px;
+        right: -137px;
     }
 
     .styles-LensProtocol {
         display: none;
         position: absolute;
-        bottom: -44px;
-        right: -137px;
-        z-index: 10;
+        bottom: -12px;
+        right: -67px;
+
     }
 
     .service-nostr :hover .styles-nostr {
