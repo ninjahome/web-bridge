@@ -466,6 +466,25 @@
     </div>
 </div>
 <script>
+
+    // 监听窗口大小变化事件
+    window.addEventListener('resize', function() {
+        // 获取.container元素
+        var container = document.querySelector('.container');
+        // 获取.container元素距离视窗右侧的距离
+        var containerRightDistance = window.innerWidth - container.getBoundingClientRect().right;
+
+        // 如果.container元素距离视窗右侧小于等于300px，则固定右侧距离为一个特定值
+        var minRightDistance = 300;
+        if (containerRightDistance <= minRightDistance) {
+            // 设置.container元素右侧距离为固定值
+            container.style.right = minRightDistance + 'px';
+        } else {
+            // 否则，保持原有的右侧距离百分比设置
+            container.style.right = '20vw';
+        }
+    });
+
     class SignInData {
         constructor(ethAddr, signTim) {
             this.eth_addr = ethAddr;
