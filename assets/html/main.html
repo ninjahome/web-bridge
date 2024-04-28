@@ -894,53 +894,10 @@
             border-bottom: 8px solid #F4F5F6;
         }
 
-        .tweets-content-txt-area {
-            margin: 0 auto;
-            display: block; /* 确保元素为块级元素 */
-            box-sizing: border-box;
-            width: 100%; /* 文本区域宽度 */
-            min-height: 4em; /* 至少容纳3行文字的高度 */
-            max-height: 26em; /* 最大高度，约等于10行文字 */
-            overflow-y: auto; /* 内容超出最大高度时显示垂直滚动条 */
-            padding: 4px; /* 内边距 */
-            border: 1px solid #D3D5D6; /* 边框 */
-            border-radius: 6px;
-            resize: none; /* 禁止调整大小 */
-            position: relative;
-            background-color: #F4F5F6;
-        }
 
         /* 设置所有输入框和可编辑内容的光标颜色 */
         input, textarea, [contenteditable] {
             caret-color: #4EA0F2;
-        }
-
-        .tweets-content-txt-area:focus {
-            border-color: rgba(78, 160, 242, 0.45); /* 选中时的边框颜色 */
-            outline: none;
-        }
-
-        .tweets-content-txt-area p {
-            margin: 4px 4px;
-
-        }
-
-        .tweets-content-txt-area span {
-            font-size: 14px; /* 文字大小，可以根据需要调整 */
-            line-height: 20px; /* 行高，一般与字体大小相同 */
-
-        }
-
-        .tweets-content-txt-area:empty:before {
-            content: attr(data-placeholder);
-            color: grey;
-            pointer-events: none;
-            display: block; /* 显示为块级元素 */
-        }
-
-        /* 确保即使 div 有空白也显示占位符 */
-        .tweets-content-txt-area:empty:focus:before {
-            content: attr(data-placeholder);
         }
 
         #tweet-post-with-eth-btn {
@@ -1630,6 +1587,43 @@
 
     </style>
 
+    <style>
+        .tweets-content-txt-area {
+            margin: 0 auto;
+            display: block; /* 确保元素为块级元素 */
+            box-sizing: border-box;
+            width: 100%; /* 文本区域宽度 */
+            min-height: 4em; /* 至少容纳3行文字的高度 */
+            max-height: 26em; /* 最大高度，约等于10行文字 */
+            overflow-y: auto; /* 内容超出最大高度时显示垂直滚动条 */
+            padding: 4px; /* 内边距 */
+            border: 1px solid #D3D5D6; /* 边框 */
+            border-radius: 6px;
+            resize: none; /* 禁止调整大小 */
+            position: relative;
+            background-color: #F4F5F6;
+            outline: none; /* 去除焦点时的外框线 */
+        }
+
+        /* 设置所有输入框的光标颜色 */
+        input, textarea {
+            caret-color: #4EA0F2;
+        }
+
+        .tweets-content-txt-area:focus {
+            border-color: rgba(78, 160, 242, 0.45); /* 选中时的边框颜色 */
+        }
+
+        /* 使用 ::placeholder 为 textarea 添加占位符样式 */
+        .tweets-content-txt-area::placeholder {
+            color: grey;
+            font-size: 14px; /* 文字大小 */
+            line-height: 20px; /* 行高 */
+        }
+
+
+    </style>
+
 </head>
 <body>
 <input type="hidden" name="csrf_token" id="csrf_token" value="{{ .CSRFToken }}">
@@ -1708,9 +1702,8 @@
                     </div>
                 </div>
 
-                <div class="tweets-content-txt-area" id="tweets-content-txt-area" contenteditable="true"
-                     data-placeholder="What's happening!?">
-                </div>
+                <label> <textarea class="tweets-content-txt-area" id="tweets-content-txt-area"
+                                  placeholder="What's happening!?" rows="5" oninput="autoResize(this)"> </textarea></label>
                 <div class="img-wrapper" id="img-wrapper-template">
                     <img src="" class="img-preview">
                     <button class="delete-btn">x</button>
@@ -2262,9 +2255,8 @@
 <div class="modal-overlay" id="modal-overlay"></div>
 <div class="modal-for-tweet-post">
     <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
-    <div class="tweets-content-txt-area .d-radius" id="tweets-content-txt-area" contenteditable="true"
-         data-placeholder="What's happening!?">
-    </div>
+    <label> <textarea class="tweets-content-txt-area" id="tweets-content-txt-area"
+                      placeholder="What's happening!?" rows="5" oninput="autoResize(this)"> </textarea></label>
     <div class="img-wrapper" id="img-wrapper-template">
         <img src="" class="img-preview">
         <button class="delete-btn">x</button>
@@ -2419,6 +2411,21 @@
             checkMetamaskErr(err);
         } finally {
             hideLoading();
+        }
+    }
+
+    function autoResize(textarea) {
+        if (textarea.value === '') {
+            // 如果内容为空，设置为初始行高。这里的初始行高根据rows属性设置为 '5em'，每行约为 '1em' 高度
+            textarea.style.height = '5em';
+        } else {
+            textarea.style.height = 'auto'; // 先重置高度，允许它缩小
+            if (textarea.scrollHeight <= 320) { // 320px 作为最大高度
+                textarea.style.height = textarea.scrollHeight + 'px'; // 增加到足够的高度
+            } else {
+                textarea.style.height = '320px'; // 设置为最大高度
+                textarea.style.overflowY = 'auto'; // 超过最大高度时启用滚动条
+            }
         }
     }
 

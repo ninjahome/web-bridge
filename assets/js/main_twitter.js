@@ -158,16 +158,19 @@ async function convertContentToImages(formattedContent, imageData) {
 
 function parseTweetContent(parentDiv) {
 
-    const contentHtml = parentDiv.querySelector(".tweets-content-txt-area").innerHTML.trim();
-    const formattedTxt = contentHtml
-        .replace(/<div><br><\/div>/gi, "\n") //
-        .replace(/(<div><\/div>|<p><\/p>)/gi, "\n") // 合并空的 <div></div> 和 <p></p> 转换
-        .replace(/(<br\s*\/?>|<\/div>|<\/p>)/gi, "\n") // 合并所有单独的换行符转换
-        .replace(/&nbsp;/gi, " ") // 将 &nbsp; 转换为空格
-        .replace(/<[^>]+>/g, '') // 移除所有其他HTML标签
-        .replace(/\n+$/, '');
-//     console.log(formattedTxt);
+    // const contentHtml = parentDiv.querySelector(".tweets-content-txt-area").innerHTML.trim();
+    // const formattedTxt = contentHtml
+    //     .replace(/<div><br><\/div>/gi, "\n") //
+    //     .replace(/(<div><\/div>|<p><\/p>)/gi, "\n") // 合并空的 <div></div> 和 <p></p> 转换
+    //     .replace(/(<br\s*\/?>|<\/div>|<\/p>)/gi, "\n") // 合并所有单独的换行符转换
+    //     .replace(/&nbsp;/gi, " ") // 将 &nbsp; 转换为空格
+    //     .replace(/<[^>]+>/g, '') // 移除所有其他HTML标签
+    //     .replace(/\n+$/, '');
+    // console.log(contentHtml);
 // return;
+    const formattedTxt = parentDiv.querySelector(".tweets-content-txt-area").value;
+    // console.log(formattedTxt);
+    // return;
     const images = parentDiv.querySelectorAll("#twImagePreview img");
     if (formattedTxt.length < 4) {
         showDialog(DLevel.Warning, "content too short")
@@ -328,7 +331,8 @@ function closePostTweetDiv() {
 }
 
 function clearDraftTweetContent(parentDiv) {
-    parentDiv.querySelector(".tweets-content-txt-area").innerHTML = '';
+    parentDiv.querySelector(".tweets-content-txt-area").value = '';
+    parentDiv.querySelector(".tweets-content-txt-area").style.height = '5em'
     parentDiv.querySelector(".img-wrapper-container").innerHTML = '';
     parentDiv.querySelector(".img-wrapper-container").style.display = 'none'
 }
