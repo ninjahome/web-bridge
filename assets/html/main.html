@@ -466,7 +466,7 @@
             -webkit-line-clamp: 5;
             -webkit-box-orient: vertical;
             position: relative;
-            word-wrap:break-word;
+            word-wrap: break-word;
         }
 
         .tweet-text {
@@ -475,7 +475,7 @@
             font-weight: 350;
             color: #141415;
             margin: 8px 0 8px 60px;
-            word-wrap:break-word;
+            word-wrap: break-word;
         }
 
         .tweetPaymentDelete {
@@ -1635,7 +1635,8 @@
                 <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
                      onclick="menuOnClicked.call(document.querySelector('.menu-item-left-area'), 4)"
                      style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
-                <img src="/assets/file/elder_icon.png" alt="flag" class="elderFlagOnAvatar" style="bottom: 5px;left: 20px; width: 20px">
+                <img src="/assets/file/elder_icon.png" id="dessage-is-elder-flag" alt="flag" class="elderFlagOnAvatar"
+                     style="bottom: 5px;left: 20px; width: 20px">
             </div>
 
             <ul class="menu-list-left-area">
@@ -1708,7 +1709,8 @@
                 </div>
 
                 <label> <textarea class="tweets-content-txt-area" id="tweets-content-txt-area"
-                                  placeholder="What's happening!?" rows="5" oninput="autoResize(this)"> </textarea></label>
+                                  placeholder="What's happening!?" rows="5"
+                                  oninput="autoResize(this)"> </textarea></label>
                 <div class="img-wrapper" id="img-wrapper-template">
                     <img src="" class="img-preview">
                     <button class="delete-btn">x</button>
@@ -2316,6 +2318,11 @@
         let tw_data = TwitterBasicInfo.loadTwBasicInfo(ninjaUserObj.tw_id)
         if (tw_data) {
             document.getElementById("dessage-log-to-nj-log").src = tw_data.profile_image_url;
+            if (ninjaUserObj.is_elder) {
+                document.getElementById("dessage-is-elder-flag").style.display = 'block';
+            } else {
+                document.getElementById("dessage-is-elder-flag").style.display = 'none';
+            }
         }
     }
 
