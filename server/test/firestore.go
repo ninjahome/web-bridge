@@ -3,13 +3,14 @@ package main
 import (
 	"cloud.google.com/go/firestore"
 	"context"
+	"fmt"
 	"google.golang.org/api/option"
 	"log"
 	"os"
 )
 
 func main() {
-	UpdateField()
+	queryNoOfCollection("ninja-user")
 }
 func test() {
 	ctx := context.Background()
@@ -31,7 +32,7 @@ func test() {
 	}
 }
 
-func UpdateField() {
+func updateField() {
 	ctx := context.Background()
 	saPath := "dessage-c3b5c95267fb.json"
 	client, err := firestore.NewClientWithDatabase(ctx, "dessage",
@@ -52,4 +53,30 @@ func UpdateField() {
 	}
 
 	log.Println("Document updated successfully with newline")
+}
+
+func queryNoOfCollection(table string) {
+	ctx := context.Background()
+	saPath := "dessage-c3b5c95267fb.json"
+	client, err := firestore.NewClientWithDatabase(ctx, "dessage",
+		"dessage-release", option.WithCredentialsFile(saPath))
+	if err != nil {
+		log.Fatalf("Failed to create Firestore client: %v", err)
+	}
+	defer client.Close()
+
+	iter := client.Collection(table).Documents(ctx)
+	defer iter.Stop()
+
+	count := 0
+	for {
+		_, err := iter.Next()
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		count++
+	}
+
+	fmt.Println("total count:", count)
 }
