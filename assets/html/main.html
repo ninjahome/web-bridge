@@ -405,6 +405,14 @@
             left: 30px;
         }
 
+        .log-elderFlagOnAvatar {
+            width: 20px;
+            display: none;
+            position: absolute;
+            bottom: 5px;
+            left: 20px;
+        }
+
         .tweet-action-vote {
             background: linear-gradient(to right, rgba(114, 166, 241, 0.55), #ffffff);
             color: #141415;
@@ -1631,9 +1639,13 @@
 <div class="container">
     <div style="width: 348px">
         <div class="left-menu-area">
-            <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
-                 onclick="menuOnClicked.call(document.querySelector('.menu-item-left-area'), 4)"
-                 style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
+            <div style="position: relative">
+                <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
+                     onclick="menuOnClicked.call(document.querySelector('.menu-item-left-area'), 4)"
+                     style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
+                <img src="/assets/file/elder_icon.png" alt="flag" class="log-elderFlagOnAvatar">
+            </div>
+
             <ul class="menu-list-left-area">
                 <li onclick="menuOnClicked.call(this,0)" data-icon-active="/assets/file/path-to-home-active-icon.png"
                     data-icon-inactive="/assets/file/path-to-home-icon.png" class="menu-item-left-area active"
