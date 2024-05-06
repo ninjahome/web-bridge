@@ -14,7 +14,7 @@ class GameSettings {
 }
 
 class GameRoundInfo {
-    constructor(hash, dTime, winner, winTicketID, curBonus, random, winnerBonus) {
+    constructor(hash, dTime, winner, winTicketID, curBonus, random, winnerBonus,ticketsNo) {
         this.hash = hash;
         this.dTime = dTime;
         this.winner = winner;
@@ -22,15 +22,16 @@ class GameRoundInfo {
         this.curBonus = curBonus;
         this.random = random;
         this.bonusForWinner = winnerBonus;
+        this.ticketsNo = ticketsNo;
     }
 
     static fromBlockChainObj(obj) {
-        const curBonusInEth = ethers.utils.formatUnits(obj.bonus, 'ether');
-        const dTime = obj.discoverTime.toNumber() * 1000;
-        const bonusForWinner = ethers.utils.formatUnits(obj.bonusForWinner, 'ether');
+        const curBonusInEth = ethers.formatUnits(obj.bonus, 'ether');
+        const dTime = Number(obj.discoverTime) * 1000;
+        const bonusForWinner = ethers.formatUnits(obj.bonusForWinner, 'ether');
 
         return new GameRoundInfo(obj.randomHash, dTime, obj.winner, obj.winTicketID,
-            curBonusInEth, obj.randomVal, bonusForWinner);
+            curBonusInEth, obj.randomVal, bonusForWinner,Number(obj.ticketNo));
     }
 }
 
@@ -55,11 +56,25 @@ class PersonalData {
 }
 
 async function initGamePage() {
-    await checkMetaMaskEnvironment(initGameContract);
-    const address = __globalContractConf.get(__globalTargetChainNetworkID).gameLottery;
-    document.querySelector('.contract-address-value').textContent = address;
-    syncWinnerHistoryData().then(r => {
-    });
+
+    try {
+        await checkMetaMaskEnvironment(initGameContract);
+        const address = __globalContractConf.get(__globalTargetChainNetworkID).gameLottery;
+        document.querySelector('.contract-address-value').textContent = address;
+        showWaiting("loading from blockchain");
+        await __loadPageData();
+
+        syncWinnerHistoryData().then(r => {
+        });
+
+        initGamingCounter();
+
+    } catch (err) {
+        console.log(err);
+        showDialog(DLevel.Warning, "load game settings from block chain failed");
+    } finally {
+        hideLoading();
+    }
 }
 
 function showContractUrl() {
@@ -74,54 +89,39 @@ async function initGameContract(provider) {
         return;
     }
 
-    const signer = provider.getSigner(ninjaUserObj.eth_addr);
+    const signer = await provider.getSigner(ninjaUserObj.eth_addr);
     const conf = __globalContractConf.get(__globalTargetChainNetworkID);
     lotteryGameContract = new ethers.Contract(conf.gameLottery, gameContractABI, signer);
-
-    __loadPageData();
 }
 
-function __loadPageData() {
-
-    loadGameSettings().then(async r => {
-        setupSystemData();
-
-        setupCurrentRoundData().then(r => {
-        });
-
-        loadPersonalMeta().then(r => {
-            setupPersonalData();
-        });
-    });
+async function __loadPageData() {
+    await loadGameSettings()
+    await setupCurrentRoundData();
+    await loadPersonalMeta()
 }
 
 async function loadGameSettings() {
+    const [currentRoundNo, totalBonus, voteNo, tickPriceForOuter, bonusForPoints, isOpenToOuter] =
+        await lotteryGameContract.systemSettings();
+    const totalBonusInEth = ethers.formatUnits(totalBonus, 'ether');
+    const tickPriceInEth = ethers.formatUnits(tickPriceForOuter, 'ether');
+    gameSettings = new GameSettings(currentRoundNo, totalBonusInEth, voteNo,
+        tickPriceForOuter, tickPriceInEth, isOpenToOuter);
 
-    showWaiting("syncing system data from block chain")
-    try {
-        const [currentRoundNo, totalBonus, voteNo, tickPriceForOuter, isOpenToOuter] =
-            await lotteryGameContract.systemSettings();
-
-        const totalBonusInEth = ethers.utils.formatUnits(totalBonus, 'ether');
-        const tickPriceInEth = ethers.utils.formatUnits(tickPriceForOuter, 'ether');
-
-        gameSettings = new GameSettings(currentRoundNo, totalBonusInEth, voteNo,
-            tickPriceForOuter, tickPriceInEth, isOpenToOuter);
-
-    } catch (err) {
-        console.log(err);
-        showDialog(DLevel.Warning, "load game settings from block chain failed");
-    } finally {
-        hideLoading()
-    }
+    document.querySelector(".history-total-bonus").textContent = gameSettings.bonus;
+    document.querySelector(".round-number").textContent = gameSettings.roundNo;
+    document.querySelector(".ticket-price-for-outer-user").textContent = gameSettings.tickPriceInEth;
 }
 
 async function loadPersonalMeta() {
     try {
         const balance = await lotteryGameContract.balance(ninjaUserObj.eth_addr);
-        const balanceInEth = ethers.utils.formatUnits(balance, 'ether');
+        const balanceInEth = ethers.formatUnits(balance, 'ether');
+        document.getElementById("personal-balance-val").textContent = balanceInEth;
 
         const tickets = await lotteryGameContract.tickList(gameSettings.roundNo, ninjaUserObj.eth_addr);
+        document.getElementById("personal-ticket-no-val").textContent = tickets.length;
+
         if (tickets.length === 0) {
             personalData = new PersonalData(balanceInEth, [], []);
             return;
@@ -132,7 +132,6 @@ async function loadPersonalMeta() {
             const tickId = tickets[i];
             mapTickets.set(tickId, true);
         }
-
         personalData = new PersonalData(balanceInEth, tickets, mapTickets);
     } catch (err) {
         console.log(err);
@@ -140,41 +139,42 @@ async function loadPersonalMeta() {
     }
 }
 
-function setupSystemData() {
-    document.querySelector(".history-total-bonus").textContent = gameSettings.bonus;
-    document.querySelector(".round-number").textContent = gameSettings.roundNo;
-    document.querySelector(".ticket-price-for-outer-user").textContent = gameSettings.tickPriceInEth;
+function initGamingCounter() {
+    let apiCounter = 0;
+
+    const elem = document.getElementById("prize-pool-discover-time");
+    startCountdown(async function (days, hours, minutes, seconds, finished) {
+        if (finished) {
+            elem.innerText = i18next.t('game-status-with-draw');
+        } else {
+            elem.innerText = days + i18next.t('game-status-day') + hours + i18next.t('game-status-hour') + minutes
+                + i18next.t('game-status-minute') + seconds + i18next.t('game-status-second');
+        }
+
+        apiCounter += 1;
+        if (apiCounter < TimeIntervalForBlockChain) {
+            return;
+        }
+
+        apiCounter = 0;
+        await loadGameSettings();
+        await setupCurrentRoundData();
+    });
 }
 
 async function setupCurrentRoundData() {
     try {
-
         const gameInfo = await lotteryGameContract.gameInfoRecord(gameSettings.roundNo);
         const data = GameRoundInfo.fromBlockChainObj(gameInfo);
+        resetCounter(data.dTime);
 
         document.getElementById("prize-pool-bonus-val").textContent = data.curBonus;
         document.getElementById("prize-pool-random-hash").textContent = data.hash;
         document.getElementById("prize-pool-tick-no").textContent = gameSettings.voteNo;
-
-        const elem = document.getElementById("prize-pool-discover-time");
-        startCountdown(data.dTime, function (days, hours, minutes, seconds, finished) {
-            if (finished) {
-                elem.innerText = i18next.t('game-status-with-draw');
-                return;
-            }
-
-            elem.innerText = days + i18next.t('game-status-day') + hours + i18next.t('game-status-hour') + minutes
-                + i18next.t('game-status-minute') + seconds + i18next.t('game-status-second');
-        });
     } catch (err) {
         console.log(err);
         showDialog(DLevel.Warning, "load game data from block chain failed");
     }
-}
-
-function setupPersonalData() {
-    document.getElementById("personal-balance-val").textContent = personalData.balance;
-    document.getElementById("personal-ticket-no-val").textContent = personalData.tickets.length;
 }
 
 function showPersonalTicket() {
@@ -249,9 +249,9 @@ function hideInfoOfThisRound() {
 
 function fullFillGameCard(obj, cardDiv, showHideBtn) {
     cardDiv.style.display = 'block';
-    cardDiv.querySelector('.one-round-bonus-val').textContent = ethers.utils.formatUnits(obj.bonus, 'ether');
+    cardDiv.querySelector('.one-round-bonus-val').textContent = ethers.formatUnits(obj.bonus, 'ether');
 
-    const dTime = new Date(obj.discoverTime * 1000);
+    const dTime = new Date(Number(obj.discoverTime) * 1000);
     cardDiv.querySelector('.one-round-discover-val').textContent = dTime.toString();
 
     cardDiv.querySelector('.history-game-random').textContent = obj.randomVal;
@@ -260,34 +260,38 @@ function fullFillGameCard(obj, cardDiv, showHideBtn) {
     cardDiv.querySelector('.history-game-winner-ticket').textContent = obj.winTicketID;
     if (showHideBtn) {
         cardDiv.querySelector('.load-history-btn').style.display = 'block';
-    }else{
+    } else {
         cardDiv.querySelector('.load-history-btn').style.display = 'none';
     }
 }
 
 let __toRoundNo = 0;
-
 async function loadHistoryData() {
-    const parentDiv = document.querySelector('.history-data-list');
-    const moreBtn = document.querySelector('.history-data-list-more-btn');
-    const isShowing = parentDiv.style.display === 'block';
+    try {
+        const parentDiv = document.querySelector('.history-data-list');
+        const moreBtn = document.querySelector('.history-data-list-more-btn');
+        const isShowing = parentDiv.style.display === 'block';
 
-    if (isShowing){
-        this.textContent = i18next.t('all-history-query-btn');
-        parentDiv.style.display = 'none';
+        if (isShowing) {
+            this.textContent = i18next.t('all-history-query-btn');
+            parentDiv.style.display = 'none';
+            parentDiv.innerHTML = '';
+            moreBtn.style.display = 'none';
+            return;
+        }
+        this.textContent = i18next.t('hide-history-data-btn');
+
+        moreBtn.style.display = 'block';
+        __toRoundNo = Number(gameSettings.roundNo) - 1;
+
+        parentDiv.style.display = 'block';
         parentDiv.innerHTML = '';
-        moreBtn.style.display = 'none';
-        return;
+
+        await __loadHistoryData(parentDiv);
+    } catch (err) {
+        console.log(err);
+        showDialog(DLevel.Warning, err.toString());
     }
-    this.textContent = i18next.t('hide-history-data-btn');
-
-    moreBtn.style.display = 'block';
-    __toRoundNo = gameSettings.roundNo - 1;
-
-    parentDiv.style.display = 'block';
-    parentDiv.innerHTML = '';
-
-    await __loadHistoryData(parentDiv);
 }
 
 async function moreHistoryData() {
@@ -307,8 +311,22 @@ async function __loadHistoryData(parentDiv) {
         const from = __toRoundNo > 20 ? (__toRoundNo - 20) : 0;
         showWaiting("syncing history game data from block chain")
 
-        const obj = await lotteryGameContract.historyRoundInfo(from, __toRoundNo);
-        let reversedArray = obj.slice().reverse();
+        const arrayProxy = await lotteryGameContract.historyRoundInfo(from, __toRoundNo);
+
+        const resultArray = arrayProxy.map(entry => ({
+            randomHash: entry.randomHash,
+            discoverTime: entry.discoverTime, // 将BigNumber转换为数字
+            winner: entry.winner,
+            winTicketID: entry.winTicketID,
+            bonus: entry.bonus,
+            bonusForWinner: entry.bonusForWinner,
+            randomVal: entry.randomVal,
+            ticketNo: entry.ticketNo,
+        }));
+
+        console.log(resultArray);
+
+        let reversedArray = resultArray.slice().reverse();
 
         for (const gameInfo of reversedArray) {
             const div = document.getElementById('history-data-one-round-template').cloneNode(true);
@@ -323,6 +341,7 @@ async function __loadHistoryData(parentDiv) {
         }
 
     } catch (err) {
+        console.log(err)
         showDialog(DLevel.Warning, "load history data err:" + err.toString());
     } finally {
         hideLoading();
@@ -331,7 +350,8 @@ async function __loadHistoryData(parentDiv) {
 
 async function buyTicket() {
     if (!gameSettings) {
-        await loadGameSettings();
+        showDialog(DLevel.Tips, "blockchain data need to sync, reload this page first please.")
+        return;
     }
 
     if (!gameSettings.isOpen) {
@@ -348,7 +368,7 @@ async function procTicketPayment(no, ifShare) {
         return;
     }
 
-    const val = gameSettings.tickPrice.mul(no);
+    const val = gameSettings.tickPrice * BigInt(no);
     try {
         showWaiting("prepare to pay")
         const txResponse = await lotteryGameContract.buyTicketFromOuter(no, {value: val});
@@ -363,16 +383,19 @@ async function procTicketPayment(no, ifShare) {
         await PostToSrvByJson("/updatePointsForSingleBets", {
             create_time: 0,
             vote_count: Number(no),
+            tx_hash:txResponse.hash,
         });
         showDialog(DLevel.Success, "buy success");
         if (ifShare) {
-            __shareVoteToTweet(0, no, i18next.t('voter-slogan')).then(r => {
+            const slogan = i18next.t('slogan_1') + gameSettings.bonus  +" ETH. "+i18next.t('voter-slogan')
+                __shareVoteToTweet(0, no, slogan).then(r => {
                 console.log("share to twitter success")
             });
         }
-        __loadPageData();
+        await __loadPageData();
 
     } catch (err) {
+        console.log(err)
         checkMetamaskErr(err);
     } finally {
         hideLoading();
@@ -412,7 +435,7 @@ function showUserWinHistory() {
             winnerCard.querySelector('.one-round-bonus-val').textContent = obj.bonus;
             winnerCard.querySelector('.one-round-ticket-id').textContent = obj.win_ticket_id;
             winnerCard.querySelector('.one-round-round-val').textContent = obj.round_no;
-            winnerCard.querySelector('.one-round-discover-val').textContent = formatTime(obj.discover_time);
+            winnerCard.querySelector('.one-round-discover-val').textContent = formatTime(Number(obj.discover_time * 1000));
             winnerCard.querySelector('.one-round-bonus-for-me').textContent = obj.bonus_for_winner;
 
             historyDiv.appendChild(winnerCard);
@@ -427,6 +450,13 @@ function showUserWinHistory() {
 }
 
 async function withdrawBonus() {
+
+    if (personalData.balance <= 0.00001) {
+        // console.log(personalData.balance)
+        showDialog(DLevel.Warning, "Insufficient Balance");
+        return;
+    }
+
     try {
         showWaiting("calling to block chain");
 
@@ -443,7 +473,6 @@ async function withdrawBonus() {
         showDialog(DLevel.Success, "withdraw success");
 
         loadPersonalMeta().then(r => {
-            setupPersonalData();
         });
 
     } catch (err) {

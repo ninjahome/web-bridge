@@ -5,15 +5,15 @@ function toHex(number) {
 
 const __globalContractConf = new Map([
     [toHex(421614), {
-        tweetVote: "0xbC086f9cF06Bc186a1a6eB619b50302dD347518C",
-        gameLottery: "0x934DA0D6541FAEF287c1bCea0Bc6D7BE79036727",
+        tweetVote: "0x4c9aF3E257eC34Ce5b32816896A84F733B6ADb9D",
+        gameLottery: "0x7e1394f0b7C460eE717cea8A7D509379ae757D2e",
         kolKey: "0x8836D288165F6136b2be970DAed0612B37dD0B6A",
         postPrice: "0.005",
         votePrice: "0.005"
     }],
     [toHex(42161), {
-        tweetVote: "0x6212246b6bE9D814DF4DC348370D590B41EDBB54",
-        gameLottery: "0xbeC347D7A0914A1BB669e24204b98CeBa90DD456",
+        tweetVote: "0x6500Cda46979F1956a46486B1a88768cb425E23a",
+        gameLottery: "0x1B85654c3576972Bdd457413E9BEcCc27B52f6a1",
         kolKey: "",
         postPrice: "0.005",
         votePrice: "0.005"

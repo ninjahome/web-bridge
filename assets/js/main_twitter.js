@@ -74,7 +74,6 @@ async function __fillNormalTweet(clear, parkID, data, templateId, cardID, overla
         tweetHeader.style.display = '';
         tweetHeader.id = "";
 
-
         const sibling = tweetCard.querySelector('.tweet-footer')
         const contentArea = await setupCommonTweetHeader(tweetHeader, tweet, overlap);
 
@@ -93,11 +92,9 @@ async function __fillNormalTweet(clear, parkID, data, templateId, cardID, overla
         const showMoreBtn = tweetCard.querySelector('.show-more');
         if (contentArea.scrollHeight <= contentArea.clientHeight) {
             showMoreBtn.style.display = 'none';
-            sibling.style.marginTop = '8px';
         } else {
             showMoreBtn.textContent = i18next.t('tweet-show-more');
             showMoreBtn.style.display = 'block';
-            sibling.style.marginTop = '-12px';
         }
     }
 }
@@ -113,47 +110,77 @@ async function fillTweetParkAtHomePage(clear) {
         });
 }
 
+async function convertTweetContentToImg(formattedContent, format = 'image/jpeg', quality = 1.0) {
+    try {
+        const target = document.getElementById('hidden-tweet-for-img');
+        const content = document.getElementById('hidden-tweet-txt');
 
-let currentTargetIdx = 1
-
-async function checkAtTarget() {
-    const tweetsContentTxtArea = document.getElementById("tweets-content-txt-area");
-    const text = tweetsContentTxtArea.innerText;
-    const usrName = findAtTarget(text)
-    if (!usrName) {
-        return;
+        content.innerText = formattedContent;
+        const canvas = await html2canvas(target, {
+            dpi: 300, // Set a higher DPI
+            scale: 2  // Increase the scaling level
+        });
+        const imgURL = canvas.toDataURL(format, quality);
+        content.innerText = "";
+        return imgURL;
+    } catch (e) {
+        console.log(e);
     }
-    console.log(usrName);
-
-    const data = await GetToSrvByJson('/searchTwitterUsr?q=' + usrName);
-    if (!data) {
-        return;
-    }
-    console.log(data);
 }
 
-function findAtTarget(text) {
-    const regex = /(?:^|\s)@(\w+)/g;
-    let match;
-    if ((match = regex.exec(text)) !== null) {
-        console.log(`Found mention: ${match[currentTargetIdx]}`);
-        return match[currentTargetIdx];
+function getCompositedTxt(formattedContent, slogan, sloganLen) {
+    let prefix = safeSubstring(formattedContent, defaultTextLenForTweet - 4 - sloganLen) + "...";
+    let compositedTxt = prefix + slogan;
+    const twtLen = twttr.txt.getTweetLength(compositedTxt);
+    if (twtLen > defaultTextLenForTweet) {
+        prefix = safeSubstring(formattedContent, (defaultTextLenForTweet - 4 - sloganLen) / 2) + "...";
+        compositedTxt = prefix + slogan;
     }
-    return null;
+    // console.log(compositedTxt, twttr.txt.getTweetLength(compositedTxt));
+    return compositedTxt;
 }
 
-async function preparePostMsg() {
-    const contentHtml = document.getElementById("tweets-content-txt-area").innerHTML.trim();
-    const formattedContent = contentHtml
-        .replace(/<br\s*[\/]?>/gi, "\n") // 将 <br> 标签转换为换行符
-        .replace(/<\/?p>/gi, "\n") // 将 <p> 标签转换为换行符
-        .replace(/<[^>]+>/g, ''); // 移除所有其他HTML标签
-    const images = document.querySelectorAll("#twImagePreview img");
-    if (!formattedContent && images.length === 0) {
-        showDialog(DLevel.Warning, "content can't be empty")
+async function convertContentToImages(formattedContent, imageData) {
+    let tmpSplitStr = formattedContent;
+    for (let i = 0; i < maxImgPerTweet; i++) {
+        // const substr = safeSubstring(tmpSplitStr, maxTweetLenPerPage);
+        const substr = tmpSplitStr.substring(0, maxTweetLenPerPage);
+        // console.log("substring len:", substr.length, substr);
+        const txtImg = await convertTweetContentToImg(substr);
+        imageData.push(new ImageRawData("converted-" + i, txtImg, ""));
+        tmpSplitStr = tmpSplitStr.substring(substr.length);
+        // console.log("last content len:", tmpSplitStr.length);
+        if (substr.length < maxTweetLenPerPage) {
+            break
+        }
+    }
+}
+
+function parseTweetContent(parentDiv) {
+
+    // const contentHtml = parentDiv.querySelector(".tweets-content-txt-area").innerHTML.trim();
+    // const formattedTxt = contentHtml
+    //     .replace(/<div><br><\/div>/gi, "\n") //
+    //     .replace(/(<div><\/div>|<p><\/p>)/gi, "\n") // 合并空的 <div></div> 和 <p></p> 转换
+    //     .replace(/(<br\s*\/?>|<\/div>|<\/p>)/gi, "\n") // 合并所有单独的换行符转换
+    //     .replace(/&nbsp;/gi, " ") // 将 &nbsp; 转换为空格
+    //     .replace(/<[^>]+>/g, '') // 移除所有其他HTML标签
+    //     .replace(/\n+$/, '');
+    // console.log(contentHtml);
+// return;
+    const formattedTxt = parentDiv.querySelector(".tweets-content-txt-area").value;
+    // console.log(formattedTxt);
+    // return;
+    const images = parentDiv.querySelectorAll("#twImagePreview img");
+    if (formattedTxt.length < 4) {
+        showDialog(DLevel.Warning, "content too short")
         return null;
     }
 
+    if (images.length > maxImgPerTweet) {
+        showDialog(DLevel.Warning, "too many images to post");
+        return null;
+    }
     const imageData = Array.from(images).map(img => {
         const thumbnail = img.src
         const raw = img.getAttribute('data-raw');
@@ -161,49 +188,94 @@ async function preparePostMsg() {
         return new ImageRawData(hash, raw, thumbnail);
     });
 
-    console.log("formattedContent length:=>", formattedContent.length, images.length);
-    let validTxtLen = maxTextLenPerImg * (maxImgPerTweet - images.length);
-    if (validTxtLen < 0) {
-        showDialog(DLevel.Warning, "too many images to post");
-        return;
-    }
-    if (validTxtLen === 0) {
-        validTxtLen = defaultTextLenForTweet;
+    return {formattedTxt, imageData}
+}
+
+function initSloganTxt(nj_tw_id) {
+    return "\r\n" + i18next.t('slogan_1')
+        + gameContractMeta.totalBonus
+        + i18next.t('slogan_2')
+        + "https://" + window.location.hostname + "/buyRights?NjTID="
+        + nj_tw_id;
+}
+
+async function procTweetContent(tweetContent, slogan) {
+
+    let compositedTxt = tweetContent.formattedTxt + slogan;
+    let result = twttr.txt.parseTweet(compositedTxt);
+    if (result.valid === true) {
+        return compositedTxt;
     }
 
-    if (formattedContent.length > validTxtLen) {
-        showDialog(DLevel.Warning, "tweet content too long");
-        return
+    const sloganLen = twttr.txt.getTweetLength(slogan);
+    if (maxImgPerTweet === tweetContent.imageData.length) {
+        showDialog(DLevel.Warning, "tweet content should be short than" + (defaultTextLenForTweet - sloganLen) + " if you have 4 images");
+        return null;
     }
 
-    const tweet = new TweetContentToPost(formattedContent,
-        (new Date()).getTime(), ninjaUserObj.eth_addr, ninjaUserObj.tw_id);
-    const message = JSON.stringify(tweet);
+    const lastValidTxtLen = maxTweetLenPerPage * (maxImgPerTweet - tweetContent.imageData.length);
+    if (tweetContent.formattedTxt.length >= lastValidTxtLen) {
+        showDialog(DLevel.Warning, "max tweet content length is:" + lastValidTxtLen + " if you have " + tweetContent.imageData.length + " images");
+        return null;
+    }
 
-    const signature = await metamaskObj.request({
+    await convertContentToImages(tweetContent.formattedTxt, tweetContent.imageData)
+
+    return getCompositedTxt(tweetContent.formattedTxt, slogan, sloganLen);
+}
+
+async function preparePostMsg(parentDiv) {
+    const tweetContent = parseTweetContent(parentDiv);
+    if (!tweetContent) {
+        return null;
+    }
+
+    const nj_tw_id = (new Date()).getTime();
+    const slogan = initSloganTxt(nj_tw_id);
+
+    const compositedTxt = await procTweetContent(tweetContent, slogan);
+    if (!compositedTxt) {
+        return null;
+    }
+
+    const tweet = new TweetContentToPost(tweetContent.formattedTxt,
+        nj_tw_id, ninjaUserObj.eth_addr, ninjaUserObj.tw_id, compositedTxt);
+    const message = JSON.stringify(tweet)
+
+    const signature = await window.ethereum.request({
         method: 'personal_sign', params: [message, ninjaUserObj.eth_addr],
     });
+
     if (!signature) {
         showDialog(DLevel.Warning, "empty signature")
         return null;
     }
 
-    return new SignDataForPost(message, signature, JSON.stringify(imageData));
+    return new SignDataForPost(message, signature, JSON.stringify(tweetContent.imageData));
 }
 
-function updatePaymentStatusToSrv(tweet) {
+function updatePaymentStatusToSrv(tweet, tx_hash) {
     return PostToSrvByJson("/updateTweetPaymentStatus", {
         create_time: tweet.create_time,
         status: tweet.payment_status,
-        hash: tweet.prefixed_hash
+        hash: tweet.prefixed_hash,
+        tx_hash: tx_hash,
     }).then(r => {
         console.log(r);
     })
 }
 
-async function postTweetWithPayment() {
+async function postTweetWithPayment(parentID) {
+
+    if (!ninjaUserObj.tw_id) {
+        showDialog(DLevel.Warning, "bind twitter first", bindingTwitter);
+        return;
+    }
+
     try {
-        const tweetObj = await preparePostMsg();
+        const parentDiv = document.querySelector(parentID)
+        showWaiting("preparing dessage")
+        const tweetObj = await preparePostMsg(parentDiv);
         if (!tweetObj) {
             return;
         }
@@ -213,20 +285,19 @@ async function postTweetWithPayment() {
         if (!basicTweet) {
             return;
         }
-        hideLoading();
-        await procPaymentForPostedTweet(basicTweet);
+        clearDraftTweetContent(parentDiv);
 
-        showWaiting("updating tweet status")
-        await updatePaymentStatusToSrv(basicTweet)
-        clearDraftTweetContent();
+        await procPaymentForPostedTweet(basicTweet, async function (newTweet, txHash) {
+            await updatePaymentStatusToSrv(newTweet, txHash);
+            if (curScrollContentID === 0) {
+                __loadTweetsAtHomePage(true).then(() => {
+                });
+            } else if (curScrollContentID === 2) {
+                __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(() => {
+                });
+            }
+        });
 
-        if (curScrollContentID === 0) {
-            __loadTweetsAtHomePage(true).then(() => {
-            });
-        } else if (curScrollContentID === 2) {
-            __loadTweetAtUserPost(true, ninjaUserObj.eth_addr).then(() => {
-            });
-        }
     } catch (err) {
         checkMetamaskErr(err);
     } finally {
@@ -249,8 +320,7 @@ async function showPostTweetDiv() {
     modal.style.display = 'block';
     document.getElementById('modal-overlay').style.display = 'block';
 
-
-    const postBtn = document.getElementById("tweet-post-with-eth-btn-txt");
+    const postBtn = document.getElementById("tweet-post-with-eth-btn-txt-2");
     postBtn.innerText = i18next.t('btn-tittle-post-tweet') + "(" + voteContractMeta.votePriceInEth + " eth)"
 }
 
@@ -260,10 +330,11 @@ function closePostTweetDiv() {
     document.getElementById('modal-overlay').style.display = 'none';
 }
 
-function clearDraftTweetContent() {
-    document.getElementById("tweets-content-txt-area").innerHTML = '';
-    document.getElementById("twImagePreview").innerHTML = '';
-    document.getElementById("twImagePreview").style.display = 'none'
+function clearDraftTweetContent(parentDiv) {
+    parentDiv.querySelector(".tweets-content-txt-area").value = '';
+    parentDiv.querySelector(".tweets-content-txt-area").style.height = '5em'
+    parentDiv.querySelector(".img-wrapper-container").innerHTML = '';
+    parentDiv.querySelector(".img-wrapper-container").style.display = 'none'
 }
 
 function showFullTweetContent() {
@@ -281,34 +352,45 @@ function showFullTweetContent() {
     } else {
         tweetContent.style.display = '-webkit-box';
         tweetContent.classList.add('tweet-content-collapsed');
-        tweetCard.style.maxHeight = '400px';
         this.setAttribute('data-more', 'true');
         this.innerText = i18next.t('tweet-show-more');
     }
 }
 
-function loadImgFromLocal() {
-    const images = document.querySelectorAll("#twImagePreview img");
+function loadImgFromLocal(parentId) {
+
+    if (!ninjaUserObj.tw_id) {
+        showDialog(DLevel.Warning, "bind twitter first", bindingTwitter);
+        return;
+    }
+
+    const parentDiv = document.querySelector(parentId);
+    const images = parentDiv.querySelectorAll("#twImagePreview img");
     if (images.length >= maxImgPerTweet) {
         showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
         return;
     }
-    document.getElementById('fileInput').click();
+    parentDiv.querySelector('.tweet-file-input').click();
 }
 
-function previewImage() {
-    let files = document.getElementById('fileInput').files;
-    const imagePreviewDiv = document.getElementById('twImagePreview');
+function previewImage(parentId) {
+    const parentDiv = document.querySelector(parentId);
+    let files = parentDiv.querySelector('.tweet-file-input').files;
+    const imagePreviewDiv = parentDiv.querySelector('.img-wrapper-container');
     imagePreviewDiv.style.display = 'block';
-    const images = document.querySelectorAll("#twImagePreview img");
+    const images = parentDiv.querySelectorAll("#twImagePreview img");
     const validLen = maxImgPerTweet - images.length;
     if (validLen <= 0) {
         return;
     }
 
+    if (files.length > validLen){
+        showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
+    }
+
     files = Array.from(files).slice(0, validLen);
     files.forEach(file => {
-        const imgWrapper = document.getElementById('img-wrapper-template').cloneNode(true);
+        const imgWrapper = parentDiv.querySelector('.img-wrapper').cloneNode(true);
         imgWrapper.style.display = 'block';
         imgWrapper.id = "";
         const img = imgWrapper.querySelector('.img-preview');
@@ -317,16 +399,29 @@ function previewImage() {
             imagePreviewDiv.removeChild(imgWrapper);
         };
 
-        const reader = new FileReader();
-        reader.onload = async function (e) {
-            img.setAttribute('data-raw', e.target.result);
-            img.src = await createThumbnail(e.target.result, 400, 400);
-            const msg = ethers.utils.toUtf8Bytes(e.target.result);
-            const hash = ethers.utils.sha256(msg);
+        readFileAsBlob(file).then(async blob => {
+            let rawBase64Str = blob.src;
+            // console.log("blob size:", rawBase64Str.length);
+            if (rawBase64Str.length > MaxRawImgSize) {
+                rawBase64Str = await adjustImageToApproxTargetBase64Length(blob, MaxRawImgSize);
+                // rawBase64Str = await blobToBase64(compressedBlob);
+                // console.log('image Base64 String:', rawBase64Str.length);
+            }
+
+            img.setAttribute('data-raw', rawBase64Str);
+            const hash = ethers.hashMessage(rawBase64Str);
             img.setAttribute('data-hash', hash);
+
+            if (blob.src.length > MaxThumbnailSize) {
+                img.src = await adjustImageToApproxTargetBase64Length(blob, MaxThumbnailSize);
+                // img.src = await blobToBase64(thumbNailBlob);
+                // console.log("thumbNail size:", img.src.length);
+            } else {
+                img.src = blob.src;
+            }
             imagePreviewDiv.appendChild(imgWrapper);
-        };
-        reader.readAsDataURL(file);
+        });
     });
-    document.getElementById('fileInput').value = '';
+
+    parentDiv.querySelector('.tweet-file-input').value = '';
 }

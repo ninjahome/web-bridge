@@ -18,6 +18,7 @@ type TweetVoteAction struct {
 	VoteCount       int    `json:"vote_count"`
 	VoteForTheTweet int    `json:"user_vote_count"`
 	Slogan          string `json:"slogan"`
+	TxHash          string `json:"tx_hash"`
 }
 
 type TweetVotePersonalRecord struct {
@@ -195,8 +196,17 @@ func (dm *DbManager) UpdatePointsForSingleBets(vote *TweetVoteAction, voter stri
 func (dm *DbManager) UpdateTweetVoteStatic(vote *TweetVoteAction, voter string) error {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut*3)
 	defer cancel()
+	stat := &TweetPaymentStatus{
+		CreateTime: vote.CreateTime,
+		TxHash:     vote.TxHash,
+		Status:     TxStSuccess,
+	}
+	err := dm.checkTransactionStatus(opCtx, stat)
+	if err != nil {
+		return err
+	}
 
-	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
+	err = dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
 		createTime := fmt.Sprintf("%d", vote.CreateTime)
 		tweetDoc := dm.fileCli.Collection(DBTableTweetsPosted).Doc(createTime)
 

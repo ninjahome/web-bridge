@@ -1,43 +1,44 @@
-async function setupGameInfo(startCounter) {
-
+function setupGameInfo(startCounter) {
     const gameArea = document.getElementById("lottery-game-info");
-
     gameArea.querySelector('.lottery-game-round-no').textContent = gameContractMeta.curRound;
     gameArea.querySelector('.lottery-amount').textContent = gameContractMeta.curBonus;
     document.getElementById('lottery-total-amount').textContent = gameContractMeta.totalBonus;
     document.getElementById('lottery-current-ticket-amount').textContent = gameContractMeta.ticketNo;
     document.getElementById('bonus-for-points-value').textContent = gameContractMeta.bonusForPoint;
+}
 
-    if (!startCounter) {
-        return;
-    }
+function setCounterInfo(countDown, days, hours, minutes, seconds) {
+    countDown.querySelector(".days").textContent = days;
+    countDown.querySelector(".hours").textContent = hours;
+    countDown.querySelector(".minutes").textContent = minutes;
+    countDown.querySelector(".seconds").textContent = seconds;
+}
 
+function initTimerOfCounterDown() {
     let apiCounter = 0;
-    startCountdown(gameContractMeta.dTime, function (days, hours, minutes, seconds, finished) {
+    resetCounter(gameContractMeta.dTime);
+    startCountdown(async function (days, hours, minutes, seconds, finished) {
+
         const countDown = document.getElementById("lottery-count-down");
-        const countDownResult = document.getElementById("countdown-result");
+        const countDownResult = document.getElementById("countdown-result-parent");
+
         if (finished) {
             countDownResult.style.display = 'block';
             countDown.style.display = 'none';
-            initGameContractMeta().then(r => {
-                setupGameInfo(true);
-            });
-            return;
+        } else {
+            countDown.style.display = 'flex';
+            countDownResult.style.display = 'none';
+            setCounterInfo(countDown, days, hours, minutes, seconds);
         }
 
         apiCounter += 1;
-        countDown.style.display = '';
-        countDownResult.style.display = 'none';
-        countDown.querySelector(".days").textContent = days;
-        countDown.querySelector(".hours").textContent = hours;
-        countDown.querySelector(".minutes").textContent = minutes;
-        countDown.querySelector(".seconds").textContent = seconds;
-
-        if (apiCounter >= 20) {
-            apiCounter = 0;
-            initGameContractMeta().then(r => {
-                setupGameInfo(false);
-            });
+        if (apiCounter < TimeIntervalForBlockChain) {
+            return;
         }
+
+        apiCounter = 0;
+        await initGameContractMeta();
+        resetCounter(gameContractMeta.dTime);
+        setupGameInfo();
     });
 }

@@ -7,192 +7,101 @@
     <link rel="icon" href="/assets/file/favicon.ico" type="image/x-icon">
     <script src="/assets/conf.js"></script>
     <script src="/assets/js/utils.js"></script>
-    <script src="https://unpkg.com/i18next@latest/dist/umd/i18next.min.js"></script>
-    <script src="https://unpkg.com/i18next-browser-languagedetector@latest/dist/umd/i18nextBrowserLanguageDetector.min.js"></script>
-
+    <script src="/assets/js/i18next.min.js"></script>
+    <script src="/assets/js/i18nextBrowserLanguageDetector.min.js"></script>
 </head>
 <style>
+
     * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
     }
 
+    h1, h2, h3, h4 {
+        margin: 0;
+    }
+
     body {
-        font-family: Helvetica, Arial, sans-serif;
+        font-family: "Baloo Chettan 2", Helvetica, Arial, sans-serif, "Alibaba PuHuiTi";
         display: flex;
         height: 100vh;
+        min-width: 1200px; /* 设置最小宽度为1200px */
     }
 
-    .d-radius {
-        border-radius: 9999px;
-    }
-
-    .d-radius2 {
-        border-radius: 16px;
-    }
-
-    .left-container, .right-container {
-        /* 使用 box-sizing: border-box; 可以让 padding 和 border 包含在宽度内 */
-        box-sizing: border-box;
-    }
-
-    @media (max-width: 800px) {
-        .left-container {
-            display: none; /* 当屏幕宽度小于1000px时隐藏左侧容器 */
-        }
-
-        .right-container {
-            width: 100%; /* 使右侧容器填满整个可用空间 */
-        }
-    }
-
-    .left-container {
-        flex: 4;
-        background-color: #f0f0f0;
-        align-items: center;
-        justify-content: center;
-        background-image: url('/assets/file/border-image.png'); /* 背景图片路径 */
-        padding: 48px 120px;
-    }
-
-    .left-container img {
-        max-height: 100%;
-        max-width: 100%;
-        display: block;
-    }
-
-    .route-list li .sequence-number {
-        font-size: 12px; /* 单独设置序列号的字体大小 */
-    }
-
-
-    .route-list li {
-        font-family: 'Courier New', monospace; /* 打字机字体样式 */
-        font-size: 42px;
-        font-weight: bold;
-        -webkit-text-stroke: 1px #4848D8; /* 文字边框颜色和宽度 */
-        color: transparent; /* 将文字颜色设置为透明 */
-        overflow: hidden; /* 超出部分隐藏 */
-        line-height: 1.2;
-        margin: 4px 0;
-    }
-
-    .route-list li.completed {
-        color: #4848D8; /* 实心字体样式 */
-        -webkit-text-stroke: 0 #4848D8; /* 文字边框颜色和宽度 */
-    }
-
-    .route-list li.uncompleted {
-        -webkit-text-stroke: 1px #4848D8; /* 空心字体样式 */
-        color: transparent;
-    }
-
-    .route-list li.typing::after {
-        content: '';
-        display: inline-block;
-        vertical-align: middle;
-        width: 8px; /* 调整光标宽度 */
-        height: 0.8em; /* 光标高度与文本高度相同 */
-        background-color: #4848D8; /* 设置光标颜色 */
-        opacity: 1;
-        animation: blink 1s step-end infinite;
-    }
-
-    @keyframes blink {
-        from, to { opacity: 1; }
-        50% { opacity: 0; }
-    }
-
-    .route-list li.completed::after {
-        content: '\2713'; /* 使用Unicode字符作为图标 */
-        color: #4848D8; /* 设置图标颜色 */
-        margin-left: 5px; /* 在文本和图标之间添加一些间隔 */
-        font-weight: bold; /* 可选：使图标更加醒目 */
-    }
-
-    /* 右侧的样式 */
     .right-container {
-        flex: 6;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: #F9F9FA;
-        padding-top: 240px;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        width: 100%;
+        height: 100%;
+        background-image: url('/assets/file/bg-img.png'); /* 背景图片路径 */
     }
 
     .container {
-        margin: 48px;
-    }
-
-    .info-section {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 136px;
-    }
-
-    .logo {
-        width: 52px;
-        display: block;
-        border-radius: 50%;
-        margin-bottom: 4px;
-    }
-
-    .cached-twitter-name {
-        font-size: 20px;
-        font-weight: bold;
-        color: #1F1E1E;
-    }
-
-    .product-description {
-        color: #1F1E1E;
-        font-size: 16px;
-        margin-top: 4px;
+        position: fixed;
+        top: 25vh; /* 调整为视口高度的50%，意味着顶部距离视口顶部的距离为视口高度的一半 */
+        right: 20vw; /* 调整为视口宽度的50%，意味着右侧距离视口右侧的距离为视口宽度的一半 */
+        transform: translate(25%, -20%); /* 使用transform来精确调整.container的中心位置 */
+        border-radius: 32px;
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 72px 56px;
     }
 
     .web3-id-label {
-        width: 386px;
-        background-color: #F1F2F3;
-        border: 1px dashed #D3D5D6;
-        padding: 16px 0; /* 添加一些内边距，使内容不紧贴边框 */
+        width: 448px;
+        background-color: #ffffff;
+        border: 1px dashed #271D1E;
+        padding: 18px 0; /* 添加一些内边距，使内容不紧贴边框 */
         display: inline-block; /* 使背景色和边框只包裹内容 */
         word-wrap: break-word; /* 在超出宽度时自动换行 */
-        margin-bottom: 16px;
+        margin: 16px 0;
+        border-radius: 12px;
+    }
+
+    .web3-id-label span {
+        font-size: 18px;
+        margin: 0 16px;
+    }
+
+    .web3-idTips {
+        display: block;
+        color: #898989;
+        font-size: 16px !important;
     }
 
     button {
-        width: 386px;
-        height: 46px;
+        border-radius: 12px;
+        width: 448px;
+        height: 52px;
         font-size: 16px;
-        font-weight: bold;
+        font-weight: 600;
         color: white;
         background-color: #1B1B1D;
         border: none;
         margin-bottom: 16px;
+        font-family: "Baloo Chettan 2", "Alibaba PuHuiTi", Helvetica, Arial, sans-serif;
     }
 
     .title-container {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 12px 0;
-    }
-
-    .dashed-line {
-        border-top: 1px dashed #E3E3E3;
-        width: 166px;
-        height: 0;
-        margin: 0 5px;
+        margin-left: 16px;
     }
 
     .binding-section p {
+        width: 448px;
         display: flex;
         flex-direction: column;
         align-items: center;
         text-align: center;
         font-size: 14px;
         color: #7E7F82;
+        margin-top: 32px;
     }
 
     .services {
@@ -210,9 +119,10 @@
     }
 
     .service img {
-        width: 40px;
-        height: 40px;
-        margin-bottom: 6px;
+        width: 46px;
+        height: 46px;
+        margin: 0 8px;
+
     }
 
     .services .service span {
@@ -220,144 +130,361 @@
         font-size: 14px;
     }
 
-    .logo-container.active{
+    .logo-container.active {
         display: flex;
     }
 
     .logo-container {
         display: none;
         position: relative;
-        align-items: center;
-        justify-content: center;
     }
 
-    .logo-container img {
-        border: 2px solid #4848D8; /* 边框样式 */
-        border-radius: 50%;
-    }
 
     .connected-icon {
         position: absolute;
-        bottom: -1px; /* 根据需要调整位置 */
-        left: 12px; /* 根据需要调整位置 */
-        width: 16px; /* 小图标大小 */
-        height: 16px; /* 小图标大小 */
-        background-color: #4848D8; /* 小图标颜色，这里是绿色 */
+        bottom: 0; /* 根据需要调整位置 */
+        left: 4px; /* 根据需要调整位置 */
+        width: 20px; /* 小图标大小 */
+        height: 20px; /* 小图标大小 */
+        background-color: #76A8F1; /* 小图标颜色，这里是绿色 */
         border-radius: 50%; /* 圆形图标 */
         background-image: url('/assets/file/connected.png'); /* 背景图片路径 */
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: cover;
+    }
+
+    .web2-binding,
+    .web3-binding,
+    .blockchain-binding {
+        width: 448px;
+        height: 76px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: nowrap;
+        background-color: white;
+        border-radius: 12px;
+        margin: 8px 0;
+        padding: 0 8px;
+    }
+
+
+    .service-nostr,
+    .service-LensProtocol,
+    .service-avatars {
+        transition: box-shadow 0.3s ease; /* 添加过渡效果使阴影变化更平滑 */
+        border-radius: 50%;
+    }
+
+    /*.service-nostr :hover {*/
+    /*    border-radius: 50%;*/
+    /*    transition: box-shadow 0.3s ease; !* 添加过渡效果使阴影变化更平滑 *!*/
+    /*    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); !* 鼠标悬停时添加阴影 *!*/
+    /*    cursor: pointer;*/
+    /*}*/
+
+    /*.service-LensProtocol :hover {*/
+    /*    border-radius: 50%;*/
+    /*    transition: box-shadow 0.3s ease; !* 添加过渡效果使阴影变化更平滑 *!*/
+    /*    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); !* 鼠标悬停时添加阴影 *!*/
+    /*    cursor: pointer;*/
+    /*}*/
+
+    /*.service-avatars :hover {*/
+    /*    border-radius: 50%;*/
+    /*    transition: box-shadow 0.3s ease; !* 添加过渡效果使阴影变化更平滑 *!*/
+    /*    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); !* 鼠标悬停时添加阴影 *!*/
+    /*    cursor: pointer;*/
+    /*}*/
+
+    ul {
+        list-style: none;
+    }
+
+    .styles_apps {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        grid-gap: 1.2rem 1.2rem;
+        gap: 1.2rem 1.2rem;
+        padding: 1.5rem;
+        background-color: white;
+        width: 100%;
+        max-width: 312px;
+        border-radius: 12px;
+        box-shadow: rgba(0, 0, 0, 0.08) 0 8px 28px;
+        z-index: 10;
+    }
+
+    .styles_apps li {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .styles-nostr {
+        display: none;
+        position: absolute;
+        bottom: -12px;
+        right: 0;
+
+    }
+
+    .styles-avatars {
+        display: none;
+        position: absolute;
+        bottom: -12px;
+        right: -137px;
+    }
+
+    .styles-LensProtocol {
+        display: none;
+        position: absolute;
+        bottom: -12px;
+        right: -67px;
+
+    }
+
+    .service-nostr :hover .styles-nostr {
+        display: block;
+        cursor: pointer;
+    }
+
+    .service-nostr :hover .styles-LensProtocol {
+        display: block;
+        cursor: pointer;
+    }
+
+    .service-nostr :hover .styles-avatars {
+        display: block;
+        cursor: pointer;
+    }
+
+    .NinjaBack {
+        margin-top: 24px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .NinjaBack a {
+        font-weight: 500;
+        color: #141415;
+    }
+
+    .NinjaBack a:hover {
+        color: #4EA0F2;
+    }
+
+    .NinjaBack img {
+        margin: 0 2px 0 8px;
+        height: 20px;
+        width: 20px;
     }
 
 </style>
 <body>
-<div class="left-container">
-    <!-- 信息展示部分 -->
-    <div class="info-section">
-        <img id="cached-twitter-logo" src="/assets/file/logo.png" alt="Dessage Logo" class="logo">
-        <div class="cached-twitter-name" id="cached-twitter-name">Dessage</div>
-        <div class="product-description">A dapp powered by Ninja Protocol and Blockchain.</div>
-    </div>
-    <div class="route">
-        <div style="background-color: #4848D8; font-size: 14px; color: white; padding: 4px 12px; width: 112px; margin-bottom: 14px" id="road-map-tittle">
-            研发规划路线
-        </div>
-        <ul class="route-list">
-            <li><span class="sequence-number">1.</span><div id="road-map-step1">客户端桥接Web2.0</div></li>
-            <li><span class="sequence-number">2.</span><div id="road-map-step2">Ninja身份跨Web2.0 Web3.0 区块链</div></li>
-            <li><span class="sequence-number">3.</span><div id="road-map-step3">接入层协议</div></li>
-            <li><span class="sequence-number">4.</span><div id="road-map-step4">路由层协议</div></li>
-            <li><span class="sequence-number">5.</span><div id="road-map-step5">启动无需信任的分布式路由网络</div></li>
-            <li><span class="sequence-number">6.</span><div id="road-map-step6">兼容Web2.0客户端和服务器的工具集合</div></li>
-        </ul>
-    </div>
-</div>
 <div class="right-container">
     <div class="container">
         <!-- 登录部分 -->
         <div class="login-section">
+            <h2>获取web3ID</h2>
             <div class="web3-id-label d-radius2" id="web3-id-label">
-                <strong style="margin-left: 8px; margin-bottom: 4px; display: inline-block; font-size: 14px">Web3 ID:</strong>
-                <span id="web3-id" style="margin: 0 8px"></span>
-                <span id="web3-id-tips" style="margin: 0 8px">链接MetaMask以获取Web3 ID</span>
+                <strong style="margin-left: 16px; margin-bottom: 4px; display: inline-block; font-size: 14px">Web3
+                    ID:</strong>
+                <span id="web3-id"></span>
+                <span id="web3-id-tips" class="web3-idTips">链接MetaMask以获取Web3 ID</span>
             </div>
             <div id="metamask-div">
-                <button class="metamask-button d-radius" id="metamask-button" onclick="connectToMetamask()">Connect with Metamask
+                <button class="metamask-button" id="metamask-button" onclick="connectToMetamask()">Connect with Metamask
                 </button>
             </div>
             <div id="sign-in-div">
-                <button class="sign-in-button d-radius" id="sign-in-button"
+                <button class="sign-in-button" id="sign-in-button"
                         onclick="signInByEth()">Sign In
                 </button>
             </div>
         </div>
-        <div id="error-div" style="display: flex; flex-direction: column; align-items: center;"><span id="error-txt" style="color: #DD324A"></span></div>
-    </div>
-    <div class="binding-section">
-        <p style="color: #1B1B1D" id="title-of-bridge-list">社交元身份桥接表</p>
-        <!-- Web2 绑定 -->
-        <div class="web2-binding">
-            <div class="title-container">
-                <span class="dashed-line"></span>
-                <p>Web2</p>
-                <span class="dashed-line"></span>
-            </div>
-            <div class="services">
-                <div class="service">
-                    <img src="/assets/file/GitHub-logo.png" alt="Web2 Logo 1">
-                    <div class="logo-container" id="logo-container-github"><span class="connected-icon"></span> </div>
-                    <span> github</span>
+        <div id="error-div" style="display: flex; flex-direction: column; align-items: center;"><span id="error-txt"
+                                                                                                      style="color: #DD324A"></span>
+        </div>
+        <div class="binding-section">
+            <p style="color: #1B1B1D" id="title-of-bridge-list">社交元身份桥接表</p>
+            <!-- Web2 绑定 -->
+            <div class="web2-binding">
+                <div class="title-container">
+                    <h4>Web2</h4>
                 </div>
-                <div class="service">
-                    <img src="/assets/file/Twitter-logo.png" alt="twitter">
-                    <div class="logo-container" id="logo-container-twitter"><span class="connected-icon"></span> </div>
-                    <span> twitter</span>
-                </div>
-                <div class="service">
-                    <img src="/assets/file/Tele-logo.png" alt="Web2 Logo 3">
-                    <div class="logo-container" id="logo-container-telegram"><span class="connected-icon"></span> </div>
-                    <span> telegram</span>
-                </div>
+                <div class="services">
+                    <div class="service">
+                        <img src="/assets/file/github_logo.png" alt="Web2 Logo 1">
+                        <div class="logo-container" id="logo-container-github"><span class="connected-icon"></span>
+                        </div>
+                    </div>
+                    <div class="service">
+                        <img src="/assets/file/Twitter-logo.png" alt="twitter">
+                        <div class="logo-container" id="logo-container-twitter"><span class="connected-icon"></span>
+                        </div>
+                    </div>
+                    <div class="service">
+                        <img src="/assets/file/Telegram-logo.png" alt="Web2 Logo 3">
+                        <div class="logo-container" id="logo-container-telegram"><span class="connected-icon"></span>
+                        </div>
+                    </div>
 
+                </div>
             </div>
-        </div>
-        <!-- Web3 绑定 -->
-        <div class="web3-binding">
-            <div class="title-container">
-                <span class="dashed-line"></span>
-                <p>Web3</p>
-                <span class="dashed-line"></span>
+            <!-- Web3 绑定 -->
+            <div class="web3-binding">
+                <div class="title-container">
+                    <h4>Web3</h4>
+                </div>
+                <div class="services">
+                    <div class="service service-nostr" style="font-size: 18px; font-weight: bold"
+                         onmouseenter="showAppList('styles-nostr',false)"
+                         onmouseleave="showAppList('styles-nostr',true)">
+                        <img src="/assets/file/nostr.png" alt="Web2 Logo 3">
+                        <div class="logo-container" id="logo-container-nostr"><span class="connected-icon"></span></div>
+                    </div>
+                    <div class="service service-LensProtocol" style="font-size: 18px; font-weight: bold"
+                         onmouseenter="showAppList('styles-LensProtocol',false)"
+                         onmouseleave="showAppList('styles-LensProtocol',true)">
+                        <img src="/assets/file/LensProtocol-logo.png" alt="Web2 Logo 3">
+                        <div class="logo-container" id="logo-container-lensProtocol"><span
+                                    class="connected-icon"></span></div>
+                    </div>
+                    <div class="service service-avatars" style="font-size: 18px; font-weight: bold"
+                         onmouseenter="showAppList('styles-avatars',false)"
+                         onmouseleave="showAppList('styles-avatars',true)">
+                        <img src="/assets/file/avatars-logo.png" alt="Web2 Logo 3">
+                        <div class="logo-container" id="logo-container-avatars"><span class="connected-icon"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="services">
-                <div class="service" style="font-size: 18px; font-weight: bold">
-                    <img src="/assets/file/nostr.png" alt="Web2 Logo 3">
-                    <div class="logo-container" id="logo-container-nostr"><span class="connected-icon"></span> </div>
-                    <span> nostr</span>
+            <!-- 区块链绑定 -->
+            <div class="blockchain-binding">
+                <div class="title-container">
+                    <h4 id="bridge-list-sub-tittle">Blockchain</h4>
+                </div>
+                <div class="services">
+                    <div class="service">
+                        <img src="/assets/file/Arbitrum-logo.png" alt="Blockchain Logo 1">
+                        <div class="logo-container" id="logo-container-arbitrum"><span class="connected-icon"></span>
+                        </div>
+                    </div>
+                    <div class="service">
+                        <img src="/assets/file/Solana-logo.png" alt="Blockchain Logo 2">
+                        <div class="logo-container" id="logo-container-solana"><span class="connected-icon"></span>
+                        </div>
+                    </div>
+                    <div class="service">
+                        <img src="/assets/file/Bitcoin-logo.png" alt="Blockchain Logo 2">
+                        <div class="logo-container" id="logo-container-btc"><span class="connected-icon"></span></div>
+                    </div>
+                    <div class="service">
+                        <img src="/assets/file/Ethereum-logo.png" alt="Blockchain Logo 2">
+                        <div class="logo-container" id="logo-container-eth"><span class="connected-icon"></span></div>
+                    </div>
                 </div>
             </div>
         </div>
-        <!-- 区块链绑定 -->
-        <div class="blockchain-binding">
-            <div class="title-container">
-                <span class="dashed-line"></span>
-                <p id="bridge-list-sub-tittle">区块链</p>
-                <span class="dashed-line"></span>
-            </div>
-            <div class="services">
-                <div class="service">
-                    <img src="/assets/file/Bitcoin-logo.png" alt="Blockchain Logo 1">
-                    <div class="logo-container" id="logo-container-btc"><span class="connected-icon"></span> </div>
-                    <span> BTC</span>
-                </div>
-                <div class="service">
-                    <img src="/assets/file/Ethereum-logo.png" alt="Blockchain Logo 2">
-                    <div class="logo-container" id="logo-container-eth"><span class="connected-icon"></span> </div>
-                    <span> ETH</span>
-                </div>
-            </div>
+        <div class="styles-avatars" id="styles-avatars">
+            <ul class="styles_apps">
+                <Li>
+                    <img src="/assets/file/Warpcast.png">
+                    <p>Warpcast</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/supercast.png">
+                    <p>Supercast</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/farcord.png">
+                    <p>Farcord</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/yup.png">
+                    <p>Yup</p>
+                </Li>
+            </ul>
         </div>
+        <div class="styles-LensProtocol" id="styles-LensProtocol">
+            <ul class="styles_apps">
+                <Li>
+                    <img src="/assets/file/Dumpling.png">
+                    <p>Dumpling</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/Kaira.png">
+                    <p>Kaira</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/Orb.png">
+                    <p>Orb</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/Buttrfly.png">
+                    <p>Buttrfly</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/Focalize.png">
+                    <p>Focalize</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/Hey.png">
+                    <p>Hey</p>
+                </Li>
+            </ul>
+        </div>
+        <div class="styles-nostr" id="styles-nostr">
+            <ul class="styles_apps">
+                <Li>
+                    <img src="/assets/file/rabbit.png">
+                    <p>Rabbit</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/nos.png">
+                    <p>Nos</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/coracle.png">
+                    <p>Coracle</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/damus.png">
+                    <p>Damus</p>
+                </Li>
+                <Li>
+                    <img src="/assets/file/primal.png">
+                    <p>Primal</p>
+                </Li>
+            </ul>
+        </div>
+        <div style="color: #898989" class="NinjaBack">Powered By <img src="/assets/file/path-to-home-icon.png"><a
+                    href="/">Ninja Protocol</a></div>
     </div>
 </div>
-
 <script>
+
+    // 监听窗口大小变化事件
+    window.addEventListener('resize', function() {
+        // 获取.container元素
+        var container = document.querySelector('.container');
+        // 获取.container元素距离视窗右侧的距离
+        var containerRightDistance = window.innerWidth - container.getBoundingClientRect().right;
+
+        // 如果.container元素距离视窗右侧小于等于300px，则固定右侧距离为一个特定值
+        var minRightDistance = 300;
+        if (containerRightDistance <= minRightDistance) {
+            // 设置.container元素右侧距离为固定值
+            container.style.right = minRightDistance + 'px';
+        } else {
+            // 否则，保持原有的右侧距离百分比设置
+            container.style.right = '20vw';
+        }
+    });
+
     class SignInData {
         constructor(ethAddr, signTim) {
             this.eth_addr = ethAddr;
@@ -380,15 +507,11 @@
     }
 
     function showSignBtn(web3ID) {
-        document.querySelectorAll(".logo-container").forEach(item=> item.classList.remove("active"));
+        document.querySelectorAll(".logo-container").forEach(item => item.classList.remove("active"));
         const web3IdTips = document.getElementById("web3-id-tips");
         const signInDiv = document.getElementById("sign-in-div");
         const metamaskDiv = document.getElementById("metamask-div");
         const web3Id = document.getElementById("web3-id");
-         const twitterAvatar = document.getElementById("cached-twitter-logo" );
-        const twitterName = document.getElementById("cached-twitter-name" );
-        twitterAvatar.src = "/assets/file/logo.png";
-        twitterName.innerHTML = "Dessage";
         if (!web3ID) {
             web3IdTips.style.display = 'block';
             signInDiv.style.display = 'none';
@@ -402,24 +525,19 @@
         metamaskDiv.style.display = 'none';
         web3Id.style.display = 'block';
         web3Id.textContent = web3ID;
+        document.getElementById("logo-container-arbitrum").classList.add("active")
         document.getElementById("logo-container-eth").classList.add("active")
 
         const savedUserInfo = NJUserBasicInfo.loadNjBasic(web3ID);
-        if (!savedUserInfo){
+        if (!savedUserInfo) {
             return;
         }
         let tw_data = TwitterBasicInfo.loadTwBasicInfo(savedUserInfo.tw_id)
-        if(!tw_data){
+        if (!tw_data) {
             return;
         }
 
         document.getElementById("logo-container-twitter").classList.add("active")
-        if (tw_data.profile_image_url) {
-            twitterAvatar.src = tw_data.profile_image_url
-        }
-        if (tw_data.name) {
-            twitterName.innerHTML = tw_data.name
-        }
     }
 
     document.addEventListener("DOMContentLoaded", initElmStatus);
@@ -429,8 +547,8 @@
             showSignBtn(null);
             return;
         }
-        metamaskObj = window.ethereum;
-        metamaskObj.on('accountsChanged', function (accounts) {
+
+        window.ethereum.on('accountsChanged', function (accounts) {
             showError(null);
             if (accounts.length > 0) {
                 showSignBtn(accounts[0]);
@@ -440,7 +558,7 @@
         });
 
         try {
-            const accounts = await metamaskObj.request({method: 'eth_accounts'})
+            const accounts = await window.ethereum.request({method: 'eth_accounts'})
             if (accounts.length === 0) {
                 showSignBtn(null);
                 return
@@ -453,16 +571,22 @@
     }
 
     async function connectToMetamask() {
-        if (!metamaskObj) {
+        if (!window.ethereum) {
             window.open('https://metamask.io/download/', '_blank');
             return;
         }
         try {
-            await metamaskObj.request({method: "eth_requestAccounts"})
-            window.location.reload();
+            const accounts = await window.ethereum.request({method: "eth_requestAccounts"})
+            // console.log(accounts)
+            showSignBtn(accounts[0]);
+            // window.location.reload();
         } catch (error) {
-            console.error("Metamask login failed:", error);
-            showError(error);
+            console.error("Metamask login failed:", error.code, error.message.toString());
+            if (error.code === -32002) {
+                showError("Please click the metamask plugin and sign in ")
+                return;
+            }
+            showError(error.message);
         }
     }
 
@@ -477,7 +601,7 @@
         const signParam = new SignInData(web3Id)
         const message = JSON.stringify(signParam);
         try {
-            const signature = await metamaskObj.request({
+            const signature = await window.ethereum.request({
                 method: 'personal_sign',
                 params: [message, web3Id],
             })
@@ -497,47 +621,18 @@
                 hideLoading();
             })
         } catch (err) {
-            showError("sign in err:\n"+err.message);
+            showError("sign in err:\n" + err.message);
             hideLoading();
         }
     }
 
-    //打字效果
-    document.addEventListener('DOMContentLoaded', function() {
-        const listItems = document.querySelectorAll('.route-list li');
-        let currentItem = 0;
-
-        function typeWriterEffect(element, text, i = 0) {
-            if (i === 0) {
-                element.innerHTML = '';
-                element.classList.add('typing');
-            }
-            if (i < text.length) {
-                element.innerHTML += text.charAt(i);
-                setTimeout(() => typeWriterEffect(element, text, i + 1), 100);
-            } else {
-                element.classList.remove('typing');
-                if (currentItem === 0) {
-                    element.classList.add('completed'); // 第一项标记为已完成
-                } else {
-                    element.classList.add('uncompleted'); // 其余标记为未完成
-                    element.style.opacity = 1 - 0.1 * currentItem; // 降低未完成项的透明度
-                }
-                currentItem++;
-                if (currentItem < listItems.length) {
-                    typeWriterEffect(listItems[currentItem], listItems[currentItem].getAttribute('data-text'));
-                }
-            }
+    function showAppList(listID, isHide) {
+        if (isHide) {
+            document.getElementById(listID).style.display = 'none';
+        } else {
+            document.getElementById(listID).style.display = 'block';
         }
-
-        if (listItems.length > 0) {
-            listItems.forEach((item) => {
-                item.setAttribute('data-text', item.textContent);
-                item.textContent = '';
-            });
-            typeWriterEffect(listItems[0], listItems[0].getAttribute('data-text'));
-        }
-    });
+    }
 
 </script>
 
@@ -545,21 +640,21 @@
     i18next
         .use(i18nextBrowserLanguageDetector)
         .init({
-            fallbackLng: 'zh',
-            debug: true,
+            fallbackLng: 'en',
+            debug: false,
             resources: {
                 en: {
                     translation: {
                         "title": "SignIn Page",
                         "bridge-title": "Social Meta-Identity Mapping Table",
                         "road-map-title": "Road Map",
-                        "road-map-step1":"Client-Side Bridging to Web2.0",
-                        "road-map-step2":"Ninja Identity Linking Web2.0, Web3.0, and Blockchain",
-                        "road-map-step3":"Access Layer Protocol",
-                        "road-map-step4":"Routing Layer Protocol",
-                        "road-map-step5":"Launching The Trustless Distributed Routing Network",
-                        "road-map-step6":"Toolset Compatible with Web2.0 Clients and Servers",
-                        "bridge-list-sub-tittle":"Blockchain",
+                        "road-map-step1": "Client-Side Bridging to Web2.0",
+                        "road-map-step2": "Ninja Identity Linking Web2.0, Web3.0, and Blockchain",
+                        "road-map-step3": "Access Layer Protocol",
+                        "road-map-step4": "Routing Layer Protocol",
+                        "road-map-step5": "Launching The Trustless Distributed Routing Network",
+                        "road-map-step6": "Toolset Compatible with Web2.0 Clients and Servers",
+                        "bridge-list-sub-tittle": "Blockchain",
                     }
                 },
                 zh: {
@@ -567,17 +662,17 @@
                         "title": "登录页面",
                         "bridge-title": "社交元身份桥接表",
                         "road-map-title": "研发规划路线",
-                        "road-map-step1":"客户端桥接Web2.0",
-                        "road-map-step2":"Ninja身份跨Web2.0 Web3.0 区块链",
-                        "road-map-step3":"接入层协议",
-                        "road-map-step4":"路由层协议",
-                        "road-map-step5":"启动无需信任的分布式路由网络",
-                        "road-map-step6":"兼容Web2.0客户端和服务器的工具集合",
-                        "bridge-list-sub-tittle":"区块链",
+                        "road-map-step1": "客户端桥接Web2.0",
+                        "road-map-step2": "Ninja身份跨Web2.0 Web3.0 区块链",
+                        "road-map-step3": "接入层协议",
+                        "road-map-step4": "路由层协议",
+                        "road-map-step5": "启动无需信任的分布式路由网络",
+                        "road-map-step6": "兼容Web2.0客户端和服务器的工具集合",
+                        "bridge-list-sub-tittle": "区块链",
                     }
                 }
             }
-        }, function(err, t) {
+        }, function (err, t) {
             updateContent();
         });
 
@@ -585,14 +680,8 @@
         document.title = i18next.t('title');
         document.getElementById('title-of-bridge-list').textContent = i18next.t('bridge-title');
         document.getElementById('bridge-list-sub-tittle').textContent = i18next.t('bridge-list-sub-tittle');
-        document.getElementById('road-map-tittle').textContent = i18next.t('road-map-title');
-        document.getElementById('road-map-step1').textContent = i18next.t('road-map-step1');
-        document.getElementById('road-map-step2').textContent = i18next.t('road-map-step2');
-        document.getElementById('road-map-step3').textContent = i18next.t('road-map-step3');
-        document.getElementById('road-map-step4').textContent = i18next.t('road-map-step4');
-        document.getElementById('road-map-step5').textContent = i18next.t('road-map-step5');
-        document.getElementById('road-map-step6').textContent = i18next.t('road-map-step6');
     }
+
 </script>
 </body>
 </html>

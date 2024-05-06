@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/golang/freetype"
-	"github.com/golang/freetype/truetype"
 	"github.com/ninjahome/web-bridge/blockchain"
 	"github.com/ninjahome/web-bridge/blockchain/ethapi"
 	"github.com/ninjahome/web-bridge/database"
@@ -14,14 +12,13 @@ import (
 	"html/template"
 	"math/big"
 	"net/http"
-	"os"
 )
 
 var (
 	cfgActionRouter = map[string]LogicAction{
 		"/signUpByTwitter":           {signUpByTwitterV1, true},
 		"/tw_callback":               {twitterSignCallBackV1, false},
-		"/signUpSuccessByTw":         {signUpSuccessByTw, false},
+		"/signUpSuccessByTw":         {signUpSuccessByTw, true},
 		"/signInByEth":               {signInByEth, false},
 		"/bindWeb3ID":                {bindingWeb3ID, true},
 		"/queryTwBasicById":          {queryTwBasicById, true},
@@ -53,7 +50,8 @@ var (
 
 	cfgHtmlFileRouter = map[string]string{
 		"/signIn": "html/signIn.html",
-		"/":       "html/signIn.html",
+		"/":       "html/index.html",
+		"/app":    "html/signIn.html",
 	}
 
 	_globalCfg *SysConf
@@ -70,6 +68,7 @@ type HttpConf struct {
 	SSLCertFile         string `json:"ssl_cert_file"`
 	SSLKeyFile          string `json:"ssl_key_file"`
 	SessionKey          string `json:"session_key"`
+	SessionMaxAge       int    `json:"session_max_age"`
 	htmlTemplateManager *template.Template
 }
 
@@ -84,27 +83,22 @@ func (c *HttpConf) String() string {
 }
 
 type TwitterConf struct {
-	imgFont        *truetype.Font
-	FontSize       float64 `json:"font_size"`
-	FontPath       string  `json:"font_path"`
-	MaxTxtPerImg   int     `json:"max_txt_per_img"`
-	ClientID       string  `json:"client_id"`
-	ClientSecret   string  `json:"client_secret"`
-	ConsumerKey    string  `json:"consumer_key"`
-	ConsumerSecret string  `json:"consumer_secret"`
+	ClientID       string `json:"client_id"`
+	ClientSecret   string `json:"client_secret"`
+	ConsumerKey    string `json:"consumer_key"`
+	ConsumerSecret string `json:"consumer_secret"`
 }
 
 func (c *TwitterConf) String() string {
 	s := "\n------twitter config------"
 	s += "\nclient id:" + c.ClientID
-	s += "\nfont path:" + c.FontPath
-	s += "\nfont size:" + fmt.Sprintf("%.1f", c.FontSize)
 	s += "\n--------------------------"
 	return s
 }
 
 type SysConf struct {
 	LogLevel string `json:"log_level"`
+	LogFile  string `json:"log_file"`
 	UrlHome  string `json:"url_home"`
 	HttpPort string `json:"http_port"`
 	*HttpConf
@@ -117,6 +111,7 @@ type SysConf struct {
 func (c *SysConf) String() any {
 	var s = "\n=======================system config==========================="
 	s += "\nlog level:" + c.LogLevel
+	s += "\nlog file:" + c.LogFile
 	s += "\nlocal mode:" + fmt.Sprintf("%t", c.LocalRun)
 	s += "\nhome:" + c.UrlHome
 	s += "\nhttp port:" + c.HttpPort
@@ -133,7 +128,7 @@ var (
 )
 
 func InitConf(c *SysConf) {
-	util.SetLogLevel(c.LogLevel)
+	util.SetLogLevel(c.LogLevel, c.LogFile)
 	if len(c.HttpPort) == 0 {
 		c.HttpPort = "80"
 	}
@@ -158,17 +153,6 @@ func InitConf(c *SysConf) {
 	_globalCfg.twOauthCfg = oauth2Config
 
 	_globalCfg.htmlTemplateManager = util.ParseTemplates("assets/html")
-
-	fontBytes, err := os.ReadFile(_globalCfg.FontPath)
-	if err != nil {
-		panic(err)
-	}
-	f, err := freetype.ParseFont(fontBytes)
-	if err != nil {
-		panic(err)
-	}
-
-	_globalCfg.imgFont = f
 }
 
 const (
@@ -176,10 +160,6 @@ const (
 	SharedID  = "sharedID"
 	SharedUsr = "shareUsr"
 )
-
-func (c *SysConf) GetNjProtocolAd(NjTwID int64) string {
-	return fmt.Sprintf("\n"+c.UrlHome+"/buyRights?"+NjTweetID+"=%d", NjTwID)
-}
 
 func (c *SysConf) getContractObj() (*ethapi.TweetLotteryGame, error) {
 	cli, err := ethclient.Dial(c.InfuraUrl)
@@ -220,5 +200,9 @@ func (c *SysConf) getHistoryBonus() (*big.Float, error) {
 }
 
 func (c *SysConf) GetNjVoteAd(NjTwID int64, web3Id, slogan string) string {
-	return fmt.Sprintf("\n"+slogan+c.UrlHome+"/buyFromShare?"+SharedID+"=%d&&"+SharedUsr+"=%s", NjTwID, web3Id)
+	return fmt.Sprintf("\r\n"+slogan+c.UrlHome+"/buyFromShare?"+SharedID+"=%d&&"+SharedUsr+"=%s", NjTwID, web3Id)
+}
+
+func (c *SysConf) GetNjProtocolAd(NjTwID int64, slogan string) string {
+	return fmt.Sprintf("\r\n"+slogan+c.UrlHome+"/buyRights?"+NjTweetID+"=%d", NjTwID)
 }

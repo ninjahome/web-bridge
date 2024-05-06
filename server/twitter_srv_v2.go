@@ -108,7 +108,7 @@ func postTweetsV2(w http.ResponseWriter, r *http.Request) {
 
 	var tweetResponse = &TweetResponse{}
 	var tweetReq = &TweetRequest{
-		Text: _globalCfg.GetNjProtocolAd(tweetContent.CreateAt),
+		Text: _globalCfg.GetNjProtocolAd(tweetContent.CreateAt, ""),
 	}
 	err = twitterPostWithAccessToken(ut.Token, accessPointPostTweets, "application/json", tweetReq, tweetResponse)
 	if err != nil {

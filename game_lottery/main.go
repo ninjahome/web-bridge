@@ -47,7 +47,7 @@ func initConfig(filePath string) *server.SysConf {
 	if err = json.Unmarshal(bts, &cf); err != nil {
 		panic(err)
 	}
-	util.SetLogLevel(cf.LogLevel)
+	util.SetLogLevel(cf.LogLevel, cf.LogFile)
 	fmt.Println(cf.String())
 	return cf
 }
@@ -179,7 +179,6 @@ type GameResult struct {
 }
 
 func NewGame(key *keystore.Key, cf *server.SysConf) *GameService {
-	util.SetLogLevel(cf.LogLevel)
 	ctx := context.Background()
 	var client *firestore.Client
 	var err error

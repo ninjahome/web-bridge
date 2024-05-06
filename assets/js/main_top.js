@@ -35,7 +35,11 @@ async function fillMostVotedTweet(clear, tweetArray) {
         function (tweetCard, tweetHeader, tweet) {
             tweetCard.querySelector('.vote-number').textContent = tweet.vote_count;
             __showVoteButton(tweetCard, tweet, function (newVote) {
-                tweetCard.querySelector('.vote-number').textContent = newVote.vote_count;
+                // tweetCard.querySelector('.vote-number').textContent = newVote.vote_count;
+                showWaiting("Re-ranking")
+                __loadMostVotedTweets(true).finally(r=>{
+                    hideLoading();
+                });
             });
         });
 }
@@ -71,18 +75,14 @@ const cachedTopVotedKolUser = new MemCachedTweets();
 async function switchToTopKol() {
     curScrollContentID = 12;
     initTopDivStatus("top-hot-Kol", 1);
-    await __loadMostVotedKolUserInfo("top-hot-Kol", cachedTopVotedKolUser, true, false);
+    await loadMostVoterOrVotedUser("top-hot-Kol", cachedTopVotedKolUser, true, false);
 }
 
 async function loadOlderMostVotedKol() {
-    if (cachedTopVotedKolUser.latestID === 0) {
-        console.log("no need to load older data");
-        return;
-    }
-    return __loadMostVotedKolUserInfo("top-hot-Kol", cachedTopVotedKolUser, false, false);
+    return loadMostVoterOrVotedUser("top-hot-Kol", cachedTopVotedKolUser, false, false);
 }
 
-async function __loadMostVotedKolUserInfo(parkID, cache, newest, voter) {
+async function loadMostVoterOrVotedUser(parkID, cache, newest, voter) {
     if (newest) {
         cache.latestID = 0;
     }
@@ -102,7 +102,6 @@ async function __loadMostVotedKolUserInfo(parkID, cache, newest, voter) {
     } else {
         cache.latestID = userArray[userArray.length - 1].be_voted_count;
     }
-
     await fillMostKolOrVoterPark(parkID, newest, userArray, voter);
 }
 
@@ -118,34 +117,36 @@ async function fillMostKolOrVoterPark(parkID, clear, data, voter) {
     for (const usr of data) {
         NJUserBasicInfo.cacheNJUsrObj(usr);
         const njUsrCard = document.getElementById("team-member-card-template").cloneNode(true);
-        njUsrCard.style.display = '';
+        njUsrCard.style.display = 'block';
+        njUsrCard.id = '';
         const avatarImg = njUsrCard.querySelector(".twitterAvatar");
         if (!usr.tw_id) {
             avatarImg.src = __defaultLogo;
             njUsrCard.querySelector(".twitterName").innerText = usr.eth_addr;
         } else {
             const twitterObj = await __setOnlyHeader(njUsrCard, usr.tw_id, usr.eth_addr);
-            const hoverDiv = njUsrCard.querySelector(".team-member-card-header");
+            const hoverDiv = njUsrCard.querySelector(".team-membersAvatar");
+            // const offset = new DessagePoint(106, 0);
             hoverDiv.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, usr.eth_addr));
             hoverDiv.addEventListener('mouseleave', () => hideHoverCard(hoverDiv));
         }
 
-        const rankNo = njUsrCard.querySelector(".team-members-number");
-        rankNo.innerText = userRankStartNo;
+        const rankNo = njUsrCard.querySelector(".user-voted-count");
+        // rankNo.innerText = userRankStartNo;
         if (userRankStartNo === 1) {
-            rankNo.classList.add('team-members-topOne');
+            rankNo.classList.add('vote-numberOne');
         } else if (userRankStartNo === 2) {
-            rankNo.classList.add('team-members-topTwo');
+            rankNo.classList.add('vote-numberTwo');
         } else if (userRankStartNo === 3) {
-            rankNo.classList.add('team-members-topThree');
+            rankNo.classList.add('vote-numberThree');
         } else {
-            rankNo.classList.add('team-members-topOther');
+            rankNo.classList.add('vote-numberOther');
         }
 
         if (voter) {
-            njUsrCard.querySelector(".user-voted-count").innerText = usr.vote_count;
+            rankNo.innerText = usr.vote_count;
         } else {
-            njUsrCard.querySelector(".user-voted-count").innerText = usr.be_voted_count;
+            rankNo.innerText = usr.be_voted_count;
         }
 
         ninjaUserPark.appendChild(njUsrCard);
@@ -159,13 +160,9 @@ const cachedTopVoterUser = new MemCachedTweets();
 async function switchToTopVoter() {
     curScrollContentID = 13;
     initTopDivStatus("top-hot-voter", 2);
-    await __loadMostVotedKolUserInfo("top-hot-voter", cachedTopVoterUser, true, true);
+    await loadMostVoterOrVotedUser("top-hot-voter", cachedTopVoterUser, true, true);
 }
 
 async function loadOlderMostVoter() {
-    if (cachedTopVoterUser.latestID === 0) {
-        console.log("no need to load older data");
-        return;
-    }
-    return __loadMostVotedKolUserInfo("top-hot-voter", cachedTopVoterUser, false, true);
+    return loadMostVoterOrVotedUser("top-hot-voter", cachedTopVoterUser, false, true);
 }

@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/csrf"
 	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"html/template"
@@ -70,10 +71,6 @@ func (sp *SignDataByEth) ParseNinjaTweet() (*database.NinjaTweet, error) {
 			tweetContent.Images = append(tweetContent.Images, imgData.ThumbNail)
 			tweetContent.ImageHash = append(tweetContent.ImageHash, imgData.Hash)
 			tweetContent.ImageRaw = append(tweetContent.ImageRaw, imgData.RawData)
-			err = database.DbInst().SaveRawImg(imgData.Hash, imgData.RawData)
-			if err != nil {
-				util.LogInst().Err(err).Msg("save tweet img failed")
-			}
 		}
 	}
 
@@ -225,8 +222,10 @@ func mainPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo)
 	data := struct {
 		NinjaUsrInfoJson template.JS
 		TargetTweet      template.JS
+		CSRFToken        string
 	}{
 		NinjaUsrInfoJson: template.JS(nu.RawData()),
+		CSRFToken:        csrf.Token(r),
 	}
 	if tweet != nil {
 		data.TargetTweet = template.JS(tweet.String())
@@ -246,7 +245,9 @@ func showLotteryMain(w http.ResponseWriter, r *http.Request, nu *database.NinjaU
 
 	data := struct {
 		NinjaUsrInfoJson template.JS
+		CSRFToken        string
 	}{
+		CSRFToken:        csrf.Token(r),
 		NinjaUsrInfoJson: template.JS(nu.RawData()),
 	}
 	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "lottery_game.html", data)
@@ -327,6 +328,7 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request, origNu *database.Ninj
 		SignUpAt:  data.BindTime,
 		Signature: param.Signature,
 	}
+
 	newNu, err := database.DbInst().BindingWeb3ID(bindDataToStore, twUsrData)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save binding data  failed")
@@ -344,6 +346,9 @@ func bindingWeb3ID(w http.ResponseWriter, r *http.Request, origNu *database.Ninj
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write(newNu.RawData())
+
+	util.LogInst().Info().Str("tweet-id", data.TwID).Str("web3-id", data.EthAddr).
+		Int64("bind-time", data.BindTime).Msg("bind web3 and social id success")
 }
 
 func queryTwBasicByTweetHash(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
@@ -382,5 +387,5 @@ func queryWinHistory(w http.ResponseWriter, r *http.Request, nu *database.NinjaU
 	w.WriteHeader(http.StatusOK)
 	w.Write(bts)
 
-	util.LogInst().Info().Int("len", len(data)).Msg("query winner history success")
+	util.LogInst().Debug().Int("len", len(data)).Msg("query winner history success")
 }

@@ -1,4 +1,3 @@
-
 function formatTime(createTime) {
     const date = new Date(createTime);
 
@@ -11,13 +10,18 @@ function formatTime(createTime) {
     return `${hours}:${minutes}:${seconds} ${day}/${month}`;
 }
 
-function startCountdown(targetTime, callback) {
-    const countdownInterval = setInterval(() => {
+let CountdownTargetTime = 0
+
+function resetCounter(tt) {
+    CountdownTargetTime = tt;
+}
+
+function startCountdown(callback) {
+    return setInterval(() => {
         const now = new Date().getTime();
-        const timeLeft = targetTime - now;
+        const timeLeft = CountdownTargetTime - now;
 
         if (timeLeft <= 0) {
-            clearInterval(countdownInterval);
             callback('', '', '', '', true);
             return;
         }
@@ -40,10 +44,17 @@ function PostToSrvByJson(url, data) {
     const requestOptions = {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify(data)
     };
+
+    const csrfToken = document.getElementById('csrf_token');
+    if (csrfToken) {
+        requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
+        // console.log("CSRF-Token=>",csrfToken.value);
+    }
+
     return new Promise((resolve, reject) => {
         fetch(url, requestOptions)
             .then(response => {
@@ -82,9 +93,14 @@ async function GetToSrvByJson(url) {
     const requestOptions = {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
     };
+    const csrfToken = document.getElementById('csrf_token');
+    if (csrfToken) {
+        requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
+        // console.log("CSRF-Token=>",csrfToken.value);
+    }
 
     try {
         const response = await fetch(url, requestOptions);
@@ -195,7 +211,7 @@ function createModalElement() {
     const spinner = document.createElement('div');
     spinner.id = 'loading-spinner';
     spinner.style.border = '6px solid #DDDDDE';
-    spinner.style.borderTop = '6px solid #4848D8';
+    spinner.style.borderTop = '6px solid #4EA0F2';
     spinner.style.borderRadius = '50%';
     spinner.style.width = '40px';
     spinner.style.height = '40px';
@@ -205,17 +221,17 @@ function createModalElement() {
     const message = document.createElement('div');
     message.id = 'loading-message';
     message.style.marginTop = '10px';
-    message.textContent = 'Loading...';
+    message.textContent = ' ';
 
     // Add text in the center of the container
     const loadingText = document.createElement('div');
-    loadingText.textContent = 'Loading';
+    loadingText.textContent = ' ';
     loadingText.style.position = 'absolute';
     loadingText.style.top = '48.75%';
     loadingText.style.left = '50%';
     loadingText.style.transform = 'translate(-50%, -50%)';
     loadingText.style.fontSize = '10px'; // Adjust font size as needed
-    loadingText.style.color = '#4848D8'; // Ensure text color is visible
+    loadingText.style.color = '#4EA0F2'; // Ensure text color is visible
 
     container.appendChild(loadingText);
 
@@ -240,8 +256,9 @@ style.innerHTML = `
 `;
 document.head.appendChild(style);
 let isShowingTips = false;
+
 function showWaiting(message, timeout) {
-    if (isShowingTips){
+    if (isShowingTips) {
         changeLoadingTips(message);
         return;
     }
@@ -255,7 +272,9 @@ function showWaiting(message, timeout) {
 
     if (timeout) {
         setTimeout(() => {
-            document.body.removeChild(modal);
+            if (modal) {
+                document.body.removeChild(modal);
+            }
         }, timeout * 1000);
     }
 }
@@ -268,7 +287,7 @@ function changeLoadingTips(content) {
 }
 
 function hideLoading() {
-    if (!isShowingTips){
+    if (!isShowingTips) {
         return;
     }
     isShowingTips = false;
@@ -304,7 +323,7 @@ class TwitterBasicInfo {
     }
 
     static loadTwBasicInfo(TwitterID) {
-        const storedData = localStorage.getItem(lclDbKeyForTwitterUserData(TwitterID))
+        const storedData = getItemWithTimestamp(lclDbKeyForTwitterUserData(TwitterID))
         if (!storedData) {
             return null
         }
@@ -317,7 +336,7 @@ class TwitterBasicInfo {
         if (!obj.id) {
             throw new Error("invalid twitter basic info")
         }
-        localStorage.setItem(lclDbKeyForTwitterUserData(obj.id), JSON.stringify(obj));
+        setItemWithTimestamp(lclDbKeyForTwitterUserData(obj.id), JSON.stringify(obj));
         return obj;
     }
 }
@@ -325,7 +344,7 @@ class TwitterBasicInfo {
 class NJUserBasicInfo {
 
     constructor(address, eth_addr, create_at, tw_id, update_at,
-                tweet_count, vote_count, be_voted_count,is_elder) {
+                tweet_count, vote_count, be_voted_count, is_elder) {
         this.address = address;
         this.eth_addr = eth_addr;
         this.create_at = create_at;
@@ -339,13 +358,13 @@ class NJUserBasicInfo {
 
 
     static loadNjBasic(ethAddr) {
-        const storedData = localStorage.getItem(DbKeyForNjUserData(ethAddr.toLowerCase()))
+        const storedData = getItemWithTimestamp(DbKeyForNjUserData(ethAddr.toLowerCase()))
         if (!storedData) {
             return null
         }
         const nuObj = JSON.parse(storedData);
         return new NJUserBasicInfo(nuObj.address, nuObj.eth_addr, nuObj.create_at, nuObj.tw_id,
-            nuObj.update_at, nuObj.tweet_count, nuObj.vote_count, nuObj.be_voted_count,nuObj.is_elder);
+            nuObj.update_at, nuObj.tweet_count, nuObj.vote_count, nuObj.be_voted_count, nuObj.is_elder);
     }
 
     static cacheNJUsrObj(obj) {
@@ -353,7 +372,7 @@ class NJUserBasicInfo {
             throw new Error("invalid twitter basic info")
         }
 
-        localStorage.setItem(DbKeyForNjUserData(obj.eth_addr.toLowerCase()), JSON.stringify(obj));
+        setItemWithTimestamp(DbKeyForNjUserData(obj.eth_addr.toLowerCase()), JSON.stringify(obj));
     }
 }
 
@@ -380,8 +399,8 @@ function createDialogElement(imageSrc) {
              <img src="${imageSrc}" alt="dialog image" style="max-width: 100%; height: auto; margin-bottom: 2px">
             <p id="dialog-message" style="margin-top: 0; margin-bottom: 16px">Message</p>
             <div style="display: flex; flex-direction: row; justify-content: center">
-                <button id="dialog-close" style="margin:0 8px; padding: 8px 42px; border-radius: 9999px; background-color: transparent; border: 1px solid rgb(221, 221, 222);font-size: 14px; color: #7E7F82">关闭</button>
-                <button id="dialog-confirm" style="margin:0 8px; padding: 8px 42px; border-radius: 9999px; border: none;font-size: 14px; color: #ffffff; background-color: #4848D8">确定</button>
+                <button id="dialog-close" style="margin:0 8px; padding: 8px 42px; border-radius: 12px; background-color: transparent; border: 1px solid rgb(221, 221, 222);font-size: 14px; color: #7E7F82">关闭</button>
+                <button id="dialog-confirm" style="margin:0 8px; padding: 8px 42px; border-radius: 12px; border: none;font-size: 14px; color: #ffffff; background-color: #4EA0F2">确定</button>
             </div>
         </div>
         `;
@@ -433,7 +452,14 @@ function showDialog(type, msg, confirmCB, cancelCB) {
     }
 }
 
-let metamaskObj = null;
+async function checkIfMetaMaskSignOut() {
+    const accounts = await window.ethereum.request({method: 'eth_accounts'})
+    if (accounts.length === 0) {
+        window.location.href = "/signIn";
+        return false;
+    }
+    return true;
+}
 
 async function checkMetaMaskEnvironment(callback) {
 
@@ -442,36 +468,41 @@ async function checkMetaMaskEnvironment(callback) {
         return
     }
 
-    metamaskObj = window.ethereum;
-    metamaskObj.on('accountsChanged', metamaskAccountChanged);
-    metamaskObj.on('chainChanged', function (chainID) {
+    if (await checkIfMetaMaskSignOut() === false) {
+        return;
+    }
+
+    window.ethereum.on('accountsChanged', metamaskAccountChanged);
+    window.ethereum.on('chainChanged', function (chainID) {
         checkCurrentChainID(chainID, callback)
     });
-    const chainID = await metamaskObj.request({method: 'eth_chainId'});
+    const chainID = await window.ethereum.request({method: 'eth_chainId'});
 
     await checkCurrentChainID(chainID, callback);
 }
 
 function metamaskAccountChanged(accounts) {
     if (accounts.length === 0) {
-        window.location.href = "/signOut";
+        console.log('MetaMask账户已断开连接，请重新连接');
+        window.location.href = "/signIn";
         return;
     }
-    window.location.href = "/signOut";
+    window.location.href = "/signIn";
 }
 
 async function checkCurrentChainID(chainId, callback) {
-    if (__globalTargetChainNetworkID === chainId) {
-        const provider = new ethers.providers.Web3Provider(metamaskObj);
-        if (callback) {
-            await callback(provider);
-        }
+    if (__globalTargetChainNetworkID !== chainId) {
+
+        showDialog(DLevel.Tips, "switch to arbitrum", switchToWorkChain, function () {
+            window.location.href = "/signIn";
+        });
+
         return;
     }
-
-    showDialog(DLevel.Tips, "switch to arbitrum", switchToWorkChain, function () {
-        window.location.href = "/signOut";
-    });
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    if (callback) {
+        await callback(provider);
+    }
 }
 
 async function switchToWorkChain() {
@@ -483,7 +514,7 @@ async function switchToWorkChain() {
 
 async function switchChain(chainId) {
     try {
-        await metamaskObj.request({
+        await window.ethereum.request({
             method: 'wallet_switchEthereumChain',
             params: [{chainId}],
         });
@@ -503,7 +534,7 @@ async function switchChain(chainId) {
 async function addChain(chainId) {
     try {
         const chainParams = __globalMetaMaskNetworkParam.get(chainId);
-        await metamaskObj.request({
+        await window.ethereum.request({
             method: 'wallet_addEthereumChain',
             params: [chainParams],
         });
@@ -548,11 +579,11 @@ function decreaseVote() {
     voteCountElement.value = newVoteCount.toString();
 }
 
-async function __shareVoteToTweet(create_time, vote_count,slogan) {
+async function __shareVoteToTweet(create_time, vote_count, slogan) {
     await PostToSrvByJson("/shareVoteAction", {
         create_time: create_time,
         vote_count: Number(vote_count),
-        slogan:slogan,
+        slogan: slogan,
     });
 }
 
@@ -560,11 +591,21 @@ function checkMetamaskErr(err) {
     console.error("Transaction error: ", err);
     hideLoading();
 
-    if (err.code === 4001) {
+    if (err.code === 4001 || err.code === "ACTION_REJECTED") {
         return null;
     }
 
+    if (err.code === 4100) {
+        showDialog(DLevel.Warning, "open metamask first");
+        return;
+    }
+
     let code = err.code;
+    if (code === "CALL_EXCEPTION" && err.action === "estimateGas" && !err.reason) {
+        showDialog(DLevel.Warning, "insufficient funds");
+        return;
+    }
+
     if (!err.data || !err.data.message) {
         code = code + err.message;
     } else {
@@ -588,47 +629,205 @@ function __incomeWithdrawHistory(address) {
     window.open(targetUrl);
 }
 
-function createThumbnail(originalImageSrc, maxWidth, maxHeight) {
+function blobToBase64(blob) {
     return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = originalImageSrc;
+        const reader = new FileReader();
+        reader.onload = () => {
+            // 当读取完成，reader.result 包含了Base64编码的数据URL
+            resolve(reader.result);
+        };
+        reader.onerror = (error) => {
+            reject(error);
+        };
+        reader.readAsDataURL(blob); // 开始将blob转换为data URL
+    });
+}
 
-        img.onload = function() {
-            const originalWidth = img.width;
-            const originalHeight = img.height;
-            const aspectRatio = originalWidth / originalHeight;
+function adjustImageToApproxTargetBase64Length(image, targetLength) {
+    return new Promise((resolve, reject) => {
+        // 确保图片已经加载完毕
+        if (!image.complete) {
+            reject('Image has not loaded yet.');
+            return;
+        }
 
-            let targetWidth, targetHeight;
-            if (originalWidth / originalHeight > maxWidth / maxHeight) {
-                targetWidth = maxWidth;
-                targetHeight = maxWidth / aspectRatio;
+        const originalBase64 = image.src;
+        const originalLength = originalBase64.length;
+
+        // 计算目标长度与原始长度的比例
+        const ratio = Math.sqrt(targetLength / originalLength) *0.95;  // 使用平方根减少尺寸调整幅度
+
+        const targetWidth = Math.floor(image.width * ratio);
+        const targetHeight = Math.floor(image.height * ratio);
+        const quality = 0.8;  // 初始压缩质量
+
+        // 使用估算的宽高和质量参数压缩图像
+        compressAndResizeImage(image, targetWidth, targetHeight, quality).then(resizedBase64 => {
+            // console.log("compressAndResizeImage result:=>", resizedBase64.length, targetLength)
+            if (resizedBase64.length > targetLength) {
+                // 如果调整后的长度仍然过大，尝试进一步降低质量
+                compressAndResizeImage(image, targetWidth , targetHeight , quality* 0.8).then(finalBase64 => {
+                    // console.log("compressed img at second time:",resizedBase64.length,finalBase64.length);
+                    resolve(finalBase64);
+                }).catch(reject);
             } else {
-                targetHeight = maxHeight;
-                targetWidth = maxHeight * aspectRatio;
+                // 如果长度符合要求或稍小，返回结果
+                // console.log("compressed img at first time:",resizedBase64.length)
+                resolve(resizedBase64);
             }
+        }).catch(reject);
+    });
+}
 
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+function compressAndResizeImage(image, targetWidth, targetHeight, quality) {
+    return new Promise((resolve, reject) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        ctx.drawImage(image, 0, 0, targetWidth, targetHeight);
 
-            canvas.width = targetWidth;
-            canvas.height = targetHeight;
-
-            ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
-
-            const thumbnailDataUrl = canvas.toDataURL('image/png');
-
-            resolve(thumbnailDataUrl);
-        };
-
-        img.onerror = function() {
-            reject(new Error('Could not load image'));
-        };
+        try {
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolve(dataUrl);
+        } catch (e) {
+            reject(e);
+        }
     });
 }
 
 
+function compressBlob(image, quality) {
+    return new Promise((resolve, reject) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = image.width;
+        canvas.height = image.height;
+        ctx.drawImage(image, 0, 0, image.width, image.height);
+        canvas.toBlob((blob) => {
+            resolve(blob);
+        }, 'image/jpeg', quality);
+    });
+}
+
+function readFileAsBlob(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                resolve(img);
+            };
+            img.onerror = (error) => {
+                reject(error);
+            };
+            img.src = event.target.result;
+        };
+        reader.onerror = (error) => {
+            reject(error);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+class DessagePoint {
+    constructor(x, y) {
+        this.X = x;
+        this.Y = y;
+    }
+}
+
+
+function safeSubstring(str, maxLength) {
+    if (maxLength >= str.length) {
+        return str;
+    }
+
+    // 使用正则表达式匹配中文字符、英文单词、标点符号以及空格和换行符
+    let pattern = /[\u4e00-\u9fa5]|\s+|[a-zA-Z0-9]+|[\uff00-\uffff]/g;
+    let tokens = str.match(pattern);
+    let currentLength = 0;
+    let endIndex = 0;
+
+    for (let i = 0; tokens && i < tokens.length && currentLength < maxLength; i++) {
+        let token = tokens[i];
+        let tokenLength = Array.from(token).length; // 计算当前token的实际字符长度
+        if (currentLength + tokenLength > maxLength) {
+            break;
+        }
+        currentLength += tokenLength;
+        endIndex += token.length; // 计算应包括的token在原始字符串中的长度
+    }
+
+    return str.substring(0, endIndex);
+}
+
+function checkStorage() {
+    if (!window.localStorage) {
+        console.log('localStorage is not supported by this browser.');
+        return;
+    }
+    try {
+        localStorage.setItem('test', 'test');
+        localStorage.removeItem('test');
+        // console.log('Current localStorage usage: ' + localStorage.length);
+    } catch (e) {
+        if (e instanceof DOMException && e.name === 'QuotaExceededError') {
+            // Handle the quota exceeded error
+            removeLeastRecentlyUsedItem();
+            try {
+                setItemWithTimestamp('myKey', 'myValue');  // Retry saving the data
+            } catch (retryError) {
+                console.error('Failed to save even after clearing space:', retryError);
+            }
+        }
+    }
+}
+
+function setItemWithTimestamp(key, value) {
+    const item = {
+        value: value,
+        timestamp: Date.now()
+    };
+    localStorage.setItem(key, JSON.stringify(item));
+}
+
+function getItemWithTimestamp(key) {
+    const itemStr = localStorage.getItem(key);
+    if (!itemStr) {
+        return null;
+    }
+    const item = JSON.parse(itemStr);
+    item.timestamp = Date.now();  // 更新时间戳表示最近被访问
+    localStorage.setItem(key, JSON.stringify(item));  // 重新保存更新后的项
+    return item.value;
+}
+
+function removeLeastRecentlyUsedItem() {
+    const oldestTimestamp = Date.now() - 24 * 3600 * 1000;
+    let deletedCount = 0;
+    for (let i = 0; i < localStorage.length; i++) {
+
+        const key = localStorage.key(i);
+        const itemStr = localStorage.getItem(key);
+        const item = JSON.parse(itemStr);
+
+        if (item.timestamp < oldestTimestamp) {
+            localStorage.removeItem(key);
+            deletedCount++;
+        }
+    }
+    if (deletedCount === 0) {
+        localStorage.clear();
+    }
+
+}
 
 const __defaultLogo = '/assets/file/logo.png';
-const maxTextLenPerImg = 1000;
+const maxTweetLenPerPage = 500;
 const maxImgPerTweet = 4;
-const defaultTextLenForTweet  = 100;
+const defaultTextLenForTweet = 280;
+const MaxRawImgSize = (1 << 20) - 128;
+const MaxThumbnailSize = (1 << 17);
+const CompressQuality = 0.75;
+const TimeIntervalForBlockChain = 30;

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
@@ -9,7 +10,9 @@ import (
 	"fmt"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ninjahome/web-bridge/util"
+	"log"
 	"os"
 	"testing"
 )
@@ -104,4 +107,18 @@ func TestGenerateEncryptedRandomHash(t *testing.T) {
 		t.Fatal(err)
 	}
 	fmt.Println(decrypted.String())
+}
+
+func TestInfuraInfo(t *testing.T) {
+	client, err := ethclient.Dial("https://arbitrum-mainnet.infura.io/v3/08db2487445e45fe848b3b7b6b95c080")
+	if err != nil {
+		log.Fatalf("Failed to connect to the Ethereum client: %v", err)
+	}
+
+	blockNumber, err := client.BlockByNumber(context.Background(), nil)
+	if err != nil {
+		log.Fatalf("Failed to retrieve block number: %v", err)
+	}
+
+	fmt.Println("Block number:", blockNumber.Time())
 }

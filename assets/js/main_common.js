@@ -30,11 +30,11 @@ function contentScroll() {
             cacheObj = cachedUserTweets;
             uiCallback = loadOlderMostVotedTweet;
             break;
-        case 13:
+        case 12:
             cacheObj = cachedTopVotedKolUser;
             uiCallback = loadOlderMostVotedKol;
             break;
-        case 14:
+        case 13:
             cacheObj = cachedTopVoterUser;
             uiCallback = loadOlderMostVoter;
             break;
@@ -80,7 +80,7 @@ function clearCachedData() {
     window.location.href = "/signIn";
 }
 
-async function showHoverCard(event, twitterObj, web3ID) {
+async function showHoverCard(event, twitterObj, web3ID, offset) {
 
     const hoverCard = document.getElementById('hover-card');
     const rect = event.currentTarget.getBoundingClientRect();
@@ -95,10 +95,16 @@ async function showHoverCard(event, twitterObj, web3ID) {
         document.getElementById('hover-name').textContent = web3ID;
     }
 
+    let x = 0;
+    let y = 0;
+    if (offset) {
+        x = offset.X;
+        y = offset.Y
+    }
 
     hoverCard.style.display = 'block';
-    hoverCard.style.left = `${rect.left}px`;
-    hoverCard.style.top = `${rect.bottom + window.scrollY}px`;
+    hoverCard.style.left = `${rect.left + x}px`;
+    hoverCard.style.top = `${rect.bottom + window.scrollY + y}px`;
 
     if (!njUsrInfo) {
         console.log("failed to load web3 user:", web3ID);
@@ -148,7 +154,7 @@ async function TweetsQuery(param, newest, cacheObj) {
         }
         const tweetArray = await PostToSrvByJson("/tweetQuery", param);
 
-        cacheObj.moreOldTweets = tweetArray || newest || tweetArray.length !== 0;
+        cacheObj.moreOldTweets = newest || (tweetArray && tweetArray.length !== 0);
 
         cachedToMem(tweetArray, cacheObj);
 
@@ -250,8 +256,7 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     tweetHeader.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
     const twitterObj = await __setOnlyHeader(tweetHeader, tweet.twitter_id, tweet.web3_id);
     const contentArea = tweetHeader.querySelector('.tweet-content');
-    contentArea.innerHTML = DOMPurify.sanitize(tweet.text.replace(/\n/g, "<br>"));
-
+    contentArea.innerHTML = DOMPurify.sanitize(tweet.text.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;").replace(/\n/g, "<br>").replace(/ /g, '&nbsp;'));
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
 
     fulfillTweetImages(tweet, tweetHeader);
@@ -263,12 +268,20 @@ async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     return contentArea;
 }
 
-function refreshTwitterInfo() {
-    showWaiting("tips", "loading from twitter server");
-    loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true).then(async () => {
-        hideLoading();
-        await setupUserBasicInfoInSetting();
-    })
+function showSettingBtn(show) {
+    const settingDiv = document.getElementById("user-tooltip")
+    if (show) {
+        settingDiv.style.visibility = 'visible';
+    } else {
+        settingDiv.style.visibility = 'hidden';
+    }
+}
+
+async function refreshTwitterInfo() {
+    showWaiting("syncing twitter meta");
+    await loadTwitterUserInfoFromSrv(ninjaUserObj.tw_id, false, true);
+    await setupUserBasicInfoInSetting();
+    hideLoading();
 }
 
 function quitFromService() {
@@ -280,10 +293,21 @@ function quitFromService() {
     })
 }
 
+function showTweetDetailInfo() {
+    const div = document.getElementById('tweet-detail-info')
+    if (div.style.display === 'none') {
+        div.style.display = 'flex';
+        document.getElementById('tweet-text-info-img').classList.remove('tweet-text-info-img');
+    } else {
+        document.getElementById('tweet-text-info-img').classList.add('tweet-text-info-img');
+        div.style.display = 'none';
+    }
+}
+
 async function showTweetDetail(parentEleID, tweet) {
     const detail = document.querySelector('#tweet-detail');
     detail.style.display = 'block';
-
+    document.getElementById('tweet-post-on-top').style.display = 'none';
     const parentNode = document.getElementById(parentEleID);
     if (!parentNode) {
         return;
@@ -292,13 +316,14 @@ async function showTweetDetail(parentEleID, tweet) {
 
     detail.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
     await __setOnlyHeader(detail, tweet.twitter_id, tweet.web3_id);
-    detail.querySelector('.tweet-text').innerHTML = DOMPurify.sanitize(tweet.text.replace(/\n/g, "<br>"));
+    detail.querySelector('.tweet-text').innerHTML = DOMPurify.sanitize(tweet.text.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;").replace(/\n/g, "<br>").replace(/ /g, '&nbsp;'));
 
     fulfillTweetImages(tweet, detail);
 
     detail.querySelector('.back-button').onclick = () => {
         parentNode.style.display = 'block';
         detail.style.display = 'none';
+        document.getElementById('tweet-post-on-top').style.display = 'block';
         detail.querySelector('.team-members').innerHTML = '';
         detail.querySelector('.team-members').style.display = 'none';
     }
@@ -317,7 +342,7 @@ async function __showVoteButton(tweetCard, tweet, callback) {
     if (!voteContractMeta) {
         await initVoteContractMeta();
     }
-    tweetCard.querySelector('.tweet-action-vote-val').textContent = voteContractMeta.votePriceInEth;
+    // tweetCard.querySelector('.tweet-action-vote-val').textContent = voteContractMeta.votePriceInEth;
     voteBtn.onclick = () => voteToTheTweet(tweet, callback);
 }
 
@@ -347,6 +372,11 @@ async function __updateVoteNumberForTweet(tweetObj, newVote) {
     if (tweetCard) {
         tweetCard.querySelector('.total-vote-count').textContent = tweetObj.vote_count;
     }
+
+    tweetCard = document.getElementById("tweet-card-for-njusr-post-" + tweetObj.create_time)
+    if (tweetCard) {
+        tweetCard.querySelector('.total-vote-count').textContent = tweetObj.vote_count;
+    }
 }
 
 async function voteToTheTweet(obj, callback) {
@@ -357,15 +387,16 @@ async function voteToTheTweet(obj, callback) {
     }
 
     openVoteModal(function (voteCount, shareToTweet) {
-        procTweetVotePayment(voteCount, obj, async function (create_time, vote_count) {
-            const newVote = await updateVoteStatusToSrv(create_time, vote_count);
+        procTweetVotePayment(voteCount, obj, async function (create_time, vote_count, txHash) {
+            const newVote = await updateVoteStatusToSrv(create_time, vote_count, txHash);
             obj.vote_count = newVote.vote_count;
             __updateVoteNumberForTweet(obj, newVote).then(() => {
             });
             reloadSelfNjData().then(() => {
             });
             if (shareToTweet && ninjaUserObj.tw_id) {
-                __shareVoteToTweet(create_time, vote_count, i18next.t('voter-slogan')).then(() => {
+                const slogan = i18next.t('slogan_1') + gameContractMeta.totalBonus + " ETH. " + i18next.t('voter-slogan');
+                __shareVoteToTweet(create_time, vote_count, slogan).then(() => {
                 });
             }
             if (callback) {
@@ -375,10 +406,11 @@ async function voteToTheTweet(obj, callback) {
     });
 }
 
-async function updateVoteStatusToSrv(create_time, vote_count) {
+async function updateVoteStatusToSrv(create_time, vote_count, txHash) {
     return await PostToSrvByJson("/updateTweetVoteStatus", {
         create_time: create_time,
         vote_count: Number(vote_count),
+        tx_hash: txHash,
     });
 }
 

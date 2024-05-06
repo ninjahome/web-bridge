@@ -19,6 +19,7 @@ type GamInfoOnChain struct {
 	Bonus          float64 `json:"bonus"  firestore:"bonus"`
 	BonusForWinner float64 `json:"bonus_for_winner"  firestore:"bonus_for_winner"`
 	RandomVal      string  `json:"random_val"  firestore:"random_val"`
+	TicketsNo      int64   `json:"tickets_no" firestore:"tickets_no"`
 }
 
 func (c *GamInfoOnChain) String() string {
@@ -83,6 +84,7 @@ func (_TweetLotteryGame *TweetLotteryGameCaller) HistoryRoundInfoEx(opts *bind.C
 		weiToEth := new(big.Float).SetInt(big.NewInt(1e18))
 		bonusEth := new(big.Float).Quo(new(big.Float).SetInt(round.Bonus), weiToEth)
 		construct.Bonus, _ = bonusEth.Float64()
+		construct.TicketsNo = round.TicketNo.Int64()
 
 		result = append(result, construct)
 	}
@@ -95,4 +97,8 @@ type TeamInfos struct {
 	MemNo   int64
 	VoteNos []*big.Int
 	Members []common.Address
+}
+
+func queryTxAndReceipt() {
+
 }

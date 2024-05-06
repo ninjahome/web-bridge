@@ -14,17 +14,18 @@ import (
 var _logInstance *zerolog.Logger
 var logOnce sync.Once
 var logLevel = "debug"
+var LogFileName = "server.log"
 
 func LogInst() *zerolog.Logger {
 	logOnce.Do(func() {
-
+		fmt.Println("\nlog file name:" + LogFileName)
 		//TODO::refactor numbers
 		logFile := &lumberjack.Logger{
-			Filename:   "game.log", // 日志文件路径
-			MaxSize:    100,        // 文件最大大小（MB）
-			MaxBackups: 5,          // 保留旧文件的最大个数
-			MaxAge:     128,        // 保留旧文件的最大天数
-			Compress:   true,       // 是否压缩/归档旧文件
+			Filename:   LogFileName, // 日志文件路径
+			MaxSize:    100,         // 文件最大大小（MB）
+			MaxBackups: 5,           // 保留旧文件的最大个数
+			MaxAge:     128,         // 保留旧文件的最大天数
+			Compress:   true,        // 是否压缩/归档旧文件
 		}
 
 		writer := diode.NewWriter(os.Stderr, 1000, 10*time.Millisecond, func(missed int) {
@@ -50,8 +51,11 @@ func LogInst() *zerolog.Logger {
 	return _logInstance
 }
 
-func SetLogLevel(ll string) {
+func SetLogLevel(ll, file string) {
 	logLevel = ll
+	if len(file) > 0 {
+		LogFileName = file
+	}
 	logLvl, err := zerolog.ParseLevel(logLevel)
 	if err != nil {
 		fmt.Println("set log level err:", err)

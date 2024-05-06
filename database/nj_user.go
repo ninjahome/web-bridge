@@ -17,6 +17,7 @@ type NinjaUsrInfo struct {
 	Address      string `json:"address" firestore:"address"`
 	EthAddr      string `json:"eth_addr" firestore:"eth_addr"`
 	CreateAt     int64  `json:"create_at" firestore:"create_at"`
+	SignInAt     int64  `json:"signIn_at" firestore:"signIn_at"`
 	TwID         string `json:"tw_id" firestore:"tw_id"`
 	UpdateAt     int64  `json:"update_at"`
 	TweetCount   int    `json:"tweet_count" firestore:"tweet_count"`
@@ -63,7 +64,11 @@ func (dm *DbManager) NjUserSignIn(ethAddr string) *NinjaUsrInfo {
 			util.LogInst().Err(err).Str("eth-addr", ethAddr).Msg("parse firestore data  to NinjaUsrInfo failed")
 			return nil
 		}
-		util.LogInst().Debug().Str("eth-addr", ethAddr).Msg("firestore load ninja user info success")
+		_, _ = docRef.Update(opCtx, []firestore.Update{
+			{Path: "signIn_at", Value: time.Now().UnixMilli()},
+		})
+		nu.SignInAt = time.Now().UnixMilli()
+		util.LogInst().Debug().Str("eth-addr", ethAddr).Int64("sign-at", nu.SignInAt).Msg("firestore load ninja user info success")
 		return nu
 	}
 
@@ -149,11 +154,11 @@ func (dm *DbManager) MostVotedKol(pageSize int, startID int64, vote bool) ([]*Ni
 func (dm *DbManager) CheckKolElder() {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut*10)
 	defer cancel()
-	util.LogInst().Info().Msg("start to check elder status")
+	util.LogInst().Debug().Msg("start to check elder status")
 	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
 
 		randomDoc := dm.fileCli.Collection(DBTableNJUser)
-		var query = randomDoc.Where("be_voted_count", ">=", 100).
+		var query = randomDoc.Where("be_voted_count", ">=", __dbConf.ElderNoFirstGot).
 			OrderBy("be_voted_count", firestore.Desc).
 			Limit(10)
 
@@ -164,7 +169,7 @@ func (dm *DbManager) CheckKolElder() {
 		for {
 			doc, err := iter.Next()
 			if errors.Is(err, iterator.Done) {
-				util.LogInst().Info().Msg("query kol status success")
+				util.LogInst().Debug().Msg("query kol status success")
 				break
 			}
 			if err != nil {

@@ -7,13 +7,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/rpc"
+	"github.com/rivo/uniseg"
 	"html/template"
 	"io"
+	"math/big"
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
+	"unicode"
 )
 
 import (
@@ -21,8 +27,9 @@ import (
 )
 
 const (
-	MaxReqContentLen = 1024 * 1024 * 5
+	MaxReqContentLen = 1 << 23
 	MaxTwitterLen    = 280
+	urlWeight        = 23
 )
 
 var (
@@ -106,8 +113,59 @@ func ReadRequest(request *http.Request, obj any) error {
 	return json.Unmarshal(b.Bytes(), obj)
 }
 
-func IsOverTwitterLimit(text string) bool {
-	return len(text) > MaxTwitterLen
+var urlRegex = regexp.MustCompile(`https?://\S+`)
+
+// ParseTweet calculates the length of a tweet text based on Twitter's specific rules.
+func ParseTweet(text string) (int, bool) {
+	weightedLength := 0
+	urls := urlRegex.FindAllStringIndex(text, -1)
+
+	// Subtract urls and add fixed url length
+	lastIndex := 0
+	for _, loc := range urls {
+		// Add the text before the URL
+		weightedLength += calculateWeight(text[lastIndex:loc[0]])
+		// Add fixed URL length
+		weightedLength += urlWeight
+		lastIndex = loc[1]
+	}
+	// Add the rest of the text after the last URL
+	weightedLength += calculateWeight(text[lastIndex:])
+
+	// Check if the tweet is valid based on its weighted length
+	isValid := weightedLength <= MaxTwitterLen
+	return weightedLength, isValid
+}
+
+// calculateWeight calculates the weight of the text.
+func calculateWeight(text string) int {
+	weight := 0
+	gr := uniseg.NewGraphemes(text)
+	for gr.Next() {
+		r := gr.Runes()
+		if isCJK(r) {
+			weight += 2 // CJK characters have weight 2
+		} else {
+			weight += 1 // Non-CJK characters have weight 1
+		}
+	}
+	return weight
+}
+
+// isCJK checks if the rune slice is a CJK character.
+func isCJK(runes []rune) bool {
+	for _, r := range runes {
+		if unicode.Is(unicode.Han, r) {
+			return true
+		}
+	}
+	return false
+}
+
+func IsValidTwitterContent(text string) bool {
+	characterCount, valid := ParseTweet(text)
+	LogInst().Debug().Int("text-len", len(text)).Str("text", text).Int("rune-len", characterCount).Msg("tweet text length")
+	return valid
 }
 
 func TruncateString(raw, append string) string {
@@ -126,4 +184,81 @@ func TruncateString(raw, append string) string {
 	}
 
 	return truncated + "..." + append
+}
+
+func toBlockNumArg(number *big.Int) string {
+	if number == nil {
+		return "latest"
+	}
+	if number.Sign() >= 0 {
+		return hexutil.EncodeBig(number)
+	}
+	// It's negative.
+	if number.IsInt64() {
+		return rpc.BlockNumber(number.Int64()).String()
+	}
+	// It's negative and large, which is invalid.
+	return fmt.Sprintf("<invalid %d>", number)
+}
+
+func GetBlockByNumber(url string, blockNum *big.Int) (*Block, error) {
+	noStr := toBlockNumArg(blockNum)
+	payload := bytes.NewBuffer([]byte(fmt.Sprintf(`{"jsonrpc":"2.0","method":"eth_getBlockByNumber","params":["%s", false],"id":1}`, noStr)))
+
+	req, err := http.NewRequest("POST", url, payload)
+	if err != nil {
+		LogInst().Err(err).Msg("Error creating request")
+		return nil, err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		LogInst().Err(err).Msg("Error sending request to server")
+		return nil, err
+	}
+	defer resp.Body.Close()
+	var response JsonResponse
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		LogInst().Err(err).Msg("decode response failed")
+		return nil, err
+	}
+	response.Result.TimeStamp2 = hexutil.MustDecodeBig(response.Result.Timestamp)
+	return &response.Result, nil
+}
+
+type Block struct {
+	BaseFeePerGas    string `json:"baseFeePerGas"`
+	Difficulty       string `json:"difficulty"`
+	ExtraData        string `json:"extraData"`
+	GasLimit         string `json:"gasLimit"`
+	GasUsed          string `json:"gasUsed"`
+	Hash             string `json:"hash"`
+	L1BlockNumber    string `json:"l1BlockNumber"`
+	LogsBloom        string `json:"logsBloom"`
+	Miner            string `json:"miner"`
+	MixHash          string `json:"mixHash"`
+	Nonce            string `json:"nonce"`
+	Number           string `json:"number"`
+	ParentHash       string `json:"parentHash"`
+	ReceiptsRoot     string `json:"receiptsRoot"`
+	SendCount        string `json:"sendCount"`
+	SendRoot         string `json:"sendRoot"`
+	Sha3Uncles       string `json:"sha3Uncles"`
+	Size             string `json:"size"`
+	StateRoot        string `json:"stateRoot"`
+	Timestamp        string `json:"timestamp"`
+	TimeStamp2       *big.Int
+	TotalDifficulty  string   `json:"totalDifficulty"`
+	Transactions     []string `json:"transactions"`
+	TransactionsRoot string   `json:"transactionsRoot"`
+	Uncles           []string `json:"uncles"`
+}
+
+type JsonResponse struct {
+	Jsonrpc string `json:"jsonrpc"`
+	ID      int    `json:"id"`
+	Result  Block  `json:"result"`
 }

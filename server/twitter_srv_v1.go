@@ -8,7 +8,10 @@ import (
 	"github.com/dghubble/oauth1"
 	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
+	"golang.org/x/image/draw"
+	_ "golang.org/x/image/webp"
 	"image"
+	_ "image/gif"
 	"image/jpeg"
 	_ "image/png"
 	"io"
@@ -16,7 +19,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"unicode/utf8"
 )
 
 const (
@@ -24,6 +26,7 @@ const (
 	accessPointMedia  = "https://upload.twitter.com/1.1/media/upload.json"
 	accessPointSearch = "https://api.twitter.com/1.1/users/search.json"
 	MaxImgInTweet     = 4
+	MaxImgDataSize    = 1 << 20
 )
 
 func checkTwitterRights(twitterUid string, r *http.Request) (*database.TwUserAccessToken, error) {
@@ -102,26 +105,86 @@ func searchTwitterUsr(w http.ResponseWriter, r *http.Request, nu *database.Ninja
 
 	util.LogInst().Debug().Str("q", keyWords).Int("user-no", len(users)).Msg("search twitter user")
 }
+func resizeImage(img image.Image, targetWidth, targetHeight int) (image.Image, error) {
+	srcBounds := img.Bounds()
+
+	// 创建一个新的目标尺寸的空图片
+	dstImg := image.NewRGBA(image.Rect(0, 0, targetWidth, targetHeight))
+
+	// 使用高质量的缩放算法缩放图片
+	draw.CatmullRom.Scale(dstImg, dstImg.Bounds(), img, srcBounds, draw.Over, nil)
+
+	return dstImg, nil
+}
+
+// 处理base64编码的图片字符串，获取图片对象，并缩放图片
+func processBase64Image(hash, base64Str string) (image.Image, error) {
+	// 移除数据URI方案的前缀（如果存在）
+	prefixIdx := strings.IndexByte(base64Str, ',') + 1
+	base64Data := base64Str[prefixIdx:]
+	prefix := base64Str[:prefixIdx]
+
+	// 解码base64字符串
+	imgData, err := base64.StdEncoding.DecodeString(base64Data)
+	if err != nil {
+		return nil, fmt.Errorf("decode image base64 failed: %v", err)
+	}
+
+	// 解码图片数据
+	img, _, err := image.Decode(bytes.NewReader(imgData))
+	if err != nil {
+		return nil, fmt.Errorf("decode image failed: %v", err)
+	}
+
+	util.LogInst().Info().Int("img-len", len(base64Str)).Msg("raw image is fine")
+	if len(base64Str) <= MaxImgDataSize {
+		if len(hash) > 20 {
+			err = database.DbInst().SaveRawImg(hash, base64Str)
+		}
+		return img, err
+	}
+
+	factor := float64(MaxImgDataSize) / float64(len(base64Str))
+	srcBounds := img.Bounds()
+	targetWidth := int(float64(srcBounds.Dx()) * factor)
+	targetHeight := int(float64(srcBounds.Dy()) * factor)
+
+	resizedImg, err := resizeImage(img, targetWidth, targetHeight)
+	if err != nil {
+		return nil, fmt.Errorf("resize image failed: %v", err)
+	}
+	var buf2 bytes.Buffer
+	if err := jpeg.Encode(&buf2, resizedImg, nil); err != nil {
+		return nil, fmt.Errorf("encode resized image failed: %v", err)
+	}
+
+	resizedBase64 := prefix + base64.StdEncoding.EncodeToString(buf2.Bytes())
+	util.LogInst().Info().Int("img-len", len(resizedBase64)).Msg("resize image success")
+	if len(hash) > 20 {
+		err = database.DbInst().SaveRawImg(hash, resizedBase64)
+	}
+	return resizedImg, err
+}
 
 func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) (*TweetRequest, error) {
+
 	var token = ut.GetToken()
 
-	var appendStr = _globalCfg.GetNjProtocolAd(njTweet.CreateAt)
-	var combinedTxt = njTweet.Txt + appendStr
+	var combinedTxt = njTweet.TxtWithSlogan
 	mediaIDs := make([]string, 0)
 	if len(njTweet.Images) > MaxImgInTweet {
 		return nil, fmt.Errorf("images must be less than 5")
 	}
-
-	for _, base64Data := range njTweet.ImageRaw {
-		base64Data = base64Data[strings.IndexByte(base64Data, ',')+1:]
-		imgData, err := base64.StdEncoding.DecodeString(base64Data)
-		if err != nil {
-			util.LogInst().Err(err).Msg("decode tweet image failed")
-			return nil, err
+	var finalHash []string
+	var finalImages []string
+	for i, base64Data := range njTweet.ImageRaw {
+		hash := njTweet.ImageHash[i]
+		if len(hash) > 20 {
+			finalHash = append(finalHash, hash)
+			finalImages = append(finalImages, njTweet.Images[i])
 		}
 
-		img, _, err := image.Decode(bytes.NewReader(imgData))
+		img, err := processBase64Image(hash, base64Data)
 		if err != nil {
 			util.LogInst().Err(err).Msg("parse tweet image to image object failed")
 			return nil, err
@@ -132,47 +195,18 @@ func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) 
 			return nil, err
 		}
 		mediaIDs = append(mediaIDs, mediaID)
+
 	}
+	njTweet.ImageHash = finalHash
+	njTweet.Images = finalImages
 
-	if !util.IsOverTwitterLimit(combinedTxt) {
-		return &TweetRequest{
-			Text: combinedTxt,
-			Media: &Media{
-				MediaIDs: mediaIDs,
-			},
-		}, nil
-	}
-
-	var txtLen = len(njTweet.Txt)
-	count := utf8.RuneCountInString(njTweet.Txt)
-	util.LogInst().Debug().Int("txt-len", txtLen).Int("txt-count", count).Send()
-
-	splitTxt := util.SplitIntoChunks(njTweet.Txt, _globalCfg.MaxTxtPerImg)
-	if len(splitTxt)+len(njTweet.Images) > MaxImgInTweet {
-		return nil, fmt.Errorf("txt is too long")
-	}
-
-	for _, content := range splitTxt {
-		txtImg, err := util.ConvertLongTweetToImg(content, _globalCfg.imgFont, _globalCfg.FontSize)
-		if err != nil {
-			util.LogInst().Err(err).Msg("convert txt to img failed:" + njTweet.String())
-			return nil, err
-		}
-
-		mediaID, err := uploadMedia(token, txtImg)
-		if err != nil {
-			util.LogInst().Err(err).Msg("convert txt to img failed:" + njTweet.String())
-			return nil, err
-		}
-		mediaIDs = append(mediaIDs, mediaID)
-	}
-
-	combinedTxt = util.TruncateString(njTweet.Txt, appendStr)
-	var req = &TweetRequest{
+	req := &TweetRequest{
 		Text: combinedTxt,
-		Media: &Media{
+	}
+	if len(mediaIDs) > 0 {
+		req.Media = &Media{
 			MediaIDs: mediaIDs,
-		},
+		}
 	}
 	return req, nil
 }
@@ -225,7 +259,7 @@ func postTweets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInf
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(njTweet)
-	util.LogInst().Debug().Str("tweet-id", njTweet.TweetId).
+	util.LogInst().Info().Str("tweet-id", njTweet.TweetId).
 		Int64("create_time", njTweet.CreateAt).
 		Msg("Tweet posted successfully")
 }
@@ -245,6 +279,7 @@ func uploadMedia(token *oauth1.Token, img image.Image) (string, error) {
 		util.LogInst().Err(err).Msg("jpeg Encode failed")
 		return "", err
 	}
+
 	writer.Close()
 	var result map[string]interface{}
 	err = twitterApiPost(accessPointMedia, token, &buffer, writer.FormDataContentType(), &result)
@@ -325,7 +360,7 @@ func shareVoteAction(w http.ResponseWriter, r *http.Request, nu *database.NinjaU
 		return
 	}
 
-	util.LogInst().Debug().Str("web3-id", nu.EthAddr).
+	util.LogInst().Info().Str("web3-id", nu.EthAddr).
 		Str("tweet-id", tweetResponse.Data.ID).
 		Int64("create_time", vote.CreateTime).
 		Msg("share vote tweet successfully")

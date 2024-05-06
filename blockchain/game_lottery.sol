@@ -25,6 +25,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
         uint256 bonus;
         uint256 bonusForWinner;
         uint256 randomVal;
+        uint256 ticketNo;
     }
 
     mapping(uint256 => address) public buyerInfoIdxForTickets;
@@ -61,7 +62,8 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             winTicketID: 0,
             bonus: msg.value,
             randomVal: 0,
-            bonusForWinner: 0
+            bonusForWinner: 0,
+            ticketNo: 0
         });
 
         gameInfoRecord[currentRoundNo] = newRoundInfo;
@@ -142,13 +144,14 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             discoverTime: block.timestamp + __lotteryGameRoundTime,
             winner: address(0),
             winTicketID: 0,
-            bonus: 0,
+            bonus: gameInfoRecord[currentRoundNo].bonus,
             randomVal: 0,
-            bonusForWinner: 0
+            bonusForWinner: 0,
+            ticketNo: gameInfoRecord[currentRoundNo].ticketNo
         });
 
-        newRoundInfo.bonus += gameInfoRecord[currentRoundNo].bonus;
         gameInfoRecord[currentRoundNo].bonus = 0;
+        gameInfoRecord[currentRoundNo].ticketNo = 0;
         currentRoundNo += 1;
 
         gameInfoRecord[currentRoundNo] = newRoundInfo;
@@ -229,7 +232,8 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             winTicketID: 0,
             bonus: 0,
             randomVal: 0,
-            bonusForWinner: 0
+            bonusForWinner: 0,
+            ticketNo: 0
         });
 
         emit DiscoverWinner(
@@ -257,6 +261,7 @@ contract TweetLotteryGame is ServiceFeeForWithdraw, TweetVotePlugInI {
             ticketsOfBuyer[currentRoundNo][buyer].push(newTid);
         }
 
+        gameInfoRecord[currentRoundNo].ticketNo += no;
         __currentLotteryTicketID += no;
     }
 

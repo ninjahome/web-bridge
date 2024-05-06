@@ -7,10 +7,6 @@ import (
 	"net/http"
 )
 
-func userProfile(w http.ResponseWriter, r *http.Request, web3ID string) {
-
-}
-
 func queryNjBasicByID(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 	var web3ID = r.URL.Query().Get("web3_id")
 	if len(web3ID) == 0 {
