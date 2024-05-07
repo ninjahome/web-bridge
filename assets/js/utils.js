@@ -629,20 +629,6 @@ function __incomeWithdrawHistory(address) {
     window.open(targetUrl);
 }
 
-function blobToBase64(blob) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            // 当读取完成，reader.result 包含了Base64编码的数据URL
-            resolve(reader.result);
-        };
-        reader.onerror = (error) => {
-            reject(error);
-        };
-        reader.readAsDataURL(blob); // 开始将blob转换为data URL
-    });
-}
-
 function adjustImageToApproxTargetBase64Length(image, targetLength) {
     return new Promise((resolve, reject) => {
         // 确保图片已经加载完毕
@@ -696,20 +682,6 @@ function compressAndResizeImage(image, targetWidth, targetHeight, quality) {
     });
 }
 
-
-function compressBlob(image, quality) {
-    return new Promise((resolve, reject) => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = image.width;
-        canvas.height = image.height;
-        ctx.drawImage(image, 0, 0, image.width, image.height);
-        canvas.toBlob((blob) => {
-            resolve(blob);
-        }, 'image/jpeg', quality);
-    });
-}
-
 function readFileAsBlob(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -729,14 +701,6 @@ function readFileAsBlob(file) {
         reader.readAsDataURL(file);
     });
 }
-
-class DessagePoint {
-    constructor(x, y) {
-        this.X = x;
-        this.Y = y;
-    }
-}
-
 
 function safeSubstring(str, maxLength) {
     if (maxLength >= str.length) {
