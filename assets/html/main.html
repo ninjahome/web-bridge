@@ -1698,8 +1698,6 @@
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
             <div class="tweet-post" id="tweet-post-on-top">
-                {{/*                <img src="" id="outputImage">*/}}
-
                 <div class="hidden-tweet-for-img" id="hidden-tweet-for-img">
                     <div class="hidden-tweet-txt" id="hidden-tweet-txt" contenteditable="true"></div>
                     <div class="hidden-appoint" id="hidden-appoint-tips"
@@ -2428,15 +2426,14 @@
 
     function autoResize(textarea) {
         if (textarea.value === '') {
-            // 如果内容为空，设置为初始行高。这里的初始行高根据rows属性设置为 '5em'，每行约为 '1em' 高度
             textarea.style.height = '5em';
         } else {
-            textarea.style.height = 'auto'; // 先重置高度，允许它缩小
-            if (textarea.scrollHeight <= 320) { // 320px 作为最大高度
-                textarea.style.height = textarea.scrollHeight + 'px'; // 增加到足够的高度
+            textarea.style.height = 'auto';
+            if (textarea.scrollHeight <= 320) {
+                textarea.style.height = textarea.scrollHeight + 'px';
             } else {
-                textarea.style.height = '320px'; // 设置为最大高度
-                textarea.style.overflowY = 'auto'; // 超过最大高度时启用滚动条
+                textarea.style.height = '320px';
+                textarea.style.overflowY = 'auto';
             }
         }
     }

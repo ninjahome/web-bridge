@@ -99,7 +99,6 @@ async function GetToSrvByJson(url) {
     const csrfToken = document.getElementById('csrf_token');
     if (csrfToken) {
         requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
-        // console.log("CSRF-Token=>",csrfToken.value);
     }
 
     try {
@@ -110,7 +109,6 @@ async function GetToSrvByJson(url) {
         }
         if (!response.ok) {
             if ([301, 302, 303, 307, 308].includes(response.status)) {
-                // 如果是重定向响应，获取重定向的 URL 并导航到那里
                 window.location = response.url;
                 return;
             }
@@ -245,7 +243,6 @@ function createModalElement() {
     return modal;
 }
 
-// 定义旋转动画
 const style = document.createElement('style');
 style.type = 'text/css';
 style.innerHTML = `
@@ -631,7 +628,6 @@ function __incomeWithdrawHistory(address) {
 
 function adjustImageToApproxTargetBase64Length(image, targetLength) {
     return new Promise((resolve, reject) => {
-        // 确保图片已经加载完毕
         if (!image.complete) {
             reject('Image has not loaded yet.');
             return;
@@ -640,25 +636,18 @@ function adjustImageToApproxTargetBase64Length(image, targetLength) {
         const originalBase64 = image.src;
         const originalLength = originalBase64.length;
 
-        // 计算目标长度与原始长度的比例
-        const ratio = Math.sqrt(targetLength / originalLength) *0.95;  // 使用平方根减少尺寸调整幅度
+        const ratio = Math.sqrt(targetLength / originalLength) *0.95;
 
         const targetWidth = Math.floor(image.width * ratio);
         const targetHeight = Math.floor(image.height * ratio);
-        const quality = 0.8;  // 初始压缩质量
+        const quality = 0.8;
 
-        // 使用估算的宽高和质量参数压缩图像
         compressAndResizeImage(image, targetWidth, targetHeight, quality).then(resizedBase64 => {
-            // console.log("compressAndResizeImage result:=>", resizedBase64.length, targetLength)
             if (resizedBase64.length > targetLength) {
-                // 如果调整后的长度仍然过大，尝试进一步降低质量
                 compressAndResizeImage(image, targetWidth , targetHeight , quality* 0.8).then(finalBase64 => {
-                    // console.log("compressed img at second time:",resizedBase64.length,finalBase64.length);
                     resolve(finalBase64);
                 }).catch(reject);
             } else {
-                // 如果长度符合要求或稍小，返回结果
-                // console.log("compressed img at first time:",resizedBase64.length)
                 resolve(resizedBase64);
             }
         }).catch(reject);
@@ -701,13 +690,38 @@ function readFileAsBlob(file) {
         reader.readAsDataURL(file);
     });
 }
+function tweetSubString(str, maxLength) {
+    if (maxLength >= str.length) {
+        return { result: str, remaining: '' };
+    }
+
+    let pattern = /[\u4e00-\u9fa5]|[\w\-']+[^\s]*|\s+|[\uff00-\uffff]/g;
+    let tokens = str.match(pattern) || [];
+    let endIndex = 0;
+    let tweetLen = 0;
+
+    for (let i = 0; i < tokens.length; i++) {
+        let token = tokens[i];
+        let tokenLength = twttr.txt.getTweetLength(token);
+
+        if (tweetLen + tokenLength > maxLength) {
+            break;
+        }
+
+        endIndex += token.length;
+        tweetLen += tokenLength;
+    }
+
+    let result = str.substring(0, endIndex);
+    let remaining = str.substring(endIndex);
+    return { result, remaining };
+}
 
 function safeSubstring(str, maxLength) {
     if (maxLength >= str.length) {
         return str;
     }
 
-    // 使用正则表达式匹配中文字符、英文单词、标点符号以及空格和换行符
     let pattern = /[\u4e00-\u9fa5]|\s+|[a-zA-Z0-9]+|[\uff00-\uffff]/g;
     let tokens = str.match(pattern);
     let currentLength = 0;
@@ -715,12 +729,12 @@ function safeSubstring(str, maxLength) {
 
     for (let i = 0; tokens && i < tokens.length && currentLength < maxLength; i++) {
         let token = tokens[i];
-        let tokenLength = Array.from(token).length; // 计算当前token的实际字符长度
+        let tokenLength = Array.from(token).length;
         if (currentLength + tokenLength > maxLength) {
             break;
         }
         currentLength += tokenLength;
-        endIndex += token.length; // 计算应包括的token在原始字符串中的长度
+        endIndex += token.length;
     }
 
     return str.substring(0, endIndex);

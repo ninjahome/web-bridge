@@ -136,7 +136,6 @@ function getCompositedTxt(formattedContent, slogan, sloganLen) {
         prefix = safeSubstring(formattedContent, (defaultTextLenForTweet - 4 - sloganLen) / 2) + "...";
         compositedTxt = prefix + slogan;
     }
-    // console.log(compositedTxt, twttr.txt.getTweetLength(compositedTxt));
     return compositedTxt;
 }
 
@@ -401,11 +400,8 @@ function previewImage(parentId) {
 
         readFileAsBlob(file).then(async blob => {
             let rawBase64Str = blob.src;
-            // console.log("blob size:", rawBase64Str.length);
             if (rawBase64Str.length > MaxRawImgSize) {
                 rawBase64Str = await adjustImageToApproxTargetBase64Length(blob, MaxRawImgSize);
-                // rawBase64Str = await blobToBase64(compressedBlob);
-                // console.log('image Base64 String:', rawBase64Str.length);
             }
 
             img.setAttribute('data-raw', rawBase64Str);
@@ -414,8 +410,6 @@ function previewImage(parentId) {
 
             if (blob.src.length > MaxThumbnailSize) {
                 img.src = await adjustImageToApproxTargetBase64Length(blob, MaxThumbnailSize);
-                // img.src = await blobToBase64(thumbNailBlob);
-                // console.log("thumbNail size:", img.src.length);
             } else {
                 img.src = blob.src;
             }
