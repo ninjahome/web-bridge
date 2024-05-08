@@ -17,6 +17,7 @@
     <script src="/assets/js/main_top.js"></script>
     <script src="/assets/js/main_operate_area.js"></script>
     <script src="/assets/js/purify.min.js"></script>
+    <script src="/assets/js/database.js"></script>
     <script src="/assets/js/i18next.min.js"></script>
     <script src="/assets/js/twitter-text-3.0.1.min.js"></script>
     <script src="/assets/js/html2canvas.min.js"></script>
@@ -2306,14 +2307,14 @@
 
     document.addEventListener("DOMContentLoaded", initMainPage);
 
-    function initNjBasic() {
+    async function initNjBasic() {
         if (!ninjaUserObj) {
             window.location.href = "/signIn";
             return;
         }
 
         NJUserBasicInfo.cacheNJUsrObj(ninjaUserObj);
-        let tw_data = TwitterBasicInfo.loadTwBasicInfo(ninjaUserObj.tw_id)
+        let tw_data = await TwitterBasicInfo.loadTwBasicInfo(ninjaUserObj.tw_id)
         if (tw_data) {
             document.getElementById("dessage-log-to-nj-log").src = tw_data.profile_image_url;
             if (ninjaUserObj.is_elder) {
@@ -2325,13 +2326,10 @@
     }
 
     async function initMainPage() {
-
-        checkStorage();
-
         try {
             showWaiting("loading from block chain");
-
-            initNjBasic();
+            await initDatabase();
+            await initNjBasic();
             await checkMetaMaskEnvironment(initBlockChainContract);
             await loadTweetsForHomePage();
             await showTargetTweetDetail();

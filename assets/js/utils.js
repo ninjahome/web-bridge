@@ -319,8 +319,8 @@ class TwitterBasicInfo {
         this.description = bio;
     }
 
-    static loadTwBasicInfo(TwitterID) {
-        const storedData = getItemWithTimestamp(lclDbKeyForTwitterUserData(TwitterID))
+    static async loadTwBasicInfo(TwitterID) {
+        const storedData = await getItemWithTimestamp(lclDbKeyForTwitterUserData(TwitterID))
         if (!storedData) {
             return null
         }
@@ -354,8 +354,8 @@ class NJUserBasicInfo {
     }
 
 
-    static loadNjBasic(ethAddr) {
-        const storedData = getItemWithTimestamp(DbKeyForNjUserData(ethAddr.toLowerCase()))
+    static async loadNjBasic(ethAddr) {
+        const storedData = await getItemWithTimestamp(DbKeyForNjUserData(ethAddr.toLowerCase()))
         if (!storedData) {
             return null
         }
@@ -636,7 +636,7 @@ function adjustImageToApproxTargetBase64Length(image, targetLength) {
         const originalBase64 = image.src;
         const originalLength = originalBase64.length;
 
-        const ratio = Math.sqrt(targetLength / originalLength) *0.95;
+        const ratio = Math.sqrt(targetLength / originalLength) * 0.95;
 
         const targetWidth = Math.floor(image.width * ratio);
         const targetHeight = Math.floor(image.height * ratio);
@@ -644,7 +644,7 @@ function adjustImageToApproxTargetBase64Length(image, targetLength) {
 
         compressAndResizeImage(image, targetWidth, targetHeight, quality).then(resizedBase64 => {
             if (resizedBase64.length > targetLength) {
-                compressAndResizeImage(image, targetWidth , targetHeight , quality* 0.8).then(finalBase64 => {
+                compressAndResizeImage(image, targetWidth, targetHeight, quality * 0.8).then(finalBase64 => {
                     resolve(finalBase64);
                 }).catch(reject);
             } else {
@@ -690,9 +690,10 @@ function readFileAsBlob(file) {
         reader.readAsDataURL(file);
     });
 }
+
 function tweetSubString(str, maxLength) {
     if (maxLength >= str.length) {
-        return { result: str, remaining: '' };
+        return {result: str, remaining: ''};
     }
 
     let pattern = /[\u4e00-\u9fa5]|[\w\-']+[^\s]*|\s+|[\uff00-\uffff]/g;
@@ -714,7 +715,7 @@ function tweetSubString(str, maxLength) {
 
     let result = str.substring(0, endIndex);
     let remaining = str.substring(endIndex);
-    return { result, remaining };
+    return {result, remaining};
 }
 
 function safeSubstring(str, maxLength) {
@@ -740,65 +741,35 @@ function safeSubstring(str, maxLength) {
     return str.substring(0, endIndex);
 }
 
-function checkStorage() {
-    if (!window.localStorage) {
-        console.log('localStorage is not supported by this browser.');
-        return;
-    }
-    try {
-        localStorage.setItem('test', 'test');
-        localStorage.removeItem('test');
-        // console.log('Current localStorage usage: ' + localStorage.length);
-    } catch (e) {
-        if (e instanceof DOMException && e.name === 'QuotaExceededError') {
-            // Handle the quota exceeded error
-            removeLeastRecentlyUsedItem();
-            try {
-                setItemWithTimestamp('myKey', 'myValue');  // Retry saving the data
-            } catch (retryError) {
-                console.error('Failed to save even after clearing space:', retryError);
-            }
-        }
-    }
-}
-
 function setItemWithTimestamp(key, value) {
-    const item = {
-        value: value,
-        timestamp: Date.now()
-    };
-    localStorage.setItem(key, JSON.stringify(item));
+    const item = new CacheItem(key, value);
+    databaseAddOrUpdate(__constCachedItem, item).then(result => {
+        // console.log(result);
+    }).catch(err => {
+        console.log(err);
+    });
 }
 
-function getItemWithTimestamp(key) {
-    const itemStr = localStorage.getItem(key);
-    if (!itemStr) {
+async function getItemWithTimestamp(key) {
+    try {
+        const data = await databaseGetByID(__constCachedItem, key);
+        if (data) {
+            // console.log('Found data:', data);
+            return data.data;
+        } else {
+            console.log('No data found for this key');
+        }
+    } catch (error) {
+        console.error('Query failed:', error);
         return null;
     }
-    const item = JSON.parse(itemStr);
-    item.timestamp = Date.now();  // 更新时间戳表示最近被访问
-    localStorage.setItem(key, JSON.stringify(item));  // 重新保存更新后的项
-    return item.value;
 }
 
-function removeLeastRecentlyUsedItem() {
-    const oldestTimestamp = Date.now() - 24 * 3600 * 1000;
-    let deletedCount = 0;
-    for (let i = 0; i < localStorage.length; i++) {
-
-        const key = localStorage.key(i);
-        const itemStr = localStorage.getItem(key);
-        const item = JSON.parse(itemStr);
-
-        if (item.timestamp < oldestTimestamp) {
-            localStorage.removeItem(key);
-            deletedCount++;
-        }
+class CacheItem {
+    constructor(key, data) {
+        this.key = key;
+        this.data = data;
     }
-    if (deletedCount === 0) {
-        localStorage.clear();
-    }
-
 }
 
 const __defaultLogo = '/assets/file/logo.png';
@@ -807,5 +778,4 @@ const maxImgPerTweet = 4;
 const defaultTextLenForTweet = 280;
 const MaxRawImgSize = (1 << 20) - 128;
 const MaxThumbnailSize = (1 << 17);
-const CompressQuality = 0.75;
 const TimeIntervalForBlockChain = 30;
