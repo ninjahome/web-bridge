@@ -22,6 +22,7 @@ async function __loadTweetsAtHomePage(newest) {
 async function loadTweetsForHomePage() {
     const tweetsDiv = document.getElementById('tweets-park');
     tweetsDiv.style.display = 'block';
+    document.getElementById('tweet-post-on-top').style.display = 'block';
     showWaiting("loading.....");
     await __loadTweetsAtHomePage(true);
     hideLoading();
