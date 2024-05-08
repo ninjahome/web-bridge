@@ -8,6 +8,7 @@ function initTopDivStatus(showID, idx) {
     const buttons = parent.querySelectorAll(".top-topic-btn");
     buttons.forEach(r => r.classList.remove("active"));
     buttons[idx].classList.add("active");
+    document.getElementById("tweet-detail").style.display = 'none';
 }
 
 const cachedTopVotedTweets = new MemCachedTweets();
