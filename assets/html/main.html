@@ -1589,7 +1589,7 @@
 
     </style>
 
-    <style>
+    <style about="tweet-on-top">
         .tweets-content-txt-area {
             margin: 0 auto;
             display: block; /* 确保元素为块级元素 */
@@ -1624,6 +1624,53 @@
         }
 
 
+    </style>
+
+    <style about="tweet-split-edit">
+        .tweet-split-item {
+            display: flex;
+            justify-content: left;
+            position: relative;
+            width: 604px;
+            overflow: auto;
+        }
+
+        .tweets-spit-content-txt-area {
+            width: 530px;
+            padding: 12px 0;
+            min-height: 100px;
+            max-height: 90vh;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.5;
+            outline: none;
+            font-size: 15px;
+            font-weight: 400;
+            border: 1px solid #D3D5D6; /* 边框 */
+            background-color: #F4F5F6;
+            border-radius: 6px;
+            direction: ltr; /* CSS method */
+            text-align: left; /* Ensure text alignment is left */
+        }
+
+        .tweet-over-flow-red {
+            background-color: rgba(255, 77, 77, .25);
+        }
+
+        .tweet-edit-custom-menu {
+            position: absolute;
+            z-index: 1000;
+            padding: 8px;
+            background: white;
+            box-shadow: 3px 3px 5px #888888;
+            display: none;
+            border-radius: 12px;
+        }
+
+        .tweet-edit-btn {
+            background-color: transparent;
+            border: none;
+        }
     </style>
 
 </head>
@@ -1699,19 +1746,27 @@
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
             <div class="tweet-post" id="tweet-post-on-top">
-                <div class="hidden-tweet-for-img" id="hidden-tweet-for-img">
-                    <div class="hidden-tweet-txt" id="hidden-tweet-txt" contenteditable="true"></div>
-                    <div class="hidden-appoint" id="hidden-appoint-tips"
-                         style="font-size: 14px; font-weight: 400; color: #a1b2c5 ">来自
-                        Dessage
+                <div class="tweets-content-area-with-split-item">
+
+                    <div class="tweet-split-item" id="tweet-split-item-template" style="margin-left: 12px">
+                        <div class="tweets-content-txt-area " id="tweets-spit-content-txt-area"
+                             contenteditable="true"
+                             oninput="highlightOverflowTxt(this)"
+                             onmouseup="checkSelection(this)">
+                        </div>
+                        <div style="float: right">
+                            <button class="tweet-edit-btn" onclick="addNewSplitEditor()">
+                                <img src="/assets/file/addPostBelow.png" alt="add tweet">
+                            </button>
+                            <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
+                                <img src="/assets/file/delPost.png" alt="delete tweet"></button>
+                        </div>
                     </div>
+
                 </div>
 
-                <label> <textarea class="tweets-content-txt-area" id="tweets-content-txt-area"
-                                  placeholder="What's happening!?" rows="5"
-                                  oninput="autoResize(this)"> </textarea></label>
                 <div class="img-wrapper" id="img-wrapper-template">
-                    <img src="" class="img-preview">
+                    <img src="" class="img-preview" alt="images">
                     <button class="delete-btn">x</button>
                 </div>
                 <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
@@ -2289,6 +2344,10 @@
     <span class="tweet-image-hash"></span>
     <button onclick="CloseImgDetail.call(this)">x</button>
 </div>
+
+<div class="tweet-edit-custom-menu" id="textMenu">
+    <button onclick="moveTextToNext()"><img src="/assets/file/movePost.png"></button>
+</div>
 <script>
 
     function showGameRule() {
@@ -2723,7 +2782,6 @@
 
         document.getElementById("tweet-detail-in-details").textContent = i18next.t('tweet-detail-in-details');
         document.getElementById("vote-price-in-modal-uint").textContent = i18next.t('vote-price-in-modal-uint');
-        document.getElementById("hidden-appoint-tips").textContent = i18next.t('hidden-appoint-tips');
     }
 </script>
 </body>

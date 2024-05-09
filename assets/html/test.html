@@ -55,7 +55,7 @@
                  style="width: 40px;height: 40px;border-radius: 50%;" alt="avatar">
         </div>
         <div style="margin-left: 12px" >
-            <span style="font-size: 12px;font-weight: 500;color: #898989;display: none">第一段文字</span>
+            <span style="font-size: 12px;font-weight: 500;color: #898989;display: none">1-1</span>
             <div class="tweets-content-txt-area" contenteditable="true" oninput="highlightText(this)" onmouseup="checkSelection(this)"></div>
             <div style="float: right">
                 <button onclick="showNextParagraph()"><img src="/assets/file/addPostBelow.png"></button>
@@ -69,7 +69,7 @@
                  style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
         </div>
         <div style="margin-left: 12px">
-            <span style="font-size: 12px;font-weight: 500;color: #898989 ">第二段文字</span>
+            <span style="font-size: 12px;font-weight: 500;color: #898989 ">1-2</span>
             <div class="tweets-content-txt-area" contenteditable="true" oninput="highlightText(this)" onmouseup="checkSelection(this)"></div>
             <div style="float: right">
                 <button onclick="showNextParagraph()"><img src="/assets/file/addPostBelow.png"></button>
@@ -83,7 +83,7 @@
                  style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
         </div>
         <div style="margin-left: 12px">
-            <span style="font-size: 12px;font-weight: 500;color: #898989 ">第三段文字</span>
+            <span style="font-size: 12px;font-weight: 500;color: #898989 ">1-3</span>
             <div class="tweets-content-txt-area" contenteditable="true" oninput="highlightText(this)" onmouseup="checkSelection(this)"></div>
             <div style="float: right">
                 <button onclick="showNextParagraph()"><img src="/assets/file/addPostBelow.png"></button>
@@ -148,7 +148,8 @@
         if (liElement) {
             liElement.remove();
         }
-    }function checkSelection(element) {
+    }
+    function checkSelection(element) {
         const selection = window.getSelection().toString();
         if (selection.length > 0) {
             showMenu();

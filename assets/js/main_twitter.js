@@ -420,3 +420,31 @@ function previewImage(parentId) {
 
     parentDiv.querySelector('.tweet-file-input').value = '';
 }
+
+function showSplitTweetEditor(){
+
+}
+
+function highlightOverflowTxt(element){
+    const text = element.innerText;
+    if (text.length > 260) {
+        const normalText = text.substring(0, 260);
+        const redText = text.substring(260);
+        element.innerHTML = normalText + '<span class="tweet-over-flow-red">' + redText + '</span>';
+    }
+}
+
+function addNewSplitEditor(){
+
+}
+
+function delCurrentEditor(){
+
+}
+
+function checkSelection(){
+    if (window.getSelection) {
+        const selection = window.getSelection().toString();
+        console.log("Selected text: ", selection);
+    }
+}
