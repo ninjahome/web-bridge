@@ -1,89 +1,202 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-    <style about="user profile detail vid">
-        .name {
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .username {
-            color: #555;
-            margin-left: 5px;
-        }
-
-        .hover-card-info {
+    <title>文本操作和高亮显示</title>
+    <style>
+        .container {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #F7F8F9;
-
+            justify-content: left;
+            position: relative;
+            width: 604px;
+            overflow: auto;
         }
 
-        .hover-card-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-            color: #7E7F82;
-            margin-top: 8px;
+        .tweets-content-txt-area {
+            width: 530px;
+            padding: 12px 0;
+            min-height: 100px;
+            max-height: 90vh;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.5;
+            outline: none;
+            font-size: 15px;
+            font-weight: 400;
+            direction: ltr; /* CSS method */
+            text-align: left; /* Ensure text alignment is left */
         }
 
-        .buy-key-button {
-            padding: 2px 0;
-            color: #7E7F82;
+        .red {
+            background-color: rgba(255,77,77,.25);
+        }
+
+        .custom-menu {
+            position: absolute;
+            z-index: 1000;
+            padding: 8px;
+            background: white;
+            box-shadow: 3px 3px 5px #888888;
+            display: none;
+            border-radius: 12px;
+        }
+
+        button {
             background-color: transparent;
             border: none;
-            border-bottom: 1px solid #D3D5D6;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .buy-key-button:hover {
-            color: #4848D8 ;
-            border-bottom: 1px solid #4848D8;
-        }
-
-        .twitterAvatar {
-            width: 48px;
-            margin-right: 8px;
-            border-radius: 50%;
-        }
-
-        .hover-card {
-            display: block; /* 默认不显示 */
-            /*position: absolute;*/
-            z-index: 5;
-            width: 340px;
-            padding: 16px;
-            background: #ffffff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            border-radius: 12px;
-            top: 100%; /* 定位到 tweet-header 下方 */
-            left: 0;
         }
     </style>
-
 </head>
 <body>
-<div class="hover-card" id="hover-card" onmouseleave="hideHoverCard(this)">
-    <div class="hover-card-info">
-        <div style=" display: flex; align-items: center;">
-            <img src="/assets/file/logo.png" alt="Avatar" id="hover-avatar" class="twitterAvatar">
-            <span id="hover-name" class="name twitterName">wesley</span>
-            <span id="hover-user-name" class="username twitterUserName">@wsliss</span>
+<ul>
+    <li class="container">
+        <div>
+            <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
+                 style="width: 40px;height: 40px;border-radius: 50%;" alt="avatar">
         </div>
-        <button id="buy-key-button" class="buy-key-button">查看详情 >></button>
-    </div>
-    <div class="hover-card-content">
-        <div>推文总数: <span id="hover-tweet-count" style="font-size: 16px; font-weight: bold; color: #4848D8">2</span></div>
-        <div>被打赏数: <span id="hover-vote-count" style="font-size: 16px; font-weight: bold; color: #DE4033">3</span></div>
-        <div>打赏数: <span id="hover-voted-count"></span>4</div>
-    </div>
-
+        <div style="margin-left: 12px" >
+            <span style="font-size: 12px;font-weight: 500;color: #898989;display: none">第一段文字</span>
+            <div class="tweets-content-txt-area" contenteditable="true" oninput="highlightText(this)" onmouseup="checkSelection(this)"></div>
+            <div style="float: right">
+                <button onclick="showNextParagraph()"><img src="/assets/file/addPostBelow.png"></button>
+                <button onclick="deleteParagraph(this)"><img src="/assets/file/delPost.png"></button>
+            </div>
+        </div>
+    </li>
+    <li class="container" style="display: none">
+        <div>
+            <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
+                 style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
+        </div>
+        <div style="margin-left: 12px">
+            <span style="font-size: 12px;font-weight: 500;color: #898989 ">第二段文字</span>
+            <div class="tweets-content-txt-area" contenteditable="true" oninput="highlightText(this)" onmouseup="checkSelection(this)"></div>
+            <div style="float: right">
+                <button onclick="showNextParagraph()"><img src="/assets/file/addPostBelow.png"></button>
+                <button onclick="deleteParagraph(this)"><img src="/assets/file/delPost.png"></button>
+            </div>
+        </div>
+    </li>
+    <li class="container" style="display: none">
+        <div>
+            <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
+                 style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
+        </div>
+        <div style="margin-left: 12px">
+            <span style="font-size: 12px;font-weight: 500;color: #898989 ">第三段文字</span>
+            <div class="tweets-content-txt-area" contenteditable="true" oninput="highlightText(this)" onmouseup="checkSelection(this)"></div>
+            <div style="float: right">
+                <button onclick="showNextParagraph()"><img src="/assets/file/addPostBelow.png"></button>
+                <button onclick="deleteParagraph(this)"><img src="/assets/file/delPost.png"></button>
+            </div>
+        </div>
+    </li>
+    <li class="container" style="display: none">
+        <div>
+            <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
+                 style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
+        </div>
+        <div style="margin-left: 12px">
+            <span style="font-size: 12px;font-weight: 500;color: #898989 ">第四段文字</span>
+            <div class="tweets-content-txt-area" contenteditable="true" oninput="highlightText(this)" onmouseup="checkSelection(this)"></div>
+            <div style="float: right">
+                <button onclick="showNextParagraph()"><img src="/assets/file/addPostBelow.png"></button>
+                <button onclick="deleteParagraph(this)"><img src="/assets/file/delPost.png"></button>
+            </div>
+        </div>
+    </li>
+    <li class="container" style="display: none">
+        <div>
+            <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
+                 style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
+        </div>
+        <div style="margin-left: 12px">
+            <span style="font-size: 12px;font-weight: 500;color: #898989 ">第五段文字</span>
+            <div class="tweets-content-txt-area" contenteditable="true" oninput="highlightText(this)" onmouseup="checkSelection(this)"></div>
+            <div style="float: right">
+                <button onclick="showNextParagraph()"><img src="/assets/file/addPostBelow.png"></button>
+                <button onclick="deleteParagraph(this)"><img src="/assets/file/delPost.png"></button>
+            </div>
+        </div>
+    </li>
+</ul>
+<div class="custom-menu" id="textMenu">
+    <button onclick="moveTextToNext()"><img src="/assets/file/movePost.png"></button>
 </div>
+<script>
 
+    function highlightText(element) {
+        var text = element.innerText;
+        if (text.length > 260) {
+            var normalText = text.substring(0, 260);
+            var redText = text.substring(260);
+            element.innerHTML = normalText + '<span class="red">' + redText + '</span>';
+        } else {
+            element.innerText = text; // to avoid innerHTML parsing removing extra formats
+        }
+    }
+
+    function showNextParagraph() {
+        var hiddenElements = document.querySelectorAll('.container[style*="display: none"]');
+        if (hiddenElements.length > 0) {
+            hiddenElements[0].style.display = 'flex';
+        }
+    }
+
+    function deleteParagraph(button) {
+        var liElement = button.closest('.container');
+        if (liElement) {
+            liElement.remove();
+        }
+    }function checkSelection(element) {
+        const selection = window.getSelection().toString();
+        if (selection.length > 0) {
+            showMenu();
+        } else {
+            hideMenu();
+        }
+    }
+
+    function showMenu() {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+
+        const menu = document.getElementById('textMenu');
+        menu.style.display = 'block';
+        // Center the menu horizontally over the selection
+        menu.style.left = `${rect.left + (rect.width / 2) - (menu.offsetWidth / 2)}px`;
+        // Position the menu above the selection, offset by the menu's height
+        menu.style.top = `${rect.top + window.scrollY - menu.offsetHeight - 5}px`; // 5px margin from the selection
+    }
+
+
+    function hideMenu() {
+        const menu = document.getElementById('textMenu');
+        menu.style.display = 'none';
+    }
+
+    function moveTextToNext() {
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        let range = selection.getRangeAt(0);
+        let selectedText = range.extractContents();
+
+        let currentContainer = selection.anchorNode.parentNode;
+        while (!currentContainer.classList.contains('container')) {
+            currentContainer = currentContainer.parentNode;
+        }
+        let nextContainer = currentContainer.nextElementSibling;
+        if (!nextContainer) return; // No next container to move text into
+
+        let nextTextArea = nextContainer.querySelector('.tweets-content-txt-area');
+        nextTextArea.appendChild(selectedText);
+
+        hideMenu();
+    }
+</script>
 </body>
 </html>
