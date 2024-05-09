@@ -42,7 +42,7 @@ async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) 
             useCache = false;
         }
         if (useCache) {
-            let tw_data = TwitterBasicInfo.loadTwBasicInfo(twitterID)
+            let tw_data = await TwitterBasicInfo.loadTwBasicInfo(twitterID)
             if (tw_data) {
                 return tw_data;
             }
@@ -384,7 +384,7 @@ function previewImage(parentId) {
         return;
     }
 
-    if (files.length > validLen){
+    if (files.length > validLen) {
         showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
     }
 

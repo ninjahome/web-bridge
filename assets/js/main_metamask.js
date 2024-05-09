@@ -1,6 +1,6 @@
 let tweetVoteContract;
 let lotteryGameContract = null;
-let voteContractMeta = TweetVoteContractSetting.load();
+let voteContractMeta = null;
 let gameContractMeta = null;
 
 async function initVoteContractMeta() {

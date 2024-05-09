@@ -506,7 +506,7 @@
         document.getElementById("error-div").style.display = 'block';
     }
 
-    function showSignBtn(web3ID) {
+    async function showSignBtn(web3ID) {
         document.querySelectorAll(".logo-container").forEach(item => item.classList.remove("active"));
         const web3IdTips = document.getElementById("web3-id-tips");
         const signInDiv = document.getElementById("sign-in-div");
@@ -528,11 +528,11 @@
         document.getElementById("logo-container-arbitrum").classList.add("active")
         document.getElementById("logo-container-eth").classList.add("active")
 
-        const savedUserInfo = NJUserBasicInfo.loadNjBasic(web3ID);
+        const savedUserInfo = await NJUserBasicInfo.loadNjBasic(web3ID);
         if (!savedUserInfo) {
             return;
         }
-        let tw_data = TwitterBasicInfo.loadTwBasicInfo(savedUserInfo.tw_id)
+        let tw_data = await TwitterBasicInfo.loadTwBasicInfo(savedUserInfo.tw_id)
         if (!tw_data) {
             return;
         }
@@ -544,26 +544,26 @@
 
     async function initElmStatus() {
         if (typeof window.ethereum === 'undefined') {
-            showSignBtn(null);
+            await showSignBtn(null);
             return;
         }
 
-        window.ethereum.on('accountsChanged', function (accounts) {
+        window.ethereum.on('accountsChanged', async function (accounts) {
             showError(null);
             if (accounts.length > 0) {
-                showSignBtn(accounts[0]);
+                await showSignBtn(accounts[0]);
                 return;
             }
-            showSignBtn(null);
+            await showSignBtn(null);
         });
 
         try {
             const accounts = await window.ethereum.request({method: 'eth_accounts'})
             if (accounts.length === 0) {
-                showSignBtn(null);
+                await showSignBtn(null);
                 return
             }
-            showSignBtn(accounts[0]);
+            await  showSignBtn(accounts[0]);
         } catch (err) {
             console.error("Error checking MetaMask status:", err);
             showError(err);
@@ -578,7 +578,7 @@
         try {
             const accounts = await window.ethereum.request({method: "eth_requestAccounts"})
             // console.log(accounts)
-            showSignBtn(accounts[0]);
+            await showSignBtn(accounts[0]);
             // window.location.reload();
         } catch (error) {
             console.error("Metamask login failed:", error.code, error.message.toString());

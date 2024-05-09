@@ -43,8 +43,8 @@ class TweetVoteContractSetting {
         return dbKeyCachedVoteContractMeta;
     }
 
-    static load() {
-        const storedVal = getItemWithTimestamp(TweetVoteContractSetting.DBKey());
+    static async load() {
+        const storedVal = await getItemWithTimestamp(TweetVoteContractSetting.DBKey());
         return storedVal ? JSON.parse(storedVal) : null;
     }
 }
@@ -116,8 +116,8 @@ class ImageRawData {
         return dbKeyCachedRawImg + hash;
     }
 
-    static load(hash) {
-        const storedVal = getItemWithTimestamp(ImageRawData.DBKey(hash));
+    static async load(hash) {
+        const storedVal = await getItemWithTimestamp(ImageRawData.DBKey(hash));
         return storedVal ? JSON.parse(storedVal) : null;
     }
 }

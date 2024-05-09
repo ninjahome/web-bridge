@@ -166,7 +166,7 @@ async function TweetsQuery(param, newest, cacheObj) {
 }
 
 async function __setOnlyHeader(tweetHeader, twitter_id, web3ID) {
-    const twitterObj = TwitterBasicInfo.loadTwBasicInfo(twitter_id);
+    const twitterObj = await TwitterBasicInfo.loadTwBasicInfo(twitter_id);
     const njUsrInfo = await loadNJUserInfoFromSrv(web3ID, true);
 
     if (twitterObj) {
@@ -219,7 +219,7 @@ function CloseImgDetail() {
 }
 
 async function loadTweetImgRaw(hash) {
-    let obj = ImageRawData.load(hash)
+    let obj = await ImageRawData.load(hash)
     if (obj) {
         return obj;
     }
@@ -425,7 +425,7 @@ async function loadNJUserInfoFromSrv(ethAddr, useCache) {
             return response;
         }
 
-        let nj_data = NJUserBasicInfo.loadNjBasic(ethAddr);
+        let nj_data = await NJUserBasicInfo.loadNjBasic(ethAddr);
         if (nj_data) {
             return nj_data;
         }
