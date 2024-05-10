@@ -706,11 +706,13 @@ function tweetSubString(str, maxLength) {
         let tokenLength = twttr.txt.getTweetLength(token);
 
         if (tweetLen + tokenLength > maxLength) {
+            console.log("last length:=>",token.length, endIndex, tokenLength, tweetLen);
             break;
         }
 
         endIndex += token.length;
         tweetLen += tokenLength;
+        console.log(token.length, endIndex, tokenLength, tweetLen);
     }
 
     let result = str.substring(0, endIndex);

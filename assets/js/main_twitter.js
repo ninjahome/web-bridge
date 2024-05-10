@@ -421,30 +421,115 @@ function previewImage(parentId) {
     parentDiv.querySelector('.tweet-file-input').value = '';
 }
 
-function showSplitTweetEditor(){
-
+function showSplitTweetEditor() {
 }
 
-function highlightOverflowTxt(element){
-    const text = element.innerText;
-    if (text.length > 260) {
-        const normalText = text.substring(0, 260);
-        const redText = text.substring(260);
-        element.innerHTML = normalText + '<span class="tweet-over-flow-red">' + redText + '</span>';
+function handleTweetInput() {
+    if (isComposing) {
+        return
     }
+    const editableDiv = document.getElementById('tweets-split-content-txt-area');
+    checkTweetLength(editableDiv);
 }
 
-function addNewSplitEditor(){
+let isComposing = false;
+
+function handleCompositionStart() {
+    isComposing = true;
+}
+
+function handleCompositionEnd(event) {
+    isComposing = false;
+    checkTweetLength(event.target);
+}
+
+function checkTweetLength(div) {
+
+    const tweetTxt = div.innerText;
+
+    const parentDiv = div.parentElement;
+    const idx = parseInt(parentDiv.dataset.index, 10);
+    // const txtLen = twttr.txt.getTweetLength(tweetTxt);
+    // console.log(idx, txtLen, tweetTxt);
+
+    const parsedText = twttr.txt.parseTweet(tweetTxt);
+    console.log(parsedText);
+    console.log("Weighted Length: ", parsedText.weightedLength);
+    console.log("Valid Tweet: ", parsedText.valid);
+    if (parsedText.valid) {
+        return;
+    }
+    let restore = saveCaretPosition(div);
+    let validText = tweetTxt.substring(0, parsedText.validRangeEnd + 1); // +1 因为 substring 不包括结束索引
+    let excessText = tweetTxt.substring(parsedText.validRangeEnd + 1);
+
+    console.log(validText, validText.length, twttr.txt.getTweetLength(validText));
+    console.log(excessText, excessText.length, twttr.txt.getTweetLength(excessText));
+
+    let oldExcess = div.querySelector('.tweet-over-flow-red');
+    if (oldExcess) {
+        oldExcess.remove();
+    }
+
+// 创建新的 span 元素来包含超出文本
+    let newExcess = document.createElement('span');
+    newExcess.className = 'tweet-over-flow-red';
+    newExcess.textContent = excessText;
+
+// 将有效文本和新的超出文本添加到 div 中
+    div.textContent = validText; // 这将设置文本但不包括HTML标签
+    div.appendChild(newExcess); // 添加新的超出文本部分
+    restore();
+}
+
+function addNewSplitEditor() {
 
 }
 
-function delCurrentEditor(){
+function delCurrentEditor() {
 
 }
 
-function checkSelection(){
+function checkSelection() {
     if (window.getSelection) {
         const selection = window.getSelection().toString();
         console.log("Selected text: ", selection);
     }
+}
+
+function saveCaretPosition(context) {
+    let selection = window.getSelection();
+    let range = selection.getRangeAt(0);
+    range.setStart(context, 0);
+    let len = range.toString().length;
+
+    return function restore() {
+        let pos = len;
+        let selection = window.getSelection();
+        let range = document.createRange();
+        range.setStart(context, 0);
+        range.setEnd(context, 0);
+        range.collapse(true);
+
+        let nodeStack = [context], node, foundStart = false, stop = false;
+
+        while (!stop && (node = nodeStack.pop())) {
+            if (node.nodeType === 3) {
+                let nextPos = pos - node.length;
+                if (nextPos <= 0) {
+                    range.setStart(node, pos);
+                    range.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    stop = true;
+                }
+                pos = nextPos;
+            } else {
+                let i = node.childNodes.length;
+                while (i--) {
+                    nodeStack.push(node.childNodes[i]);
+                }
+            }
+        }
+    };
 }
