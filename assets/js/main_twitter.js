@@ -421,73 +421,82 @@ function previewImage(parentId) {
     parentDiv.querySelector('.tweet-file-input').value = '';
 }
 
-function showSplitTweetEditor() {
+function addListenerToTweetArea() {
+    createTweetEditor();
 }
 
-function handleTweetInput() {
-    if (isComposing) {
-        return
+let __globalTweetEditorCount = 0;
+
+function createTweetEditor() {
+    if (__globalTweetEditorCount >= 5) {
+        showDialog(DLevel.Warning, "too much tweets");
+        return;
     }
-    const editableDiv = document.getElementById('tweets-split-content-txt-area');
-    checkTweetLength(editableDiv);
+
+    const tweetManager = document.getElementById("tweets-content-area-with-split-item");
+    const tweetEditorTemplate = document.getElementById("tweet-split-item-template");
+
+    const newEditor = tweetEditorTemplate.cloneNode(true);
+    newEditor.style.display = 'block';
+    newEditor.id = 'tweet-area-' + __globalTweetEditorCount;
+
+    const editableDiv = newEditor.querySelector('.tweets-content-txt-area');
+    editableDiv.addEventListener('compositionstart', ()=>{isComposing = true;});
+    editableDiv.addEventListener('compositionend', ()=>{
+        isComposing = false;
+        checkTweetLength(editableDiv);}
+    );
+    editableDiv.addEventListener('input', () => checkTweetLength(editableDiv));
+
+    tweetManager.parentElement.appendChild(newEditor);
+    __globalTweetEditorCount++;
 }
 
 let isComposing = false;
 
-function handleCompositionStart() {
-    isComposing = true;
-}
-
-function handleCompositionEnd(event) {
-    isComposing = false;
-    checkTweetLength(event.target);
-}
-
 function checkTweetLength(div) {
-
     const tweetTxt = div.innerText;
-
-    const parentDiv = div.parentElement;
-    const idx = parseInt(parentDiv.dataset.index, 10);
-    // const txtLen = twttr.txt.getTweetLength(tweetTxt);
-    // console.log(idx, txtLen, tweetTxt);
-
     const parsedText = twttr.txt.parseTweet(tweetTxt);
-    console.log(parsedText);
-    console.log("Weighted Length: ", parsedText.weightedLength);
-    console.log("Valid Tweet: ", parsedText.valid);
+    // console.log("Weighted Length: ", parsedText.weightedLength);
+    // console.log("Valid Tweet: ", parsedText.valid);
+
     if (parsedText.valid) {
         return;
     }
+
     let restore = saveCaretPosition(div);
-    let validText = tweetTxt.substring(0, parsedText.validRangeEnd + 1); // +1 因为 substring 不包括结束索引
+    let validText = tweetTxt.substring(0, parsedText.validRangeEnd + 1);
     let excessText = tweetTxt.substring(parsedText.validRangeEnd + 1);
 
-    console.log(validText, validText.length, twttr.txt.getTweetLength(validText));
-    console.log(excessText, excessText.length, twttr.txt.getTweetLength(excessText));
+    // console.log(validText, validText.length, twttr.txt.getTweetLength(validText));
+    // console.log(excessText, excessText.length, twttr.txt.getTweetLength(excessText));
 
     let oldExcess = div.querySelector('.tweet-over-flow-red');
     if (oldExcess) {
         oldExcess.remove();
     }
 
-// 创建新的 span 元素来包含超出文本
     let newExcess = document.createElement('span');
     newExcess.className = 'tweet-over-flow-red';
     newExcess.textContent = excessText;
 
-// 将有效文本和新的超出文本添加到 div 中
-    div.textContent = validText; // 这将设置文本但不包括HTML标签
-    div.appendChild(newExcess); // 添加新的超出文本部分
+    div.textContent = validText;
+    div.appendChild(newExcess);
     restore();
 }
 
-function addNewSplitEditor() {
+function addNewSplitEditor(btn) {
+    const parentDiv = btn.closest('.tweet-split-item');
+    const idx = parseInt(parentDiv.dataset.index, 10);
+    console.log(idx);
 
+    createTweetEditor();
 }
 
-function delCurrentEditor() {
-
+function delCurrentEditor(btn) {
+    const parentDiv = btn.closest('.tweet-split-item');
+    const idx = parseInt(parentDiv.dataset.index, 10);
+    console.log(idx);
 }
 
 function checkSelection() {

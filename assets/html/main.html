@@ -1728,23 +1728,20 @@
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
             <div class="tweet-post" id="tweet-post-on-top">
-                <div class="tweets-content-area-with-split-item">
-
-                    <div data-index="0" class="tweet-split-item" id="tweet-split-item-template" style="margin-left: 12px">
-                        <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
-                             contenteditable="true">
-                            <span class="tweet-over-flow-red" id="excess-txt-area"></span>
-                        </div>
-                        <div style="float: right">
-                            <button class="tweet-edit-btn" onclick="addNewSplitEditor()">
-                                <img src="/assets/file/addPostBelow.png" alt="add tweet">
-                            </button>
-                            <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
-                                <img src="/assets/file/delPost.png" alt="delete tweet"></button>
-                        </div>
+                <div data-index="0" class="tweet-split-item" id="tweet-split-item-template" style="margin-left: 12px;display: none">
+                    <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
+                         contenteditable="true">
                     </div>
+                    <div style="float: right">
+                        <button class="tweet-edit-btn" onclick="addNewSplitEditor(this)">
+                            <img src="/assets/file/addPostBelow.png" alt="add tweet">
+                        </button>
+                        <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
+                            <img src="/assets/file/delPost.png" alt="delete tweet"></button>
+                    </div>
+                </div>
 
-
+                <div class="tweets-content-area-with-split-item" id="tweets-content-area-with-split-item">
                 </div>
 
                 <div class="img-wrapper" id="img-wrapper-template">
@@ -2368,13 +2365,8 @@
 
     async function initMainPage() {
         try {
-
-            const editableDiv = document.getElementById('tweets-split-content-txt-area');
-            editableDiv.addEventListener('compositionstart', handleCompositionStart);
-            editableDiv.addEventListener('compositionend', handleCompositionEnd);
-            editableDiv.addEventListener('input', handleTweetInput);
             showWaiting("loading from block chain");
-
+            addListenerToTweetArea();
             await initDatabase();
             await initNjBasic();
             await checkMetaMaskEnvironment(initBlockChainContract);
