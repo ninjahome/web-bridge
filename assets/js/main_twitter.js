@@ -158,16 +158,6 @@ async function convertContentToImages(formattedContent, imageData) {
 
 function parseTweetContent(parentDiv) {
 
-    // const contentHtml = parentDiv.querySelector(".tweets-content-txt-area").innerHTML.trim();
-    // const formattedTxt = contentHtml
-    //     .replace(/<div><br><\/div>/gi, "\n") //
-    //     .replace(/(<div><\/div>|<p><\/p>)/gi, "\n") // 合并空的 <div></div> 和 <p></p> 转换
-    //     .replace(/(<br\s*\/?>|<\/div>|<\/p>)/gi, "\n") // 合并所有单独的换行符转换
-    //     .replace(/&nbsp;/gi, " ") // 将 &nbsp; 转换为空格
-    //     .replace(/<[^>]+>/g, '') // 移除所有其他HTML标签
-    //     .replace(/\n+$/, '');
-    // console.log(contentHtml);
-// return;
     const formattedTxt = parentDiv.querySelector(".tweets-content-txt-area").value;
     // console.log(formattedTxt);
     // return;
@@ -316,6 +306,8 @@ async function showPostTweetDiv() {
         return;
     }
 
+    initTweetArea('modal-split-tweet-content');
+
     const modal = document.querySelector('.modal-for-tweet-post');
     modal.style.display = 'block';
     document.getElementById('modal-overlay').style.display = 'block';
@@ -430,25 +422,6 @@ function handlePaste(event) {
     checkTweetLength(event.target);
 }
 
-
-function insertTextAtCursor_2(text) {
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return;  // 如果没有选区，则不执行任何操作
-
-    const range = selection.getRangeAt(0);
-    range.deleteContents();  // 删除选中内容
-
-    // 创建文本节点并插入到当前光标位置
-    const textNode = document.createTextNode(text);
-    range.insertNode(textNode);
-
-    // 移动光标到文本末尾
-    range.setStartAfter(textNode);
-    range.setEndAfter(textNode);
-    selection.removeAllRanges();  // 清除现有的选区
-    selection.addRange(range);  // 添加新的范围
-}
-
 function insertTextAtCursor(text) {
     const selection = window.getSelection();
     if (!selection.rangeCount) return;  // 如果没有选区，则不执行任何操作
@@ -471,18 +444,25 @@ function insertTextAtCursor(text) {
     selection.addRange(range);  // 添加新的范围
 }
 
+function initTweetArea(divID){
+    const tweetManager = document.getElementById(divID);
+    __globalTweetEditorCount = 0;
+    newSplitEditor(tweetManager);
+}
+
+function addNextSplitEditor(btn){
+    const tweetManager = btn.closest(".split-tweet-content")
+    newSplitEditor(tweetManager);
+}
 
 let __globalTweetEditorCount = 0;
 
-function addNewSplitEditor() {
+function newSplitEditor(tweetManager) {
     if (__globalTweetEditorCount >= 5) {
         showDialog(DLevel.Warning, "too much tweets");
         return;
     }
-
-    const tweetManager = document.getElementById("tweets-content-area-with-split-item");
     const tweetEditorTemplate = document.getElementById("tweet-split-item-template");
-
     const newEditor = tweetEditorTemplate.cloneNode(true);
     newEditor.style.display = 'block';
     newEditor.id = 'tweet-area-' + __globalTweetEditorCount;
@@ -498,14 +478,14 @@ function addNewSplitEditor() {
     );
     editableDiv.addEventListener('paste', handlePaste);
     editableDiv.addEventListener('input', () => {
-        if(isComposing){
+        if (isComposing) {
             return;
         }
         checkTweetLength(editableDiv);
     });
 
-    tweetManager.appendChild(newEditor);
     __globalTweetEditorCount++;
+    tweetManager.appendChild(newEditor);
 }
 
 let isComposing = false;
@@ -561,47 +541,10 @@ function checkSelection() {
     }
 }
 
-function saveCaretPosition_2(context) {
-    let selection = window.getSelection();
-    let range = selection.getRangeAt(0);
-    range.setStart(context, 0);
-    let len = range.toString().length;
-
-    return function restore() {
-        let pos = len;
-        let selection = window.getSelection();
-        let range = document.createRange();
-        range.setStart(context, 0);
-        range.setEnd(context, 0);
-        range.collapse(true);
-
-        let nodeStack = [context], node, foundStart = false, stop = false;
-
-        while (!stop && (node = nodeStack.pop())) {
-            if (node.nodeType === 3) {
-                let nextPos = pos - node.length;
-                if (nextPos <= 0) {
-                    range.setStart(node, pos);
-                    range.collapse(true);
-                    selection.removeAllRanges();
-                    selection.addRange(range);
-                    stop = true;
-                }
-                pos = nextPos;
-            } else {
-                let i = node.childNodes.length;
-                while (i--) {
-                    nodeStack.push(node.childNodes[i]);
-                }
-            }
-        }
-    };
-}
-
-
 function saveCaretPosition(context) {
     let selection = window.getSelection();
-    if (!selection.rangeCount) return function() {}; // 如果没有选择范围，返回一个空函数
+    if (!selection.rangeCount) return function () {
+    }; // 如果没有选择范围，返回一个空函数
 
     let range = selection.getRangeAt(0);
     range.setStart(context, 0);

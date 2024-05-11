@@ -1731,10 +1731,10 @@
                 <div data-index="0" class="tweet-split-item" id="tweet-split-item-template"
                      style="margin-left: 12px;display: none">
                     <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
-                         contenteditable="true" >
+                         contenteditable="true">
                     </div>
                     <div style="float: right">
-                        <button class="tweet-edit-btn" onclick="addNewSplitEditor()">
+                        <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
                             <img src="/assets/file/addPostBelow.png" alt="add tweet">
                         </button>
                         <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
@@ -1742,7 +1742,7 @@
                     </div>
                 </div>
 
-                <div class="tweets-content-area-with-split-item" id="tweets-content-area-with-split-item">
+                <div class="split-tweet-content" id="split-tweet-content">
                 </div>
 
                 <div class="img-wrapper" id="img-wrapper-template">
@@ -2296,8 +2296,10 @@
 <div class="modal-overlay" id="modal-overlay"></div>
 <div class="modal-for-tweet-post">
     <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
-    <label> <textarea class="tweets-content-txt-area" id="tweets-content-txt-area"
-                      placeholder="What's happening!?" rows="5" oninput="autoResize(this)"> </textarea></label>
+
+    <div class="split-tweet-content" id="modal-split-tweet-content">
+    </div>
+
     <div class="img-wrapper" id="img-wrapper-template">
         <img src="" class="img-preview">
         <button class="delete-btn">x</button>
@@ -2367,7 +2369,7 @@
     async function initMainPage() {
         try {
             showWaiting("loading from block chain");
-            addNewSplitEditor();
+            initTweetArea('split-tweet-content');
             await initDatabase();
             await initNjBasic();
             await checkMetaMaskEnvironment(initBlockChainContract);
