@@ -421,13 +421,8 @@ function previewImage(parentId) {
     parentDiv.querySelector('.tweet-file-input').value = '';
 }
 
-function addListenerToTweetArea() {
-    createTweetEditor();
-}
-
 let __globalTweetEditorCount = 0;
-
-function createTweetEditor() {
+function addNewSplitEditor() {
     if (__globalTweetEditorCount >= 5) {
         showDialog(DLevel.Warning, "too much tweets");
         return;
@@ -441,30 +436,35 @@ function createTweetEditor() {
     newEditor.id = 'tweet-area-' + __globalTweetEditorCount;
 
     const editableDiv = newEditor.querySelector('.tweets-content-txt-area');
-    editableDiv.addEventListener('compositionstart', ()=>{isComposing = true;});
-    editableDiv.addEventListener('compositionend', ()=>{
-        isComposing = false;
-        checkTweetLength(editableDiv);}
+    editableDiv.addEventListener('compositionstart', () => {
+        isComposing = true;
+    });
+    editableDiv.addEventListener('compositionend', () => {
+            isComposing = false;
+            checkTweetLength(editableDiv);
+        }
     );
     editableDiv.addEventListener('input', () => checkTweetLength(editableDiv));
 
-    tweetManager.parentElement.appendChild(newEditor);
+    tweetManager.appendChild(newEditor);
     __globalTweetEditorCount++;
 }
 
 let isComposing = false;
 
 function checkTweetLength(div) {
-    const tweetTxt = div.innerText;
+    const tweetTxt = div.textContent;
     const parsedText = twttr.txt.parseTweet(tweetTxt);
     // console.log("Weighted Length: ", parsedText.weightedLength);
     // console.log("Valid Tweet: ", parsedText.valid);
+    let restore = saveCaretPosition(div);
 
     if (parsedText.valid) {
+        div.textContent = tweetTxt;
+        restore();
         return;
     }
 
-    let restore = saveCaretPosition(div);
     let validText = tweetTxt.substring(0, parsedText.validRangeEnd + 1);
     let excessText = tweetTxt.substring(parsedText.validRangeEnd + 1);
 
@@ -485,18 +485,13 @@ function checkTweetLength(div) {
     restore();
 }
 
-function addNewSplitEditor(btn) {
-    const parentDiv = btn.closest('.tweet-split-item');
-    const idx = parseInt(parentDiv.dataset.index, 10);
-    console.log(idx);
-
-    createTweetEditor();
-}
-
 function delCurrentEditor(btn) {
+    if (__globalTweetEditorCount === 1) {
+        return;
+    }
     const parentDiv = btn.closest('.tweet-split-item');
-    const idx = parseInt(parentDiv.dataset.index, 10);
-    console.log(idx);
+    parentDiv.remove();
+    __globalTweetEditorCount--;
 }
 
 function checkSelection() {

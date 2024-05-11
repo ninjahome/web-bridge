@@ -1728,12 +1728,13 @@
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
             <div class="tweet-post" id="tweet-post-on-top">
-                <div data-index="0" class="tweet-split-item" id="tweet-split-item-template" style="margin-left: 12px;display: none">
+                <div data-index="0" class="tweet-split-item" id="tweet-split-item-template"
+                     style="margin-left: 12px;display: none">
                     <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
                          contenteditable="true">
                     </div>
                     <div style="float: right">
-                        <button class="tweet-edit-btn" onclick="addNewSplitEditor(this)">
+                        <button class="tweet-edit-btn" onclick="addNewSplitEditor()">
                             <img src="/assets/file/addPostBelow.png" alt="add tweet">
                         </button>
                         <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
@@ -2366,7 +2367,7 @@
     async function initMainPage() {
         try {
             showWaiting("loading from block chain");
-            addListenerToTweetArea();
+            addNewSplitEditor();
             await initDatabase();
             await initNjBasic();
             await checkMetaMaskEnvironment(initBlockChainContract);
