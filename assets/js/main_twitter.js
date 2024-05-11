@@ -421,7 +421,15 @@ function previewImage(parentId) {
     parentDiv.querySelector('.tweet-file-input').value = '';
 }
 
+
+function handlePaste(event) {
+    event.preventDefault();  // 阻止默认粘贴行为
+    const text = event.clipboardData.getData('text/plain');  // 获取剪贴板的纯文本数据
+    document.execCommand('insertText', false, text);  // 插入纯文本
+}
+
 let __globalTweetEditorCount = 0;
+
 function addNewSplitEditor() {
     if (__globalTweetEditorCount >= 5) {
         showDialog(DLevel.Warning, "too much tweets");
@@ -444,7 +452,12 @@ function addNewSplitEditor() {
             checkTweetLength(editableDiv);
         }
     );
-    editableDiv.addEventListener('input', () => checkTweetLength(editableDiv));
+    editableDiv.addEventListener('input', () => {
+        if(isComposing){
+            return;
+        }
+        checkTweetLength(editableDiv);
+    });
 
     tweetManager.appendChild(newEditor);
     __globalTweetEditorCount++;
@@ -453,34 +466,33 @@ function addNewSplitEditor() {
 let isComposing = false;
 
 function checkTweetLength(div) {
-    const tweetTxt = div.textContent;
+    const tweetTxt = div.innerText;
     const parsedText = twttr.txt.parseTweet(tweetTxt);
+
     // console.log("Weighted Length: ", parsedText.weightedLength);
     // console.log("Valid Tweet: ", parsedText.valid);
-    let restore = saveCaretPosition(div);
-
-    if (parsedText.valid) {
-        div.textContent = tweetTxt;
-        restore();
-        return;
-    }
-
-    let validText = tweetTxt.substring(0, parsedText.validRangeEnd + 1);
-    let excessText = tweetTxt.substring(parsedText.validRangeEnd + 1);
-
-    // console.log(validText, validText.length, twttr.txt.getTweetLength(validText));
-    // console.log(excessText, excessText.length, twttr.txt.getTweetLength(excessText));
 
     let oldExcess = div.querySelector('.tweet-over-flow-red');
     if (oldExcess) {
         oldExcess.remove();
     }
 
+    if (parsedText.valid) {
+        return;
+    }
+
+    let restore = saveCaretPosition(div);
+    let validText = tweetTxt.substring(0, parsedText.validRangeEnd + 1);
+    let excessText = tweetTxt.substring(parsedText.validRangeEnd + 1);
+
+    // console.log(validText, validText.length, twttr.txt.getTweetLength(validText));
+    // console.log(excessText, excessText.length, twttr.txt.getTweetLength(excessText));
+
     let newExcess = document.createElement('span');
     newExcess.className = 'tweet-over-flow-red';
-    newExcess.textContent = excessText;
+    newExcess.innerText = excessText;
 
-    div.textContent = validText;
+    div.innerText = validText;
     div.appendChild(newExcess);
     restore();
 }
