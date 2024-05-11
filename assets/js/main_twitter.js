@@ -421,12 +421,56 @@ function previewImage(parentId) {
     parentDiv.querySelector('.tweet-file-input').value = '';
 }
 
-
 function handlePaste(event) {
     event.preventDefault();  // 阻止默认粘贴行为
-    const text = event.clipboardData.getData('text/plain');  // 获取剪贴板的纯文本数据
-    document.execCommand('insertText', false, text);  // 插入纯文本
+    const clipboardData = event.clipboardData || window.clipboardData;  // 获取剪贴板对象
+    const text = clipboardData.getData('text/plain');  // 从剪贴板获取纯文本内容
+    // 插入文本到光标位置
+    insertTextAtCursor(text);
+    checkTweetLength(event.target);
 }
+
+
+function insertTextAtCursor_2(text) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;  // 如果没有选区，则不执行任何操作
+
+    const range = selection.getRangeAt(0);
+    range.deleteContents();  // 删除选中内容
+
+    // 创建文本节点并插入到当前光标位置
+    const textNode = document.createTextNode(text);
+    range.insertNode(textNode);
+
+    // 移动光标到文本末尾
+    range.setStartAfter(textNode);
+    range.setEndAfter(textNode);
+    selection.removeAllRanges();  // 清除现有的选区
+    selection.addRange(range);  // 添加新的范围
+}
+
+function insertTextAtCursor(text) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;  // 如果没有选区，则不执行任何操作
+
+    // 替换换行符为 <br>
+    const lines = text.split('\n');
+    const fragment = document.createDocumentFragment();
+    lines.forEach((line, index) => {
+        if (index > 0) fragment.appendChild(document.createElement('br'));
+        fragment.appendChild(document.createTextNode(line));
+    });
+
+    const range = selection.getRangeAt(0);
+    range.deleteContents();  // 删除选中内容
+    range.insertNode(fragment);  // 插入修改后的文本
+
+    // 移动光标到文本末尾
+    range.collapse(false);
+    selection.removeAllRanges();  // 清除现有的选区
+    selection.addRange(range);  // 添加新的范围
+}
+
 
 let __globalTweetEditorCount = 0;
 
@@ -452,6 +496,7 @@ function addNewSplitEditor() {
             checkTweetLength(editableDiv);
         }
     );
+    editableDiv.addEventListener('paste', handlePaste);
     editableDiv.addEventListener('input', () => {
         if(isComposing){
             return;
@@ -478,6 +523,7 @@ function checkTweetLength(div) {
     }
 
     if (parsedText.valid) {
+        div.dataset.validTxt = tweetTxt;
         return;
     }
 
@@ -494,6 +540,8 @@ function checkTweetLength(div) {
 
     div.innerText = validText;
     div.appendChild(newExcess);
+    div.dataset.validTxt = validText;
+
     restore();
 }
 
@@ -513,7 +561,7 @@ function checkSelection() {
     }
 }
 
-function saveCaretPosition(context) {
+function saveCaretPosition_2(context) {
     let selection = window.getSelection();
     let range = selection.getRangeAt(0);
     range.setStart(context, 0);
@@ -544,6 +592,58 @@ function saveCaretPosition(context) {
                 let i = node.childNodes.length;
                 while (i--) {
                     nodeStack.push(node.childNodes[i]);
+                }
+            }
+        }
+    };
+}
+
+
+function saveCaretPosition(context) {
+    let selection = window.getSelection();
+    if (!selection.rangeCount) return function() {}; // 如果没有选择范围，返回一个空函数
+
+    let range = selection.getRangeAt(0);
+    range.setStart(context, 0);
+    let len = range.toString().length;
+
+    return function restore() {
+        let pos = len;
+        let selection = window.getSelection();
+        let range = document.createRange();
+        range.setStart(context, 0);
+        range.setEnd(context, 0);
+        range.collapse(true);
+
+        let nodeStack = [context], node, foundStart = false, stop = false;
+
+        while (!stop && (node = nodeStack.pop())) {
+            if (node.nodeType === 3) { // 文本节点
+                let nextPos = pos - node.length;
+                if (nextPos <= 0) {
+                    range.setStart(node, pos);
+                    range.collapse(true);
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                    stop = true;
+                }
+                pos = nextPos;
+            } else if (node.nodeType === 1) { // 元素节点
+                let i = node.childNodes.length;
+                while (i--) {
+                    nodeStack.push(node.childNodes[i]);
+                }
+                // 特殊处理换行元素
+                if (node.nodeName === "BR" || node.nodeName === "P" || node.nodeName === "DIV") {
+                    let nextPos = pos - 1; // 假设换行元素占一个位置
+                    if (nextPos <= 0) {
+                        range.setStartAfter(node); // 将光标设置在换行元素之后
+                        range.collapse(true);
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                        stop = true;
+                    }
+                    pos = nextPos;
                 }
             }
         }
