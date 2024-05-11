@@ -157,10 +157,12 @@ async function convertContentToImages(formattedContent, imageData) {
 }
 
 function parseTweetContent(parentDiv) {
-
-    const formattedTxt = parentDiv.querySelector(".tweets-content-txt-area").value;
-    // console.log(formattedTxt);
-    // return;
+    const allTweetDiv = parentDiv.querySelectorAll(".tweets-content-txt-area");
+    const formattedTxt = Array.from(allTweetDiv).map(div => div.dataset.validTxt);
+    const combinedText = formattedTxt.join('\n');
+    console.log(combinedText);
+    console.log(formattedTxt);
+    return null;
     const images = parentDiv.querySelectorAll("#twImagePreview img");
     if (formattedTxt.length < 4) {
         showDialog(DLevel.Warning, "content too short")

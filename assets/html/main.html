@@ -1721,30 +1721,31 @@
         <span class="show-more" data-more="true"
               onclick="showFullTweetContent.call(this)">更多</span>
         <div class="image-item-in-tweet" id="image-item-in-tweet" style="display: none">
-            <img src="" data-raw="" data-hash="" class="image-src-to-show" onclick="showImgRaw.call(this)">
+            <img src="" data-raw="" data-hash="" class="image-src-to-show" onclick="showImgRaw.call(this)"
+                 alt="image-in-tweet">
         </div>
         <div class="tweet-images"></div>
     </div>
+
+    <div data-index="0" class="tweet-split-item" id="tweet-split-item-template"
+         style="margin-left: 12px;display: none">
+        <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
+             contenteditable="true">
+        </div>
+        <div style="float: right">
+            <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
+                <img src="/assets/file/addPostBelow.png" alt="add tweet">
+            </button>
+            <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
+                <img src="/assets/file/delPost.png" alt="delete tweet"></button>
+        </div>
+    </div>
+
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
             <div class="tweet-post" id="tweet-post-on-top">
-                <div data-index="0" class="tweet-split-item" id="tweet-split-item-template"
-                     style="margin-left: 12px;display: none">
-                    <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
-                         contenteditable="true">
-                    </div>
-                    <div style="float: right">
-                        <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
-                            <img src="/assets/file/addPostBelow.png" alt="add tweet">
-                        </button>
-                        <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
-                            <img src="/assets/file/delPost.png" alt="delete tweet"></button>
-                    </div>
-                </div>
-
                 <div class="split-tweet-content" id="split-tweet-content">
                 </div>
-
                 <div class="img-wrapper" id="img-wrapper-template">
                     <img src="" class="img-preview" alt="images">
                     <button class="delete-btn">x</button>
