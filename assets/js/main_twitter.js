@@ -446,20 +446,21 @@ function insertTextAtCursor(text) {
     selection.addRange(range);  // 添加新的范围
 }
 
-function initTweetArea(divID){
+function initTweetArea(divID) {
     const tweetManager = document.getElementById(divID);
     __globalTweetEditorCount = 0;
     newSplitEditor(tweetManager);
 }
 
-function addNextSplitEditor(btn){
-    const tweetManager = btn.closest(".split-tweet-content")
-    newSplitEditor(tweetManager);
+function addNextSplitEditor(btn) {
+    const tweetManager = btn.closest(".split-tweet-content");
+    const siblingNode = btn.closest(".tweet-split-item");
+    newSplitEditor(tweetManager, siblingNode);
 }
 
 let __globalTweetEditorCount = 0;
 
-function newSplitEditor(tweetManager) {
+function newSplitEditor(tweetManager, siblingNode) {
     if (__globalTweetEditorCount >= 5) {
         showDialog(DLevel.Warning, "too much tweets");
         return;
@@ -487,7 +488,11 @@ function newSplitEditor(tweetManager) {
     });
 
     __globalTweetEditorCount++;
-    tweetManager.appendChild(newEditor);
+    if (siblingNode) {
+        siblingNode.insertAdjacentElement('afterend', newEditor);
+    } else {
+        tweetManager.appendChild(newEditor);
+    }
 }
 
 let isComposing = false;
@@ -509,7 +514,6 @@ function checkTweetLength(div) {
         return;
     }
 
-    let restore = saveCaretPosition(div);
     let validText = tweetTxt.substring(0, parsedText.validRangeEnd + 1);
     let excessText = tweetTxt.substring(parsedText.validRangeEnd + 1);
 
@@ -519,6 +523,8 @@ function checkTweetLength(div) {
     let newExcess = document.createElement('span');
     newExcess.className = 'tweet-over-flow-red';
     newExcess.innerText = excessText;
+
+    let restore = saveCaretPosition(div);
 
     div.innerText = validText;
     div.appendChild(newExcess);
