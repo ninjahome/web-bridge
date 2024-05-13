@@ -501,9 +501,6 @@ function checkTweetLength(div) {
     const tweetTxt = div.innerText;
     const parsedText = twttr.txt.parseTweet(tweetTxt);
 
-    // console.log("Weighted Length: ", parsedText.weightedLength);
-    // console.log("Valid Tweet: ", parsedText.valid);
-
     let oldExcess = div.querySelector('.tweet-over-flow-red');
     if (oldExcess) {
         oldExcess.remove();
@@ -516,21 +513,30 @@ function checkTweetLength(div) {
 
     let validText = tweetTxt.substring(0, parsedText.validRangeEnd + 1);
     let excessText = tweetTxt.substring(parsedText.validRangeEnd + 1);
-
-    // console.log(validText, validText.length, twttr.txt.getTweetLength(validText));
-    // console.log(excessText, excessText.length, twttr.txt.getTweetLength(excessText));
+    // div.dataset.validTxt = validText;
 
     let newExcess = document.createElement('span');
     newExcess.className = 'tweet-over-flow-red';
     newExcess.innerText = excessText;
 
     let restore = saveCaretPosition(div);
-
     div.innerText = validText;
     div.appendChild(newExcess);
-    div.dataset.validTxt = validText;
-
     restore();
+}
+
+function insertSpanAtRange(div, text, className) {
+    let span = document.createElement('span');
+    span.className = className;
+    span.innerText = text;
+
+    let sel = window.getSelection();
+    if (sel.rangeCount > 0) {
+        let range = sel.getRangeAt(0);
+        range.insertNode(span);
+    } else {
+        div.appendChild(span); // Fallback if no selection
+    }
 }
 
 function delCurrentEditor(btn) {
@@ -551,50 +557,35 @@ function checkSelection() {
 
 function saveCaretPosition(context) {
     let selection = window.getSelection();
-    if (!selection.rangeCount) return function () {
-    }; // 如果没有选择范围，返回一个空函数
-
-    let range = selection.getRangeAt(0);
+    if (selection.rangeCount === 0) return () => {
+    };
+    let activeRange = selection.getRangeAt(0);
+    let range = document.createRange();
     range.setStart(context, 0);
-    let len = range.toString().length;
+    console.log(activeRange.startContainer, activeRange.startOffset)
+    range.setEnd(activeRange.startContainer, activeRange.startOffset);
+    let length = range.toString().length;
 
     return function restore() {
-        let pos = len;
-        let selection = window.getSelection();
-        let range = document.createRange();
+        selection.removeAllRanges();
+        range = document.createRange();
         range.setStart(context, 0);
-        range.setEnd(context, 0);
         range.collapse(true);
+        let nodeStack = [context], node, foundStart = false;
 
-        let nodeStack = [context], node, foundStart = false, stop = false;
-
-        while (!stop && (node = nodeStack.pop())) {
-            if (node.nodeType === 3) { // 文本节点
-                let nextPos = pos - node.length;
-                if (nextPos <= 0) {
-                    range.setStart(node, pos);
+        while (node = nodeStack.pop()) {
+            if (node.nodeType === 3) { // Text node
+                if (length <= node.length) {
+                    range.setStart(node, length);
                     range.collapse(true);
-                    selection.removeAllRanges();
                     selection.addRange(range);
-                    stop = true;
+                    break;
                 }
-                pos = nextPos;
-            } else if (node.nodeType === 1) { // 元素节点
+                length -= node.length;
+            } else {
                 let i = node.childNodes.length;
                 while (i--) {
                     nodeStack.push(node.childNodes[i]);
-                }
-                // 特殊处理换行元素
-                if (node.nodeName === "BR" || node.nodeName === "P" || node.nodeName === "DIV") {
-                    let nextPos = pos - 1; // 假设换行元素占一个位置
-                    if (nextPos <= 0) {
-                        range.setStartAfter(node); // 将光标设置在换行元素之后
-                        range.collapse(true);
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                        stop = true;
-                    }
-                    pos = nextPos;
                 }
             }
         }

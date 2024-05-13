@@ -597,11 +597,17 @@ function checkMetamaskErr(err) {
         return;
     }
 
+    if (err.code === -32603) {
+        showDialog(DLevel.Warning, "check your metamask please");
+        return;
+    }
+
     let code = err.code;
     if (code === "CALL_EXCEPTION" && err.action === "estimateGas" && !err.reason) {
         showDialog(DLevel.Warning, "insufficient funds");
         return;
     }
+
 
     if (!err.data || !err.data.message) {
         code = code + err.message;
@@ -706,7 +712,7 @@ function tweetSubString(str, maxLength) {
         let tokenLength = twttr.txt.getTweetLength(token);
 
         if (tweetLen + tokenLength > maxLength) {
-            console.log("last length:=>",token.length, endIndex, tokenLength, tweetLen);
+            console.log("last length:=>", token.length, endIndex, tokenLength, tweetLen);
             break;
         }
 
