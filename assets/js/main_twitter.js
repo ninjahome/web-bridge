@@ -556,36 +556,8 @@ function insertTextAtCursor(text) {
     selection.removeAllRanges();  // 清除现有的选区
     selection.addRange(range);  // 添加新的范围
 }
-function handleEnter(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault();  // 阻止默认行为
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
 
-        const range = selection.getRangeAt(0);
-        console.log('Initial range:', range.startContainer, range.startOffset);
-
-        const br = document.createElement('br');
-        range.deleteContents();
-        range.insertNode(br);
-        console.log('Inserted <br>: ', br);
-        console.log('DOM structure after inserting <br>: ', event.target.innerHTML);
-
-        // 将光标移动到 <br> 标签之后
-        range.setStartAfter(br);
-        range.setEndAfter(br);
-        selection.removeAllRanges();
-        selection.addRange(range);
-        console.log('Range after setting to <br>: ', range.startContainer, range.startOffset);
-
-        const restore = saveCaretPosition(event.target); // 保存光标位置并标记新行
-        checkTweetLength(event.target);
-        restore(); // 恢复光标位置
-    }
-}
-
-
-function saveCaretPosition(context) {
+function saveCaretPosition(context, isNewLine = false) {
     let selection = window.getSelection();
     if (selection.rangeCount === 0) return () => {};
 
@@ -598,7 +570,6 @@ function saveCaretPosition(context) {
     // 保存当前的光标位置，包括节点和偏移量
     let startNode = activeRange.startContainer;
     let startOffset = activeRange.startOffset;
-    let isNewLine = startNode.nodeName === 'BR' || (startNode.nodeType === 3 && startOffset > 0 && startNode.nodeValue.charAt(startOffset - 1) === '\n');
 
     console.log('Caret position saved:', { startNode, startOffset, length, isNewLine });
 
@@ -624,15 +595,21 @@ function saveCaretPosition(context) {
             }
         }
 
-        // 如果光标在新的行首，设置在新行的开头
         if (isNewLine) {
+            console.log('Setting caret for new line:', { startNode, startOffset });
             if (startNode.nextSibling && startNode.nextSibling.nodeName === 'BR') {
                 range.setStartAfter(startNode.nextSibling);
-            } else if (startNode.nodeType === 3 && startNode.nodeValue.charAt(startOffset - 1) === '\n') {
-                range.setStart(startNode, startOffset);
+                console.log('Moved caret after <br>: ', { startNode, startOffset });
+            } else if (startNode.nodeType === 3 && startNode.nodeValue.charAt(startOffset) === '\n') {
+                range.setStart(startNode, startOffset + 1);
+                console.log('Moved caret to next character after newline in text node:', startNode, startOffset);
+            } else if (startNode.nodeType === 1 && startNode.tagName === 'BR') {
+                range.setStartAfter(startNode);
+                console.log('Moved caret after <br> tag:', startNode);
+            } else if (startNode.nodeType === 1 && startNode.nodeName === 'DIV' && startNode.childNodes.length > startOffset) {
+                range.setStart(startNode.childNodes[startOffset], 0);
+                console.log('Moved caret to the start of next node:', startNode.childNodes[startOffset]);
             }
-        } else if (remainingLength === 0 && nodeStack.length === 0) {
-            range.setStart(context, context.childNodes.length);
         }
 
         // 确保范围在文档中
@@ -644,4 +621,32 @@ function saveCaretPosition(context) {
             console.warn('Range not in document, cannot restore caret position');
         }
     };
+}
+
+function handleEnter(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();  // 阻止默认行为
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        const range = selection.getRangeAt(0);
+        console.log('Initial range:', range.startContainer, range.startOffset);
+
+        const br = document.createElement('br');
+        range.deleteContents();
+        range.insertNode(br);
+        console.log('Inserted <br>: ', br);
+        console.log('DOM structure after inserting <br>: ', event.target.innerHTML);
+
+        // 将光标移动到 <br> 标签之后
+        range.setStartAfter(br);
+        range.setEndAfter(br);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        console.log('Range after setting to <br>: ', range.startContainer, range.startOffset);
+
+        const restore = saveCaretPosition(event.target, true); // 保存光标位置并标记新行
+        checkTweetLength(event.target);
+        restore(); // 恢复光标位置
+    }
 }
