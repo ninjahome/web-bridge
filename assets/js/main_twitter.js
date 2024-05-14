@@ -595,22 +595,7 @@ function saveCaretPosition(context, isNewLine = false) {
             }
         }
 
-        if (isNewLine) {
-            console.log('Setting caret for new line:', { startNode, startOffset });
-            if (startNode.nextSibling && startNode.nextSibling.nodeName === 'BR') {
-                range.setStartAfter(startNode.nextSibling);
-                console.log('Moved caret after <br>: ', { startNode, startOffset });
-            } else if (startNode.nodeType === 3 && startNode.nodeValue.charAt(startOffset) === '\n') {
-                range.setStart(startNode, startOffset + 1);
-                console.log('Moved caret to next character after newline in text node:', startNode, startOffset);
-            } else if (startNode.nodeType === 1 && startNode.tagName === 'BR') {
-                range.setStartAfter(startNode);
-                console.log('Moved caret after <br> tag:', startNode);
-            } else if (startNode.nodeType === 1 && startNode.nodeName === 'DIV' && startNode.childNodes.length > startOffset) {
-                range.setStart(startNode.childNodes[startOffset], 0);
-                console.log('Moved caret to the start of next node:', startNode.childNodes[startOffset]);
-            }
-        }
+
 
         // 确保范围在文档中
         if (range.startContainer && range.startContainer.parentNode) {
@@ -622,6 +607,7 @@ function saveCaretPosition(context, isNewLine = false) {
         }
     };
 }
+
 
 function handleEnter(event) {
     if (event.key === 'Enter') {
