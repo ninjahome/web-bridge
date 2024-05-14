@@ -527,11 +527,11 @@ function checkTweetLength(div) {
         div.removeChild(div.firstChild);
     }
 
-    // 插入有效文本节点
-    let newText = document.createTextNode(validText);
-    div.appendChild(newText);
+    // 插入有效文本节点，保留换行符
+    let validTextNode = document.createTextNode(validText);
+    div.appendChild(validTextNode);
 
-    // 如果有超出文本，插入对应的 span
+    // 如果有超出文本，插入对应的 span，保留换行符
     if (excessText) {
         let newExcess = document.createElement('span');
         newExcess.className = 'tweet-over-flow-red';
