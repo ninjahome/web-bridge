@@ -456,6 +456,7 @@ function newSplitEditor(tweetManager, siblingNode) {
         checkTweetLength(editableDiv);
     });
     editableDiv.addEventListener('keydown', handleEnter);
+    editableDiv.addEventListener('focus', setCursorToStart);
 
     __globalTweetEditorCount++;
     if (siblingNode) {
@@ -628,4 +629,18 @@ function handleEnter(event) {
         selection.addRange(range);
         console.log('Range after setting to <br>: ', range.startContainer, range.startOffset);
     }
+}
+
+function setCursorToStart(event) {
+    const div = event.target;
+    if (div.innerHTML.trim().length > 0) {
+        return;
+    }
+
+    let range = document.createRange();
+    let sel = window.getSelection();
+    range.setStart(div.childNodes[0], 0);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
 }

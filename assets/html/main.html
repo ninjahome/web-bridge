@@ -1590,7 +1590,24 @@
     </style>
 
     <style about="tweet-on-top">
+
         .tweets-content-txt-area {
+            width: 530px;
+            padding: 12px 0;
+            min-height: 100px;
+            max-height: 90vh;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.5;
+            outline: none;
+            font-size: 15px;
+            font-weight: 400;
+            direction: ltr; /* CSS method */
+            text-align: left; /* Ensure text alignment is left */
+            background-color: #F4F5F6;
+        }
+
+        .tweets-content-txt-area-2 {
             margin: 0 auto;
             display: block; /* 确保元素为块级元素 */
             box-sizing: border-box;
@@ -1731,8 +1748,7 @@
     <div data-index="0" class="tweet-split-item" id="tweet-split-item-template"
          style="margin-left: 12px;display: none">
         <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
-             contenteditable="true">
-        </div>
+             contenteditable="true"></div>
         <div style="float: right">
             <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
                 <img src="/assets/file/addPostBelow.png" alt="add tweet">
