@@ -415,37 +415,6 @@ function previewImage(parentId) {
     parentDiv.querySelector('.tweet-file-input').value = '';
 }
 
-function handlePaste(event) {
-    event.preventDefault();  // 阻止默认粘贴行为
-    const clipboardData = event.clipboardData || window.clipboardData;  // 获取剪贴板对象
-    const text = clipboardData.getData('text/plain');  // 从剪贴板获取纯文本内容
-    // 插入文本到光标位置
-    insertTextAtCursor(text);
-    checkTweetLength(event.target);
-}
-
-function insertTextAtCursor(text) {
-    const selection = window.getSelection();
-    if (!selection.rangeCount) return;  // 如果没有选区，则不执行任何操作
-
-    // 替换换行符为 <br>
-    const lines = text.split('\n');
-    const fragment = document.createDocumentFragment();
-    lines.forEach((line, index) => {
-        if (index > 0) fragment.appendChild(document.createElement('br'));
-        fragment.appendChild(document.createTextNode(line));
-    });
-
-    const range = selection.getRangeAt(0);
-    range.deleteContents();  // 删除选中内容
-    range.insertNode(fragment);  // 插入修改后的文本
-
-    // 移动光标到文本末尾
-    range.collapse(false);
-    selection.removeAllRanges();  // 清除现有的选区
-    selection.addRange(range);  // 添加新的范围
-}
-
 function initTweetArea(divID) {
     const tweetManager = document.getElementById(divID);
     __globalTweetEditorCount = 0;
@@ -486,6 +455,8 @@ function newSplitEditor(tweetManager, siblingNode) {
         }
         checkTweetLength(editableDiv);
     });
+    editableDiv.addEventListener('keydown', handleEnter);
+
 
     __globalTweetEditorCount++;
     if (siblingNode) {
@@ -513,6 +484,24 @@ function checkSelection() {
     }
 }
 
+function handleEnter(event){
+    if (event.key === 'Enter') {
+        event.preventDefault();  // 阻止默认行为
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        const range = selection.getRangeAt(0);
+        const br = document.createElement('br');
+        range.deleteContents();
+        range.insertNode(br);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        checkTweetLength(event.target);
+    }
+}
+
 function checkTweetLength(div) {
     const tweetTxt = div.innerText;
     const parsedText = twttr.txt.parseTweet(tweetTxt);
@@ -531,7 +520,7 @@ function checkTweetLength(div) {
     let validTextNode = document.createTextNode(validText);
     div.appendChild(validTextNode);
 
-    // 如果有超出文本，插入对应的 span，保留换行符
+    // 如果有超出文本，插入新的超出文本节点
     if (excessText) {
         let newExcess = document.createElement('span');
         newExcess.className = 'tweet-over-flow-red';
@@ -551,14 +540,18 @@ function saveCaretPosition(context) {
     range.setEnd(activeRange.startContainer, activeRange.startOffset);
     let length = range.toString().length;
 
+    // 保存当前的光标位置，包括节点和偏移量
+    let startNode = activeRange.startContainer;
+    let startOffset = activeRange.startOffset;
+
     return function restore() {
         selection.removeAllRanges();
-        range = document.createRange();
+        let range = document.createRange();
         let nodeStack = [context], node;
         let remainingLength = length;
 
         while (node = nodeStack.pop()) {
-            if (node.nodeType === 3) { // Text node
+            if (node.nodeType === 3) { // 文本节点
                 if (remainingLength <= node.length) {
                     range.setStart(node, remainingLength);
                     break;
@@ -573,7 +566,44 @@ function saveCaretPosition(context) {
             }
         }
 
-        range.collapse(true);
-        selection.addRange(range);
+        // 确保范围在文档中
+        if (range.startContainer && range.startContainer.parentNode) {
+            range.collapse(true);
+            selection.addRange(range);
+        } else {
+            console.warn('Range not in document, cannot restore caret position');
+        }
     };
+}
+
+function handlePaste(event) {
+    event.preventDefault();  // 阻止默认粘贴行为
+    const clipboardData = event.clipboardData || window.clipboardData;  // 获取剪贴板对象
+    const text = clipboardData.getData('text/plain');  // 从剪贴板获取纯文本内容
+    // 插入文本到光标位置
+    insertTextAtCursor(text);
+    checkTweetLength(event.target);
+}
+
+function insertTextAtCursor(text) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;  // 如果没有选区，则不执行任何操作
+
+    const range = selection.getRangeAt(0);
+    range.deleteContents();  // 删除选中内容
+
+    // 插入文本并处理换行符
+    const lines = text.split('\n');
+    const fragment = document.createDocumentFragment();
+    lines.forEach((line, index) => {
+        if (index > 0) fragment.appendChild(document.createElement('br'));
+        fragment.appendChild(document.createTextNode(line));
+    });
+
+    range.insertNode(fragment);  // 插入修改后的文本
+
+    // 移动光标到文本末尾
+    range.collapse(false);
+    selection.removeAllRanges();  // 清除现有的选区
+    selection.addRange(range);  // 添加新的范围
 }
