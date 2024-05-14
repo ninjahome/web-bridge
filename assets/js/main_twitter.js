@@ -497,48 +497,6 @@ function newSplitEditor(tweetManager, siblingNode) {
 
 let isComposing = false;
 
-function checkTweetLength(div) {
-    const tweetTxt = div.innerText;
-    const parsedText = twttr.txt.parseTweet(tweetTxt);
-
-    let oldExcess = div.querySelector('.tweet-over-flow-red');
-    if (oldExcess) {
-        oldExcess.remove();
-    }
-
-    if (parsedText.valid) {
-        div.dataset.validTxt = tweetTxt;
-        return;
-    }
-
-    let validText = tweetTxt.substring(0, parsedText.validRangeEnd + 1);
-    let excessText = tweetTxt.substring(parsedText.validRangeEnd + 1);
-    // div.dataset.validTxt = validText;
-
-    let newExcess = document.createElement('span');
-    newExcess.className = 'tweet-over-flow-red';
-    newExcess.innerText = excessText;
-
-    let restore = saveCaretPosition(div);
-    div.innerText = validText;
-    div.appendChild(newExcess);
-    restore();
-}
-
-function insertSpanAtRange(div, text, className) {
-    let span = document.createElement('span');
-    span.className = className;
-    span.innerText = text;
-
-    let sel = window.getSelection();
-    if (sel.rangeCount > 0) {
-        let range = sel.getRangeAt(0);
-        range.insertNode(span);
-    } else {
-        div.appendChild(span); // Fallback if no selection
-    }
-}
-
 function delCurrentEditor(btn) {
     if (__globalTweetEditorCount === 1) {
         return;
@@ -555,14 +513,42 @@ function checkSelection() {
     }
 }
 
+function checkTweetLength(div) {
+    const tweetTxt = div.innerText;
+    const parsedText = twttr.txt.parseTweet(tweetTxt);
+
+    let validText = tweetTxt.substring(0, parsedText.validRangeEnd + 1);
+    let excessText = tweetTxt.substring(parsedText.validRangeEnd + 1);
+
+    let restore = saveCaretPosition(div);  // 先保存光标位置
+
+    // 清空 div 的所有子节点
+    while (div.firstChild) {
+        div.removeChild(div.firstChild);
+    }
+
+    // 插入有效文本节点
+    let newText = document.createTextNode(validText);
+    div.appendChild(newText);
+
+    // 如果有超出文本，插入对应的 span
+    if (excessText) {
+        let newExcess = document.createElement('span');
+        newExcess.className = 'tweet-over-flow-red';
+        newExcess.innerText = excessText;
+        div.appendChild(newExcess);
+    }
+
+    restore(); // 恢复光标位置
+}
+
 function saveCaretPosition(context) {
     let selection = window.getSelection();
-    if (selection.rangeCount === 0) return () => {
-    };
+    if (selection.rangeCount === 0) return () => {};
     let activeRange = selection.getRangeAt(0);
     let range = document.createRange();
     range.setStart(context, 0);
-    console.log(activeRange.startContainer, activeRange.startOffset)
+    console.log(activeRange.startContainer, activeRange.startOffset);
     range.setEnd(activeRange.startContainer, activeRange.startOffset);
     let length = range.toString().length;
 
@@ -571,7 +557,7 @@ function saveCaretPosition(context) {
         range = document.createRange();
         range.setStart(context, 0);
         range.collapse(true);
-        let nodeStack = [context], node, foundStart = false;
+        let nodeStack = [context], node;
 
         while (node = nodeStack.pop()) {
             if (node.nodeType === 3) { // Text node

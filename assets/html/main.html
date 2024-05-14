@@ -1605,6 +1605,7 @@
             position: relative;
             background-color: #F4F5F6;
             outline: none; /* 去除焦点时的外框线 */
+            white-space: pre-wrap;
         }
 
         /* 设置所有输入框的光标颜色 */
@@ -2298,7 +2299,7 @@
 <div class="modal-for-tweet-post">
     <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
 
-    <div class="split-tweet-content" id="modal-split-tweet-content">
+    <div class="tweets-content-txt-area" id="modal-split-tweet-content" contenteditable="true">
     </div>
 
     <div class="img-wrapper" id="img-wrapper-template">
