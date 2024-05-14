@@ -548,26 +548,23 @@ function saveCaretPosition(context) {
     let activeRange = selection.getRangeAt(0);
     let range = document.createRange();
     range.setStart(context, 0);
-    console.log(activeRange.startContainer, activeRange.startOffset);
     range.setEnd(activeRange.startContainer, activeRange.startOffset);
     let length = range.toString().length;
 
     return function restore() {
         selection.removeAllRanges();
         range = document.createRange();
-        range.setStart(context, 0);
-        range.collapse(true);
         let nodeStack = [context], node;
+        let remainingLength = length;
 
         while (node = nodeStack.pop()) {
             if (node.nodeType === 3) { // Text node
-                if (length <= node.length) {
-                    range.setStart(node, length);
-                    range.collapse(true);
-                    selection.addRange(range);
+                if (remainingLength <= node.length) {
+                    range.setStart(node, remainingLength);
                     break;
+                } else {
+                    remainingLength -= node.length;
                 }
-                length -= node.length;
             } else {
                 let i = node.childNodes.length;
                 while (i--) {
@@ -575,5 +572,8 @@ function saveCaretPosition(context) {
                 }
             }
         }
+
+        range.collapse(true);
+        selection.addRange(range);
     };
 }
