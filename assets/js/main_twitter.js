@@ -455,6 +455,8 @@ function newSplitEditor(tweetManager, siblingNode) {
         }
         checkTweetLength(editableDiv);
     });
+    editableDiv.addEventListener('keydown', handleEnter);
+
     __globalTweetEditorCount++;
     if (siblingNode) {
         siblingNode.insertAdjacentElement('afterend', newEditor);
@@ -480,7 +482,6 @@ function checkSelection() {
         console.log("Selected text: ", selection);
     }
 }
-
 
 function checkTweetLength(div) {
     const tweetTxt = div.innerText;
@@ -602,4 +603,29 @@ function saveCaretPosition(context) {
             console.warn('Range not in document, cannot restore caret position');
         }
     };
+}
+
+function handleEnter(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();  // 阻止默认行为
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        const range = selection.getRangeAt(0);
+        console.log('Initial range:', range.startContainer, range.startOffset);
+
+        const br = document.createElement('br');
+        range.deleteContents();
+        range.insertNode(br);
+        console.log('Inserted <br>: ', br);
+        console.log('DOM structure after inserting <br>: ', event.target.innerHTML);
+        // checkTweetLength(event.target);
+
+        // 将光标移动到 <br> 标签之后
+        range.setStartAfter(br);
+        range.setEndAfter(br);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        console.log('Range after setting to <br>: ', range.startContainer, range.startOffset);
+    }
 }
