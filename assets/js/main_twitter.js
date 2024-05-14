@@ -457,7 +457,6 @@ function newSplitEditor(tweetManager, siblingNode) {
     });
     editableDiv.addEventListener('keydown', handleEnter);
 
-
     __globalTweetEditorCount++;
     if (siblingNode) {
         siblingNode.insertAdjacentElement('afterend', newEditor);
@@ -484,32 +483,22 @@ function checkSelection() {
     }
 }
 
-function handleEnter(event){
-    if (event.key === 'Enter') {
-        event.preventDefault();  // 阻止默认行为
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
-
-        const range = selection.getRangeAt(0);
-        const br = document.createElement('br');
-        range.deleteContents();
-        range.insertNode(br);
-        range.collapse(false);
-        selection.removeAllRanges();
-        selection.addRange(range);
-
-        checkTweetLength(event.target);
-    }
-}
 
 function checkTweetLength(div) {
     const tweetTxt = div.innerText;
+    console.log('Tweet text:', tweetTxt);
+
     const parsedText = twttr.txt.parseTweet(tweetTxt);
+    console.log('Parsed tweet:', parsedText);
 
     let validText = tweetTxt.substring(0, parsedText.validRangeEnd + 1);
     let excessText = tweetTxt.substring(parsedText.validRangeEnd + 1);
 
+    console.log('Valid text:', validText);
+    console.log('Excess text:', excessText);
+
     let restore = saveCaretPosition(div);  // 先保存光标位置
+    console.log('Saved caret position');
 
     // 清空 div 的所有子节点
     while (div.firstChild) {
@@ -519,6 +508,8 @@ function checkTweetLength(div) {
     // 插入有效文本节点，保留换行符
     let validTextNode = document.createTextNode(validText);
     div.appendChild(validTextNode);
+    console.log('Inserted valid text node');
+    console.log('DOM structure after inserting valid text node: ', div.innerHTML);
 
     // 如果有超出文本，插入新的超出文本节点
     if (excessText) {
@@ -526,54 +517,12 @@ function checkTweetLength(div) {
         newExcess.className = 'tweet-over-flow-red';
         newExcess.innerText = excessText;
         div.appendChild(newExcess);
+        console.log('Inserted excess text node');
+        console.log('DOM structure after inserting excess text node: ', div.innerHTML);
     }
 
     restore(); // 恢复光标位置
-}
-
-function saveCaretPosition(context) {
-    let selection = window.getSelection();
-    if (selection.rangeCount === 0) return () => {};
-    let activeRange = selection.getRangeAt(0);
-    let range = document.createRange();
-    range.setStart(context, 0);
-    range.setEnd(activeRange.startContainer, activeRange.startOffset);
-    let length = range.toString().length;
-
-    // 保存当前的光标位置，包括节点和偏移量
-    let startNode = activeRange.startContainer;
-    let startOffset = activeRange.startOffset;
-
-    return function restore() {
-        selection.removeAllRanges();
-        let range = document.createRange();
-        let nodeStack = [context], node;
-        let remainingLength = length;
-
-        while (node = nodeStack.pop()) {
-            if (node.nodeType === 3) { // 文本节点
-                if (remainingLength <= node.length) {
-                    range.setStart(node, remainingLength);
-                    break;
-                } else {
-                    remainingLength -= node.length;
-                }
-            } else {
-                let i = node.childNodes.length;
-                while (i--) {
-                    nodeStack.push(node.childNodes[i]);
-                }
-            }
-        }
-
-        // 确保范围在文档中
-        if (range.startContainer && range.startContainer.parentNode) {
-            range.collapse(true);
-            selection.addRange(range);
-        } else {
-            console.warn('Range not in document, cannot restore caret position');
-        }
-    };
+    console.log('Restored caret position');
 }
 
 function handlePaste(event) {
@@ -606,4 +555,93 @@ function insertTextAtCursor(text) {
     range.collapse(false);
     selection.removeAllRanges();  // 清除现有的选区
     selection.addRange(range);  // 添加新的范围
+}
+function handleEnter(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();  // 阻止默认行为
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return;
+
+        const range = selection.getRangeAt(0);
+        console.log('Initial range:', range.startContainer, range.startOffset);
+
+        const br = document.createElement('br');
+        range.deleteContents();
+        range.insertNode(br);
+        console.log('Inserted <br>: ', br);
+        console.log('DOM structure after inserting <br>: ', event.target.innerHTML);
+
+        // 将光标移动到 <br> 标签之后
+        range.setStartAfter(br);
+        range.setEndAfter(br);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        console.log('Range after setting to <br>: ', range.startContainer, range.startOffset);
+
+        const restore = saveCaretPosition(event.target); // 保存光标位置并标记新行
+        checkTweetLength(event.target);
+        restore(); // 恢复光标位置
+    }
+}
+
+
+function saveCaretPosition(context) {
+    let selection = window.getSelection();
+    if (selection.rangeCount === 0) return () => {};
+
+    let activeRange = selection.getRangeAt(0);
+    let range = document.createRange();
+    range.setStart(context, 0);
+    range.setEnd(activeRange.startContainer, activeRange.startOffset);
+    let length = range.toString().length;
+
+    // 保存当前的光标位置，包括节点和偏移量
+    let startNode = activeRange.startContainer;
+    let startOffset = activeRange.startOffset;
+    let isNewLine = startNode.nodeName === 'BR' || (startNode.nodeType === 3 && startOffset > 0 && startNode.nodeValue.charAt(startOffset - 1) === '\n');
+
+    console.log('Caret position saved:', { startNode, startOffset, length, isNewLine });
+
+    return function restore() {
+        selection.removeAllRanges();
+        let range = document.createRange();
+        let nodeStack = [context], node;
+        let remainingLength = length;
+
+        while (node = nodeStack.pop()) {
+            if (node.nodeType === 3) { // 文本节点
+                if (remainingLength <= node.length) {
+                    range.setStart(node, remainingLength);
+                    break;
+                } else {
+                    remainingLength -= node.length;
+                }
+            } else {
+                let i = node.childNodes.length;
+                while (i--) {
+                    nodeStack.push(node.childNodes[i]);
+                }
+            }
+        }
+
+        // 如果光标在新的行首，设置在新行的开头
+        if (isNewLine) {
+            if (startNode.nextSibling && startNode.nextSibling.nodeName === 'BR') {
+                range.setStartAfter(startNode.nextSibling);
+            } else if (startNode.nodeType === 3 && startNode.nodeValue.charAt(startOffset - 1) === '\n') {
+                range.setStart(startNode, startOffset);
+            }
+        } else if (remainingLength === 0 && nodeStack.length === 0) {
+            range.setStart(context, context.childNodes.length);
+        }
+
+        // 确保范围在文档中
+        if (range.startContainer && range.startContainer.parentNode) {
+            range.collapse(true);
+            selection.addRange(range);
+            console.log('Caret position restored:', { node: range.startContainer, offset: range.startOffset });
+        } else {
+            console.warn('Range not in document, cannot restore caret position');
+        }
+    };
 }
