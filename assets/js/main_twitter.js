@@ -455,8 +455,6 @@ function newSplitEditor(tweetManager, siblingNode) {
         }
         checkTweetLength(editableDiv);
     });
-    editableDiv.addEventListener('keydown', handleEnter);
-
     __globalTweetEditorCount++;
     if (siblingNode) {
         siblingNode.insertAdjacentElement('afterend', newEditor);
@@ -557,9 +555,10 @@ function insertTextAtCursor(text) {
     selection.addRange(range);  // 添加新的范围
 }
 
-function saveCaretPosition(context, isNewLine = false) {
+function saveCaretPosition(context) {
     let selection = window.getSelection();
-    if (selection.rangeCount === 0) return () => {};
+    if (selection.rangeCount === 0) return () => {
+    };
 
     let activeRange = selection.getRangeAt(0);
     let range = document.createRange();
@@ -571,7 +570,7 @@ function saveCaretPosition(context, isNewLine = false) {
     let startNode = activeRange.startContainer;
     let startOffset = activeRange.startOffset;
 
-    console.log('Caret position saved:', { startNode, startOffset, length, isNewLine });
+    console.log('Caret position saved:', {startNode, startOffset, length});
 
     return function restore() {
         selection.removeAllRanges();
@@ -594,45 +593,13 @@ function saveCaretPosition(context, isNewLine = false) {
                 }
             }
         }
-
-
-
         // 确保范围在文档中
         if (range.startContainer && range.startContainer.parentNode) {
             range.collapse(true);
             selection.addRange(range);
-            console.log('Caret position restored:', { node: range.startContainer, offset: range.startOffset });
+            console.log('Caret position restored:', {node: range.startContainer, offset: range.startOffset});
         } else {
             console.warn('Range not in document, cannot restore caret position');
         }
     };
-}
-
-
-function handleEnter(event) {
-    if (event.key === 'Enter') {
-        event.preventDefault();  // 阻止默认行为
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
-
-        const range = selection.getRangeAt(0);
-        console.log('Initial range:', range.startContainer, range.startOffset);
-
-        const br = document.createElement('br');
-        range.deleteContents();
-        range.insertNode(br);
-        console.log('Inserted <br>: ', br);
-        console.log('DOM structure after inserting <br>: ', event.target.innerHTML);
-
-        // 将光标移动到 <br> 标签之后
-        range.setStartAfter(br);
-        range.setEndAfter(br);
-        selection.removeAllRanges();
-        selection.addRange(range);
-        console.log('Range after setting to <br>: ', range.startContainer, range.startOffset);
-
-        const restore = saveCaretPosition(event.target, true); // 保存光标位置并标记新行
-        checkTweetLength(event.target);
-        restore(); // 恢复光标位置
-    }
 }
