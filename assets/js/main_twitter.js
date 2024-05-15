@@ -158,15 +158,13 @@ async function convertContentToImages(formattedContent, imageData) {
 
 function parseTweetContent(parentDiv) {
     const allTweetDiv = parentDiv.querySelectorAll(".tweets-content-txt-area");
-    const formattedTxt = Array.from(allTweetDiv).map(div => div.firstChild.textContent);
 
-    // const combinedText = formattedTxt.join('\n');
-    // console.log(combinedText);
-    // console.log(formattedTxt);
-    // return null;
+    const formattedTxt = Array.from(allTweetDiv)
+        .map(div => div.firstChild.textContent.trim()) // 使用 trim() 去除可能的空白字符
+        .filter(txt => txt.length > 0); // 只保留长度大于 0 的文本
 
     const images = parentDiv.querySelectorAll("#twImagePreview img");
-    if (formattedTxt.length < 4) {
+    if (formattedTxt.length === 0) {
         showDialog(DLevel.Warning, "content too short")
         return null;
     }
