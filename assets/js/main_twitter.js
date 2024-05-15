@@ -454,7 +454,7 @@ function newSplitEditor(tweetManager, siblingNode) {
         }
         checkTweetLength(editableDiv);
     });
-    // editableDiv.addEventListener('keydown', handleEnter);
+    editableDiv.addEventListener('keydown', handleEnter);
 
     __globalTweetEditorCount++;
     if (siblingNode) {
@@ -482,7 +482,7 @@ function checkSelection() {
     }
 }
 
-function checkTweetLength(div) {
+function checkTweetLength(div, isNewLine = false) {
     const tweetTxt = div.innerText;
     const parsedText = twttr.txt.parseTweet(tweetTxt);
 
@@ -504,7 +504,7 @@ function checkTweetLength(div) {
         div.appendChild(newExcess);
     }
 
-    restore();
+    restore(isNewLine);
 }
 
 function handlePaste(event) {
@@ -555,11 +555,14 @@ function saveCaretPosition(context) {
 
     console.log('Caret position saved:', {startNode, startOffset, length});
 
-    return function restore() {
+    return function restore(isNewLine) {
         selection.removeAllRanges();
         let range = document.createRange();
         let nodeStack = [context], node;
         let remainingLength = length;
+        if (isNewLine) {
+            remainingLength++;
+        }
 
         while (node = nodeStack.pop()) {
             if (node.nodeType === 3) { // 文本节点
@@ -587,7 +590,6 @@ function saveCaretPosition(context) {
     };
 }
 
-
 function handleEnter(event) {
     if (event.key === 'Enter') {
         event.preventDefault(); // 阻止默认的回车效果
@@ -597,26 +599,14 @@ function handleEnter(event) {
 
         const range = selection.getRangeAt(0);
         console.log('Current range start:', range.startContainer, range.startOffset);
-
-        // 删除当前选区内容（如果有的话）
         range.deleteContents();
 
-        // 创建并插入 <br> 元素
         const br = document.createElement('br');
-        const zeroWidthSpace = document.createTextNode('\u200B'); // 零宽空格
-
-        range.insertNode(zeroWidthSpace);
         range.insertNode(br);
-
-        // 移动光标到零宽空格后，理论上是新行的开始位置
-        range.setStartAfter(br);
-        range.setEndAfter(br);
-
-        // 清除当前的选区，并设置新的选区
         selection.removeAllRanges();
         selection.addRange(range);
 
         console.log('New cursor position set after <br>:', range.startContainer, range.startOffset);
-        // checkTweetLength(event)
+        checkTweetLength(event.target, true);
     }
 }
