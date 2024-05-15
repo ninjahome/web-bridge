@@ -602,7 +602,8 @@ function handleEnter(event) {
         range.deleteContents();
 
         const br = document.createElement('br');
-        range.insertNode(br);
+        range.insertNode( document.createTextNode('\u200B'));
+        range.insertNode(document.createElement('br'));
         selection.removeAllRanges();
         selection.addRange(range);
 
