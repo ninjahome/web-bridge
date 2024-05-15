@@ -158,11 +158,13 @@ async function convertContentToImages(formattedContent, imageData) {
 
 function parseTweetContent(parentDiv) {
     const allTweetDiv = parentDiv.querySelectorAll(".tweets-content-txt-area");
-    const formattedTxt = Array.from(allTweetDiv).map(div => div.dataset.validTxt);
-    const combinedText = formattedTxt.join('\n');
-    console.log(combinedText);
-    console.log(formattedTxt);
-    return null;
+    const formattedTxt = Array.from(allTweetDiv).map(div => div.firstChild.textContent);
+
+    // const combinedText = formattedTxt.join('\n');
+    // console.log(combinedText);
+    // console.log(formattedTxt);
+    // return null;
+
     const images = parentDiv.querySelectorAll("#twImagePreview img");
     if (formattedTxt.length < 4) {
         showDialog(DLevel.Warning, "content too short")
@@ -184,7 +186,7 @@ function parseTweetContent(parentDiv) {
 }
 
 function initSloganTxt(nj_tw_id) {
-    return "\r\n" + i18next.t('slogan_1')
+    return "\n" + i18next.t('slogan_1')
         + gameContractMeta.totalBonus
         + i18next.t('slogan_2')
         + "https://" + window.location.hostname + "/buyRights?NjTID="
@@ -218,20 +220,24 @@ async function procTweetContent(tweetContent, slogan) {
 
 async function preparePostMsg(parentDiv) {
     const tweetContent = parseTweetContent(parentDiv);
-    if (!tweetContent) {
+    if (!tweetContent||tweetContent.formattedTxt.length === 0) {
         return null;
     }
 
     const nj_tw_id = (new Date()).getTime();
     const slogan = initSloganTxt(nj_tw_id);
+    const lastIdx = tweetContent.formattedTxt.length - 1;
+    const lastStr = tweetContent.formattedTxt[lastIdx];
 
-    const compositedTxt = await procTweetContent(tweetContent, slogan);
-    if (!compositedTxt) {
-        return null;
+    let result = twttr.txt.parseTweet(lastStr+slogan);
+    if (result.valid === true) {
+        tweetContent.formattedTxt[lastIdx] += slogan;
+    }else{
+        tweetContent.formattedTxt.push(slogan);
     }
 
     const tweet = new TweetContentToPost(tweetContent.formattedTxt,
-        nj_tw_id, ninjaUserObj.eth_addr, ninjaUserObj.tw_id, compositedTxt);
+        nj_tw_id, ninjaUserObj.eth_addr, ninjaUserObj.tw_id);
     const message = JSON.stringify(tweet)
 
     const signature = await window.ethereum.request({
@@ -550,8 +556,8 @@ function saveCaretPosition(context) {
     range.setEnd(activeRange.startContainer, activeRange.startOffset);
     let length = range.toString().length;
 
-    let startNode = activeRange.startContainer;
-    let startOffset = activeRange.startOffset;
+    // let startNode = activeRange.startContainer;
+    // let startOffset = activeRange.startOffset;
 
     // console.log('Caret position saved:', {startNode, startOffset, length});
 

@@ -9,6 +9,7 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -56,6 +57,7 @@ func (sp *SignDataByEth) ParseNinjaTweet() (*database.NinjaTweet, error) {
 		util.LogInst().Err(err).Msg("tweet signature verify failed")
 		return nil, err
 	}
+	tweetContent.Txt = strings.Join(tweetContent.TxtList, "\n")
 	tweetContent.Signature = sp.Signature
 	tweetContent.PrefixedHash = prefixedHash
 	tweetContent.PaymentStatus = database.TxStNotPay

@@ -37,7 +37,7 @@ func (ts TxStatus) String() string {
 
 type NinjaTweet struct {
 	Txt           string   `json:"text" firestore:"text"`
-	TxtWithSlogan string   `json:"txt_with_slogan" firestore:"-"`
+	TxtList       []string `json:"text_list"  firestore:"-"`
 	Images        []string `json:"images,omitempty"  firestore:"images"`
 	ImageHash     []string `json:"image_hash,omitempty"  firestore:"image_hash"`
 	ImageRaw      []string `json:"-"  firestore:"-"`
@@ -110,7 +110,7 @@ type TweetsOfUser struct {
 }
 
 func (nt *NinjaTweet) IsValid() bool {
-	return nt.CreateAt > 0 && len(nt.Txt) >= 4 &&
+	return nt.CreateAt > 0 && len(nt.TxtList) >= 0 &&
 		len(nt.TweetUsrId) > 0 && len(nt.Web3ID) > 0
 }
 

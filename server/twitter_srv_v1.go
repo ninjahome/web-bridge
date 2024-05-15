@@ -170,7 +170,6 @@ func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) 
 
 	var token = ut.GetToken()
 
-	var combinedTxt = njTweet.TxtWithSlogan
 	mediaIDs := make([]string, 0)
 	if len(njTweet.Images) > MaxImgInTweet {
 		return nil, fmt.Errorf("images must be less than 5")
@@ -201,7 +200,7 @@ func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) 
 	njTweet.Images = finalImages
 
 	req := &TweetRequest{
-		Text: combinedTxt,
+		Text: njTweet.TxtList[0],
 	}
 	if len(mediaIDs) > 0 {
 		req.Media = &Media{
@@ -238,10 +237,11 @@ func postTweets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInf
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	var tweetResponse TweetResponse
 	bts, _ := json.Marshal(tweetBody)
+	var tweetResponse TweetResponse
 
-	err = twitterApiPost(accessPointTweet, ut.GetToken(), bytes.NewBuffer(bts), "application/json", &tweetResponse)
+	err = twitterApiPost(accessPointTweet, ut.GetToken(), bytes.NewBuffer(bts),
+		"application/json", &tweetResponse)
 	if err != nil {
 		util.LogInst().Err(err).Msg(" posted tweet failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -254,6 +254,21 @@ func postTweets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInf
 		util.LogInst().Err(err).Msg("save posted tweet failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	if len(njTweet.TxtList) > 1 {
+		for i := 1; i < len(njTweet.TxtList); i++ {
+			bts, _ := json.Marshal(&TweetRequest{
+				Text: njTweet.TxtList[i],
+			})
+			err = twitterApiPost(accessPointTweet, ut.GetToken(), bytes.NewBuffer(bts),
+				"application/json", &tweetResponse)
+			if err != nil {
+				util.LogInst().Err(err).Msg("send other tweet failed")
+			} else {
+				util.LogInst().Info().Msgf("second level tweet success%v", tweetResponse)
+			}
+		}
 	}
 
 	w.Header().Set("Content-Type", "application/json")
