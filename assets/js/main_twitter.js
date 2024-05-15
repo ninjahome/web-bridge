@@ -553,7 +553,7 @@ function saveCaretPosition(context) {
     let startNode = activeRange.startContainer;
     let startOffset = activeRange.startOffset;
 
-    console.log('Caret position saved:', {startNode, startOffset, length});
+    // console.log('Caret position saved:', {startNode, startOffset, length});
 
     return function restore(isNewLine) {
         selection.removeAllRanges();
@@ -583,7 +583,7 @@ function saveCaretPosition(context) {
         if (range.startContainer && range.startContainer.parentNode) {
             range.collapse(true);
             selection.addRange(range);
-            console.log('Caret position restored:', {node: range.startContainer, offset: range.startOffset});
+            // console.log('Caret position restored:', {node: range.startContainer, offset: range.startOffset});
         } else {
             console.warn('Range not in document, cannot restore caret position');
         }
