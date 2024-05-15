@@ -484,43 +484,27 @@ function checkSelection() {
 
 function checkTweetLength(div) {
     const tweetTxt = div.innerText;
-    console.log('Tweet text:', tweetTxt);
-
     const parsedText = twttr.txt.parseTweet(tweetTxt);
-    console.log('Parsed tweet:', parsedText);
 
     let validText = tweetTxt.substring(0, parsedText.validRangeEnd + 1);
     let excessText = tweetTxt.substring(parsedText.validRangeEnd + 1);
-
-    console.log('Valid text:', validText);
-    console.log('Excess text:', excessText);
-
     let restore = saveCaretPosition(div);  // 先保存光标位置
-    console.log('Saved caret position');
 
-    // 清空 div 的所有子节点
     while (div.firstChild) {
         div.removeChild(div.firstChild);
     }
 
-    // 插入有效文本节点，保留换行符
     let validTextNode = document.createTextNode(validText);
     div.appendChild(validTextNode);
-    console.log('Inserted valid text node');
-    console.log('DOM structure after inserting valid text node: ', div.innerHTML);
 
-    // 如果有超出文本，插入新的超出文本节点
     if (excessText) {
         let newExcess = document.createElement('span');
         newExcess.className = 'tweet-over-flow-red';
         newExcess.innerText = excessText;
         div.appendChild(newExcess);
-        console.log('Inserted excess text node');
-        console.log('DOM structure after inserting excess text node: ', div.innerHTML);
     }
 
-    restore(); // 恢复光标位置
-    console.log('Restored caret position');
+    restore();
 }
 
 function handlePaste(event) {
@@ -566,7 +550,6 @@ function saveCaretPosition(context) {
     range.setEnd(activeRange.startContainer, activeRange.startOffset);
     let length = range.toString().length;
 
-    // 保存当前的光标位置，包括节点和偏移量
     let startNode = activeRange.startContainer;
     let startOffset = activeRange.startOffset;
 
@@ -593,7 +576,7 @@ function saveCaretPosition(context) {
                 }
             }
         }
-        // 确保范围在文档中
+
         if (range.startContainer && range.startContainer.parentNode) {
             range.collapse(true);
             selection.addRange(range);
