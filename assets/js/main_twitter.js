@@ -448,14 +448,13 @@ function newSplitEditor(tweetManager, siblingNode) {
             checkTweetLength(editableDiv);
         }
     );
-    editableDiv.addEventListener('paste', handlePaste);
     editableDiv.addEventListener('input', () => {
         if (isComposing) {
             return;
         }
         checkTweetLength(editableDiv);
     });
-    editableDiv.addEventListener('keydown', handleEnter);
+    // editableDiv.addEventListener('keydown', handleEnter);
 
     __globalTweetEditorCount++;
     if (siblingNode) {
@@ -605,28 +604,36 @@ function saveCaretPosition(context) {
     };
 }
 
+
 function handleEnter(event) {
     if (event.key === 'Enter') {
-        event.preventDefault();  // 阻止默认行为
+        event.preventDefault(); // 阻止默认的回车效果
+
         const selection = window.getSelection();
-        if (!selection.rangeCount) return;
+        if (!selection.rangeCount) return; // 如果没有选区，则不执行后续操作
 
         const range = selection.getRangeAt(0);
-        console.log('Initial range:', range.startContainer, range.startOffset);
+        console.log('Current range start:', range.startContainer, range.startOffset);
 
-        const br = document.createElement('br');
+        // 删除当前选区内容（如果有的话）
         range.deleteContents();
-        range.insertNode(br);
-        console.log('Inserted <br>: ', br);
-        console.log('DOM structure after inserting <br>: ', event.target.innerHTML);
-        // checkTweetLength(event.target);
 
-        // 将光标移动到 <br> 标签之后
+        // 创建并插入 <br> 元素
+        const br = document.createElement('br');
+        const zeroWidthSpace = document.createTextNode('\u200B'); // 零宽空格
+
+        range.insertNode(zeroWidthSpace);
+        range.insertNode(br);
+
+        // 移动光标到零宽空格后，理论上是新行的开始位置
         range.setStartAfter(br);
         range.setEndAfter(br);
+
+        // 清除当前的选区，并设置新的选区
         selection.removeAllRanges();
         selection.addRange(range);
-        console.log('Range after setting to <br>: ', range.startContainer, range.startOffset);
+
+        console.log('New cursor position set after <br>:', range.startContainer, range.startOffset);
+        // checkTweetLength(event)
     }
 }
-
