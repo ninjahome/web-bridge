@@ -1591,9 +1591,13 @@
 
     <style about="tweet-on-top">
 
+        .split-tweet-content{
+            border-radius: 12px;
+            border: 1px solid #d3d5d6;
+            padding: 12px;
+        }
+
         .tweets-content-txt-area {
-            width: 530px;
-            padding: 12px 0;
             min-height: 100px;
             max-height: 90vh;
             white-space: pre-wrap;
@@ -1601,10 +1605,11 @@
             line-height: 1.5;
             outline: none;
             font-size: 15px;
-            font-weight: 400;
+            font-weight: 350;
             direction: ltr; /* CSS method */
             text-align: left; /* Ensure text alignment is left */
-            background-color: #F4F5F6;
+            border-radius: 12px;
+            margin: 12px 0;
         }
 
         /*.tweets-content-txt-area {*/
@@ -1641,10 +1646,10 @@
             line-height: 20px; /* 行高 */
         }
 
-
     </style>
 
     <style about="tweet-split-edit">
+
         .tweet-split-item {
             display: flex;
             justify-content: left;
@@ -1668,9 +1673,17 @@
         }
 
         .tweet-edit-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             background-color: transparent;
             border: none;
         }
+
+        .tweet-edit-btn:hover {
+            background-color: rgba(228, 228, 223, 0.2);
+        }
+
     </style>
 
 </head>
@@ -1748,9 +1761,11 @@
     <div data-index="0" class="tweet-split-item" id="tweet-split-item-template"
          style="margin-left: 12px;display: none">
         <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
-             contenteditable="true"></div>
+             contenteditable="true">
+
+        </div>
         <div style="float: right">
-            <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
+            <button class="tweet-edit-btn" style="margin-right: 12px" onclick="addNextSplitEditor(this)">
                 <img src="/assets/file/addPostBelow.png" alt="add tweet">
             </button>
             <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
