@@ -39,83 +39,118 @@ function startCountdown(callback) {
     }, 1000);
 }
 
+//
+// function PostToSrvByJson(url, data) {
+//     const requestOptions = {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(data)
+//     };
+//
+//     const csrfToken = document.getElementById('csrf_token');
+//     if (csrfToken) {
+//         requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
+//         // console.log("CSRF-Token=>",csrfToken.value);
+//     }
+//
+//     return new Promise((resolve, reject) => {
+//         fetch(url, requestOptions)
+//             .then(response => {
+//                 if (response.redirected) {
+//                     window.location = response.url;
+//                     return;
+//                 }
+//                 if (!response.ok) {
+//
+//                     if (response.status === 302 || response.status === 301) {
+//                         window.location = response.url;
+//                         return;
+//                     }
+//
+//                     return response.text().then(text => {
+//                         console.log(text)
+//                         throw new Error('\tserver responded with an error:' + response.status);
+//                     });
+//                 }
+//                 if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
+//                     return {};
+//                 }
+//                 return response.json();
+//             })
+//             .then(data => {
+//                 resolve(data);
+//             })
+//             .catch(error => {
+//                 console.log(error);
+//                 reject(error);
+//             });
+//     });
+// }
+//
+// async function GetToSrvByJson(url) {
+//     const requestOptions = {
+//         method: 'GET',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//     };
+//     const csrfToken = document.getElementById('csrf_token');
+//     if (csrfToken) {
+//         requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
+//     }
+//
+//     try {
+//         const response = await fetch(url, requestOptions);
+//         if (response.redirected) {
+//             window.location = response.url;
+//             return;
+//         }
+//         if (!response.ok) {
+//             if ([301, 302, 303, 307, 308].includes(response.status)) {
+//                 window.location = response.url;
+//                 return;
+//             }
+//             const text = await response.text();
+//             console.log(text);
+//             throw new Error('Server responded with an error: ' + response.status);
+//         }
+//         if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
+//             return {};
+//         }
+//
+//         return await response.json();
+//     } catch (error) {
+//         console.error('Error during fetch:', error);
+//         throw error;
+//     }
+// }
 
-function PostToSrvByJson(url, data) {
-    const requestOptions = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
-    };
 
+async function fetchFromSrv(url, options) {
     const csrfToken = document.getElementById('csrf_token');
     if (csrfToken) {
-        requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
-        // console.log("CSRF-Token=>",csrfToken.value);
-    }
-
-    return new Promise((resolve, reject) => {
-        fetch(url, requestOptions)
-            .then(response => {
-                if (response.redirected) {
-                    window.location = response.url;
-                    return;
-                }
-                if (!response.ok) {
-
-                    if (response.status === 302 || response.status === 301) {
-                        window.location = response.url;
-                        return;
-                    }
-
-                    return response.text().then(text => {
-                        console.log(text)
-                        throw new Error('\tserver responded with an error:' + response.status);
-                    });
-                }
-                if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
-                    return {};
-                }
-                return response.json();
-            })
-            .then(data => {
-                resolve(data);
-            })
-            .catch(error => {
-                console.log(error);
-                reject(error);
-            });
-    });
-}
-
-async function GetToSrvByJson(url) {
-    const requestOptions = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    };
-    const csrfToken = document.getElementById('csrf_token');
-    if (csrfToken) {
-        requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
+        options.headers['X-CSRF-Token'] = csrfToken.value;
     }
 
     try {
-        const response = await fetch(url, requestOptions);
+        const response = await fetch(url, options);
+
         if (response.redirected) {
             window.location = response.url;
             return;
         }
+
         if (!response.ok) {
             if ([301, 302, 303, 307, 308].includes(response.status)) {
                 window.location = response.url;
                 return;
             }
-            const text = await response.text();
-            console.log(text);
-            throw new Error('Server responded with an error: ' + response.status);
+
+            await handleFetchError(response);
         }
+
         if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
             return {};
         }
@@ -125,6 +160,51 @@ async function GetToSrvByJson(url) {
         console.error('Error during fetch:', error);
         throw error;
     }
+}
+
+async function handleFetchError(response) {
+    const text = await response.text();
+
+    if (response.status === 403) {
+        try {
+            const errorDetails = JSON.parse(text);
+            if (errorDetails.reason === 'CSRF token invalid') {
+                console.error("CSRF token is invalid or missing.");
+                window.location.href = "/signIn";
+            } else {
+                console.error("Access denied: " + errorDetails.message);
+            }
+            throw new Error('403 Forbidden: ' + errorDetails.message);
+        } catch (e) {
+            console.error('Failed to parse error details', e);
+        }
+    } else {
+        console.error('Server responded with an error:', response.status, text);
+        throw new Error('Server responded with an error: ' + response.status);
+    }
+}
+
+async function PostToSrvByJson(url, data) {
+    const requestOptions = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    };
+
+    return fetchFromSrv(url, requestOptions);
+}
+
+async function GetToSrvByJson(url) {
+    const requestOptions = {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    return fetchFromSrv(url, requestOptions);
 }
 
 const __globalMetaMaskNetworkParam = new Map([
