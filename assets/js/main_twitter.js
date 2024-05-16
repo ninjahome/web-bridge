@@ -461,7 +461,6 @@ function newSplitEditor(tweetManager, siblingNode) {
     const newEditor = tweetEditorTemplate.cloneNode(true);
     newEditor.style.display = 'block';
     newEditor.id = 'tweet-area-' + __globalTweetEditorCount;
-    setCursorToStart(newEditor);
     const editableDiv = newEditor.querySelector('.tweets-content-txt-area');
     editableDiv.addEventListener('compositionstart', () => {
         isComposing = true;
@@ -485,6 +484,7 @@ function newSplitEditor(tweetManager, siblingNode) {
     } else {
         tweetManager.appendChild(newEditor);
     }
+    setCursorToStart(newEditor);
 }
 
 let isComposing = false;
