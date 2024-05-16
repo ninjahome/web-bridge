@@ -1594,11 +1594,11 @@
         .split-tweet-content{
             border-radius: 12px;
             border: 1px solid #d3d5d6;
-            padding: 12px;
+            padding: 12px 12px 6px 12px;
         }
 
         .tweets-content-txt-area {
-            min-height: 100px;
+            min-height: 80px;
             max-height: 90vh;
             white-space: pre-wrap;
             word-wrap: break-word;
@@ -1636,7 +1636,7 @@
         }
 
         .tweets-content-txt-area:focus {
-            border-color: rgba(78, 160, 242, 0.45); /* 选中时的边框颜色 */
+            border:2px solid #4EA0F2; /* 选中时的边框颜色 */
         }
 
         /* 使用 ::placeholder 为 textarea 添加占位符样式 */
@@ -1650,11 +1650,10 @@
 
     <style about="tweet-split-edit">
 
-        .tweet-split-item {
+        .tweet-content-txt-item {
             display: flex;
             justify-content: left;
             position: relative;
-            width: 604px;
             overflow: auto;
         }
 
@@ -1682,6 +1681,30 @@
 
         .tweet-edit-btn:hover {
             background-color: rgba(228, 228, 223, 0.2);
+        }
+
+        .titles-line-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 12px;
+        }
+
+        .titles-circle {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid  #d3d5d6; /* 设置边框来创建圆圈 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .titles-line {
+            width: 2px;
+            background-color: #d3d5d6;
+            flex-grow: 1;
+            margin-top: 8px;
         }
 
     </style>
@@ -1757,12 +1780,18 @@
         </div>
         <div class="tweet-images"></div>
     </div>
-
-    <div data-index="0" class="tweet-split-item" id="tweet-split-item-template"
+    <div class="tweet-split-item" id="tweet-split-item-template" style="display: flex; justify-content: left">
+    <div class="titles-line-container">
+        <div class="titles-circle">
+            <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
+                 style="width: 12px;height: 12px;border-radius: 50%;" alt="avatar">
+        </div>
+        <div class="titles-line"></div>
+    </div>
+    <div data-index="0" class="tweet-content-txt-item"
          style="margin-left: 12px;display: none">
         <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
              contenteditable="true">
-
         </div>
         <div style="float: right">
             <button class="tweet-edit-btn" style="margin-right: 12px" onclick="addNextSplitEditor(this)">
@@ -1771,6 +1800,7 @@
             <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
                 <img src="/assets/file/delPost.png" alt="delete tweet"></button>
         </div>
+    </div>
     </div>
 
     <div class="middle-content-area">
