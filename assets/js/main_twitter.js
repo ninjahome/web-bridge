@@ -462,6 +462,7 @@ function newSplitEditor(tweetManager, siblingNode) {
     newEditor.style.display = 'block';
     newEditor.id = 'tweet-area-' + __globalTweetEditorCount;
     const editableDiv = newEditor.querySelector('.tweets-content-txt-area');
+    editableDiv.innerHTML = '';
     editableDiv.addEventListener('compositionstart', () => {
         isComposing = true;
     });
@@ -484,7 +485,7 @@ function newSplitEditor(tweetManager, siblingNode) {
     } else {
         tweetManager.appendChild(newEditor);
     }
-    setCursorToStart(newEditor);
+    // setCursorToStart(newEditor);
 }
 
 let isComposing = false;
@@ -634,20 +635,3 @@ function handleEnter(event) {
         checkTweetLength(event.target, true);
     }
 }
-
-function setCursorToStart(element) {
-    const range = document.createRange();
-    const sel = window.getSelection();
-
-    // 将 range 设置在元素的起始位置
-    range.setStart(element, 0);
-    range.collapse(true);
-
-    // 清除任何现有的选择，并添加新 range
-    sel.removeAllRanges();
-    sel.addRange(range);
-
-    // 聚焦元素
-    element.focus();
-}
-
