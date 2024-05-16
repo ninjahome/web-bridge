@@ -170,12 +170,12 @@ function parseTweetContent(parentDiv) {
                 return null;
             }
             textContent = textContent.replace(/\u200B/g, '').trim();
-            console.log(`Original text: '${textContent}'`);
+            // console.log(`Original text: '${textContent}'`);
             return textContent;
         })
         .filter(txt => {
             const isValid = (txt && txt.length > 0);
-            console.log(`Filter result for '${txt}': ${isValid}`);
+            // console.log(`Filter result for '${txt}': ${isValid}`);
             return isValid;
         });
 
@@ -346,8 +346,10 @@ function closePostTweetDiv() {
 }
 
 function clearDraftTweetContent(parentDiv) {
-    parentDiv.querySelector(".tweets-content-txt-area").value = '';
-    parentDiv.querySelector(".tweets-content-txt-area").style.height = '5em'
+    const splitArea = parentDiv.querySelector(".split-tweet-content");
+    splitArea.innerHTML = '';
+    __globalTweetEditorCount = 0;
+    newSplitEditor(splitArea);
     parentDiv.querySelector(".img-wrapper-container").innerHTML = '';
     parentDiv.querySelector(".img-wrapper-container").style.display = 'none'
 }
@@ -619,7 +621,7 @@ function handleEnter(event) {
         if (!selection.rangeCount) return; // 如果没有选区，则不执行后续操作
 
         const range = selection.getRangeAt(0);
-        console.log('Current range start:', range.startContainer, range.startOffset);
+        // console.log('Current range start:', range.startContainer, range.startOffset);
         range.deleteContents();
 
         const br = document.createElement('br');
@@ -628,7 +630,7 @@ function handleEnter(event) {
         selection.removeAllRanges();
         selection.addRange(range);
 
-        console.log('New cursor position set after <br>:', range.startContainer, range.startOffset);
+        // console.log('New cursor position set after <br>:', range.startContainer, range.startOffset);
         checkTweetLength(event.target, true);
     }
 }
