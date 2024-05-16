@@ -9,7 +9,6 @@ import (
 	"html/template"
 	"net/http"
 	"strconv"
-	"strings"
 )
 
 const (
@@ -52,12 +51,11 @@ func (sp *SignDataByEth) ParseNinjaTweet() (*database.NinjaTweet, error) {
 		return nil, fmt.Errorf("invalid tweet content")
 	}
 
-	prefixedHash, err := util.Verify(tweetContent.Web3ID, sp.Message, sp.Signature)
+	prefixedHash, err := util.Verify(tweetContent.Web3ID, tweetContent.Txt, sp.Signature)
 	if err != nil {
 		util.LogInst().Err(err).Msg("tweet signature verify failed")
 		return nil, err
 	}
-	tweetContent.Txt = strings.Join(tweetContent.TxtList, "\n")
 	tweetContent.Signature = sp.Signature
 	tweetContent.PrefixedHash = prefixedHash
 	tweetContent.PaymentStatus = database.TxStNotPay

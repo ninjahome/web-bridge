@@ -255,11 +255,14 @@ func postTweets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInf
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
+	var tweetId = njTweet.TweetId
 	if len(njTweet.TxtList) > 1 {
 		for i := 1; i < len(njTweet.TxtList); i++ {
 			bts, _ := json.Marshal(&TweetRequest{
 				Text: njTweet.TxtList[i],
+				Reply: &Reply{
+					InReplyToTweetID: tweetId,
+				},
 			})
 			err = twitterApiPost(accessPointTweet, ut.GetToken(), bytes.NewBuffer(bts),
 				"application/json", &tweetResponse)
@@ -267,6 +270,7 @@ func postTweets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInf
 				util.LogInst().Err(err).Msg("send other tweet failed")
 			} else {
 				util.LogInst().Info().Msgf("second level tweet success%v", tweetResponse)
+				tweetId = tweetResponse.Data.ID
 			}
 		}
 	}

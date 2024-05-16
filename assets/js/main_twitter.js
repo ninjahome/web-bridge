@@ -159,7 +159,7 @@ async function convertContentToImages(formattedContent, imageData) {
 function parseTweetContent(parentDiv) {
     const allTweetDiv = parentDiv.querySelectorAll(".tweets-content-txt-area");
 
-    const formattedTxt = Array.from(allTweetDiv)
+    const txtList = Array.from(allTweetDiv)
         .map(div => {
             const validElm = div.firstChild;
             if (!validElm) {
@@ -179,7 +179,7 @@ function parseTweetContent(parentDiv) {
             return isValid;
         });
 
-
+    const formattedTxt = txtList.join('\n');
     const images = parentDiv.querySelectorAll("#twImagePreview img");
     if (formattedTxt.length === 0) {
         showDialog(DLevel.Warning, "content too short")
@@ -197,7 +197,7 @@ function parseTweetContent(parentDiv) {
         return new ImageRawData(hash, raw, thumbnail);
     });
 
-    return {formattedTxt, imageData}
+    return {formattedTxt, txtList, imageData}
 }
 
 function initSloganTxt(nj_tw_id) {
@@ -235,28 +235,28 @@ async function procTweetContent(tweetContent, slogan) {
 
 async function preparePostMsg(parentDiv) {
     const tweetContent = parseTweetContent(parentDiv);
-    if (!tweetContent || tweetContent.formattedTxt.length === 0) {
+    if (!tweetContent || tweetContent.txtList.length === 0) {
         return null;
     }
 
     const nj_tw_id = (new Date()).getTime();
     const slogan = initSloganTxt(nj_tw_id);
-    const lastIdx = tweetContent.formattedTxt.length - 1;
-    const lastStr = tweetContent.formattedTxt[lastIdx];
+    const lastIdx = tweetContent.txtList.length - 1;
+    const lastStr = tweetContent.txtList[lastIdx];
 
     let result = twttr.txt.parseTweet(lastStr + slogan);
     if (result.valid === true) {
-        tweetContent.formattedTxt[lastIdx] += slogan;
+        tweetContent.txtList[lastIdx] += slogan;
     } else {
-        tweetContent.formattedTxt.push(slogan);
+        tweetContent.txtList.push(slogan);
     }
 
     const tweet = new TweetContentToPost(tweetContent.formattedTxt,
-        nj_tw_id, ninjaUserObj.eth_addr, ninjaUserObj.tw_id);
+        tweetContent.txtList, nj_tw_id, ninjaUserObj.eth_addr, ninjaUserObj.tw_id);
     const message = JSON.stringify(tweet)
 
     const signature = await window.ethereum.request({
-        method: 'personal_sign', params: [message, ninjaUserObj.eth_addr],
+        method: 'personal_sign', params: [tweetContent.formattedTxt, ninjaUserObj.eth_addr],
     });
 
     if (!signature) {
