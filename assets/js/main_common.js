@@ -483,3 +483,47 @@ async function reloadSelfNjData() {
         showDialog(DLevel.Warning, "reload session failed:" + err.toString())
     }
 }
+
+
+const TweetTimerInterval = 30_000
+function initTweetTimer(){
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // 初始检测页面可见性
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                console.log("Page is hidden, stop updating content.");
+                // 停止自动更新内容
+                stopAutoUpdate();
+            } else {
+                console.log("Page is visible, start updating content.");
+                // 开始自动更新内容
+                startAutoUpdate();
+            }
+        }
+
+        // 监听 visibilitychange 事件
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // 模拟自动更新内容的功能
+        let updateInterval;
+
+        function startAutoUpdate() {
+            if (!updateInterval) {
+                updateInterval = setInterval(async () => {
+                    console.log("Fetching new content...");
+                    await __loadTweetsAtHomePage(true);
+                }, TweetTimerInterval); // 每30秒获取一次新内容
+            }
+        }
+
+        function stopAutoUpdate() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+        }
+
+        // 页面加载时检查初始状态
+        handleVisibilityChange();
+    });
+}
