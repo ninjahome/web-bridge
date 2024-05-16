@@ -160,8 +160,25 @@ function parseTweetContent(parentDiv) {
     const allTweetDiv = parentDiv.querySelectorAll(".tweets-content-txt-area");
 
     const formattedTxt = Array.from(allTweetDiv)
-        .map(div => div.firstChild.textContent.trim()) // 使用 trim() 去除可能的空白字符
-        .filter(txt => txt.length > 0); // 只保留长度大于 0 的文本
+        .map(div => {
+            const validElm = div.firstChild;
+            if (!validElm) {
+                return null;
+            }
+            let textContent = validElm.textContent;
+            if (!textContent) {
+                return null;
+            }
+            textContent = textContent.replace(/\u200B/g, '').trim();
+            console.log(`Original text: '${textContent}'`);
+            return textContent;
+        })
+        .filter(txt => {
+            const isValid = (txt && txt.length > 0);
+            console.log(`Filter result for '${txt}': ${isValid}`);
+            return isValid;
+        });
+
 
     const images = parentDiv.querySelectorAll("#twImagePreview img");
     if (formattedTxt.length === 0) {
@@ -218,7 +235,7 @@ async function procTweetContent(tweetContent, slogan) {
 
 async function preparePostMsg(parentDiv) {
     const tweetContent = parseTweetContent(parentDiv);
-    if (!tweetContent||tweetContent.formattedTxt.length === 0) {
+    if (!tweetContent || tweetContent.formattedTxt.length === 0) {
         return null;
     }
 
@@ -227,10 +244,10 @@ async function preparePostMsg(parentDiv) {
     const lastIdx = tweetContent.formattedTxt.length - 1;
     const lastStr = tweetContent.formattedTxt[lastIdx];
 
-    let result = twttr.txt.parseTweet(lastStr+slogan);
+    let result = twttr.txt.parseTweet(lastStr + slogan);
     if (result.valid === true) {
         tweetContent.formattedTxt[lastIdx] += slogan;
-    }else{
+    } else {
         tweetContent.formattedTxt.push(slogan);
     }
 
@@ -606,7 +623,7 @@ function handleEnter(event) {
         range.deleteContents();
 
         const br = document.createElement('br');
-        range.insertNode( document.createTextNode('\u200B'));
+        range.insertNode(document.createTextNode('\u200B'));
         range.insertNode(document.createElement('br'));
         selection.removeAllRanges();
         selection.addRange(range);
