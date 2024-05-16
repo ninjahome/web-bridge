@@ -1608,8 +1608,17 @@
             font-weight: 350;
             direction: ltr; /* CSS method */
             text-align: left; /* Ensure text alignment is left */
-            border-radius: 12px;
             margin: 12px 0;
+            border-left: 1px solid rgba(211, 213, 214, 0.2);
+
+        }
+        .tweets-content-txt-area:empty::before {
+            content: attr(data-placeholder);
+            color: #ccc;
+            position: absolute;
+            top: 12px; /* Adjust based on padding */
+            left: 0;
+            pointer-events: none; /* Ensures that the placeholder text is not selectable */
         }
 
         /*.tweets-content-txt-area {*/
@@ -1780,20 +1789,12 @@
         </div>
         <div class="tweet-images"></div>
     </div>
-    <div class="tweet-split-item" id="tweet-split-item-template" style="display: flex; justify-content: left">
-        <div class="titles-line-container">
-            <div class="titles-circle">
-                <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
-                     style="width: 12px;height: 12px;border-radius: 50%;" alt="avatar">
-            </div>
-            <div class="titles-line"></div>
-        </div>
-        <div data-index="0" class="tweet-content-txt-item"
+        <div data-index="0" class="tweet-split-item" id="tweet-split-item-template"
              style="margin-left: 12px;display: none">
             <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
-                 contenteditable="true">
+                 contenteditable="true"  data-placeholder="请输入文本..." >
             </div>
-            <div style="float: right">
+            <div style="display:flex; justify-content: flex-end; background-color: rgba(211,213,214,0.2); width: 100%; border-radius: 12px; padding: 2px 8px">
                 <button class="tweet-edit-btn" style="margin-right: 12px" onclick="addNextSplitEditor(this)">
                     <img src="/assets/file/addPostBelow.png" alt="add tweet">
                 </button>
@@ -1801,7 +1802,6 @@
                     <img src="/assets/file/delPost.png" alt="delete tweet"></button>
             </div>
         </div>
-    </div>
 
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
