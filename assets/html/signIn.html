@@ -574,7 +574,7 @@
     }
 
     async function connectToMetamask() {
-        if (!window.ethereum) {
+        if (!window.ethereum||!window.ethereum.isMetaMask) {
             window.open('https://metamask.io/download/', '_blank');
             return;
         }
