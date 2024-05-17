@@ -867,3 +867,4 @@ const defaultTextLenForTweet = 280;
 const MaxRawImgSize = (1 << 20) - 128;
 const MaxThumbnailSize = (1 << 17);
 const TimeIntervalForBlockChain = 30;
+const MaxTweetsPerPost = 5;

@@ -181,8 +181,13 @@ function parseTweetContent(parentDiv) {
 
     const formattedTxt = txtList.join('\n');
     const images = parentDiv.querySelectorAll("#twImagePreview img");
-    if (formattedTxt.length === 0) {
+    if (txtList.length === 0) {
         showDialog(DLevel.Warning, "content too short")
+        return null;
+    }
+
+    if (txtList.length > MaxTweetsPerPost + 1){
+        showDialog(DLevel.Warning, "content too long")
         return null;
     }
 
@@ -441,6 +446,7 @@ function previewImage(parentId) {
 function initTweetArea(divID) {
     const tweetManager = document.getElementById(divID);
     __globalTweetEditorCount = 0;
+    tweetManager.innerHTML='';
     newSplitEditor(tweetManager);
 }
 
@@ -453,7 +459,7 @@ function addNextSplitEditor(btn) {
 let __globalTweetEditorCount = 0;
 
 function newSplitEditor(tweetManager, siblingNode) {
-    if (__globalTweetEditorCount >= 5) {
+    if (__globalTweetEditorCount >= MaxTweetsPerPost) {
         showDialog(DLevel.Warning, "too much tweets");
         return;
     }
