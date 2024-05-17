@@ -941,16 +941,20 @@
         }
 
         .tweet-post-close-btn {
-            float: right; /* 右上角 */
+            display: block;
             font-size: 24px; /* 字体大小 */
             line-height: 24px; /* 行高 */
             cursor: pointer; /* 鼠标样式 */
             color: #a7aaac; /* 颜色 */
             margin-bottom: 16px;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            text-align:center;
         }
 
         .tweet-post-close-btn:hover {
-            color: #141415; /* 悬停时颜色 */
+            background-color: rgba(211, 212, 213, 0.25); /* 悬停时颜色 */
         }
 
         .tweets-fileImg {
@@ -1671,15 +1675,18 @@
         }
 
         .tweet-edit-btn {
-            width: 32px;
-            height: 32px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background-color: transparent;
             border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .tweet-edit-btn:hover {
-            background-color: rgba(228, 228, 223, 0.2);
+            background-color: rgba(228, 228, 223, 0.5);
         }
 
         .titles-line-container {
