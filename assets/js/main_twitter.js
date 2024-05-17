@@ -15,7 +15,7 @@ async function __loadTweetsAtHomePage(newest) {
         }
     } catch (err) {
         console.log(err);
-        showDialog(DLevel.Error, err.toString());
+        showDialog(DLevel.Error, "failed to load tweets");
     }
 }
 
