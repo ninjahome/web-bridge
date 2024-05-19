@@ -66,7 +66,7 @@
         .middle-content-area {
             background-color: #fff; /* 背景色，可根据需要调整 */
             width: 636px;
-            height: 99vh;
+            height: 6000px;
             margin: 8px;
             border-radius: 6px;
         }
@@ -1605,7 +1605,6 @@
 
         .tweets-content-txt-area {
             min-height: 80px;
-            max-height: 90vh;
             white-space: pre-wrap;
             word-wrap: break-word;
             line-height: 1.5;
@@ -1617,7 +1616,6 @@
             margin: 12px 0;
             border-left: 1px solid rgba(211, 213, 214, 0.2);
             position: relative;
-
         }
 
         .tweets-content-txt-area:empty::before {
@@ -1628,24 +1626,6 @@
             left: 0;
             pointer-events: none; /* Ensures that the placeholder text is not selectable */
         }
-
-        /*.tweets-content-txt-area {*/
-        /*    margin: 0 auto;*/
-        /*    display: block; !* 确保元素为块级元素 *!*/
-        /*    box-sizing: border-box;*/
-        /*    width: 100%; !* 文本区域宽度 *!*/
-        /*    min-height: 4em; !* 至少容纳3行文字的高度 *!*/
-        /*    max-height: 26em; !* 最大高度，约等于10行文字 *!*/
-        /*    overflow-y: auto; !* 内容超出最大高度时显示垂直滚动条 *!*/
-        /*    padding: 4px; !* 内边距 *!*/
-        /*    border: 1px solid #D3D5D6; !* 边框 *!*/
-        /*    border-radius: 6px;*/
-        /*    resize: none; !* 禁止调整大小 *!*/
-        /*    position: relative;*/
-        /*    background-color: #F4F5F6;*/
-        /*    outline: none; !* 去除焦点时的外框线 *!*/
-        /*    white-space: pre-wrap;*/
-        /*}*/
 
         /* 设置所有输入框的光标颜色 */
         input, textarea {
@@ -1685,6 +1665,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            margin-right: 12px;
         }
 
         .tweet-content-btn {
@@ -1803,7 +1784,7 @@
                  contenteditable="true"  data-placeholder="请输入文本..." >
             </div>
             <div class="tweet-content-btn">
-                <button class="tweet-edit-btn" style="margin-right: 12px" onclick="addNextSplitEditor(this)">
+                <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
                     <img src="/assets/file/addPostBelow.png" alt="add tweet">
                 </button>
                 <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
