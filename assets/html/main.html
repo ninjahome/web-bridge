@@ -1687,6 +1687,15 @@
             align-items: center;
         }
 
+        .tweet-content-btn {
+            display: flex;
+            justify-content: flex-end;
+            background-color: rgba(211,213,214,0.2);
+            width: 100%;
+            border-radius: 12px;
+            padding: 2px 8px;
+        }
+
         .tweet-edit-btn:hover {
             background-color: rgba(228, 228, 223, 0.5);
         }
@@ -1793,7 +1802,7 @@
             <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
                  contenteditable="true"  data-placeholder="请输入文本..." >
             </div>
-            <div style="display:flex; justify-content: flex-end; background-color: rgba(211,213,214,0.2); width: 100%; border-radius: 12px; padding: 2px 8px">
+            <div class="tweet-content-btn">
                 <button class="tweet-edit-btn" style="margin-right: 12px" onclick="addNextSplitEditor(this)">
                     <img src="/assets/file/addPostBelow.png" alt="add tweet">
                 </button>
