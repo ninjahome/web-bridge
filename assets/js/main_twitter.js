@@ -482,6 +482,8 @@ function newSplitEditor(tweetManager, siblingNode) {
             return;
         }
         checkTweetLength(editableDiv);
+        adjustTweetPostHeight(editableDiv);
+
     });
     editableDiv.addEventListener('keydown', handleEnter);
 
@@ -640,4 +642,11 @@ function handleEnter(event) {
         // console.log('New cursor position set after <br>:', range.startContainer, range.startOffset);
         checkTweetLength(event.target, true);
     }
+}
+
+function adjustTweetPostHeight(element) {
+    const tweetPost = element.closest('.tweet-post');
+    const buttonContainer = tweetPost.querySelector('div[style="display: flex; justify-content: space-between; align-items: center;"]');
+    const totalHeight = element.scrollHeight + buttonContainer.offsetHeight;
+    tweetPost.style.height = totalHeight + 'px';
 }
