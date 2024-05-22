@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Official Website</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<style>
+
+    @media (max-width: 1200px) {
+        .hero-section {
+            height: 50vh; /* 在较小的设备上调整高度 */
+        }
+    }
+    * {
+        margin: 0;
+        padding: 0;
+        text-align: left;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Impact, DINCond-Medium, Arial, sans-serif;
+        overflow-x: hidden;
+        background-color: white;
+    }
+
+    h2 {
+        font-size: 42px;
+        line-height: 42px;
+        margin-bottom: 12px;
+    }
+
+    p , span {
+        font-size: 20px;
+        line-height: 20px;
+        font-family: DINCond-Medium, Arial, sans-serif;
+    }
+
+    .containerText {
+        width: 70%;
+        height: 100%;
+        margin: auto;
+        position: relative;
+    }
+
+    /* Hero Section */
+    .hero-section {
+        width: 100vw;
+        height: 42.74vw;
+        background-image: url("/assets/file/promo.png");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover; /* 覆盖整个区域，可能会裁切 */
+        position: relative;
+        color: white;
+    }
+
+    .hero-text {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translate(0, -50%);
+        background: rgba(0, 0, 0, 0.5);
+        padding: 20px;
+    }
+
+    .hero-mail {
+        font-size: 32px;
+        line-height: 48px;
+        text-align: right;
+        position: absolute;
+        right: 20px;  /* 距离右侧20px */
+        bottom: 40px;  /* 距离底部20px */
+    }
+
+    .hero-text h1 {
+        font-size: 3em;
+        margin-bottom: 0.5em;
+    }
+
+    /* Product Introduction Section */
+
+    .product-introduction {
+        width: 100vw;
+        height: 45.87vw;
+        background-image: url("/assets/file/product-background.png");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover; /* 覆盖整个区域，可能会裁切 */
+    }
+
+
+    .product-highlights {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(0, -50%);
+    }
+
+    .product-highlights p {
+        font-size: 20px;
+        color: #666;
+    }
+
+    .highlight-item {
+        display: flex;
+        align-items: center;
+        margin-top: 72px;
+    }
+
+    .highlight-number {
+       width: 90px;
+        height: 90px;
+        margin-right: 12px;
+    }
+
+    .highlight-text h3 {
+        margin-bottom: 8px;
+        font-size: 28px;
+        line-height: 28px;
+    }
+
+    .highlight-text p {
+        margin: 0;
+        font-size: 24px;
+        line-height: 24px;
+        color: #666;
+    }
+
+    .ProductPhase-intro {
+       width: 70%;
+        padding: 24px;
+        text-align: left;
+        margin: auto;
+    }
+
+    .ProductPhase-intro h2 {
+        margin-bottom: 10px;
+        margin-top: 72px;
+    }
+
+    .detailed-product-introduction p {
+        font-size: 1.2em;
+        margin-bottom: 20px;
+    }
+
+    .ProductPhase-photo {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 24px 0;
+    }
+
+    .ProductPhase-photo img {
+        width: 25%;
+        height: auto;
+    }
+
+    .plus-symbol, .arrow-symbol {
+       width: 48px;
+        height: 48px;
+        margin: 0 24px;
+    }
+
+    .example-text {
+        font-size: 18px;
+        color: rgba(20, 20, 21, 0.4);
+        margin-top: 16px;
+        font-weight: 400;
+    }
+
+    .product-section {
+        width: 100%;
+        height: auto;
+        background-image: url("/assets/file/product-bgimg.png");
+        background-repeat: no-repeat;
+        color: white;
+        padding: 72px 0;
+    }
+
+    .product-title {
+        margin: 72px 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(35%, 1fr));
+        grid-gap: 1.2rem 1.2rem;
+        gap: 3.2rem 1.2rem;
+        max-width: 76%;
+        min-width: 60%;
+
+    }
+
+    .product-title h2 {
+        font-size: 28px;
+        line-height: 28px;
+    }
+
+
+    .product-intro {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .product-intro img {
+        margin-right: 8px;
+    }
+
+    .market-section {
+        background-image: url("/assets/file/Market-backimg.png");
+        background-repeat: no-repeat;
+        background-position: center;
+        padding: 72px 24px;
+    }
+
+    .market-section h2{
+        margin-bottom: 42px;
+    }
+
+
+    ul.square-list {
+        list-style-type: none; /* 移除默认的列表标记 */
+        padding-left: 0; /* 移除列表的默认左填充 */
+    }
+
+    ul.square-list li {
+        position: relative; /* 为伪元素定位提供基准 */
+        padding-left: 20px; /* 留出空间放置自定义标记 */
+        margin: 24px 0 ;
+    }
+
+    ul.square-list li:before {
+        content: ""; /* 伪元素的内容 */
+        position: absolute; /* 绝对定位 */
+        left: 0; /* 在列表项的最左侧 */
+        top: 50%; /* 垂直居中 */
+        width: 10px; /* 标记的宽度 */
+        height: 10px; /* 标记的高度 */
+        background-color: #FCC42C; /* 标记的背景色 */
+        border-radius: 3px; /* 圆角效果 */
+        transform: translateY(-50%); /* 确保标记垂直居中 */
+    }
+
+
+    /* Team Introduction Section */
+    .team-introduction {
+        text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: stretch; /* 让所有子元素填充到父容器的高度 */
+        background-color: #F7F7F7;
+
+    }
+    .team-introLeft {
+        flex: 7; /* 占据大约 70% 的空间 */
+        background-color: #F7F7F7;
+        padding: 42px 0;
+    }
+
+    .team-introRight {
+        flex: 4; /* 占据大约 30% 的空间 */
+        background-color: #FEC52E;
+        display: flex;
+        align-items: center;
+        padding: 24px;
+
+    }
+
+    .team-list {
+        display: grid;
+        grid-template-columns:repeat(auto-fill, minmax(35%, 1fr));
+
+    }
+    .team-introLeft {
+        margin-left: 12%;
+    }
+
+    .team-member {
+       display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .team-member img {
+        width: 50%;
+        height: auto;
+        margin-right: 12px;
+    }
+
+    .team-member h3 {
+        margin-top: 15px;
+        font-size: 1.5em;
+    }
+
+    .team-introRight p {
+        margin-top: 10px;
+        max-width: 45%;
+        font-size: 28px;
+        line-height: 40px;
+    }
+
+    .phaseUpload {
+        width: 80px;
+        height: 80px;
+        border: none;
+        background-color: transparent;
+        background-image: url("/assets/file/upload.png");
+        background-position: center ;
+    }
+
+    .ProductPhase-photo div {
+        width: 100%;   /* 占满容器宽度 */
+        height: auto;  /* 高度自动调整 */
+        aspect-ratio: 11 / 14; /* 使用CSS的aspect-ratio属性维持比例 */
+        background-color: #F4F5F5 ;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+</style>
+<body>
+
+<!-- First Screen: Hero Section -->
+<section class="hero-section">
+    <div class="containerText">
+        <div class="hero-text">
+            <h1 style="color: #FEC52E">Sports Efficiency Lab</h1>
+            <h1>Large Motion Model and Application</h1>
+        </div>
+        <p class="hero-mail">Sean LONG <br>aetfopuca@gmail.com</p>
+    </div>
+</section>
+
+<!-- Product Introduction Section -->
+<section class="product-introduction">
+    <div class="containerText">
+        <div class="product-highlights">
+            <h2>Investment Highlights</h2>
+            <p>SE Lab is dedicated to improving the efficiency of individual and team sports and rehab</p>
+            <div class="highlight-item">
+                <div class="highlight-number">
+                    <img src="/assets/file/num01.png" alt=" ">
+                </div>
+                <div class="highlight-text">
+                    <h3>Large Motion Model</h3>
+                    <p>Leading Position in Industry</p>
+                </div>
+            </div>
+            <div class="highlight-item" style="margin-left: 88px">
+                <div class="highlight-number">
+                    <img src="/assets/file/num02.png" alt=" ">
+                </div>
+                <div class="highlight-text">
+                    <h3>Great Market Potential</h3>
+                    <p>Sports and Rehab</p>
+                </div>
+            </div>
+            <div class="highlight-item" style="margin-left: 176px">
+                <div class="highlight-number">
+                    <img src="/assets/file/num03.png" alt=" ">
+                </div>
+                <div class="highlight-text">
+                    <h3>Experienced Entrepreneurs</h3>
+                    <p>Athletes, Scientists, Bankers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<section class="ProductPhase">
+    <div class="ProductPhase-intro">
+        <h2>Product, phase 1, Self Efficiency</h2>
+        <p>Input two videos, SE Lab will automatically intercept the cycle of the action, identify the differences and mark them, and finally output a video with comparison</p>
+        <div class="ProductPhase-photo">
+            <img src="/assets/file/phase-img.png" alt="Phase 1 Image 1">
+            <img src="/assets/file/phase-add.png"  class="plus-symbol" alt=" " style="width: 48px; height: 48px">
+            <img src="/assets/file/phaseone-img.png" alt="Phase 1 Image 2">
+            <img src="/assets/file/arrow-symbol.png" class="arrow-symbol" alt=" " style="width: 48px; height: 48px">
+            <img src="/assets/file/phase1-result.png" alt="Phase 1 Result Image">
+        </div>
+
+        <h2>Product, phase 2, Optimized Solution</h2>
+        <p>Compare individual user actions with professional athlete actions to continuously optimize the efficiency of amateur sports. Through continuous learning, SE Lab will develop the most suitable motion template for users.</p>
+        <div class="ProductPhase-photo">
+            <img src="/assets/file/phaseone-img.png" alt="Phase 2 Image 1">
+            <img src="/assets/file/phase-add.png"  class="plus-symbol" style="width: 48px; height: 48px">
+            <img src="/assets/file/phase2-2.png" alt="Phase 2 Image 2">
+            <img src="/assets/file/arrow-symbol.png" class="arrow-symbol" style="width: 48px; height: 48px">
+            <img src="/assets/file/phase2-result.png" alt="Phase 2 Result Image">
+        </div>
+
+        <span class="example-text">For example, when I first use SE Lab, it will not provide me with Shohei Ohtani's template, but rather an optimized template for men who are 5'10" and 180 lbs.</span>
+    </div>
+</section>
+
+<section class="ProductPhase" style="background-color: rgba(244,245,245,0.5)">
+    <div class="ProductPhase-intro">
+        <h2>Try it out</h2>
+        <div class="ProductPhase-photo">
+            <div>
+                <button class="phaseUpload"></button>
+            </div>
+            <img src="/assets/file/phase-add.png"  class="plus-symbol" alt=" " style="width: 48px; height: 48px">
+            <div>
+                <button class="phaseUpload"></button>
+            </div>
+            <img src="/assets/file/arrow-symbol.png" class="arrow-symbol" alt=" " style="width: 48px; height: 48px">
+            <div>
+
+            </div>
+        </div>
+    </div>
+</section>
+<!-- product Introduction Section -->
+<section class="product-section">
+    <div class="containerText">
+        <h2>Product</h2>
+        <p>Based on the user's individual physical condition, SE Lab can monitor and correct the trajectory during or after exercise to improve sports & rehab efficiency and minimize injuries.</p>
+        <div class="product-title">
+            <div class="product-intro">
+                <img src="/assets/file/APPLICABILITY.png" alt=" ">
+                <div>
+                    <h2>APPLICABILITY</h2>
+                    <p>Process photos, videos</p>
+                </div>
+            </div>
+            <div class="product-intro">
+                <img src="/assets/file/CAPABILITY.png" alt=" ">
+                <div>
+                    <h2>CAPABILITY</h2>
+                    <p>Training and rehabilitation Amateur and professional athletes</p>
+                </div>
+            </div><div class="product-intro">
+                <img src="/assets/file/COMMITMENT.png" alt=" ">
+                <div>
+                    <h2>COMMITMENT</h2>
+                    <p>Learn and provide individuals the optimal ways of exercising</p>
+                </div>
+            </div><div class="product-intro">
+                <img src="/assets/file/PRODUCTIVITY.png" alt=" ">
+                <div>
+                    <h2>PRODUCTIVITY</h2>
+                    <p>Continuous improvement of sports efficiency by analyzing the differences in motions</p>
+                </div>
+            </div>
+        </div>
+        <span style="display: block; background-color: #DFAE29; font-size: 18px; padding: 8px; color: #141415;">SPORTS: Baseball, Golf, Basketball, Taekwando, Gym Training, etc  Rehabilitation: Stretch, Massage, Meditation, Yoga, etc</span>
+
+    </div>
+   </section>
+
+<!--mark Introduction Section -->
+<section class="market-section">
+    <div class="containerText">
+        <h2>Market Analysis</h2>
+        <ul class="square-list">
+            <li>
+                <p>The sports market size has grown strongly in recent years. It will grow from $480.12 billion in 2023 to $629.81 billion in 2028.</p>
+            </li>
+            <li>
+                <p>The proliferation of internet-accessible devices is considered a solid driver of the anticipated growth in the forecast period.</p>
+            </li>
+            <li>
+                <p>The algorithm, computing power, and data are the three basic elements of AI.</p>
+            </li>
+            <li>
+                <p>Unlike LLM, under Large Motion Model, personal motion data is not held by industry giants, such as Meta, X, so startups will have the opportunity to develop applications.</p>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- Team Introduction Section -->
+<section class="team-introduction">
+    <div class="team-introLeft">
+        <h2>Meet Our Team</h2>
+        <div style="margin-top: 32px">
+            <div class="team-list">
+                <div class="team-member">
+                    <img src="/assets/file/SeanLONG-img.png" alt="Team Member 1">
+                    <div>
+                        <h3>Dr. Sean LONG <br>
+                            Co-founder</h3>
+                        <p>Bachelor in Clinic Medicine <br>
+                            PhD in Finance <br>
+                            Serial Entrepreneur <br>
+                            Amteur Athlete <br>
+                            Investment Banker
+                        </p>
+                    </div>
+                </div>
+                <div class="team-member">
+                    <img src="/assets/file/WesleyLi-img.png" alt="Team Member 1">
+                    <div>
+                        <h3>Dr. Sean LONG <br>
+                            Co-founder</h3>
+                        <p>Bachelor in Clinic Medicine <br>
+                            PhD in Finance <br>
+                            Serial Entrepreneur <br>
+                            Amteur Athlete <br>
+                            Investment Banker
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="team-introRight">
+        <p>SE Lab consultants include former China national basketball team coach, Yale
+            varsity tennis player, Canadian PGA coah, etc</p>
+    </div>
+
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
