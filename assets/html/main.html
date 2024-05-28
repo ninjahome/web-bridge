@@ -962,18 +962,6 @@
             background-color: rgba(211, 212, 213, 0.25); /* 悬停时颜色 */
         }
 
-        .tweets-fileImg {
-            width: 42px;
-            height: 42px;
-            border: none;
-            background-color: transparent;
-            border-radius: 50%;
-        }
-
-        .tweets-fileImg:hover {
-            background-color: rgba(72, 72, 216, 0.1);
-        }
-
         .img-wrapper-container {
             display: grid !important;
             grid-template-columns: repeat(4, 1fr); /* Creates two columns with equal width */
@@ -1788,11 +1776,16 @@
             <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
                  contenteditable="true"  data-placeholder="请输入文本..." >
             </div>
-            <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
+            <div>
+                <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
+                </div>
+                <input type="file" id="fileInput" class="tweet-file-input" style="display: none;"
+                       accept=".jpg, .png, .webp" multiple
+                       onchange="previewImage('.tweet-post')">
             </div>
             <div class="tweet-content-btn">
-                <span>剩余<strong style="color: #DD2111">0</strong>字</span>
-                <button class="tweet-img-btn" >
+                <span style="font-size: 14px; color: #CACCCD; margin-right: 8px">剩余<strong style="color: #DD2111">0</strong>字</span>
+                <button class="tweet-edit-btn" onclick=" ">
                     <img src="/assets/file/image-icon.png" alt="add img">
                 </button>
                 <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
@@ -1813,10 +1806,8 @@
                     <button class="delete-btn">x</button>
                 </div>
 
-                <div>
-                    <input type="file" id="fileInput" class="tweet-file-input" style="display: none;"
-                           accept=".jpg, .png, .webp" multiple
-                           onchange="previewImage('.tweet-post')">
+                <div style="display: flex; justify-content: flex-end;">
+
                     <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.tweet-post')" class="d-radius"
                             style="margin: 8px">
                         <img src="/assets/file/Twitter-logo.png" alt="twitter"
