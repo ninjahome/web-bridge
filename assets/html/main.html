@@ -1788,7 +1788,13 @@
             <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
                  contenteditable="true"  data-placeholder="请输入文本..." >
             </div>
+            <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
+            </div>
             <div class="tweet-content-btn">
+                <span>剩余<strong style="color: #DD2111">0</strong>字</span>
+                <button class="tweet-img-btn" >
+                    <img src="/assets/file/image-icon.png" alt="add img">
+                </button>
                 <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
                     <img src="/assets/file/addPostBelow.png" alt="add tweet">
                 </button>
@@ -1805,8 +1811,6 @@
                 <div class="img-wrapper" id="img-wrapper-template">
                     <img src="" class="img-preview" alt="images">
                     <button class="delete-btn">x</button>
-                </div>
-                <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
                 </div>
 
                 <div style="display: flex; justify-content: space-between; align-items: center">
