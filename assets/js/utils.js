@@ -158,7 +158,7 @@ async function fetchFromSrv(url, options) {
         return await response.json();
     } catch (error) {
         console.error('Error during fetch:', error);
-        if(!error.includes("NetworkError")){
+        if(!error.toString().includes("NetworkError")){
             throw error;
         }
     }
