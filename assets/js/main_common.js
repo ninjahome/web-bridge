@@ -486,7 +486,8 @@ async function reloadSelfNjData() {
 
 
 const TweetTimerInterval = 30_000
-function initTweetTimer(){
+
+function initTweetTimer() {
     document.addEventListener('DOMContentLoaded', (event) => {
         // 初始检测页面可见性
         function handleVisibilityChange() {
@@ -526,4 +527,13 @@ function initTweetTimer(){
         // 页面加载时检查初始状态
         handleVisibilityChange();
     });
+}
+
+function showTmpTips(msg) {
+    const alert = document.getElementById("temporary-alert-popup");
+    alert.className = "temporary-alert-popup show";
+    alert.querySelector('.tips-content-msg').innerText = msg;
+    setTimeout(function () {
+        alert.className = alert.className.replace("show", "");
+    }, 3000);
 }

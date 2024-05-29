@@ -403,7 +403,8 @@ function previewImage() {
     }
 
     if (files.length > validLen) {
-        showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
+        // showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
+        showTmpTips("max " + maxImgPerTweet + " images allowed");
     }
     files = Array.from(files).slice(0, validLen);
     files.forEach(file => {

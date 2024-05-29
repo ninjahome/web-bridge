@@ -1698,7 +1698,41 @@
             flex-grow: 1;
             margin-top: 8px;
         }
+    </style>
+    <style about="tips-style">
+        .temporary-alert-popup {
+            visibility: hidden;
+            max-width: 300px;
+            background-color: rgba(232, 50, 26, 0.9);
+            color: white;
+            text-align: center;
+            border-radius: 12px;
+            padding: 12px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 30px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
 
+        }
+
+        .temporary-alert-popup.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
     </style>
 
 </head>
@@ -2376,6 +2410,12 @@
 <div class="tweet-edit-custom-menu" id="textMenu">
     <button onclick="moveTextToNext()"><img src="/assets/file/movePost.png"></button>
 </div>
+
+<div id="temporary-alert-popup" class="temporary-alert-popup">
+    <img src="/assets/file/alert-tip-img.png" style="width: 24px;height: auto;margin-right: 8px">
+    <span class="tips-content-msg"></span>
+</div>
+
 <script>
 
     function showGameRule() {
