@@ -186,7 +186,7 @@ function parseTweetContent(parentDiv) {
         return null;
     }
 
-    if (txtList.length > MaxTweetsPerPost + 1){
+    if (txtList.length > MaxTweetsPerPost + 1) {
         showDialog(DLevel.Warning, "content too long")
         return null;
     }
@@ -379,20 +379,18 @@ function showFullTweetContent() {
     }
 }
 
-function loadImgFromLocal(parentId) {
-
+function loadImgFromLocal() {
     if (!ninjaUserObj.tw_id) {
         showDialog(DLevel.Warning, "bind twitter first", bindingTwitter);
         return;
     }
-
-    const parentDiv = document.querySelector(parentId);
-    const images = parentDiv.querySelectorAll("#twImagePreview img");
+    const tweetItem = this.closest('.tweet-split-item');
+    const images = tweetItem.querySelectorAll(".img-wrapper-container img");
     if (images.length >= maxImgPerTweet) {
         showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
         return;
     }
-    parentDiv.querySelector('.tweet-file-input').click();
+    tweetItem.querySelector('.tweet-file-input').click();
 }
 
 function previewImage(parentId) {
@@ -446,7 +444,7 @@ function previewImage(parentId) {
 function initTweetArea(divID) {
     const tweetManager = document.getElementById(divID);
     __globalTweetEditorCount = 0;
-    tweetManager.innerHTML='';
+    tweetManager.innerHTML = '';
     newSplitEditor(tweetManager);
 }
 
@@ -478,6 +476,10 @@ function newSplitEditor(tweetManager, siblingNode) {
         }
     );
     editableDiv.addEventListener('input', () => {
+        if (!ninjaUserObj.tw_id) {
+            showDialog(DLevel.Warning, "bind twitter first", bindingTwitter);
+            return;
+        }
         if (isComposing) {
             return;
         }
@@ -535,6 +537,9 @@ function checkTweetLength(div, isNewLine = false) {
     }
 
     restore(isNewLine);
+
+    const parentDiv = div.closest('.tweet-split-item');
+    parentDiv.querySelector('.tweet-length-valid').innerText = 280 - parsedText.weightedLength;
 }
 
 function handlePaste(event) {
@@ -579,11 +584,6 @@ function saveCaretPosition(context) {
     range.setStart(context, 0);
     range.setEnd(activeRange.startContainer, activeRange.startOffset);
     let length = range.toString().length;
-
-    // let startNode = activeRange.startContainer;
-    // let startOffset = activeRange.startOffset;
-
-    // console.log('Caret position saved:', {startNode, startOffset, length});
 
     return function restore(isNewLine) {
         selection.removeAllRanges();

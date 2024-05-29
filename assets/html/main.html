@@ -1778,15 +1778,15 @@
                  contenteditable="true"  data-placeholder="请输入文本..." >
             </div>
             <div>
-                <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
+                <div class="img-wrapper-container" style="display: none;">
                 </div>
                 <input type="file" id="fileInput" class="tweet-file-input" style="display: none;"
                        accept=".jpg, .png, .webp" multiple
                        onchange="previewImage('.tweet-post')">
             </div>
             <div class="tweet-content-btn">
-                <span style="font-size: 14px; margin-right: 8px"><strong style="color: #DD2111">280</strong></span>
-                <button class="tweet-edit-btn" onclick=" ">
+                <span style="font-size: 14px; margin-right: 8px"><strong style="color: #DD2111" class="tweet-length-valid">280</strong></span>
+                <button class="tweet-edit-btn" onclick="loadImgFromLocal.call(this)">
                     <img src="/assets/file/image-icon.png" alt="add img">
                 </button>
                 <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
@@ -1869,8 +1869,6 @@
             <div class="tweets-park top-div" id="top-most-voted-tweet"></div>
             <li id="team-member-card-template" style="display: none">
                 <div class="team-member-card-header">
-
-
                     <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
                     <img src="/assets/file/elder_icon.png" alt="flag" class="elderFlagOnAvatar"
                          style="left: 82px; top:49px">
@@ -2358,11 +2356,11 @@
     </div>
 
     <div style="display: flex; justify-content: space-between; align-items: center">
-        <button onclick="loadImgFromLocal('.modal-for-tweet-post')" class="tweets-fileImg"><img
-                    src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
-        <input type="file" id="fileInput" class="tweet-file-input" style="display: none;" accept=".jpg, .png, .webp"
-               multiple
-               onchange="previewImage('.modal-for-tweet-post')">
+{{/*        <button onclick="loadImgFromLocal('.modal-for-tweet-post')" class="tweets-fileImg"><img*/}}
+{{/*                    src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>*/}}
+{{/*        <input type="file" id="fileInput" class="tweet-file-input" style="display: none;" accept=".jpg, .png, .webp"*/}}
+{{/*               multiple*/}}
+{{/*               onchange="previewImage('.modal-for-tweet-post')">*/}}
         <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.modal-for-tweet-post')" class="d-radius"
                 style="margin: 8px 0">
             <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">
