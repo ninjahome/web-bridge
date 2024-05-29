@@ -75,6 +75,7 @@ function contentScroll() {
 }
 
 function clearCachedData() {
+    databaseDeleteTable(__constCachedItem);
     localStorage.clear();
     sessionStorage.clear();
     window.location.href = "/signIn";
@@ -221,25 +222,35 @@ function CloseImgDetail() {
 
 async function loadTweetImgRaw(hash) {
     let obj = await ImageRawData.load(hash)
-    if (obj) {
+    if (obj && obj.raw_data) {
         return obj;
     }
 
     const response = await GetToSrvByJson("/tweetImgRaw?img_hash=" + hash);
-    obj = new ImageRawData(response.hash, response.raw)
+    if (obj) {
+        obj.raw_data = response.raw;
+    } else {
+        obj = new ImageRawData(response.hash, response.raw);
+    }
     ImageRawData.sycToDb(obj);
     return obj;
 }
 
 async function loadTweetImgThumb(hash) {
-    let obj = await ImageRawData.load(hash + "_thumb")
-    if (obj) {
+    let obj = await ImageRawData.load(hash)
+    if (obj && obj.thumb_nail) {
+        console.log("no need to query--->", hash)
         return obj;
     }
 
     const response = await GetToSrvByJson("/tweetImgThumb?img_hash=" + hash);
-    obj = new ImageRawData(response.hash + "_thumb", response.raw)
+    if (obj) {
+        obj.thumb_nail = response.raw
+    } else {
+        obj = new ImageRawData(response.hash, null, response.raw);
+    }
     ImageRawData.sycToDb(obj);
+    console.log('found from server =>', obj)
     return obj;
 }
 
@@ -270,10 +281,10 @@ async function procTweetTxt(text) {
     let txt = text.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;").replace(/\n/g, "<br>").replace(/ /g, '&nbsp;')
     const regex = /<dessage-img>(.*?)<\/dessage-img>/g;
     const result = txt.replace(regex, (match, imgHash) => {
-        console.log(imgHash);
+        // console.log(imgHash);
         const cleanedStr = imgHash.replace(/\s+/g, '');
         const images = cleanedStr.split(delimiter);
-        console.log(images);
+        // console.log(images);
         const imgManagerDiv = document.getElementById('image-in-tweet-template').cloneNode(true);
         imgManagerDiv.id = '';
         imgManagerDiv.removeAttribute('id');
@@ -286,12 +297,12 @@ async function procTweetTxt(text) {
             imgDiv.removeAttribute('id');
             const imgElm = imgDiv.querySelector('.image-src-to-show');
             imgElm.setAttribute('data-hash', imgHash);
-            imgElm.setAttribute('id', imgHash);
+            // imgElm.setAttribute('id', imgHash);
             loadTweetImgThumb(imgHash).then(imgObj => {
                 const selector = `[data-hash="${imgHash}"]`;
                 const element = document.querySelector(selector);
                 if (imgObj) {
-                    element.src = imgObj.raw_data;
+                    element.src = imgObj.thumb_nail;
                     element.onclick = showImgRaw;
                 }
             });
