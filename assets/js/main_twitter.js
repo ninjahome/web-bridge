@@ -204,7 +204,7 @@ function parseTweetContent(parentDiv) {
     })
 
     let formattedTxt = '';
-    for (let i = 0; i < txtList; i++) {
+    for (let i = 0; i < txtList.length; i++) {
         const images = imageList[i];
         formattedTxt += txtList[i];
         if (images.length === 0) {
@@ -235,7 +235,6 @@ async function preparePostMsg(parentDiv) {
     if (!tweetContent || tweetContent.txtList.length === 0) {
         return null;
     }
-    return;
     const nj_tw_id = (new Date()).getTime();
     const slogan = initSloganTxt(nj_tw_id);
     const lastIdx = tweetContent.txtList.length - 1;
@@ -246,6 +245,7 @@ async function preparePostMsg(parentDiv) {
         tweetContent.txtList[lastIdx] += slogan;
     } else {
         tweetContent.txtList.push(slogan);
+        tweetContent.imageList.push([])
     }
 
     const tweet = new TweetContentToPost(tweetContent.formattedTxt,

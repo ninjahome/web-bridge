@@ -39,7 +39,7 @@ type NinjaTweet struct {
 	Txt           string     `json:"text" firestore:"text"`
 	TxtList       []string   `json:"text_list"  firestore:"-"`
 	ImageThumb    [][]string `json:"-"  firestore:"-"`
-	ImageHash     [][]string `json:"-"  firestore:"image_hash"`
+	ImageHash     [][]string `json:"-"  firestore:"-"`
 	ImageRaw      [][]string `json:"-"  firestore:"-"`
 	CreateAt      int64      `json:"create_time" firestore:"create_time"`
 	Web3ID        string     `json:"web3_id" firestore:"web3_id"`
