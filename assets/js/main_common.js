@@ -194,7 +194,8 @@ async function __setOnlyHeader(tweetHeader, twitter_id, web3ID) {
     return newObj;
 }
 
-async function showImgRaw() {
+async function showImgRaw(event) {
+    event.stopPropagation();
     try {
         showWaiting("loading.....");
         const hash = this.getAttribute('data-hash');
@@ -231,17 +232,16 @@ async function loadTweetImgRaw(hash) {
 }
 
 async function loadTweetImgThumb(hash) {
-    let obj = await ImageRawData.load(hash+"_thumb")
+    let obj = await ImageRawData.load(hash + "_thumb")
     if (obj) {
         return obj;
     }
 
     const response = await GetToSrvByJson("/tweetImgThumb?img_hash=" + hash);
-    obj = new ImageRawData(response.hash+"_thumb", response.raw)
+    obj = new ImageRawData(response.hash + "_thumb", response.raw)
     ImageRawData.sycToDb(obj);
     return obj;
 }
-
 
 
 function fulfillTweetImages(tweet, tweetHeader) {
@@ -269,7 +269,7 @@ function fulfillTweetImages(tweet, tweetHeader) {
 async function procTweetTxt(text) {
     let txt = text.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;").replace(/\n/g, "<br>").replace(/ /g, '&nbsp;')
     const regex = /<dessage-img>(.*?)<\/dessage-img>/g;
-    const result =  txt.replace(regex, (match, imgHash) => {
+    const result = txt.replace(regex, (match, imgHash) => {
         console.log(imgHash);
         const cleanedStr = imgHash.replace(/\s+/g, '');
         const images = cleanedStr.split(delimiter);
@@ -287,18 +287,18 @@ async function procTweetTxt(text) {
             const imgElm = imgDiv.querySelector('.image-src-to-show');
             imgElm.setAttribute('data-hash', imgHash);
             imgElm.setAttribute('id', imgHash);
-            loadTweetImgThumb(imgHash).then(imgObj=>{
+            loadTweetImgThumb(imgHash).then(imgObj => {
                 const selector = `[data-hash="${imgHash}"]`;
                 const element = document.querySelector(selector);
-                if(imgObj){
+                if (imgObj) {
                     element.src = imgObj.raw_data;
+                    element.onclick = showImgRaw;
                 }
             });
             imgManagerDiv.appendChild(imgDiv);
         }
         return imgManagerDiv.outerHTML;
     });
-    console.log(result);
     return result;
 }
 
