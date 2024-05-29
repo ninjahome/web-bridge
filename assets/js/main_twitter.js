@@ -393,12 +393,13 @@ function loadImgFromLocal() {
     tweetItem.querySelector('.tweet-file-input').click();
 }
 
-function previewImage(parentId) {
-    const parentDiv = document.querySelector(parentId);
-    let files = parentDiv.querySelector('.tweet-file-input').files;
+function previewImage() {
+    const parentDiv = this.parentNode;
+    // let files = this.files;
+    let files = parentDiv.querySelector('.tweet-file-input').files
     const imagePreviewDiv = parentDiv.querySelector('.img-wrapper-container');
     imagePreviewDiv.style.display = 'block';
-    const images = parentDiv.querySelectorAll("#twImagePreview img");
+    const images = imagePreviewDiv.querySelectorAll("img");
     const validLen = maxImgPerTweet - images.length;
     if (validLen <= 0) {
         return;
@@ -407,16 +408,18 @@ function previewImage(parentId) {
     if (files.length > validLen) {
         showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
     }
-
     files = Array.from(files).slice(0, validLen);
     files.forEach(file => {
-        const imgWrapper = parentDiv.querySelector('.img-wrapper').cloneNode(true);
+        const imgWrapper = document.getElementById('img-wrapper-template').cloneNode(true);
         imgWrapper.style.display = 'block';
-        imgWrapper.id = "";
+        imgWrapper.setAttribute('id', '');
         const img = imgWrapper.querySelector('.img-preview');
         const deleteBtn = imgWrapper.querySelector('.delete-btn');
         deleteBtn.onclick = function () {
             imagePreviewDiv.removeChild(imgWrapper);
+            if (imagePreviewDiv.querySelectorAll("img").length === 0){
+                imagePreviewDiv.style.display = 'none';
+            }
         };
 
         readFileAsBlob(file).then(async blob => {

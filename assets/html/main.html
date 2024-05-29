@@ -955,7 +955,7 @@
             height: 24px;
             width: 24px;
             border-radius: 50%;
-            text-align:center;
+            text-align: center;
         }
 
         .tweet-post-close-btn:hover {
@@ -1665,7 +1665,7 @@
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            background-color: rgba(211,213,214,0.2);
+            background-color: rgba(211, 213, 214, 0.2);
             width: 100%;
             border-radius: 12px;
             padding: 2px 8px;
@@ -1772,43 +1772,41 @@
         </div>
         <div class="tweet-images"></div>
     </div>
-        <div data-index="0" class="tweet-split-item" id="tweet-split-item-template"
-             style="margin-left: 12px;display: none">
-            <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
-                 contenteditable="true"  data-placeholder="请输入文本..." >
-            </div>
-            <div>
-                <div class="img-wrapper-container" style="display: none;">
-                </div>
-                <input type="file" id="fileInput" class="tweet-file-input" style="display: none;"
-                       accept=".jpg, .png, .webp" multiple
-                       onchange="previewImage('.tweet-post')">
-            </div>
-            <div class="tweet-content-btn">
-                <span style="font-size: 14px; margin-right: 8px"><strong style="color: #DD2111" class="tweet-length-valid">280</strong></span>
-                <button class="tweet-edit-btn" onclick="loadImgFromLocal.call(this)">
-                    <img src="/assets/file/image-icon.png" alt="add img">
-                </button>
-                <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
-                    <img src="/assets/file/addPostBelow.png" alt="add tweet">
-                </button>
-                <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
-                    <img src="/assets/file/delPost.png" alt="delete tweet"></button>
-            </div>
+    <div data-index="0" class="tweet-split-item" id="tweet-split-item-template"
+         style="margin-left: 12px;display: none">
+        <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
+             contenteditable="true" data-placeholder="请输入文本...">
         </div>
+        <div>
+            <div class="img-wrapper" id="img-wrapper-template">
+                <img src="" class="img-preview" alt="images">
+                <button class="delete-btn">x</button>
+            </div>
+            <div class="img-wrapper-container" style="display: none;">
+            </div>
+            <input type="file" id="fileInput" class="tweet-file-input" style="display: none;"
+                   accept=".jpg, .png, .webp" multiple
+                   onchange="previewImage.call(this)">
+        </div>
+        <div class="tweet-content-btn">
+            <span style="font-size: 14px; margin-right: 8px"><strong style="color: #DD2111" class="tweet-length-valid">280</strong></span>
+            <button class="tweet-edit-btn" onclick="loadImgFromLocal.call(this)">
+                <img src="/assets/file/image-icon.png" alt="add img">
+            </button>
+            <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
+                <img src="/assets/file/addPostBelow.png" alt="add tweet">
+            </button>
+            <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
+                <img src="/assets/file/delPost.png" alt="delete tweet"></button>
+        </div>
+    </div>
 
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
             <div class="tweet-post" id="tweet-post-on-top">
                 <div class="split-tweet-content" id="split-tweet-content">
                 </div>
-                <div class="img-wrapper" id="img-wrapper-template">
-                    <img src="" class="img-preview" alt="images">
-                    <button class="delete-btn">x</button>
-                </div>
-
                 <div style="display: flex; justify-content: flex-end;">
-
                     <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.tweet-post')" class="d-radius"
                             style="margin: 8px">
                         <img src="/assets/file/Twitter-logo.png" alt="twitter"
@@ -2348,19 +2346,19 @@
 
     <div class="split-tweet-content" id="modal-split-tweet-content">
     </div>
-    <div class="img-wrapper" id="img-wrapper-template">
-        <img src="" class="img-preview">
-        <button class="delete-btn">x</button>
-    </div>
+    {{/*    <div class="img-wrapper" id="img-wrapper-template">*/}}
+    {{/*        <img src="" class="img-preview">*/}}
+    {{/*        <button class="delete-btn">x</button>*/}}
+    {{/*    </div>*/}}
     <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
     </div>
 
     <div style="display: flex; justify-content: space-between; align-items: center">
-{{/*        <button onclick="loadImgFromLocal('.modal-for-tweet-post')" class="tweets-fileImg"><img*/}}
-{{/*                    src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>*/}}
-{{/*        <input type="file" id="fileInput" class="tweet-file-input" style="display: none;" accept=".jpg, .png, .webp"*/}}
-{{/*               multiple*/}}
-{{/*               onchange="previewImage('.modal-for-tweet-post')">*/}}
+        {{/*        <button onclick="loadImgFromLocal('.modal-for-tweet-post')" class="tweets-fileImg"><img*/}}
+        {{/*                    src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>*/}}
+        {{/*        <input type="file" id="fileInput" class="tweet-file-input" style="display: none;" accept=".jpg, .png, .webp"*/}}
+        {{/*               multiple*/}}
+        {{/*               onchange="previewImage('.modal-for-tweet-post')">*/}}
         <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.modal-for-tweet-post')" class="d-radius"
                 style="margin: 8px 0">
             <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">
