@@ -174,13 +174,10 @@ function parseTweetContent(parentDiv) {
             return textContent;
         })
         .filter(txt => {
-            const isValid = (txt && txt.length > 0);
             // console.log(`Filter result for '${txt}': ${isValid}`);
-            return isValid;
+            return (txt && txt.length > 0);
         });
 
-    const formattedTxt = txtList.join('\n');
-    const images = parentDiv.querySelectorAll("#twImagePreview img");
     if (txtList.length === 0) {
         showDialog(DLevel.Warning, "content too short")
         return null;
@@ -191,18 +188,37 @@ function parseTweetContent(parentDiv) {
         return null;
     }
 
-    if (images.length > maxImgPerTweet) {
-        showDialog(DLevel.Warning, "too many images to post");
-        return null;
-    }
-    const imageData = Array.from(images).map(img => {
-        const thumbnail = img.src
-        const raw = img.getAttribute('data-raw');
-        const hash = img.getAttribute('data-hash');
-        return new ImageRawData(hash, raw, thumbnail);
-    });
+    const allImgDiv = parentDiv.querySelectorAll('.img-wrapper-container');
+    const imageList = Array.from(allImgDiv).map(div => {
+        let images = div.querySelectorAll("img");
+        if (images.length > maxImgPerTweet) {
+            images = images.slice(0, maxImgPerTweet);
+        }
 
-    return {formattedTxt, txtList, imageData}
+        return Array.from(images).map(img => {
+            const thumbnail = img.src
+            const raw = img.getAttribute('data-raw');
+            const hash = img.getAttribute('data-hash');
+            return new ImageRawData(hash, raw, thumbnail);
+        });
+    })
+
+    let formattedTxt = '';
+    for (let i = 0; i < txtList; i++) {
+        const images = imageList[i];
+        formattedTxt += txtList[i];
+        if (images.length === 0) {
+            formattedTxt += '\n';
+            continue;
+        }
+        let embedImgStr = ''
+        images.forEach((image, index) => {
+            embedImgStr += '<dessage-img>' + image.hash + '</dessage-img>'
+        })
+        formattedTxt += embedImgStr + '\n';
+    }
+
+    return {formattedTxt, txtList, imageList}
 }
 
 function initSloganTxt(nj_tw_id) {
@@ -213,37 +229,13 @@ function initSloganTxt(nj_tw_id) {
         + nj_tw_id;
 }
 
-async function procTweetContent(tweetContent, slogan) {
-
-    let compositedTxt = tweetContent.formattedTxt + slogan;
-    let result = twttr.txt.parseTweet(compositedTxt);
-    if (result.valid === true) {
-        return compositedTxt;
-    }
-
-    const sloganLen = twttr.txt.getTweetLength(slogan);
-    if (maxImgPerTweet === tweetContent.imageData.length) {
-        showDialog(DLevel.Warning, "tweet content should be short than" + (defaultTextLenForTweet - sloganLen) + " if you have 4 images");
-        return null;
-    }
-
-    const lastValidTxtLen = maxTweetLenPerPage * (maxImgPerTweet - tweetContent.imageData.length);
-    if (tweetContent.formattedTxt.length >= lastValidTxtLen) {
-        showDialog(DLevel.Warning, "max tweet content length is:" + lastValidTxtLen + " if you have " + tweetContent.imageData.length + " images");
-        return null;
-    }
-
-    await convertContentToImages(tweetContent.formattedTxt, tweetContent.imageData)
-
-    return getCompositedTxt(tweetContent.formattedTxt, slogan, sloganLen);
-}
 
 async function preparePostMsg(parentDiv) {
     const tweetContent = parseTweetContent(parentDiv);
     if (!tweetContent || tweetContent.txtList.length === 0) {
         return null;
     }
-
+    return;
     const nj_tw_id = (new Date()).getTime();
     const slogan = initSloganTxt(nj_tw_id);
     const lastIdx = tweetContent.txtList.length - 1;
@@ -269,7 +261,7 @@ async function preparePostMsg(parentDiv) {
         return null;
     }
 
-    return new SignDataForPost(message, signature, JSON.stringify(tweetContent.imageData));
+    return new SignDataForPost(message, signature, JSON.stringify(tweetContent.imageList));
 }
 
 function updatePaymentStatusToSrv(tweet, tx_hash) {
@@ -403,7 +395,6 @@ function previewImage() {
     }
 
     if (files.length > validLen) {
-        // showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
         showTmpTips("max " + maxImgPerTweet + " images allowed");
     }
     files = Array.from(files).slice(0, validLen);
@@ -415,7 +406,7 @@ function previewImage() {
         const deleteBtn = imgWrapper.querySelector('.delete-btn');
         deleteBtn.onclick = function () {
             imagePreviewDiv.removeChild(imgWrapper);
-            if (imagePreviewDiv.querySelectorAll("img").length === 0){
+            if (imagePreviewDiv.querySelectorAll("img").length === 0) {
                 imagePreviewDiv.style.display = 'none';
             }
         };

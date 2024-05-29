@@ -60,17 +60,24 @@ func (sp *SignDataByEth) ParseNinjaTweet() (*database.NinjaTweet, error) {
 	tweetContent.PrefixedHash = prefixedHash
 	tweetContent.PaymentStatus = database.TxStNotPay
 	var payloadStr, ok = sp.PayLoad.(string)
-	if ok {
-		var imagesI []TweetImgData
-		if err := json.Unmarshal([]byte(payloadStr), &imagesI); err != nil {
-			util.LogInst().Err(err).Msg("parse tweet img failed")
-			return &tweetContent, nil
-		}
+	if !ok {
+		return &tweetContent, nil
+	}
 
-		for _, imgData := range imagesI {
-			tweetContent.Images = append(tweetContent.Images, imgData.ThumbNail)
-			tweetContent.ImageHash = append(tweetContent.ImageHash, imgData.Hash)
-			tweetContent.ImageRaw = append(tweetContent.ImageRaw, imgData.RawData)
+	var imagesI [][]TweetImgData
+	if err := json.Unmarshal([]byte(payloadStr), &imagesI); err != nil {
+		util.LogInst().Err(err).Msg("parse tweet img failed")
+		return &tweetContent, nil
+	}
+	tweetContent.ImageHash = make([][]string, len(imagesI))
+	tweetContent.ImageThumb = make([][]string, len(imagesI))
+	tweetContent.ImageRaw = make([][]string, len(imagesI))
+
+	for i, imgDataArr := range imagesI {
+		for _, imgData := range imgDataArr {
+			tweetContent.ImageThumb[i] = append(tweetContent.ImageThumb[i], imgData.ThumbNail)
+			tweetContent.ImageHash[i] = append(tweetContent.ImageHash[i], imgData.Hash)
+			tweetContent.ImageRaw[i] = append(tweetContent.ImageRaw[i], imgData.RawData)
 		}
 	}
 
