@@ -211,11 +211,15 @@ function parseTweetContent(parentDiv) {
             formattedTxt += '\n';
             continue;
         }
-        let embedImgStr = ''
+
+        let embedImgStr = '<dessage-img>'
         images.forEach((image, index) => {
-            embedImgStr += '<dessage-img>' + image.hash + '</dessage-img>'
+            embedImgStr += image.hash + delimiter
         })
-        formattedTxt += embedImgStr + '\n';
+        if (embedImgStr.endsWith(delimiter)) {
+            embedImgStr = embedImgStr.slice(0, -1);
+        }
+        formattedTxt += embedImgStr + '</dessage-img>\n';
     }
 
     return {formattedTxt, txtList, imageList}

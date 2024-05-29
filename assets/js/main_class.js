@@ -102,10 +102,9 @@ class TeamDetailOnBlockChain {
 const dbKeyCachedRawImg = "__db_key_cached_tweet_raw_img__"
 
 class ImageRawData {
-    constructor(hash, rawData, thumbnail) {
+    constructor(hash, rawData) {
         this.hash = hash;
         this.raw_data = rawData;
-        this.thumb_nail = thumbnail;
     }
 
     static sycToDb(obj) {

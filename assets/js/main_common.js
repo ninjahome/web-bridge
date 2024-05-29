@@ -230,6 +230,20 @@ async function loadTweetImgRaw(hash) {
     return obj;
 }
 
+async function loadTweetImgThumb(hash) {
+    let obj = await ImageRawData.load(hash+"_thumb")
+    if (obj) {
+        return obj;
+    }
+
+    const response = await GetToSrvByJson("/tweetImgThumb?img_hash=" + hash);
+    obj = new ImageRawData(response.hash+"_thumb", response.raw)
+    ImageRawData.sycToDb(obj);
+    return obj;
+}
+
+
+
 function fulfillTweetImages(tweet, tweetHeader) {
     const div = tweetHeader.querySelector('.tweet-images');
     div.innerHTML = '';
@@ -252,14 +266,51 @@ function fulfillTweetImages(tweet, tweetHeader) {
     }
 }
 
+async function procTweetTxt(text) {
+    let txt = text.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;").replace(/\n/g, "<br>").replace(/ /g, '&nbsp;')
+    const regex = /<dessage-img>(.*?)<\/dessage-img>/g;
+    const result =  txt.replace(regex, (match, imgHash) => {
+        console.log(imgHash);
+        const cleanedStr = imgHash.replace(/\s+/g, '');
+        const images = cleanedStr.split(delimiter);
+        console.log(images);
+        const imgManagerDiv = document.getElementById('image-in-tweet-template').cloneNode(true);
+        imgManagerDiv.id = '';
+        imgManagerDiv.removeAttribute('id');
+        imgManagerDiv.style.display = 'flex';
+
+        for (let i = 0; i < images.length; i++) {
+            const imgHash = images[i];
+            const imgDiv = imgManagerDiv.querySelector('.image-item-in-tweet').cloneNode(true)
+            imgDiv.style.display = 'block';
+            imgDiv.removeAttribute('id');
+            const imgElm = imgDiv.querySelector('.image-src-to-show');
+            imgElm.setAttribute('data-hash', imgHash);
+            imgElm.setAttribute('id', imgHash);
+            loadTweetImgThumb(imgHash).then(imgObj=>{
+                const selector = `[data-hash="${imgHash}"]`;
+                const element = document.querySelector(selector);
+                if(imgObj){
+                    element.src = imgObj.raw_data;
+                }
+            });
+            imgManagerDiv.appendChild(imgDiv);
+        }
+        return imgManagerDiv.outerHTML;
+    });
+    console.log(result);
+    return result;
+}
+
 async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     tweetHeader.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
     const twitterObj = await __setOnlyHeader(tweetHeader, tweet.twitter_id, tweet.web3_id);
     const contentArea = tweetHeader.querySelector('.tweet-content');
-    contentArea.innerHTML = DOMPurify.sanitize(tweet.text.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;").replace(/\n/g, "<br>").replace(/ /g, '&nbsp;'));
+    const txt = await procTweetTxt(tweet.text);
+    contentArea.innerHTML = DOMPurify.sanitize(txt);
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
 
-    fulfillTweetImages(tweet, tweetHeader);
+    // fulfillTweetImages(tweet, tweetHeader);
 
     if (overlap) {
         wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, tweet.web3_id));
