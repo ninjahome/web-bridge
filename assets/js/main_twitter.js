@@ -355,8 +355,6 @@ function clearDraftTweetContent(parentDiv) {
     splitArea.innerHTML = '';
     __globalTweetEditorCount = 0;
     newSplitEditor(splitArea);
-    parentDiv.querySelector(".img-wrapper-container").innerHTML = '';
-    parentDiv.querySelector(".img-wrapper-container").style.display = 'none'
 }
 
 function showFullTweetContent() {
