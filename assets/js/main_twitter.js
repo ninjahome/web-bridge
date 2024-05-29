@@ -395,7 +395,6 @@ function loadImgFromLocal() {
 
 function previewImage() {
     const parentDiv = this.parentNode;
-    // let files = this.files;
     let files = parentDiv.querySelector('.tweet-file-input').files
     const imagePreviewDiv = parentDiv.querySelector('.img-wrapper-container');
     imagePreviewDiv.style.display = 'block';
