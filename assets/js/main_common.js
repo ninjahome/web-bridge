@@ -297,14 +297,17 @@ async function procTweetTxt(text) {
             imgDiv.removeAttribute('id');
             const imgElm = imgDiv.querySelector('.image-src-to-show');
             imgElm.setAttribute('data-hash', imgHash);
-            // imgElm.setAttribute('id', imgHash);
             loadTweetImgThumb(imgHash).then(imgObj => {
-                const selector = `[data-hash="${imgHash}"]`;
-                const element = document.querySelector(selector);
-                if (imgObj) {
-                    element.src = imgObj.thumb_nail;
-                    element.onclick = showImgRaw;
+                if (!imgObj) {
+                    console.log("failed to load thumb img=>", imgHash);
+                    return
                 }
+                const selector = `[data-hash="${imgHash}"]`;
+                const element = document.querySelectorAll(selector);
+                element.forEach(elm=>{
+                    elm.src = imgObj.thumb_nail;
+                    elm.onclick = showImgRaw;
+                })
             });
             imgManagerDiv.appendChild(imgDiv);
         }
@@ -378,9 +381,10 @@ async function showTweetDetail(parentEleID, tweet) {
 
     detail.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
     await __setOnlyHeader(detail, tweet.twitter_id, tweet.web3_id);
-    detail.querySelector('.tweet-text').innerHTML = DOMPurify.sanitize(tweet.text.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;").replace(/\n/g, "<br>").replace(/ /g, '&nbsp;'));
+    const txt = await procTweetTxt(tweet.text);
+    detail.querySelector('.tweet-text').innerHTML = DOMPurify.sanitize(txt);
 
-    fulfillTweetImages(tweet, detail);
+    // fulfillTweetImages(tweet, detail);
 
     detail.querySelector('.back-button').onclick = () => {
         parentNode.style.display = 'block';
