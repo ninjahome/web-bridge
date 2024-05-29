@@ -1,203 +1,63 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>文本操作和高亮显示</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporary Alert Popup</title>
     <style>
-        .container {
-            display: flex;
-            justify-content: left;
-            position: relative;
-            width: 604px;
-            overflow: auto;
-        }
-
-        .tweets-content-txt-area {
-            width: 530px;
-            padding: 12px 0;
-            min-height: 100px;
-            max-height: 90vh;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            line-height: 1.5;
-            outline: none;
-            font-size: 15px;
-            font-weight: 400;
-            direction: ltr; /* CSS method */
-            text-align: left; /* Ensure text alignment is left */
-        }
-
-        .red {
-            background-color: rgba(255,77,77,.25);
-        }
-
-        .custom-menu {
-            position: absolute;
-            z-index: 1000;
-            padding: 8px;
-            background: white;
-            box-shadow: 3px 3px 5px #888888;
-            display: none;
+        .alert {
+            visibility: hidden;
+            max-width: 300px;
+            background-color: rgba(211, 35, 25, 0.9);
+            color: white;
+            text-align: center;
             border-radius: 12px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 30px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+
         }
 
-        button {
-            background-color: transparent;
-            border: none;
+        .alert.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
         }
     </style>
 </head>
 <body>
-<ul>
-    <li class="container">
-        <div>
-            <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
-                 style="width: 40px;height: 40px;border-radius: 50%;" alt="avatar">
-        </div>
-        <div style="margin-left: 12px" >
-            <span style="font-size: 12px;font-weight: 500;color: #898989;display: none">1-1</span>
-            <div class="tweets-content-txt-area" contenteditable="true" oninput="highlightText(this)" onmouseup="checkSelection(this)"></div>
-            <div style="float: right">
-                <button onclick="showNextParagraph()"><img src="/assets/file/addPostBelow.png"></button>
-                <button onclick="deleteParagraph(this)"><img src="/assets/file/delPost.png"></button>
-            </div>
-        </div>
-    </li>
-    <li class="container" style="display: none">
-        <div>
-            <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
-                 style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
-        </div>
-        <div style="margin-left: 12px">
-            <span style="font-size: 12px;font-weight: 500;color: #898989 ">1-2</span>
-            <div class="tweets-content-txt-area" contenteditable="true" oninput="highlightText(this)" onmouseup="checkSelection(this)"></div>
-            <div style="float: right">
-                <button onclick="showNextParagraph()"><img src="/assets/file/addPostBelow.png"></button>
-                <button onclick="deleteParagraph(this)"><img src="/assets/file/delPost.png"></button>
-            </div>
-        </div>
-    </li>
-    <li class="container" style="display: none">
-        <div>
-            <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
-                 style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
-        </div>
-        <div style="margin-left: 12px">
-            <span style="font-size: 12px;font-weight: 500;color: #898989 ">1-3</span>
-            <div class="tweets-content-txt-area" contenteditable="true" oninput="highlightText(this)" onmouseup="checkSelection(this)"></div>
-            <div style="float: right">
-                <button onclick="showNextParagraph()"><img src="/assets/file/addPostBelow.png"></button>
-                <button onclick="deleteParagraph(this)"><img src="/assets/file/delPost.png"></button>
-            </div>
-        </div>
-    </li>
-    <li class="container" style="display: none">
-        <div>
-            <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
-                 style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
-        </div>
-        <div style="margin-left: 12px">
-            <span style="font-size: 12px;font-weight: 500;color: #898989 ">第四段文字</span>
-            <div class="tweets-content-txt-area" contenteditable="true" oninput="highlightText(this)" onmouseup="checkSelection(this)"></div>
-            <div style="float: right">
-                <button onclick="showNextParagraph()"><img src="/assets/file/addPostBelow.png"></button>
-                <button onclick="deleteParagraph(this)"><img src="/assets/file/delPost.png"></button>
-            </div>
-        </div>
-    </li>
-    <li class="container" style="display: none">
-        <div>
-            <img src="/assets/file/logo.png" id="dessage-log-to-nj-log"
-                 style="width: 40px;height: 40px;border-radius: 50%; cursor: pointer" alt="avatar">
-        </div>
-        <div style="margin-left: 12px">
-            <span style="font-size: 12px;font-weight: 500;color: #898989 ">第五段文字</span>
-            <div class="tweets-content-txt-area" contenteditable="true" oninput="highlightText(this)" onmouseup="checkSelection(this)"></div>
-            <div style="float: right">
-                <button onclick="showNextParagraph()"><img src="/assets/file/addPostBelow.png"></button>
-                <button onclick="deleteParagraph(this)"><img src="/assets/file/delPost.png"></button>
-            </div>
-        </div>
-    </li>
-</ul>
-<div class="custom-menu" id="textMenu">
-    <button onclick="moveTextToNext()"><img src="/assets/file/movePost.png"></button>
+
+<button onclick="showAlert()">Show Alert</button>
+
+<div id="alert" class="alert">
+    <img src="/assets/file/alert-tip-img.png" style="width: 24px;height: auto;margin-right: 8px">
+    图片加载错误
 </div>
+
 <script>
-
-    function highlightText(element) {
-        var text = element.innerText;
-        if (text.length > 260) {
-            var normalText = text.substring(0, 260);
-            var redText = text.substring(260);
-            element.innerHTML = normalText + '<span class="red">' + redText + '</span>';
-        } else {
-            element.innerText = text; // to avoid innerHTML parsing removing extra formats
-        }
-    }
-
-    function showNextParagraph() {
-        var hiddenElements = document.querySelectorAll('.container[style*="display: none"]');
-        if (hiddenElements.length > 0) {
-            hiddenElements[0].style.display = 'flex';
-        }
-    }
-
-    function deleteParagraph(button) {
-        var liElement = button.closest('.container');
-        if (liElement) {
-            liElement.remove();
-        }
-    }
-    function checkSelection(element) {
-        const selection = window.getSelection().toString();
-        if (selection.length > 0) {
-            showMenu();
-        } else {
-            hideMenu();
-        }
-    }
-
-    function showMenu() {
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
-
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-
-        const menu = document.getElementById('textMenu');
-        menu.style.display = 'block';
-        // Center the menu horizontally over the selection
-        menu.style.left = `${rect.left + (rect.width / 2) - (menu.offsetWidth / 2)}px`;
-        // Position the menu above the selection, offset by the menu's height
-        menu.style.top = `${rect.top + window.scrollY - menu.offsetHeight - 5}px`; // 5px margin from the selection
-    }
-
-
-    function hideMenu() {
-        const menu = document.getElementById('textMenu');
-        menu.style.display = 'none';
-    }
-
-    function moveTextToNext() {
-        const selection = window.getSelection();
-        if (!selection.rangeCount) return;
-
-        let range = selection.getRangeAt(0);
-        let selectedText = range.extractContents();
-
-        let currentContainer = selection.anchorNode.parentNode;
-        while (!currentContainer.classList.contains('container')) {
-            currentContainer = currentContainer.parentNode;
-        }
-        let nextContainer = currentContainer.nextElementSibling;
-        if (!nextContainer) return; // No next container to move text into
-
-        let nextTextArea = nextContainer.querySelector('.tweets-content-txt-area');
-        nextTextArea.appendChild(selectedText);
-
-        hideMenu();
+    function showAlert() {
+        var alert = document.getElementById("alert");
+        alert.className = "alert show";
+        setTimeout(function() {
+            alert.className = alert.className.replace("show", "");
+        }, 3000);
     }
 </script>
+
 </body>
 </html>
