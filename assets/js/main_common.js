@@ -288,7 +288,7 @@ async function procTweetTxt(text) {
         const imgManagerDiv = document.getElementById('image-in-tweet-template').cloneNode(true);
         imgManagerDiv.id = '';
         imgManagerDiv.removeAttribute('id');
-        imgManagerDiv.style.display = 'flex';
+        imgManagerDiv.style.display = 'grid';
 
         for (let i = 0; i < images.length; i++) {
             const imgHash = images[i];

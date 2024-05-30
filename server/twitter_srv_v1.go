@@ -212,11 +212,6 @@ func createTweetRequest(txt, lastTid string, hashs, thumbs, rawImgs []string, to
 func sendTweetToTwitter(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) (string, error) {
 
 	var token = ut.GetToken()
-
-	if len(njTweet.ImageThumb) > MaxImgInTweet {
-		return "", fmt.Errorf("images must be less than 5")
-	}
-
 	firstTweetID := ""
 	lastTweetID := ""
 	for i, txt := range njTweet.TxtList {
