@@ -36,19 +36,19 @@ func (ts TxStatus) String() string {
 }
 
 type NinjaTweet struct {
-	Txt           string   `json:"text" firestore:"text"`
-	TxtList       []string `json:"text_list"  firestore:"-"`
-	Images        []string `json:"images,omitempty"  firestore:"images"`
-	ImageHash     []string `json:"image_hash,omitempty"  firestore:"image_hash"`
-	ImageRaw      []string `json:"-"  firestore:"-"`
-	CreateAt      int64    `json:"create_time" firestore:"create_time"`
-	Web3ID        string   `json:"web3_id" firestore:"web3_id"`
-	TweetUsrId    string   `json:"twitter_id" firestore:"twitter_id"`
-	TweetId       string   `json:"tweet_id,omitempty" firestore:"tweet_id"`
-	Signature     string   `json:"signature,omitempty" firestore:"signature"`
-	PrefixedHash  string   `json:"prefixed_hash" firestore:"prefixed_hash"`
-	PaymentStatus TxStatus `json:"payment_status" firestore:"payment_status"`
-	VoteCount     int      `json:"vote_count" firestore:"vote_count"`
+	Txt           string     `json:"text" firestore:"text"`
+	TxtList       []string   `json:"text_list"  firestore:"-"`
+	ImageThumb    [][]string `json:"-"  firestore:"-"`
+	ImageHash     [][]string `json:"-"  firestore:"-"`
+	ImageRaw      [][]string `json:"-"  firestore:"-"`
+	CreateAt      int64      `json:"create_time" firestore:"create_time"`
+	Web3ID        string     `json:"web3_id" firestore:"web3_id"`
+	TweetUsrId    string     `json:"twitter_id" firestore:"twitter_id"`
+	TweetId       string     `json:"tweet_id,omitempty" firestore:"tweet_id"`
+	Signature     string     `json:"signature,omitempty" firestore:"signature"`
+	PrefixedHash  string     `json:"prefixed_hash" firestore:"prefixed_hash"`
+	PaymentStatus TxStatus   `json:"payment_status" firestore:"payment_status"`
+	VoteCount     int        `json:"vote_count" firestore:"vote_count"`
 }
 
 type TweetQueryParm struct {
@@ -150,6 +150,38 @@ func (dm *DbManager) GetRawImg(hash string) (*TweetImgRaw, error) {
 	}
 
 	return &imgRaw, nil // 返回TweetImgRaw结构体中的Raw字段
+}
+
+func (dm *DbManager) SaveThumbImg(hash, raw string) error {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	imgDoc := dm.fileCli.Collection(DBTableTweetsThumbImages).Doc(hash)
+
+	var obj = TweetImgRaw{
+		raw,
+		hash,
+	}
+	_, err := imgDoc.Set(opCtx, obj)
+	return err
+}
+
+func (dm *DbManager) GetThumbImg(hash string) (*TweetImgRaw, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	imgDoc := dm.fileCli.Collection(DBTableTweetsThumbImages).Doc(hash)
+
+	docSnapshot, err := imgDoc.Get(opCtx)
+	if err != nil {
+		util.LogInst().Err(err).Msg("not found image raw obj :" + hash)
+		return nil, err
+	}
+	var imgRaw TweetImgRaw
+	err = docSnapshot.DataTo(&imgRaw)
+	if err != nil {
+		util.LogInst().Err(err).Msg("parse image raw obj failed:" + hash)
+		return nil, err
+	}
+	return &imgRaw, nil
 }
 
 func (dm *DbManager) updateNjUserForTweet(web3ID string, opCtx context.Context) error {

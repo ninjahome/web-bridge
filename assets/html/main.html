@@ -953,7 +953,7 @@
             height: 24px;
             width: 24px;
             border-radius: 50%;
-            text-align:center;
+            text-align: center;
         }
 
         .tweet-post-close-btn:hover {
@@ -1663,7 +1663,7 @@
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            background-color: rgba(211,213,214,0.2);
+            background-color: rgba(211, 213, 214, 0.2);
             width: 100%;
             border-radius: 12px;
             padding: 2px 8px;
@@ -1696,7 +1696,41 @@
             flex-grow: 1;
             margin-top: 8px;
         }
+    </style>
+    <style about="tips-style">
+        .temporary-alert-popup {
+            visibility: hidden;
+            max-width: 300px;
+            background-color: rgba(232, 50, 26, 0.9);
+            color: white;
+            text-align: center;
+            border-radius: 12px;
+            padding: 12px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 30px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
 
+        }
+
+        .temporary-alert-popup.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
     </style>
 
 </head>
@@ -1764,49 +1798,50 @@
         <div class="tweet-content tweet-content-collapsed"></div>
         <span class="show-more" data-more="true"
               onclick="showFullTweetContent.call(this)">更多</span>
+    </div>
+
+    <div class="tweet-images" style="display: none" id="image-in-tweet-template">
         <div class="image-item-in-tweet" id="image-item-in-tweet" style="display: none">
             <img src="" data-raw="" data-hash="" class="image-src-to-show" onclick="showImgRaw.call(this)"
                  alt="image-in-tweet">
         </div>
-        <div class="tweet-images"></div>
     </div>
-        <div data-index="0" class="tweet-split-item" id="tweet-split-item-template"
-             style="margin-left: 12px;display: none">
-            <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
-                 contenteditable="true"  data-placeholder="请输入文本..." >
-            </div>
-            <div>
-                <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
-                </div>
-                <input type="file" id="fileInput" class="tweet-file-input" style="display: none;"
-                       accept=".jpg, .png, .webp" multiple
-                       onchange="previewImage('.tweet-post')">
-            </div>
-            <div class="tweet-content-btn">
-                <span style="font-size: 14px; margin-right: 8px"><strong style="color: #DD2111">280</strong></span>
-                <button class="tweet-edit-btn" onclick=" ">
-                    <img src="/assets/file/image-icon.png" alt="add img">
-                </button>
-                <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
-                    <img src="/assets/file/addPostBelow.png" alt="add tweet">
-                </button>
-                <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
-                    <img src="/assets/file/delPost.png" alt="delete tweet"></button>
-            </div>
+
+    <div data-index="0" class="tweet-split-item" id="tweet-split-item-template"
+         style="margin-left: 12px;display: none">
+        <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
+             contenteditable="true" data-placeholder="请输入文本...">
         </div>
+        <div>
+            <div class="img-wrapper" id="img-wrapper-template">
+                <img src="" class="img-preview" alt="images">
+                <button class="delete-btn">x</button>
+            </div>
+            <div class="img-wrapper-container" style="display: none;">
+            </div>
+            <input type="file" id="fileInput" class="tweet-file-input" style="display: none;"
+                   accept=".jpg, .png, .webp" multiple
+                   onchange="previewImage.call(this)">
+        </div>
+        <div class="tweet-content-btn">
+            <span style="font-size: 14px; margin-right: 8px"><strong style="color: #DD2111" class="tweet-length-valid">280</strong></span>
+            <button class="tweet-edit-btn" onclick="loadImgFromLocal.call(this)">
+                <img src="/assets/file/image-icon.png" alt="add img">
+            </button>
+            <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
+                <img src="/assets/file/addPostBelow.png" alt="add tweet">
+            </button>
+            <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
+                <img src="/assets/file/delPost.png" alt="delete tweet"></button>
+        </div>
+    </div>
 
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
             <div class="tweet-post" id="tweet-post-on-top">
                 <div class="split-tweet-content" id="split-tweet-content">
                 </div>
-                <div class="img-wrapper" id="img-wrapper-template">
-                    <img src="" class="img-preview" alt="images">
-                    <button class="delete-btn">x</button>
-                </div>
-
                 <div style="display: flex; justify-content: flex-end;">
-
                     <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.tweet-post')" class="d-radius"
                             style="margin: 8px">
                         <img src="/assets/file/Twitter-logo.png" alt="twitter"
@@ -1867,8 +1902,6 @@
             <div class="tweets-park top-div" id="top-most-voted-tweet"></div>
             <li id="team-member-card-template" style="display: none">
                 <div class="team-member-card-header">
-
-
                     <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
                     <img src="/assets/file/elder_icon.png" alt="flag" class="elderFlagOnAvatar"
                          style="left: 82px; top:49px">
@@ -2074,12 +2107,6 @@
                 </div>
             </div>
             <div class="tweet-text"></div>
-            <div class="image-item-in-tweet" id="image-item-in-tweet" style="display: none">
-                <img src="" data-raw="" data-hash="" class="image-src-to-show" onclick="showImgRaw.call(this)">
-            </div>
-            <div class="tweet-images">
-
-            </div>
             <div class="tweet-text-info">
                 <div style="background-color: rgba(192,211,240,0.5); padding: 8px 14px; border-radius: 12px"
                      onclick="showTweetDetailInfo()">
@@ -2348,19 +2375,19 @@
 
     <div class="split-tweet-content" id="modal-split-tweet-content">
     </div>
-    <div class="img-wrapper" id="img-wrapper-template">
-        <img src="" class="img-preview">
-        <button class="delete-btn">x</button>
-    </div>
-    <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
-    </div>
+    {{/*    <div class="img-wrapper" id="img-wrapper-template">*/}}
+    {{/*        <img src="" class="img-preview">*/}}
+    {{/*        <button class="delete-btn">x</button>*/}}
+    {{/*    </div>*/}}
+{{/*    <div id="twImagePreview" class="img-wrapper-container" style="display: none;">*/}}
+{{/*    </div>*/}}
 
     <div style="display: flex; justify-content: space-between; align-items: center">
-        <button onclick="loadImgFromLocal('.modal-for-tweet-post')" class="tweets-fileImg"><img
-                    src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
-        <input type="file" id="fileInput" class="tweet-file-input" style="display: none;" accept=".jpg, .png, .webp"
-               multiple
-               onchange="previewImage('.modal-for-tweet-post')">
+        {{/*        <button onclick="loadImgFromLocal('.modal-for-tweet-post')" class="tweets-fileImg"><img*/}}
+        {{/*                    src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>*/}}
+        {{/*        <input type="file" id="fileInput" class="tweet-file-input" style="display: none;" accept=".jpg, .png, .webp"*/}}
+        {{/*               multiple*/}}
+        {{/*               onchange="previewImage('.modal-for-tweet-post')">*/}}
         <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.modal-for-tweet-post')" class="d-radius"
                 style="margin: 8px 0">
             <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">
@@ -2378,6 +2405,12 @@
 <div class="tweet-edit-custom-menu" id="textMenu">
     <button onclick="moveTextToNext()"><img src="/assets/file/movePost.png"></button>
 </div>
+
+<div id="temporary-alert-popup" class="temporary-alert-popup">
+    <img src="/assets/file/alert-tip-img.png" style="width: 24px;height: auto;margin-right: 8px">
+    <span class="tips-content-msg"></span>
+</div>
+
 <script>
 
     function showGameRule() {
