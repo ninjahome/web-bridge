@@ -165,12 +165,10 @@ function parseTweetContent(parentDiv) {
             if (!validElm) {
                 throw new Error('tweet content is empty');
             }
-            let textContent = validElm.textContent.trim();
-            if (!textContent) {
+            let textContent = validElm.textContent.replace(/\u200B/g, '').trim();
+            if (/\S/.test(textContent) === false)  {
                 throw new Error('tweet content is empty');
-                // return null;
             }
-            textContent = textContent.replace(/\u200B/g, '').trim();
             // console.log(`Original text: '${textContent}'`);
             return textContent;
         })
