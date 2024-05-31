@@ -207,7 +207,7 @@ function parseTweetContent(parentDiv) {
         const images = imageList[i];
         formattedTxt += txtList[i];
         if (images.length === 0) {
-            formattedTxt += '\n';
+            formattedTxt += '\n\n';
             continue;
         }
 
