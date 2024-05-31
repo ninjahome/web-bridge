@@ -165,7 +165,7 @@ function parseTweetContent(parentDiv) {
             if (!validElm) {
                 throw new Error('tweet content is empty');
             }
-            let textContent = validElm.textContent;
+            let textContent = validElm.textContent.trim();
             if (!textContent) {
                 throw new Error('tweet content is empty');
                 // return null;
