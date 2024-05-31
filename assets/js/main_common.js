@@ -239,7 +239,7 @@ async function loadTweetImgRaw(hash) {
 async function loadTweetImgThumb(hash) {
     let obj = await ImageRawData.load(hash)
     if (obj && obj.thumb_nail) {
-        console.log("no need to query--->", hash)
+        // console.log("no need to query--->", hash)
         return obj;
     }
 
@@ -250,7 +250,7 @@ async function loadTweetImgThumb(hash) {
         obj = new ImageRawData(response.hash, null, response.raw);
     }
     ImageRawData.sycToDb(obj);
-    console.log('found from server =>', obj)
+    // console.log('found from server =>', obj)
     return obj;
 }
 

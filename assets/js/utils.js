@@ -692,7 +692,11 @@ function checkMetamaskErr(err) {
 
 
     if (!err.data || !err.data.message) {
-        code = code + err.message;
+        if(code){
+            code = code + err.message;
+        }else{
+            code =  err.message;
+        }
     } else {
         code = "code:" + err.data.code + " " + err.data.message
     }
