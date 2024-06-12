@@ -1,10 +1,10 @@
 class TweetContentToPost {
-    constructor(tweet_content, createAt, web3Id, twitterID, txtWithSlogan) {
+    constructor(tweet_content, text_list, createAt, web3Id, twitterID, txtWithSlogan) {
         this.text = tweet_content;
+        this.text_list = text_list;
         this.create_time = createAt;
         this.web3_id = web3Id;
         this.twitter_id = twitterID;
-        this.txt_with_slogan = txtWithSlogan;
     }
 }
 

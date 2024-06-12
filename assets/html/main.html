@@ -299,18 +299,24 @@
         }
 
         .tweet-images {
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-start;
-            flex-wrap: wrap;
-            gap: 8px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+            grid-gap: 1.2rem 1.2rem;
+            gap: 1.2rem 1.2rem;
             align-items: center;
-            margin-left: 60px;
+            padding: 12px;
+        }
+
+        .image-item-in-tweet {
+            width: 248px; /* 固定宽度 */
+            height: 164px; /* 固定高度，根据你的图片实际高度调整 */
+            overflow: hidden;
+            position: relative;
         }
 
         .image-item-in-tweet img {
-            width: 250px;
-            height: 164px;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             border-radius: 16px;
         }
@@ -374,7 +380,7 @@
     <style about="tweet card">
 
         .tweet-card {
-            max-height: 800px;
+            max-height: 2000px;
             display: block;
             min-height: 100px;
             overflow: hidden;
@@ -888,12 +894,17 @@
             background-color: #fff; /* 背景颜色 */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 盒子阴影 */
             width: 80%; /* 宽度，可根据需要调整 */
-            max-width: 500px; /* 最大宽度 */
+            max-width: 636px; /* 最大宽度 */
+            border-radius: 12px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .tweet-post {
             padding: 24px 16px;
             border-bottom: 8px solid #F4F5F6;
+            background-color: white;
+            max-height: 600vh;
         }
 
 
@@ -941,28 +952,20 @@
         }
 
         .tweet-post-close-btn {
-            float: right; /* 右上角 */
+            display: block;
             font-size: 24px; /* 字体大小 */
             line-height: 24px; /* 行高 */
             cursor: pointer; /* 鼠标样式 */
             color: #a7aaac; /* 颜色 */
             margin-bottom: 16px;
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            text-align: center;
         }
 
         .tweet-post-close-btn:hover {
-            color: #141415; /* 悬停时颜色 */
-        }
-
-        .tweets-fileImg {
-            width: 42px;
-            height: 42px;
-            border: none;
-            background-color: transparent;
-            border-radius: 50%;
-        }
-
-        .tweets-fileImg:hover {
-            background-color: rgba(72, 72, 216, 0.1);
+            background-color: rgba(211, 212, 213, 0.25); /* 悬停时颜色 */
         }
 
         .img-wrapper-container {
@@ -1589,41 +1592,154 @@
 
     </style>
 
-    <style>
+    <style about="tweet-on-top">
+
+        .split-tweet-content {
+            border-radius: 12px;
+            border: 1px solid #d3d5d6;
+            padding: 12px 12px 6px 12px;
+        }
+
         .tweets-content-txt-area {
-            margin: 0 auto;
-            display: block; /* 确保元素为块级元素 */
-            box-sizing: border-box;
-            width: 100%; /* 文本区域宽度 */
-            min-height: 4em; /* 至少容纳3行文字的高度 */
-            max-height: 26em; /* 最大高度，约等于10行文字 */
-            overflow-y: auto; /* 内容超出最大高度时显示垂直滚动条 */
-            padding: 4px; /* 内边距 */
-            border: 1px solid #D3D5D6; /* 边框 */
-            border-radius: 6px;
-            resize: none; /* 禁止调整大小 */
+            min-height: 80px;
+            max-height: 32vh;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            line-height: 1.5;
+            outline: none;
+            font-size: 15px;
+            font-weight: 350;
+            direction: ltr; /* CSS method */
+            text-align: left; /* Ensure text alignment is left */
+            margin: 12px 0;
+            border-left: 1px solid rgba(211, 213, 214, 0.2);
             position: relative;
-            background-color: #F4F5F6;
-            outline: none; /* 去除焦点时的外框线 */
+        }
+
+        .tweets-content-txt-area:empty::before {
+            content: attr(data-placeholder);
+            color: #ccc;
+            position: absolute;
+            top: 0px; /* Adjust based on padding */
+            left: 0;
+            pointer-events: none; /* Ensures that the placeholder text is not selectable */
         }
 
         /* 设置所有输入框的光标颜色 */
         input, textarea {
             caret-color: #4EA0F2;
         }
+    </style>
 
-        .tweets-content-txt-area:focus {
-            border-color: rgba(78, 160, 242, 0.45); /* 选中时的边框颜色 */
+    <style about="tweet-split-edit">
+
+        .tweet-content-txt-item {
+            display: flex;
+            justify-content: left;
+            position: relative;
+            overflow: auto;
         }
 
-        /* 使用 ::placeholder 为 textarea 添加占位符样式 */
-        .tweets-content-txt-area::placeholder {
-            color: grey;
-            font-size: 14px; /* 文字大小 */
-            line-height: 20px; /* 行高 */
+        .tweet-over-flow-red {
+            background-color: rgba(255, 77, 77, .25);
         }
 
+        .tweet-edit-custom-menu {
+            position: absolute;
+            z-index: 1000;
+            padding: 8px;
+            background: white;
+            box-shadow: 3px 3px 5px #888888;
+            display: none;
+            border-radius: 12px;
+        }
 
+        .tweet-edit-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: transparent;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 12px;
+        }
+
+        .tweet-content-btn {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: rgba(211, 213, 214, 0.2);
+            width: 100%;
+            border-radius: 12px;
+            padding: 2px 8px;
+            margin-top: 12px;
+        }
+
+        .tweet-edit-btn:hover {
+            background-color: rgba(228, 228, 223, 0.5);
+        }
+
+        .titles-line-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 12px;
+        }
+
+        .titles-circle {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid #d3d5d6; /* 设置边框来创建圆圈 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .titles-line {
+            width: 2px;
+            background-color: #d3d5d6;
+            flex-grow: 1;
+            margin-top: 8px;
+        }
+    </style>
+    <style about="tips-style">
+        .temporary-alert-popup {
+            visibility: hidden;
+            max-width: 300px;
+            background-color: rgba(232, 50, 26, 0.9);
+            color: white;
+            text-align: center;
+            border-radius: 12px;
+            padding: 12px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 30px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+
+        }
+
+        .temporary-alert-popup.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @keyframes fadein {
+            from {bottom: 0; opacity: 0;}
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadeout {
+            from {bottom: 30px; opacity: 1;}
+            to {bottom: 0; opacity: 0;}
+        }
     </style>
 
 </head>
@@ -1691,38 +1807,50 @@
         <div class="tweet-content tweet-content-collapsed"></div>
         <span class="show-more" data-more="true"
               onclick="showFullTweetContent.call(this)">更多</span>
-        <div class="image-item-in-tweet" id="image-item-in-tweet" style="display: none">
-            <img src="" data-raw="" data-hash="" class="image-src-to-show" onclick="showImgRaw.call(this)">
-        </div>
-        <div class="tweet-images"></div>
     </div>
+
+    <div class="tweet-images" style="display: none" id="image-in-tweet-template">
+        <div class="image-item-in-tweet" id="image-item-in-tweet" style="display: none">
+            <img src="" data-raw="" data-hash="" class="image-src-to-show" onclick="showImgRaw.call(this)"
+                 alt="image-in-tweet">
+        </div>
+    </div>
+
+    <div data-index="0" class="tweet-split-item" id="tweet-split-item-template"
+         style="margin-left: 12px;display: none">
+        <div class="tweets-content-txt-area" id="tweets-split-content-txt-area"
+             contenteditable="true" data-placeholder="请输入文本...">
+        </div>
+        <div>
+            <div class="img-wrapper" id="img-wrapper-template">
+                <img src="" class="img-preview" alt="images">
+                <button class="delete-btn">x</button>
+            </div>
+            <div class="img-wrapper-container" style="display: none;">
+            </div>
+            <input type="file" id="fileInput" class="tweet-file-input" style="display: none;"
+                   accept=".jpg, .png, .webp" multiple
+                   onchange="previewImage.call(this)">
+        </div>
+        <div class="tweet-content-btn">
+            <span style="font-size: 14px; margin-right: 8px"><strong style="color: #DD2111" class="tweet-length-valid">280</strong></span>
+            <button class="tweet-edit-btn" onclick="loadImgFromLocal.call(this)">
+                <img src="/assets/file/image-icon.png" alt="add img">
+            </button>
+            <button class="tweet-edit-btn" onclick="addNextSplitEditor(this)">
+                <img src="/assets/file/addPostBelow.png" alt="add tweet">
+            </button>
+            <button class="tweet-edit-btn" onclick="delCurrentEditor(this)">
+                <img src="/assets/file/delPost.png" alt="delete tweet"></button>
+        </div>
+    </div>
+
     <div class="middle-content-area">
         <div id="middle-div-home" class="content-in-middle-area active">
             <div class="tweet-post" id="tweet-post-on-top">
-                <div class="hidden-tweet-for-img" id="hidden-tweet-for-img">
-                    <div class="hidden-tweet-txt" id="hidden-tweet-txt" contenteditable="true"></div>
-                    <div class="hidden-appoint" id="hidden-appoint-tips"
-                         style="font-size: 14px; font-weight: 400; color: #a1b2c5 ">来自
-                        Dessage
-                    </div>
+                <div class="split-tweet-content" id="split-tweet-content">
                 </div>
-
-                <label> <textarea class="tweets-content-txt-area" id="tweets-content-txt-area"
-                                  placeholder="What's happening!?" rows="5"
-                                  oninput="autoResize(this)"> </textarea></label>
-                <div class="img-wrapper" id="img-wrapper-template">
-                    <img src="" class="img-preview">
-                    <button class="delete-btn">x</button>
-                </div>
-                <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
-                </div>
-
-                <div style="display: flex; justify-content: space-between; align-items: center">
-                    <button onclick="loadImgFromLocal('.tweet-post')" class="tweets-fileImg"><img
-                                src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
-                    <input type="file" id="fileInput" class="tweet-file-input" style="display: none;"
-                           accept=".jpg, .png, .webp" multiple
-                           onchange="previewImage('.tweet-post')">
+                <div style="display: flex; justify-content: flex-end;">
                     <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.tweet-post')" class="d-radius"
                             style="margin: 8px">
                         <img src="/assets/file/Twitter-logo.png" alt="twitter"
@@ -1783,8 +1911,6 @@
             <div class="tweets-park top-div" id="top-most-voted-tweet"></div>
             <li id="team-member-card-template" style="display: none">
                 <div class="team-member-card-header">
-
-
                     <img src="/assets/file/logo.png" alt="Avatar" class="twitterAvatar team-membersAvatar">
                     <img src="/assets/file/elder_icon.png" alt="flag" class="elderFlagOnAvatar"
                          style="left: 82px; top:49px">
@@ -1990,12 +2116,6 @@
                 </div>
             </div>
             <div class="tweet-text"></div>
-            <div class="image-item-in-tweet" id="image-item-in-tweet" style="display: none">
-                <img src="" data-raw="" data-hash="" class="image-src-to-show" onclick="showImgRaw.call(this)">
-            </div>
-            <div class="tweet-images">
-
-            </div>
             <div class="tweet-text-info">
                 <div style="background-color: rgba(192,211,240,0.5); padding: 8px 14px; border-radius: 12px"
                      onclick="showTweetDetailInfo()">
@@ -2261,21 +2381,22 @@
 <div class="modal-overlay" id="modal-overlay"></div>
 <div class="modal-for-tweet-post">
     <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
-    <label> <textarea class="tweets-content-txt-area" id="tweets-content-txt-area"
-                      placeholder="What's happening!?" rows="5" oninput="autoResize(this)"> </textarea></label>
-    <div class="img-wrapper" id="img-wrapper-template">
-        <img src="" class="img-preview">
-        <button class="delete-btn">x</button>
+
+    <div class="split-tweet-content" id="modal-split-tweet-content">
     </div>
-    <div id="twImagePreview" class="img-wrapper-container" style="display: none;">
-    </div>
+    {{/*    <div class="img-wrapper" id="img-wrapper-template">*/}}
+    {{/*        <img src="" class="img-preview">*/}}
+    {{/*        <button class="delete-btn">x</button>*/}}
+    {{/*    </div>*/}}
+{{/*    <div id="twImagePreview" class="img-wrapper-container" style="display: none;">*/}}
+{{/*    </div>*/}}
 
     <div style="display: flex; justify-content: space-between; align-items: center">
-        <button onclick="loadImgFromLocal('.modal-for-tweet-post')" class="tweets-fileImg"><img
-                    src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>
-        <input type="file" id="fileInput" class="tweet-file-input" style="display: none;" accept=".jpg, .png, .webp"
-               multiple
-               onchange="previewImage('.modal-for-tweet-post')">
+        {{/*        <button onclick="loadImgFromLocal('.modal-for-tweet-post')" class="tweets-fileImg"><img*/}}
+        {{/*                    src="/assets/file/image-icon.png" alt="" style="margin: 0;"></button>*/}}
+        {{/*        <input type="file" id="fileInput" class="tweet-file-input" style="display: none;" accept=".jpg, .png, .webp"*/}}
+        {{/*               multiple*/}}
+        {{/*               onchange="previewImage('.modal-for-tweet-post')">*/}}
         <button id="tweet-post-with-eth-btn" onclick="postTweetWithPayment('.modal-for-tweet-post')" class="d-radius"
                 style="margin: 8px 0">
             <img src="/assets/file/Twitter-logo.png" alt="twitter" style="width: 24px; height: 24px; margin-right: 6px">
@@ -2289,6 +2410,16 @@
     <span class="tweet-image-hash"></span>
     <button onclick="CloseImgDetail.call(this)">x</button>
 </div>
+
+<div class="tweet-edit-custom-menu" id="textMenu">
+    <button onclick="moveTextToNext()"><img src="/assets/file/movePost.png"></button>
+</div>
+
+<div id="temporary-alert-popup" class="temporary-alert-popup">
+    <img src="/assets/file/alert-tip-img.png" style="width: 24px;height: auto;margin-right: 8px">
+    <span class="tips-content-msg"></span>
+</div>
+
 <script>
 
     function showGameRule() {
@@ -2304,7 +2435,7 @@
     const targetTweet = {{.TargetTweet}};
 
     let curScrollContentID = 0;
-
+    // initTweetTimer();
     document.addEventListener("DOMContentLoaded", initMainPage);
 
     async function initNjBasic() {
@@ -2328,6 +2459,7 @@
     async function initMainPage() {
         try {
             showWaiting("loading from block chain");
+            initTweetArea('split-tweet-content');
             await initDatabase();
             await initNjBasic();
             await checkMetaMaskEnvironment(initBlockChainContract);
@@ -2723,7 +2855,6 @@
 
         document.getElementById("tweet-detail-in-details").textContent = i18next.t('tweet-detail-in-details');
         document.getElementById("vote-price-in-modal-uint").textContent = i18next.t('vote-price-in-modal-uint');
-        document.getElementById("hidden-appoint-tips").textContent = i18next.t('hidden-appoint-tips');
     }
 </script>
 </body>

@@ -353,6 +353,22 @@ func tweetImgRaw(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInf
 	util.LogInst().Debug().Str("img-hash", hash).Msg("query tweet img raw success")
 }
 
+func tweetImgThumb(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
+	var hash = r.URL.Query().Get("img_hash")
+	obj, err := database.DbInst().GetThumbImg(hash)
+	if err != nil {
+		util.LogInst().Err(err).Str("img-hash", hash).Msg("query tweet img raw img failed")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	bts, _ := json.Marshal(obj)
+	w.Write(bts)
+	util.LogInst().Debug().Str("img-hash", hash).Msg("query tweet img thumb success")
+}
+
 func queryTweetByHash(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
 	var tweetHash = r.URL.Query().Get("tweet_hash")
 

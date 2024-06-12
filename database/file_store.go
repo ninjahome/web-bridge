@@ -25,6 +25,7 @@ const (
 	DBTableTweetsVoted        = "tweets-voted"
 	DBTableTweetsSubStatus    = "vote-status"
 	DBTableTweetsImages       = "raw_img"
+	DBTableTweetsThumbImages  = "thumb_img"
 )
 
 /*******************************************************************************************************

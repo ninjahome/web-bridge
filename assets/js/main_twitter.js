@@ -15,7 +15,7 @@ async function __loadTweetsAtHomePage(newest) {
         }
     } catch (err) {
         console.log(err);
-        showDialog(DLevel.Error, err.toString());
+        showDialog(DLevel.Error, "failed to load tweets");
     }
 }
 
@@ -157,93 +157,106 @@ async function convertContentToImages(formattedContent, imageData) {
 }
 
 function parseTweetContent(parentDiv) {
+    const allTweetDiv = parentDiv.querySelectorAll(".tweets-content-txt-area");
 
-    // const contentHtml = parentDiv.querySelector(".tweets-content-txt-area").innerHTML.trim();
-    // const formattedTxt = contentHtml
-    //     .replace(/<div><br><\/div>/gi, "\n") //
-    //     .replace(/(<div><\/div>|<p><\/p>)/gi, "\n") // 合并空的 <div></div> 和 <p></p> 转换
-    //     .replace(/(<br\s*\/?>|<\/div>|<\/p>)/gi, "\n") // 合并所有单独的换行符转换
-    //     .replace(/&nbsp;/gi, " ") // 将 &nbsp; 转换为空格
-    //     .replace(/<[^>]+>/g, '') // 移除所有其他HTML标签
-    //     .replace(/\n+$/, '');
-    // console.log(contentHtml);
-// return;
-    const formattedTxt = parentDiv.querySelector(".tweets-content-txt-area").value;
-    // console.log(formattedTxt);
-    // return;
-    const images = parentDiv.querySelectorAll("#twImagePreview img");
-    if (formattedTxt.length < 4) {
+    const txtList = Array.from(allTweetDiv)
+        .map(div => {
+            const validElm = div.firstChild;
+            if (!validElm) {
+                throw new Error('tweet content is empty');
+            }
+            let textContent = validElm.textContent.replace(/\u200B/g, '').trim();
+            if (/\S/.test(textContent) === false)  {
+                throw new Error('tweet content is empty');
+            }
+            // console.log(`Original text: '${textContent}'`);
+            return textContent;
+        })
+        .filter(txt => {
+            // console.log(`Filter result for '${txt}': ${isValid}`);
+            return (txt && txt.length > 0);
+        });
+
+    if (txtList.length === 0) {
         showDialog(DLevel.Warning, "content too short")
         return null;
     }
 
-    if (images.length > maxImgPerTweet) {
-        showDialog(DLevel.Warning, "too many images to post");
+    if (txtList.length > MaxTweetsPerPost + 1) {
+        showDialog(DLevel.Warning, "content too long")
         return null;
     }
-    const imageData = Array.from(images).map(img => {
-        const thumbnail = img.src
-        const raw = img.getAttribute('data-raw');
-        const hash = img.getAttribute('data-hash');
-        return new ImageRawData(hash, raw, thumbnail);
-    });
 
-    return {formattedTxt, imageData}
+    const allImgDiv = parentDiv.querySelectorAll('.img-wrapper-container');
+    const imageList = Array.from(allImgDiv).map(div => {
+        let images = div.querySelectorAll("img");
+        if (images.length > maxImgPerTweet) {
+            images = images.slice(0, maxImgPerTweet);
+        }
+
+        return Array.from(images).map(img => {
+            const thumbnail = img.src
+            const raw = img.getAttribute('data-raw');
+            const hash = img.getAttribute('data-hash');
+            return new ImageRawData(hash, raw, thumbnail);
+        });
+    })
+
+    let formattedTxt = '';
+    for (let i = 0; i < txtList.length; i++) {
+        const images = imageList[i];
+        formattedTxt += txtList[i];
+        if (images.length === 0) {
+            formattedTxt += '\n\n';
+            continue;
+        }
+
+        let embedImgStr = '<dessage-img>'
+        images.forEach((image, index) => {
+            embedImgStr += image.hash + delimiter
+        })
+        if (embedImgStr.endsWith(delimiter)) {
+            embedImgStr = embedImgStr.slice(0, -1);
+        }
+        formattedTxt += embedImgStr + '</dessage-img>\n';
+    }
+
+    return {formattedTxt, txtList, imageList}
 }
 
 function initSloganTxt(nj_tw_id) {
-    return "\r\n" + i18next.t('slogan_1')
+    return "\n" + i18next.t('slogan_1')
         + gameContractMeta.totalBonus
         + i18next.t('slogan_2')
         + "https://" + window.location.hostname + "/buyRights?NjTID="
         + nj_tw_id;
 }
 
-async function procTweetContent(tweetContent, slogan) {
-
-    let compositedTxt = tweetContent.formattedTxt + slogan;
-    let result = twttr.txt.parseTweet(compositedTxt);
-    if (result.valid === true) {
-        return compositedTxt;
-    }
-
-    const sloganLen = twttr.txt.getTweetLength(slogan);
-    if (maxImgPerTweet === tweetContent.imageData.length) {
-        showDialog(DLevel.Warning, "tweet content should be short than" + (defaultTextLenForTweet - sloganLen) + " if you have 4 images");
-        return null;
-    }
-
-    const lastValidTxtLen = maxTweetLenPerPage * (maxImgPerTweet - tweetContent.imageData.length);
-    if (tweetContent.formattedTxt.length >= lastValidTxtLen) {
-        showDialog(DLevel.Warning, "max tweet content length is:" + lastValidTxtLen + " if you have " + tweetContent.imageData.length + " images");
-        return null;
-    }
-
-    await convertContentToImages(tweetContent.formattedTxt, tweetContent.imageData)
-
-    return getCompositedTxt(tweetContent.formattedTxt, slogan, sloganLen);
-}
 
 async function preparePostMsg(parentDiv) {
     const tweetContent = parseTweetContent(parentDiv);
-    if (!tweetContent) {
+    if (!tweetContent || tweetContent.txtList.length === 0) {
         return null;
     }
-
     const nj_tw_id = (new Date()).getTime();
     const slogan = initSloganTxt(nj_tw_id);
+    const lastIdx = tweetContent.txtList.length - 1;
+    const lastStr = tweetContent.txtList[lastIdx];
 
-    const compositedTxt = await procTweetContent(tweetContent, slogan);
-    if (!compositedTxt) {
-        return null;
+    let result = twttr.txt.parseTweet(lastStr + slogan);
+    if (result.valid === true) {
+        tweetContent.txtList[lastIdx] += slogan;
+    } else {
+        tweetContent.txtList.push(slogan);
+        tweetContent.imageList.push([])
     }
 
     const tweet = new TweetContentToPost(tweetContent.formattedTxt,
-        nj_tw_id, ninjaUserObj.eth_addr, ninjaUserObj.tw_id, compositedTxt);
+        tweetContent.txtList, nj_tw_id, ninjaUserObj.eth_addr, ninjaUserObj.tw_id);
     const message = JSON.stringify(tweet)
 
     const signature = await window.ethereum.request({
-        method: 'personal_sign', params: [message, ninjaUserObj.eth_addr],
+        method: 'personal_sign', params: [tweetContent.formattedTxt, ninjaUserObj.eth_addr],
     });
 
     if (!signature) {
@@ -251,7 +264,7 @@ async function preparePostMsg(parentDiv) {
         return null;
     }
 
-    return new SignDataForPost(message, signature, JSON.stringify(tweetContent.imageData));
+    return new SignDataForPost(message, signature, JSON.stringify(tweetContent.imageList));
 }
 
 function updatePaymentStatusToSrv(tweet, tx_hash) {
@@ -316,6 +329,8 @@ async function showPostTweetDiv() {
         return;
     }
 
+    initTweetArea('modal-split-tweet-content');
+
     const modal = document.querySelector('.modal-for-tweet-post');
     modal.style.display = 'block';
     document.getElementById('modal-overlay').style.display = 'block';
@@ -331,10 +346,10 @@ function closePostTweetDiv() {
 }
 
 function clearDraftTweetContent(parentDiv) {
-    parentDiv.querySelector(".tweets-content-txt-area").value = '';
-    parentDiv.querySelector(".tweets-content-txt-area").style.height = '5em'
-    parentDiv.querySelector(".img-wrapper-container").innerHTML = '';
-    parentDiv.querySelector(".img-wrapper-container").style.display = 'none'
+    const splitArea = parentDiv.querySelector(".split-tweet-content");
+    splitArea.innerHTML = '';
+    __globalTweetEditorCount = 0;
+    newSplitEditor(splitArea);
 }
 
 function showFullTweetContent() {
@@ -357,46 +372,46 @@ function showFullTweetContent() {
     }
 }
 
-function loadImgFromLocal(parentId) {
-
+function loadImgFromLocal() {
     if (!ninjaUserObj.tw_id) {
         showDialog(DLevel.Warning, "bind twitter first", bindingTwitter);
         return;
     }
-
-    const parentDiv = document.querySelector(parentId);
-    const images = parentDiv.querySelectorAll("#twImagePreview img");
+    const tweetItem = this.closest('.tweet-split-item');
+    const images = tweetItem.querySelectorAll(".img-wrapper-container img");
     if (images.length >= maxImgPerTweet) {
         showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
         return;
     }
-    parentDiv.querySelector('.tweet-file-input').click();
+    tweetItem.querySelector('.tweet-file-input').click();
 }
 
-function previewImage(parentId) {
-    const parentDiv = document.querySelector(parentId);
-    let files = parentDiv.querySelector('.tweet-file-input').files;
+function previewImage() {
+    const parentDiv = this.parentNode;
+    let files = parentDiv.querySelector('.tweet-file-input').files
     const imagePreviewDiv = parentDiv.querySelector('.img-wrapper-container');
     imagePreviewDiv.style.display = 'block';
-    const images = parentDiv.querySelectorAll("#twImagePreview img");
+    const images = imagePreviewDiv.querySelectorAll("img");
     const validLen = maxImgPerTweet - images.length;
     if (validLen <= 0) {
         return;
     }
 
     if (files.length > validLen) {
-        showDialog(DLevel.Tips, "max " + maxImgPerTweet + " images allowed")
+        showTmpTips("max " + maxImgPerTweet + " images allowed");
     }
-
     files = Array.from(files).slice(0, validLen);
     files.forEach(file => {
-        const imgWrapper = parentDiv.querySelector('.img-wrapper').cloneNode(true);
+        const imgWrapper = document.getElementById('img-wrapper-template').cloneNode(true);
         imgWrapper.style.display = 'block';
-        imgWrapper.id = "";
+        imgWrapper.setAttribute('id', '');
         const img = imgWrapper.querySelector('.img-preview');
         const deleteBtn = imgWrapper.querySelector('.delete-btn');
         deleteBtn.onclick = function () {
             imagePreviewDiv.removeChild(imgWrapper);
+            if (imagePreviewDiv.querySelectorAll("img").length === 0) {
+                imagePreviewDiv.style.display = 'none';
+            }
         };
 
         readFileAsBlob(file).then(async blob => {
@@ -419,4 +434,205 @@ function previewImage(parentId) {
     });
 
     parentDiv.querySelector('.tweet-file-input').value = '';
+}
+
+function initTweetArea(divID) {
+    const tweetManager = document.getElementById(divID);
+    __globalTweetEditorCount = 0;
+    tweetManager.innerHTML = '';
+    newSplitEditor(tweetManager);
+}
+
+function addNextSplitEditor(btn) {
+    const tweetManager = btn.closest(".split-tweet-content");
+    const siblingNode = btn.closest(".tweet-split-item");
+    newSplitEditor(tweetManager, siblingNode);
+}
+
+let __globalTweetEditorCount = 0;
+
+function newSplitEditor(tweetManager, siblingNode) {
+    if (__globalTweetEditorCount >= MaxTweetsPerPost) {
+        showDialog(DLevel.Warning, "too much tweets");
+        return;
+    }
+    const tweetEditorTemplate = document.getElementById("tweet-split-item-template");
+    const newEditor = tweetEditorTemplate.cloneNode(true);
+    newEditor.style.display = 'block';
+    newEditor.id = 'tweet-area-' + __globalTweetEditorCount;
+    const editableDiv = newEditor.querySelector('.tweets-content-txt-area');
+    editableDiv.innerHTML = '';
+    editableDiv.addEventListener('compositionstart', () => {
+        isComposing = true;
+    });
+    editableDiv.addEventListener('compositionend', () => {
+            isComposing = false;
+            checkTweetLength(editableDiv);
+        }
+    );
+    editableDiv.addEventListener('input', () => {
+        if (!ninjaUserObj.tw_id) {
+            showDialog(DLevel.Warning, "bind twitter first", bindingTwitter);
+            return;
+        }
+        if (isComposing) {
+            return;
+        }
+        checkTweetLength(editableDiv);
+    });
+    editableDiv.addEventListener('keydown', handleEnter);
+
+    __globalTweetEditorCount++;
+    if (siblingNode) {
+        siblingNode.insertAdjacentElement('afterend', newEditor);
+    } else {
+        tweetManager.appendChild(newEditor);
+    }
+    // setCursorToStart(newEditor);
+}
+
+let isComposing = false;
+
+function delCurrentEditor(btn) {
+    if (__globalTweetEditorCount === 1) {
+        return;
+    }
+    const parentDiv = btn.closest('.tweet-split-item');
+    parentDiv.remove();
+    __globalTweetEditorCount--;
+}
+
+function checkSelection() {
+    if (window.getSelection) {
+        const selection = window.getSelection().toString();
+        console.log("Selected text: ", selection);
+    }
+}
+
+function checkTweetLength(div, isNewLine = false) {
+    const tweetTxt = div.innerText;
+    const parsedText = twttr.txt.parseTweet(tweetTxt);
+
+    let validText = tweetTxt.substring(0, parsedText.validRangeEnd + 1);
+    let excessText = tweetTxt.substring(parsedText.validRangeEnd + 1);
+    let restore = saveCaretPosition(div);  // 先保存光标位置
+
+    while (div.firstChild) {
+        div.removeChild(div.firstChild);
+    }
+
+    let validTextNode = document.createTextNode(validText);
+    div.appendChild(validTextNode);
+
+    if (excessText) {
+        let newExcess = document.createElement('span');
+        newExcess.className = 'tweet-over-flow-red';
+        newExcess.innerText = excessText;
+        div.appendChild(newExcess);
+    }
+
+    restore(isNewLine);
+
+    const parentDiv = div.closest('.tweet-split-item');
+    parentDiv.querySelector('.tweet-length-valid').innerText = 280 - parsedText.weightedLength;
+}
+
+function handlePaste(event) {
+    event.preventDefault();  // 阻止默认粘贴行为
+    const clipboardData = event.clipboardData || window.clipboardData;  // 获取剪贴板对象
+    const text = clipboardData.getData('text/plain');  // 从剪贴板获取纯文本内容
+    // 插入文本到光标位置
+    insertTextAtCursor(text);
+    checkTweetLength(event.target);
+}
+
+function insertTextAtCursor(text) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;  // 如果没有选区，则不执行任何操作
+
+    const range = selection.getRangeAt(0);
+    range.deleteContents();  // 删除选中内容
+
+    // 插入文本并处理换行符
+    const lines = text.split('\n');
+    const fragment = document.createDocumentFragment();
+    lines.forEach((line, index) => {
+        if (index > 0) fragment.appendChild(document.createElement('br'));
+        fragment.appendChild(document.createTextNode(line));
+    });
+
+    range.insertNode(fragment);  // 插入修改后的文本
+
+    // 移动光标到文本末尾
+    range.collapse(false);
+    selection.removeAllRanges();  // 清除现有的选区
+    selection.addRange(range);  // 添加新的范围
+}
+
+function saveCaretPosition(context) {
+    let selection = window.getSelection();
+    if (selection.rangeCount === 0) return () => {
+    };
+
+    let activeRange = selection.getRangeAt(0);
+    let range = document.createRange();
+    range.setStart(context, 0);
+    range.setEnd(activeRange.startContainer, activeRange.startOffset);
+    let length = range.toString().length;
+
+    return function restore(isNewLine) {
+        selection.removeAllRanges();
+        let range = document.createRange();
+        let nodeStack = [context], node;
+        let remainingLength = length;
+        if (isNewLine) {
+            remainingLength++;
+        }
+
+        while (node = nodeStack.pop()) {
+            if (node.nodeType === 3) { // 文本节点
+                if (remainingLength <= node.length) {
+                    range.setStart(node, remainingLength);
+                    break;
+                } else {
+                    remainingLength -= node.length;
+                }
+            } else {
+                let i = node.childNodes.length;
+                while (i--) {
+                    nodeStack.push(node.childNodes[i]);
+                }
+            }
+        }
+
+        if (range.startContainer && range.startContainer.parentNode) {
+            range.collapse(true);
+            selection.addRange(range);
+            // console.log('Caret position restored:', {node: range.startContainer, offset: range.startOffset});
+        } else {
+            console.warn('Range not in document, cannot restore caret position');
+        }
+    };
+}
+
+function handleEnter(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // 阻止默认的回车效果
+
+        const selection = window.getSelection();
+        if (!selection.rangeCount) return; // 如果没有选区，则不执行后续操作
+
+        const range = selection.getRangeAt(0);
+        // console.log('Current range start:', range.startContainer, range.startOffset);
+        range.deleteContents();
+
+        const br = document.createElement('br');
+        range.insertNode(document.createTextNode('\u200B'));
+        range.insertNode(document.createElement('br'));
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        // console.log('New cursor position set after <br>:', range.startContainer, range.startOffset);
+        checkTweetLength(event.target, true);
+    }
 }

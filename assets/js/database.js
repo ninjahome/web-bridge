@@ -1,23 +1,24 @@
 let __databaseObj;
 const __currentDatabaseVersion = 8;
 const __constCachedItem = '__cached-items__';
+const __databaseName = 'dessage-database'
 
 function initDatabase() {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open('dessage-database', __currentDatabaseVersion);
+        const request = indexedDB.open(__databaseName, __currentDatabaseVersion);
 
-        request.onerror = function(event) {
+        request.onerror = function (event) {
             console.error("Database open failed:", event.target.error);
             reject(event.target.error);
         };
 
-        request.onsuccess = function(event) {
+        request.onsuccess = function (event) {
             __databaseObj = event.target.result;
             console.log("Database open success, version=", __databaseObj.version);
             resolve(__databaseObj);
         };
 
-        request.onupgradeneeded = function(event) {
+        request.onupgradeneeded = function (event) {
             const db = event.target.result;
             if (!db.objectStoreNames.contains(__constCachedItem)) {
                 const objectStore = db.createObjectStore(__constCachedItem, {keyPath: 'key'});
@@ -269,9 +270,26 @@ function databaseCleanByFilter(storeName, newData, conditionFn) {
 }
 
 function databaseDeleteTable(tableName) {
-    // 检查对象存储是否存在
-    if (__databaseObj.objectStoreNames.contains(tableName)) {
-        __databaseObj.deleteObjectStore(tableName);
-        console.log("Object store " + tableName + " deleted");
-    }
+
+    const request = indexedDB.open(__databaseName);
+
+    request.onsuccess = function (event) {
+        const db = event.target.result;
+        const transaction = db.transaction(tableName, 'readwrite');
+        const objectStore = transaction.objectStore(tableName);
+
+        const clearRequest = objectStore.clear();
+
+        clearRequest.onsuccess = function () {
+            console.log(`${tableName} has been cleared`);
+        };
+
+        clearRequest.onerror = function (event) {
+            console.error('Clear object store error:', event.target.error);
+        };
+    };
+
+    request.onerror = function (event) {
+        console.error('Database error:', event.target.error);
+    };
 }

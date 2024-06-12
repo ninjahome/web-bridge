@@ -39,54 +39,163 @@ function startCountdown(callback) {
     }, 1000);
 }
 
+//
+// function PostToSrvByJson(url, data) {
+//     const requestOptions = {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify(data)
+//     };
+//
+//     const csrfToken = document.getElementById('csrf_token');
+//     if (csrfToken) {
+//         requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
+//         // console.log("CSRF-Token=>",csrfToken.value);
+//     }
+//
+//     return new Promise((resolve, reject) => {
+//         fetch(url, requestOptions)
+//             .then(response => {
+//                 if (response.redirected) {
+//                     window.location = response.url;
+//                     return;
+//                 }
+//                 if (!response.ok) {
+//
+//                     if (response.status === 302 || response.status === 301) {
+//                         window.location = response.url;
+//                         return;
+//                     }
+//
+//                     return response.text().then(text => {
+//                         console.log(text)
+//                         throw new Error('\tserver responded with an error:' + response.status);
+//                     });
+//                 }
+//                 if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
+//                     return {};
+//                 }
+//                 return response.json();
+//             })
+//             .then(data => {
+//                 resolve(data);
+//             })
+//             .catch(error => {
+//                 console.log(error);
+//                 reject(error);
+//             });
+//     });
+// }
+//
+// async function GetToSrvByJson(url) {
+//     const requestOptions = {
+//         method: 'GET',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//     };
+//     const csrfToken = document.getElementById('csrf_token');
+//     if (csrfToken) {
+//         requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
+//     }
+//
+//     try {
+//         const response = await fetch(url, requestOptions);
+//         if (response.redirected) {
+//             window.location = response.url;
+//             return;
+//         }
+//         if (!response.ok) {
+//             if ([301, 302, 303, 307, 308].includes(response.status)) {
+//                 window.location = response.url;
+//                 return;
+//             }
+//             const text = await response.text();
+//             console.log(text);
+//             throw new Error('Server responded with an error: ' + response.status);
+//         }
+//         if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
+//             return {};
+//         }
+//
+//         return await response.json();
+//     } catch (error) {
+//         console.error('Error during fetch:', error);
+//         throw error;
+//     }
+// }
 
-function PostToSrvByJson(url, data) {
+
+async function fetchFromSrv(url, options) {
+    const csrfToken = document.getElementById('csrf_token');
+    if (csrfToken) {
+        options.headers['X-CSRF-Token'] = csrfToken.value;
+    }
+
+    try {
+        const response = await fetch(url, options);
+
+        if (response.redirected) {
+            window.location = response.url;
+            return;
+        }
+
+        if (!response.ok) {
+            if ([301, 302, 303, 307, 308].includes(response.status)) {
+                window.location = response.url;
+                return;
+            }
+
+            await handleFetchError(response);
+        }
+
+        if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
+            return {};
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error during fetch:', error);
+        if(!error.toString().includes("NetworkError")){
+            throw error;
+        }
+    }
+}
+
+async function handleFetchError(response) {
+    const text = await response.text();
+
+    if (response.status === 403) {
+        try {
+            const errorDetails = JSON.parse(text);
+            if (errorDetails.reason === 'CSRF token invalid') {
+                console.error("CSRF token is invalid or missing.");
+                window.location.href = "/signIn";
+            } else {
+                console.error("Access denied: " + errorDetails.message);
+            }
+            throw new Error('403 Forbidden: ' + errorDetails.message);
+        } catch (e) {
+            console.error('Failed to parse error details', e);
+        }
+    } else {
+        console.error('Server responded with an error:', response.status, text);
+        throw new Error('Server responded with an error: ' + response.status);
+    }
+}
+
+async function PostToSrvByJson(url, data) {
     const requestOptions = {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
     };
 
-    const csrfToken = document.getElementById('csrf_token');
-    if (csrfToken) {
-        requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
-        // console.log("CSRF-Token=>",csrfToken.value);
-    }
-
-    return new Promise((resolve, reject) => {
-        fetch(url, requestOptions)
-            .then(response => {
-                if (response.redirected) {
-                    window.location = response.url;
-                    return;
-                }
-                if (!response.ok) {
-
-                    if (response.status === 302 || response.status === 301) {
-                        window.location = response.url;
-                        return;
-                    }
-
-                    return response.text().then(text => {
-                        console.log(text)
-                        throw new Error('\tserver responded with an error:' + response.status);
-                    });
-                }
-                if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
-                    return {};
-                }
-                return response.json();
-            })
-            .then(data => {
-                resolve(data);
-            })
-            .catch(error => {
-                console.log(error);
-                reject(error);
-            });
-    });
+    return fetchFromSrv(url, requestOptions);
 }
 
 async function GetToSrvByJson(url) {
@@ -96,35 +205,8 @@ async function GetToSrvByJson(url) {
             'Content-Type': 'application/json',
         },
     };
-    const csrfToken = document.getElementById('csrf_token');
-    if (csrfToken) {
-        requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
-    }
 
-    try {
-        const response = await fetch(url, requestOptions);
-        if (response.redirected) {
-            window.location = response.url;
-            return;
-        }
-        if (!response.ok) {
-            if ([301, 302, 303, 307, 308].includes(response.status)) {
-                window.location = response.url;
-                return;
-            }
-            const text = await response.text();
-            console.log(text);
-            throw new Error('Server responded with an error: ' + response.status);
-        }
-        if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
-            return {};
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('Error during fetch:', error);
-        throw error;
-    }
+    return fetchFromSrv(url, requestOptions);
 }
 
 const __globalMetaMaskNetworkParam = new Map([
@@ -597,14 +679,24 @@ function checkMetamaskErr(err) {
         return;
     }
 
+    if (err.code === -32603) {
+        showDialog(DLevel.Warning, "check your metamask please");
+        return;
+    }
+
     let code = err.code;
     if (code === "CALL_EXCEPTION" && err.action === "estimateGas" && !err.reason) {
         showDialog(DLevel.Warning, "insufficient funds");
         return;
     }
 
+
     if (!err.data || !err.data.message) {
-        code = code + err.message;
+        if(code){
+            code = code + err.message;
+        }else{
+            code =  err.message;
+        }
     } else {
         code = "code:" + err.data.code + " " + err.data.message
     }
@@ -706,11 +798,13 @@ function tweetSubString(str, maxLength) {
         let tokenLength = twttr.txt.getTweetLength(token);
 
         if (tweetLen + tokenLength > maxLength) {
+            console.log("last length:=>", token.length, endIndex, tokenLength, tweetLen);
             break;
         }
 
         endIndex += token.length;
         tweetLen += tokenLength;
+        console.log(token.length, endIndex, tokenLength, tweetLen);
     }
 
     let result = str.substring(0, endIndex);
@@ -779,3 +873,5 @@ const defaultTextLenForTweet = 280;
 const MaxRawImgSize = (1 << 20) - 128;
 const MaxThumbnailSize = (1 << 17);
 const TimeIntervalForBlockChain = 30;
+const MaxTweetsPerPost = 5;
+const delimiter = ',';

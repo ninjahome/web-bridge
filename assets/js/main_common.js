@@ -75,6 +75,7 @@ function contentScroll() {
 }
 
 function clearCachedData() {
+    databaseDeleteTable(__constCachedItem);
     localStorage.clear();
     sessionStorage.clear();
     window.location.href = "/signIn";
@@ -194,7 +195,8 @@ async function __setOnlyHeader(tweetHeader, twitter_id, web3ID) {
     return newObj;
 }
 
-async function showImgRaw() {
+async function showImgRaw(event) {
+    event.stopPropagation();
     try {
         showWaiting("loading.....");
         const hash = this.getAttribute('data-hash');
@@ -220,15 +222,38 @@ function CloseImgDetail() {
 
 async function loadTweetImgRaw(hash) {
     let obj = await ImageRawData.load(hash)
-    if (obj) {
+    if (obj && obj.raw_data) {
         return obj;
     }
 
     const response = await GetToSrvByJson("/tweetImgRaw?img_hash=" + hash);
-    obj = new ImageRawData(response.hash, response.raw)
+    if (obj) {
+        obj.raw_data = response.raw;
+    } else {
+        obj = new ImageRawData(response.hash, response.raw);
+    }
     ImageRawData.sycToDb(obj);
     return obj;
 }
+
+async function loadTweetImgThumb(hash) {
+    let obj = await ImageRawData.load(hash)
+    if (obj && obj.thumb_nail) {
+        // console.log("no need to query--->", hash)
+        return obj;
+    }
+
+    const response = await GetToSrvByJson("/tweetImgThumb?img_hash=" + hash);
+    if (obj) {
+        obj.thumb_nail = response.raw
+    } else {
+        obj = new ImageRawData(response.hash, null, response.raw);
+    }
+    ImageRawData.sycToDb(obj);
+    // console.log('found from server =>', obj)
+    return obj;
+}
+
 
 function fulfillTweetImages(tweet, tweetHeader) {
     const div = tweetHeader.querySelector('.tweet-images');
@@ -252,14 +277,54 @@ function fulfillTweetImages(tweet, tweetHeader) {
     }
 }
 
+async function procTweetTxt(text) {
+    let txt = text.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;").replace(/\n/g, "<br>").replace(/ /g, '&nbsp;')
+    const regex = /<dessage-img>(.*?)<\/dessage-img>/g;
+    const result = txt.replace(regex, (match, imgHash) => {
+        // console.log(imgHash);
+        const cleanedStr = imgHash.replace(/\s+/g, '');
+        const images = cleanedStr.split(delimiter);
+        // console.log(images);
+        const imgManagerDiv = document.getElementById('image-in-tweet-template').cloneNode(true);
+        imgManagerDiv.id = '';
+        imgManagerDiv.removeAttribute('id');
+        imgManagerDiv.style.display = 'grid';
+
+        for (let i = 0; i < images.length; i++) {
+            const imgHash = images[i];
+            const imgDiv = imgManagerDiv.querySelector('.image-item-in-tweet').cloneNode(true)
+            imgDiv.style.display = 'block';
+            imgDiv.removeAttribute('id');
+            const imgElm = imgDiv.querySelector('.image-src-to-show');
+            imgElm.setAttribute('data-hash', imgHash);
+            loadTweetImgThumb(imgHash).then(imgObj => {
+                if (!imgObj) {
+                    console.log("failed to load thumb img=>", imgHash);
+                    return
+                }
+                const selector = `[data-hash="${imgHash}"]`;
+                const element = document.querySelectorAll(selector);
+                element.forEach(elm=>{
+                    elm.src = imgObj.thumb_nail;
+                    elm.onclick = showImgRaw;
+                })
+            });
+            imgManagerDiv.appendChild(imgDiv);
+        }
+        return imgManagerDiv.outerHTML;
+    });
+    return result;
+}
+
 async function setupCommonTweetHeader(tweetHeader, tweet, overlap) {
     tweetHeader.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
     const twitterObj = await __setOnlyHeader(tweetHeader, tweet.twitter_id, tweet.web3_id);
     const contentArea = tweetHeader.querySelector('.tweet-content');
-    contentArea.innerHTML = DOMPurify.sanitize(tweet.text.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;").replace(/\n/g, "<br>").replace(/ /g, '&nbsp;'));
+    const txt = await procTweetTxt(tweet.text);
+    contentArea.innerHTML = DOMPurify.sanitize(txt);
     const wrappedHeader = tweetHeader.querySelector('.tweet-header');
 
-    fulfillTweetImages(tweet, tweetHeader);
+    // fulfillTweetImages(tweet, tweetHeader);
 
     if (overlap) {
         wrappedHeader.addEventListener('mouseenter', (event) => showHoverCard(event, twitterObj, tweet.web3_id));
@@ -316,9 +381,10 @@ async function showTweetDetail(parentEleID, tweet) {
 
     detail.querySelector('.tweetCreateTime').textContent = formatTime(tweet.create_time);
     await __setOnlyHeader(detail, tweet.twitter_id, tweet.web3_id);
-    detail.querySelector('.tweet-text').innerHTML = DOMPurify.sanitize(tweet.text.replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;").replace(/\n/g, "<br>").replace(/ /g, '&nbsp;'));
+    const txt = await procTweetTxt(tweet.text);
+    detail.querySelector('.tweet-text').innerHTML = DOMPurify.sanitize(txt);
 
-    fulfillTweetImages(tweet, detail);
+    // fulfillTweetImages(tweet, detail);
 
     detail.querySelector('.back-button').onclick = () => {
         parentNode.style.display = 'block';
@@ -482,4 +548,58 @@ async function reloadSelfNjData() {
         console.log(err)
         showDialog(DLevel.Warning, "reload session failed:" + err.toString())
     }
+}
+
+
+const TweetTimerInterval = 30_000
+
+function initTweetTimer() {
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // 初始检测页面可见性
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                console.log("Page is hidden, stop updating content.");
+                // 停止自动更新内容
+                stopAutoUpdate();
+            } else {
+                console.log("Page is visible, start updating content.");
+                // 开始自动更新内容
+                startAutoUpdate();
+            }
+        }
+
+        // 监听 visibilitychange 事件
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        // 模拟自动更新内容的功能
+        let updateInterval;
+
+        function startAutoUpdate() {
+            if (!updateInterval) {
+                updateInterval = setInterval(async () => {
+                    console.log("Fetching new content...");
+                    await __loadTweetsAtHomePage(true);
+                }, TweetTimerInterval); // 每30秒获取一次新内容
+            }
+        }
+
+        function stopAutoUpdate() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+        }
+
+        // 页面加载时检查初始状态
+        handleVisibilityChange();
+    });
+}
+
+function showTmpTips(msg) {
+    const alert = document.getElementById("temporary-alert-popup");
+    alert.className = "temporary-alert-popup show";
+    alert.querySelector('.tips-content-msg').innerText = msg;
+    setTimeout(function () {
+        alert.className = alert.className.replace("show", "");
+    }, 3000);
 }

@@ -166,49 +166,74 @@ func processBase64Image(hash, base64Str string) (image.Image, error) {
 	return resizedImg, err
 }
 
-func prepareTweet(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) (*TweetRequest, error) {
-
-	var token = ut.GetToken()
-
-	var combinedTxt = njTweet.TxtWithSlogan
-	mediaIDs := make([]string, 0)
-	if len(njTweet.Images) > MaxImgInTweet {
-		return nil, fmt.Errorf("images must be less than 5")
+func createTweetRequest(txt, lastTid string, hashs, thumbs, rawImgs []string, token *oauth1.Token) (*TweetRequest, error) {
+	req := &TweetRequest{
+		Text: txt,
 	}
-	var finalHash []string
-	var finalImages []string
-	for i, base64Data := range njTweet.ImageRaw {
-		hash := njTweet.ImageHash[i]
-		if len(hash) > 20 {
-			finalHash = append(finalHash, hash)
-			finalImages = append(finalImages, njTweet.Images[i])
+	mediaIDs := make([]string, 0)
+	for i, hash := range hashs {
+		thumb := thumbs[i]
+		err := database.DbInst().SaveThumbImg(hash, thumb)
+		if err != nil {
+			util.LogInst().Err(err).Msg("save image thumb failed")
+			return nil, err
 		}
 
-		img, err := processBase64Image(hash, base64Data)
+		rawImg := rawImgs[i]
+		img, err := processBase64Image(hash, rawImg)
 		if err != nil {
 			util.LogInst().Err(err).Msg("parse tweet image to image object failed")
 			return nil, err
 		}
+
 		mediaID, err := uploadMedia(token, img)
 		if err != nil {
 			util.LogInst().Err(err).Msg("upload media for tweet failed")
 			return nil, err
 		}
 		mediaIDs = append(mediaIDs, mediaID)
-
 	}
-	njTweet.ImageHash = finalHash
-	njTweet.Images = finalImages
 
-	req := &TweetRequest{
-		Text: combinedTxt,
-	}
 	if len(mediaIDs) > 0 {
 		req.Media = &Media{
 			MediaIDs: mediaIDs,
 		}
 	}
+
+	if len(lastTid) > 0 {
+		req.Reply = &Reply{
+			InReplyToTweetID: lastTid,
+		}
+	}
+
 	return req, nil
+}
+
+func sendTweetToTwitter(njTweet *database.NinjaTweet, ut *database.TwUserAccessToken) (string, error) {
+
+	var token = ut.GetToken()
+	firstTweetID := ""
+	lastTweetID := ""
+	for i, txt := range njTweet.TxtList {
+		req, err := createTweetRequest(txt, lastTweetID, njTweet.ImageHash[i], njTweet.ImageThumb[i], njTweet.ImageRaw[i], token)
+		if err != nil {
+			return "", err
+		}
+		bts, _ := json.Marshal(req)
+
+		var tweetResponse TweetResponse
+		err = twitterApiPost(accessPointTweet, ut.GetToken(), bytes.NewBuffer(bts),
+			"application/json", &tweetResponse)
+		if err != nil {
+			util.LogInst().Err(err).Msg(" posted tweet failed")
+			return "", err
+		}
+		lastTweetID = tweetResponse.Data.ID
+		if i == 0 {
+			firstTweetID = lastTweetID
+		}
+	}
+	return firstTweetID, nil
 }
 
 func postTweets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
@@ -233,22 +258,13 @@ func postTweets(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInf
 		return
 	}
 
-	tweetBody, err := prepareTweet(njTweet, ut)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	var tweetResponse TweetResponse
-	bts, _ := json.Marshal(tweetBody)
-
-	err = twitterApiPost(accessPointTweet, ut.GetToken(), bytes.NewBuffer(bts), "application/json", &tweetResponse)
+	tid, err := sendTweetToTwitter(njTweet, ut)
 	if err != nil {
 		util.LogInst().Err(err).Msg(" posted tweet failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	njTweet.TweetId = tweetResponse.Data.ID
+	njTweet.TweetId = tid
 	err = database.DbInst().SaveTweet(njTweet)
 	if err != nil {
 		util.LogInst().Err(err).Msg("save posted tweet failed")
