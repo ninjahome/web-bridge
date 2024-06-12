@@ -25,6 +25,8 @@ type NinjaUsrInfo struct {
 	BeVotedCount int    `json:"be_voted_count" firestore:"be_voted_count"`
 	Points       int    `json:"points"  firestore:"points"`
 	IsElder      bool   `json:"is_elder" firestore:"is_elder"`
+	Referrer     string `json:"referrer" firestore:"referrer"`
+	SelfRefCode  string `json:"self_ref_code" firestore:"self_ref_code"`
 }
 
 func (nu *NinjaUsrInfo) String() string {
@@ -50,9 +52,11 @@ func NJUsrInfoMust(data []byte) (*NinjaUsrInfo, error) {
 	return nu, err
 }
 
-func (dm *DbManager) NjUserSignIn(ethAddr string) *NinjaUsrInfo {
+func (dm *DbManager) NjUserSignIn(ethAddr, Referer string) *NinjaUsrInfo {
+	ethAddr = strings.ToLower(ethAddr)
+	signInTime := time.Now().UnixMilli()
 	nu := &NinjaUsrInfo{
-		EthAddr: strings.ToLower(ethAddr),
+		EthAddr: ethAddr,
 	}
 	docRef := dm.fileCli.Collection(DBTableNJUser).Doc(ethAddr)
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
@@ -64,10 +68,18 @@ func (dm *DbManager) NjUserSignIn(ethAddr string) *NinjaUsrInfo {
 			util.LogInst().Err(err).Str("eth-addr", ethAddr).Msg("parse firestore data  to NinjaUsrInfo failed")
 			return nil
 		}
-		_, _ = docRef.Update(opCtx, []firestore.Update{
-			{Path: "signIn_at", Value: time.Now().UnixMilli()},
-		})
-		nu.SignInAt = time.Now().UnixMilli()
+		updateOps := []firestore.Update{
+			{Path: "signIn_at", Value: signInTime},
+		}
+
+		if len(nu.SelfRefCode) == 0 {
+			updateOps = append(updateOps, firestore.Update{Path: "self_ref_code", Value: ethAddr[len(ethAddr)-6:]})
+		}
+		if len(Referer) > 0 && len(nu.Referrer) == 0 {
+			updateOps = append(updateOps, firestore.Update{Path: "referrer", Value: Referer})
+		}
+		_, _ = docRef.Update(opCtx, updateOps)
+		nu.SignInAt = signInTime
 		util.LogInst().Debug().Str("eth-addr", ethAddr).Int64("sign-at", nu.SignInAt).Msg("firestore load ninja user info success")
 		return nu
 	}
@@ -78,15 +90,19 @@ func (dm *DbManager) NjUserSignIn(ethAddr string) *NinjaUsrInfo {
 	}
 
 	nu = &NinjaUsrInfo{
-		EthAddr:  ethAddr,
-		CreateAt: time.Now().UnixMilli(),
+		EthAddr:     ethAddr,
+		CreateAt:    signInTime,
+		SelfRefCode: ethAddr[len(ethAddr)-6:],
+	}
+
+	if len(Referer) > 0 {
+		nu.Referrer = Referer
 	}
 	_, err = docRef.Set(opCtx, nu)
 	if err != nil {
 		util.LogInst().Err(err).Str("eth-addr", ethAddr).Msg("Set firestore data as NinjaUsrInfo failed")
 		return nil
 	}
-
 	util.LogInst().Debug().Str("eth-addr", ethAddr).Msg("firestore create ninja user success")
 	return nu
 }

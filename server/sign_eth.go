@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	database2 "github.com/ninjahome/web-bridge/database"
+	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"net/http"
 )
@@ -10,6 +10,7 @@ import (
 type SignInObj struct {
 	EthAddr string `json:"eth_addr"`
 	SignTim int64  `json:"sign_time"`
+	Referer string `json:"referer"`
 }
 
 func (so *SignInObj) String() string {
@@ -17,7 +18,7 @@ func (so *SignInObj) String() string {
 	return string(bts)
 }
 
-func signInByEth(w http.ResponseWriter, r *http.Request, _ *database2.NinjaUsrInfo) {
+func signInByEth(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
 	param := &SignDataByEth{}
 	err := util.ReadRequest(r, param)
 	if err != nil {
@@ -40,7 +41,7 @@ func signInByEth(w http.ResponseWriter, r *http.Request, _ *database2.NinjaUsrIn
 		return
 	}
 	util.LogInst().Info().Str("eth-addr", obj.EthAddr).Int64("sign-time", obj.SignTim).Msg("sign in success")
-	nu := database2.DbInst().NjUserSignIn(obj.EthAddr)
+	nu := database.DbInst().NjUserSignIn(obj.EthAddr, obj.Referer)
 	if nu == nil {
 		util.LogInst().Warn().Str("eth-addr", obj.EthAddr).Msgf("no user found")
 		http.Error(w, "database error", http.StatusNotFound)
