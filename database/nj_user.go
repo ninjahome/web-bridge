@@ -116,6 +116,9 @@ func (dm *DbManager) QueryNjUsrByReferrer(referrer string) (*NinjaUsrInfo, error
 
 	doc, err := iter.Next()
 	if err != nil {
+		if errors.Is(err, iterator.Done) {
+			return nil, status.Error(codes.NotFound, "no Ninja User found with referrer: "+referrer)
+		}
 		util.LogInst().Err(err).Str("self_ref_code", referrer).Msg("query ninja user by referrer failed")
 		return nil, err
 	}

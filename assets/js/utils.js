@@ -63,7 +63,7 @@ async function fetchFromSrv(url, options) {
         }
 
         if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
-            return {};
+            return null;
         }
 
         return await response.json();
@@ -824,3 +824,4 @@ const MaxThumbnailSize = (1 << 17);
 const TimeIntervalForBlockChain = 30;
 const MaxTweetsPerPost = 5;
 const delimiter = ',';
+const referrerCodeLen = 6;

@@ -627,9 +627,9 @@
             return;
         }
 
-        if (!savedUserInfo.referrer_code){
+        if (!savedUserInfo.referrer_code) {
             refererDiv.style.display = 'block';
-        }else{
+        } else {
             refererDiv.style.display = 'none';
         }
 
@@ -677,15 +677,16 @@
         document.querySelector(".referral-code-popup").style.display = 'none';
     }
 
-    function setupReferralCode() {
+    async function setupReferralCode() {
         const val = document.getElementById("referral-code-val").value;
-        if (val.length !== 6) {
-            showDialog(DLevel.Tips, "referral code length invalid")
+        if (val.length !== referrerCodeLen) {
+            showDialog(DLevel.Tips, "referral code length is:" + referrerCodeLen)
             return;
         }
-        const referrerInfo = loadNJUserByReferrer(val);
-        if (!referrerInfo){
+        const referrerInfo = await loadNJUserByReferrer(val);
+        if (!referrerInfo) {
             showDialog(DLevel.Tips, "no such referrer!")
+            document.getElementById("referral-code-val").value = '';
             return;
         }
         document.querySelector(".referral-code-popup").style.display = 'none';
@@ -721,7 +722,7 @@
         const val = document.getElementById("referral-code-val").value;
 
         const signParam = new SignInData(web3Id)
-        if (val.length === 6) {
+        if (val.length === referrerCodeLen) {
             signParam.referrer_code = val;
         }
         const message = JSON.stringify(signParam);
