@@ -95,4 +95,5 @@ func (dp *DaemonProc) checkPointBonus() {
 		return
 	}
 
+	database.DbInst().RewardForOneRound()
 }

@@ -3,7 +3,9 @@ package database
 import (
 	"cloud.google.com/go/firestore"
 	"context"
+	"errors"
 	"github.com/ninjahome/web-bridge/util"
+	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"math"
@@ -15,6 +17,7 @@ type SysPoints struct {
 	Points     float32 `json:"points"  firestore:"points"`
 	BonusToWin float32 `json:"bonus_to_win" firestore:"bonus_to_win"`
 }
+
 type PointLogic func(sp *SysPoints)
 
 func (dm *DbManager) ProcSystemPoints(ethAddr string, call PointLogic) {
@@ -84,4 +87,76 @@ func pointsWithReferrerBonus(sp *SysPoints, points float32) {
 	} else {
 		sp.Points += points
 	}
+}
+
+func (dm *DbManager) RewardForOneRound() {
+	ctx := context.Background()
+	var totalPoints float32 = 0
+
+	iter := dm.fileCli.Collection(DBTableUserPoints).Select("points").Documents(ctx)
+	for {
+		doc, err := iter.Next()
+		if err != nil {
+			if errors.Is(err, iterator.Done) {
+				break
+			}
+			util.LogInst().Err(err).Msg("timer:failed to calculate total points")
+			return
+		}
+		points := doc.Data()["points"].(float32)
+		totalPoints += points
+	}
+
+	if totalPoints == 0 {
+		util.LogInst().Info().Msg("total pints is zero")
+		return
+	}
+
+	util.LogInst().Info().Float32("points", totalPoints).Msg("total points process success")
+
+	err := dm.fileCli.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+		iter := tx.Documents(dm.fileCli.Collection(DBTableUserPoints))
+		defer iter.Stop()
+
+		for {
+			doc, err := iter.Next()
+			if errors.Is(err, iterator.Done) {
+				break
+			}
+			if err != nil {
+				return err
+			}
+
+			var sp SysPoints
+			if err := doc.DataTo(&sp); err != nil {
+				return err
+			}
+			if sp.Points <= 0 {
+				continue
+			}
+
+			pointsDelta := sp.Points / totalPoints * __dbConf.RewardPointsForOneRound
+			newPoints := sp.Points + pointsDelta
+
+			err = tx.Update(doc.Ref, []firestore.Update{
+				{Path: "points", Value: newPoints},
+			})
+			if err != nil {
+				return err
+			}
+
+			util.LogInst().Debug().Str("web3id", sp.EthAddr).
+				Float32("newPoints", newPoints).
+				Float32("delta", pointsDelta).
+				Msg("update reward points success")
+		}
+		return nil
+	})
+
+	if err != nil {
+		util.LogInst().Err(err).Msg("pints timer failed")
+		return
+	}
+
+	util.LogInst().Info().Msg("pints timer transaction succeeded")
 }
