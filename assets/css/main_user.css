@@ -1,0 +1,576 @@
+
+.hover-card-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #E4E4DF;
+
+}
+
+.hover-card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #7E7F82;
+    margin-top: 8px;
+}
+
+.buy-key-button {
+    padding: 2px 0;
+    color: #7E7F82;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #D3D5D6;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.buy-key-button:hover {
+    color: #4EA0F2;
+    border-bottom: 1px solid #4EA0F2;
+}
+
+.hover-card {
+    display: none; /* 默认不显示 */
+    position: absolute;
+    z-index: 5;
+    padding: 10px;
+    background: white;
+    box-shadow: 0 12px 18px rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    top: 100%; /* 定位到 tweet-header 下方 */
+    left: 0;
+    width: 340px;
+}
+
+.tweet-header-in-profile {
+    position: relative;
+    height: 236px;
+}
+
+.tweet-header-img {
+    height: 132px;
+    background-image: url("/assets/file/tweet-bgimg.png");
+    margin: 16px;
+}
+
+.tweet-nameID-info {
+    position: absolute;
+    top: 100px;
+    left: 32px;
+    display: inline-block;
+}
+
+.tweet-nameID-info div {
+    padding-left: 16px;
+}
+
+.web3id {
+    font-size: 14px;
+    color: #7E7F82;
+    margin-top: 6px;
+}
+
+.tweet-twitterAvatar {
+    width: 64px;
+    height: auto;
+}
+
+.tweet-topic-switch {
+    justify-content: space-evenly;
+}
+
+.vote-chose-modal-class {
+    display: none; /* 默认隐藏 */
+    position: fixed; /* 固定位置 */
+    z-index: 10; /* 置于顶层 */
+    left: 0;
+    top: 0;
+    width: 100%; /* 宽度 */
+    height: 100%; /* 高度 */
+    overflow: auto; /* 启用滚动条 */
+    background-color: rgb(0, 0, 0); /* 背景颜色 */
+    background-color: rgba(0, 0, 0, 0.4); /* 黑色背景透明度 */
+}
+
+.vote-no-modal-content h2 {
+    font-size: 18px;
+}
+
+.vote-no-modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% 从顶部开始 */
+    padding: 16px 32px 32px;
+    border-radius: 12px;
+    width: 390px; /* 宽度 */
+}
+
+.vote-no-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vote-no-modal-body {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    margin-top: 32px;
+}
+
+.quantity-selector button {
+    width: 42px;
+    height: 42px;
+    font-size: 16px;
+    padding: 0;
+    border: none;
+    background-color: #F1F2F3;
+}
+
+.quantity-selector button:hover {
+    background-color: #D3D5D6; /* 鼠标经过时的背景色 */
+}
+
+.quantity-selector button:active {
+    background-color: #B0B2B3; /* 鼠标点击时的背景色 */
+    color: #4848D8;
+}
+
+.quantity-selector input {
+    height: 40px;
+    width: 188px;
+    text-align: center;
+    border: 1px solid #F1F2F3;
+    padding: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* 隐藏默认加减箭头 */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* 关闭按钮 */
+.vote-no-close {
+    color: #aaa;
+    font-size: 24px;
+    font-weight: normal;
+}
+
+.vote-no-close:hover,
+.vote-no-close:focus {
+    color: #141415;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.vote-no-modal-footer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 24px;
+}
+
+.cancel-btn,
+.confirm-btn {
+    margin: 0 8px;
+    padding: 10px 42px;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.cancel-btn {
+    background-color: transparent;
+    border: 1px solid rgb(221, 221, 222);
+    color: #7E7F82
+}
+
+.confirm-btn {
+    border: none;
+    background-color: #4EA0F2;
+    color: #ffffff;
+}
+
+.cancel-btn {
+    margin: 0 8px;
+    padding: 10px 32px;
+    border-radius: 12px;
+    background-color: transparent;
+    border: 1px solid rgb(221, 221, 222);
+    font-size: 14px;
+    color: #7E7F82;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.confirm-btn {
+    margin: 0 8px;
+    padding: 10px 32px;
+    border-radius: 12px;
+    border: none;
+    background-color: #141415;
+    font-size: 14px;
+    color: #ffffff;
+}
+
+.vote-no-modal-footer .cancel-btn,
+.vote-no-modal-footer .confirm-btn {
+    padding: 12px 52px;
+}
+
+.d-radius {
+    border-radius: 9999px;
+}
+
+.modal-overlay {
+    display: none; /* 默认隐藏 */
+    position: fixed; /* 固定定位 */
+    top: 0; /* 顶部对齐 */
+    left: 0; /* 左侧对齐 */
+    width: 100%; /* 宽度为整个视窗 */
+    height: 100%; /* 高度为整个视窗 */
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+    z-index: 2; /* 确保它位于内容和模态框之间 */
+}
+
+.modal-for-tweet-post {
+    display: none;
+    z-index: 2;
+    padding: 16px 32px; /* 增加内边距 */
+    position: fixed; /* 固定定位 */
+    left: 50%; /* 水平居中 */
+    top: 50%; /* 垂直居中 */
+    transform: translate(-50%, -50%); /* 校正到完全居中 */
+    background-color: #fff; /* 背景颜色 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 盒子阴影 */
+    width: 80%; /* 宽度，可根据需要调整 */
+    max-width: 636px; /* 最大宽度 */
+    border-radius: 12px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.tweet-post {
+    padding: 24px 16px;
+    border-bottom: 8px solid #F4F5F6;
+    background-color: white;
+    max-height: 600vh;
+}
+
+
+/* 设置所有输入框和可编辑内容的光标颜色 */
+input, textarea, [contenteditable] {
+    caret-color: #4EA0F2;
+}
+
+#tweet-post-with-eth-btn {
+    display: flex;
+    align-items: center;
+    float: right;
+    background: linear-gradient(to right, rgba(114, 166, 241, 0.55), #ffffff);
+    color: #222223; /* 字体颜色 */
+    border: none; /* 无边框 */
+    padding: 8px 16px; /* 内边距 */
+    cursor: pointer; /* 鼠标样式 */
+    margin: 16px 0; /* 下边距 */
+}
+
+#tweet-post-with-eth-btn:hover {
+    background: linear-gradient(to right, rgba(114, 166, 241, 0.9), #ffffff)
+}
+
+.show-post-tweet-div {
+    background-color: #141415;
+    height: 42px;
+    width: 148px;
+    color: white; /* 字体颜色 */
+    border: none; /* 无边框 */
+    cursor: pointer; /* 鼠标样式 */
+    font-size: 16px; /* 字体大小 */
+    box-shadow: rgba(0, 0, 0, 0.08) 0 8px 28px;
+    border-radius: 12px;
+    margin-top: 16px;
+}
+
+.cancel-btn:hover {
+    background-color: #F1F2F3; /* 悬停时背景颜色 */
+}
+
+.confirm-btn:hover,
+.show-post-tweet-div:hover {
+    background-color: #232326; /* 悬停时背景颜色 */
+}
+
+.tweet-post-close-btn {
+    display: block;
+    font-size: 24px; /* 字体大小 */
+    line-height: 24px; /* 行高 */
+    cursor: pointer; /* 鼠标样式 */
+    color: #a7aaac; /* 颜色 */
+    margin-bottom: 16px;
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+    text-align: center;
+}
+
+.tweet-post-close-btn:hover {
+    background-color: rgba(211, 212, 213, 0.25); /* 悬停时颜色 */
+}
+
+.img-wrapper-container {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr); /* Creates two columns with equal width */
+    gap: 8px; /* Adjusts the gap between grid items */
+}
+
+.img-wrapper {
+    display: none;
+    position: relative;
+    margin-top: 8px;
+    width: 119px;
+    height: 119px;
+    border-radius: 16px;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+}
+
+.img-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* For the delete button */
+.delete-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background-color: rgba(20, 20, 21, 0.5);
+    color: #d2d1d1;
+    border-radius: 50%;
+    border: none;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    align-items: center;
+}
+
+.delete-btn:hover {
+    background-color: #141415;
+}
+
+
+.income-tweet-area,
+.income-game-area,
+.user-settings {
+    background-color: #ffffff;
+    padding: 16px;
+    border-radius: 6px;
+}
+
+.user-settings {
+    border: 1px solid #F2F4F6;
+    background: linear-gradient(to bottom, rgba(114, 166, 241, 0.55), #ffffff);
+}
+
+.user-settings-tab {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    cursor: pointer; /* 添加鼠标指针样式 */
+    width: 100%;
+    height: 42px;
+}
+
+.user-settings-tab .user-tooltip {
+    visibility: hidden;
+    width: 180px;
+    background-color: #f9f9f9;
+    color: #000;
+    text-align: right;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: 28px;
+    right: 0;
+    box-shadow: 0 12px 18px 0 rgba(0, 0, 0, 0.3);
+    opacity: 1;
+    transition: opacity 0.5s ease, visibility 0s linear 0.5s;
+}
+
+.user-settings-icon {
+    height: 28px;
+    width: 28px;
+    background-image: url("/assets/file/settings-icon.png");
+    background-repeat: no-repeat; /* 防止背景图重复 */
+    background-position: center; /* 背景图居中 */
+    border: none;
+    background-color: transparent;
+}
+
+.user-syncTwitter {
+    height: 28px;
+    width: 28px;
+    background-image: url("/assets/file/twitter- cloud-icon.png");
+    background-repeat: no-repeat; /* 防止背景图重复 */
+    background-position: center; /* 背景图居中 */
+    border: none;
+    background-color: transparent;
+    margin-right: 16px;
+}
+
+.user-settings-icon button:hover {
+    background-image: url("/assets/file/setting-hover-8.png");
+}
+
+.user-tooltip ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.user-tooltip ul li {
+    padding: 8px 16px;
+    cursor: pointer;
+    white-space: nowrap;
+    margin: 6px;
+}
+
+.user-tooltip ul li a {
+    color: #1B1B1D;
+    text-decoration: none; /* 去除下划线 */
+    padding: 8px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.user-tooltip ul li :hover {
+    background-color: #F1F2F3;
+    padding: 12px 32px 12px 12px;
+    border-radius: 999px;
+}
+
+.middle-div-income-inner {
+    display: flex;
+    flex-direction: column;
+}
+
+.income-body {
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.income-text {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rule-info-btn {
+    border: none;
+    background-color: transparent;
+    color: #898989;
+    padding: 0;
+}
+
+.rule-info-btn:hover {
+    color: #4EA0F2;
+}
+
+.withdraw-btn {
+    border-radius: 12px;
+    border: none;
+    color: #fff;
+    font-size: 16px;
+    font-weight: normal;
+    padding: 8px 24px;
+    cursor: pointer;
+    background-color: #271D1E;
+    flex-shrink: 0;
+}
+
+.middle-div-income-inner button:hover {
+    background-color: #232326;
+}
+
+.rule-info-btn {
+    border: none;
+    background-color: transparent;
+    color: #898989;
+    padding: 0;
+}
+
+.middle-div-income-inner .rule-info-btn:hover {
+    color: #4EA0F2;
+    background-color: transparent;
+}
+
+/* Twitter 信息样式 */
+.about-twitter {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    color: #7E7F82; /* 中度深色文本 */
+    padding: 5px;
+}
+
+.about-twitter div span {
+    font-size: 14px;
+    font-weight: 400;
+    color: #898989;
+}
+
+.user-twitter-avatar img {
+    width: 46px; /* 调整为适合的尺寸 */
+    height: 46px;
+    border-radius: 50%;
+}
+
+/* Web3 ID 和 积分信息样式 */
+.about-ninja {
+    padding: 8px; /* 添加一些内边距，使内容不紧贴边框 */
+    display: flex; /* 使背景色和边框只包裹内容 */
+    justify-content: space-between;
+    align-items: center;
+    word-wrap: break-word; /* 在超出宽度时自动换行 */
+    margin-left: 50px;
+    margin-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.user-web3-id,
+.user-ninja-noun,
+.income-val {
+    font-size: 26px;
+    font-weight: 600;
+    color: #271D1E;
+    line-height: 30px;
+}
+
+.user-setting-action {
+    display: flex;
+    justify-content: flex-start;
+}

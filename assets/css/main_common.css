@@ -1,0 +1,462 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+h1, h2, h3, h4 {
+    margin: 0;
+}
+
+body {
+    font-family: "Baloo Chettan 2", Helvetica, Arial, sans-serif, "Alibaba PuHuiTi";
+    display: flex;
+    height: 100vh;
+    min-width: 1200px; /* 设置最小宽度为1200px */
+    background-color: #F4F5F6;
+}
+
+.container {
+    display: flex; /* 启用flex布局 */
+    justify-content: center;
+
+    height: 100vh; /* 容器高度设置为视窗高度 */
+    width: 80%;
+    margin: auto; /* 左边距自动 */
+}
+
+.left-menu-area {
+    width: 196px;
+    height: 99vh;
+    float: right;
+    margin-top: 8px;
+    background-color: #ffffff; /* 背景色，可根据需要调整 */
+    padding: 16px; /* 内边距 */
+    display: flex; /* 添加flex布局 */
+    flex-direction: column; /* 确保子元素垂直排列 */
+    border-radius: 6px;
+}
+
+.middle-content-area {
+    background-color: #fff; /* 背景色，可根据需要调整 */
+    width: 636px;
+    height: 99vh;
+    margin: 8px;
+    border-radius: 6px;
+}
+
+.right-operation-area {
+    background-color: transparent; /* 背景色，可根据需要调整 */
+    margin-top: 8px;
+}
+
+.menu-list-left-area {
+    list-style: none;
+    padding: 0;
+    display: flex; /* 添加flex布局 */
+    flex-direction: column; /* 确保子元素垂直排列 */
+    width: 100%; /* 设置宽度为父容器的100% */
+    margin-top: 18px;
+}
+
+.menu-icon {
+    vertical-align: middle;
+    /* 可以添加更多样式，例如设置图标大小 */
+    height: auto; /* 或任何适合你设计的尺寸 */
+    width: 16px; /* 保持图像比例 */
+    margin-right: 8px; /* 在图标和文本之间添加一些空间 */
+}
+
+.menu-item-left-area {
+    content: '';
+    display: inline-block;
+    margin: 4px 8px 4px 0;
+    vertical-align: middle;
+    background-size: contain;
+    background-repeat: no-repeat;
+    white-space: nowrap;
+    padding: 11px 32px;
+    cursor: pointer;
+    color: #271D1E; /* 默认颜色 */
+}
+
+.menu-item-left-area:hover {
+    background-color: #F7F8F9; /* 鼠标悬停时的颜色 */
+    border-radius: 12px;
+}
+
+.menu-item-left-area.active {
+    background-color: #F7F8F9; /* 被选中的菜单项颜色 */
+    border-radius: 12px;
+    font-weight: bolder;
+}
+
+.content-in-middle-area {
+    width: 636px;
+    display: none; /* 默认隐藏所有内容 */
+}
+
+.content-in-middle-area.active {
+    display: block; /* 显示激活的内容 */
+}
+
+.topic-switch {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 64px;
+    margin-top: 16px;
+    border: 1px solid #F7F8F9;
+    border-top: none;
+}
+
+.top-topic-btn {
+    background-color: transparent;
+    border: none;
+    font-size: 14px;
+    position: relative; /* 设置相对定位以便绝对定位子元素 */
+    cursor: pointer;
+    z-index: 2;
+
+}
+
+.top-topic-btn span {
+    position: relative; /* 相对定位 */
+    z-index: 2; /* 确保文本在渐变的上方 */
+}
+
+/* 添加伪元素模拟渐变边框效果 */
+.top-topic-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 8px;
+    display: block;
+    z-index: 2; /* 确保文本在渐变的上方 */
+}
+
+/* 鼠标经过按钮时的样式 */
+.top-topic-btn:hover::after {
+    z-index: -1; /* 伪元素在内容之下 */
+    background: linear-gradient(to bottom, #72A6F1, #ffffff); /* 鼠标悬停时的渐变色 */
+}
+
+/* 按钮被点击时的样式 */
+.top-topic-btn.active {
+    height: 20px;
+    font-size: 16px;
+    color: #271D1E;
+    font-weight: bold;
+
+}
+
+.top-topic-btn.active::after {
+    z-index: -1; /* 伪元素在内容之下 */
+    background: linear-gradient(to bottom, #72A6F1, #ffffff); /* 活动状态下的渐变色 */
+}
+
+
+.bonus-for-points {
+    width: 322px;
+    height: 56px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px dashed rgba(20, 20, 21, 0.65);
+    margin-bottom: 22px;
+}
+
+.bonus-for-points-value {
+    font-size: 26px;
+    font-weight: bold;
+    margin-left: 6px;
+}
+
+.bonus-for-points-sub-tittle {
+    color: #898989;
+}
+
+.bonus-for-points-sub-tittle .bonus-for-points-tittle {
+    margin-left: 16px;
+}
+
+.lottery-game-info {
+    position: relative;
+}
+
+.lottery-round-info,
+.lottery-timer {
+    width: 348px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.lottery-round-info {
+    width: 354px;
+    height: 314px;
+    background-image: url("/assets/file/myLottery-bgimg.png");
+    background-repeat: no-repeat;
+    background-position: center center;
+    color: #271D1E;
+    padding: 12px 0;
+
+}
+
+.lottery-round {
+    position: absolute;
+    top: 178px;
+    left: 16px;
+    padding: 4px 4px;
+    line-height: 14px;
+    font-size: 12px;
+    background-color: #F3A46D;
+    border: 1px solid #141415;
+}
+
+.lottery-amount {
+    font-size: 48px;
+    font-weight: 700;
+    padding: 0;
+    color: #141415;
+}
+
+.lottery-amount-div {
+    color: #271D1E;
+    line-height: 1;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    margin: 4px 0;
+}
+
+.lottery-timer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 104px;
+}
+
+
+.lottery-stats-label {
+    margin: 2px 0;
+}
+
+.lottery-stats {
+    width: 350px;
+    background-color: white;
+    border-radius: 6px;
+    padding: 16px;
+    position: absolute;
+    top: 298px;
+    left: 4px;
+}
+
+.lottery-stats-total {
+    display: flex;
+    justify-content: space-around;
+}
+
+.lottery-stats-total span {
+    display: block;
+}
+
+.lottery-stats-label {
+    display: flex; /* 启用flex布局 */
+    flex-direction: column; /* 子项沿垂直方向排列 */
+    justify-content: center; /* 子项在容器中垂直居中 */
+    align-items: center; /* 子项在容器中水平居中 */
+
+}
+
+.countdown {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 18px;
+
+}
+
+.timeTitle {
+    margin-top: 184px;
+    transform: rotate(2deg); /* 添加旋转 */
+}
+
+.countdown .countdownDays {
+    position: absolute;
+    top: 212px;
+    left: 24px;
+    transform: rotate(2deg); /* 添加旋转 */
+    background-color: #141415;
+    border: 1px solid #979797;
+    border-radius: 12px;
+    width: 52px;
+    height: 54px;
+    line-height: 54px;
+    text-align: center;
+}
+
+.countdown .hours {
+    position: absolute;
+    top: 219px;
+    left: 102px;
+    transform: rotate(2deg); /* 添加旋转 */
+    background-color: #141415;
+    border: 1px solid #979797;
+    border-radius: 12px;
+    width: 52px;
+    height: 54px;
+    line-height: 54px;
+    text-align: center;
+}
+
+.countdown .minutes {
+    position: absolute;
+    top: 223px;
+    left: 181px;
+    transform: rotate(2deg); /* 添加旋转 */
+    background-color: #141415;
+    border: 1px solid #979797;
+    border-radius: 12px;
+    width: 52px;
+    height: 54px;
+    line-height: 54px;
+    text-align: center;
+}
+
+.countdown .seconds {
+    position: absolute;
+    top: 228px;
+    left: 262px;
+    transform: rotate(2deg); /* 添加旋转 */
+    background-color: #141415;
+    border: 1px solid #979797;
+    border-radius: 12px;
+    width: 52px;
+    height: 54px;
+    line-height: 54px;
+    text-align: center;
+}
+
+.number {
+    font-size: 36px;
+    border-radius: 10px;
+}
+
+.days,
+.hours,
+.minutes,
+.seconds {
+    font-weight: 600;
+    color: white;
+}
+
+.countdown-result {
+    display: none;
+    position: absolute;
+    top: 222px;
+    left: 24px;
+    height: 52px;
+    width: 290px;
+    color: #F3D86D;
+    background-color: #141415;
+    text-align: center; /* 文本水平居中（对于inline元素或当flex不起作用时） */
+    letter-spacing: 18px; /* 设置字母间距为100px */
+    padding-top: 16px;
+    transform: rotate(3deg); /* 添加旋转 */
+    border-radius: 12px;
+    border: 1px solid #979797;
+}
+
+.countdown-result h2 {
+    font-size: 18px;
+}
+
+.lottery-participate-btn {
+    border: none;
+    background-color: #1B1B1D;
+    color: white;
+    padding: 8px 42px;
+    border-radius: 12px;
+    display: block;
+    margin: 8px auto;
+}
+
+.lottery-participate-btn:hover {
+    background-color: #232326;
+}
+
+.rule-info-btn:hover {
+    color: #4EA0F2;
+}
+
+.rule-info-btn {
+    border: none;
+    background-color: transparent;
+    color: #898989;
+    padding: 0;
+}
+
+.rule-info {
+    font-size: 14px;
+    margin-top: 16px;
+    border-top: 1px solid #E4E4DF;
+    padding-top: 16px;
+}
+
+.rule-info p {
+    margin: 6px 0;
+}
+
+.rule-info ul,
+.rule-info ul li h4 {
+    padding: 0;
+    margin: 0;
+}
+
+.rule-info ul li {
+    list-style: none;
+    margin-top: 6px;
+}
+
+.rule-info ul li h4 {
+    color: #1B1B1D;
+}
+
+.temporary-alert-popup {
+    visibility: hidden;
+    max-width: 300px;
+    background-color: rgba(232, 50, 26, 0.9);
+    color: white;
+    text-align: center;
+    border-radius: 12px;
+    padding: 12px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 30px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+
+}
+
+.temporary-alert-popup.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}

@@ -1,0 +1,694 @@
+
+.tweets-park {
+    flex-grow: 1.618;
+    background-color: #e6e6e6;
+    margin-bottom: 16px;
+}
+
+.tweet-first-half {
+    display: flex; /* 启用flex布局 */
+    align-items: center; /* 垂直居中对齐子元素 */
+    position: relative;
+}
+
+.tweet-header {
+    display: inline-block;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.tweet-header img {
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.username {
+    color: #898989;
+}
+
+.tweet-text-info {
+    margin-left: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #F7F8F9;
+    margin-top: 8px;
+    text-align: right;
+    padding-top: 16px;
+}
+
+.tweet-footer {
+    display: flex !important;
+    justify-content: flex-end;
+    align-items: center;
+    /*margin-top: -4px;*/
+}
+
+.tweet-footer .tweet-action {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.tweet-action button {
+    display: flex;
+    align-items: center;
+    /* 其他必要的样式 */
+}
+
+.tweet-action-vote img {
+    width: 22px;
+    height: auto;
+}
+
+.tweet-action-with-status {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.tweet-info,
+.vote-count {
+    font-size: 16px;
+    color: #232326;
+    margin-right: 6px;
+    font-weight: 500;
+}
+
+.vote-countTop {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    text-align: right;
+
+}
+
+.vote-numberOne {
+    color: #FDBE51;
+}
+
+.vote-numberTwo {
+    color: #5191fd;
+}
+
+.vote-numberThree {
+    color: #FD7851;
+}
+
+.vote-numberOther {
+    color: #B5B5B6;
+}
+
+
+.vote-number {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 30px;
+}
+
+.tweet-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+    grid-gap: 1.2rem 1.2rem;
+    gap: 1.2rem 1.2rem;
+    align-items: center;
+    padding: 12px;
+}
+
+.image-item-in-tweet {
+    width: 248px; /* 固定宽度 */
+    height: 164px; /* 固定高度，根据你的图片实际高度调整 */
+    overflow: hidden;
+    position: relative;
+}
+
+.image-item-in-tweet img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+}
+
+.image-item-in-tweet:last-child {
+    margin-right: 0;
+}
+
+.tweet-image-raw {
+    position: fixed;
+    z-index: 10;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+}
+
+.tweet-image-detail {
+    display: block;
+    width: 95%;
+    height: 95vh;
+    object-fit: contain;
+    margin: auto;
+}
+
+.tweet-image-raw button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: #d2d1d1;
+    font-size: 20px;
+    font-weight: 400;
+    transition: 0.3s;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    line-height: 36px;
+    border: none;
+    align-items: center;
+}
+
+.tweet-image-raw button:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+
+}
+
+.tweet-image-hash {
+    position: absolute;
+    left: 35%;
+    color: white;
+    margin-top: 8px;
+}
+
+.referral-Code-info {
+    display: none;
+    background-color: white;
+    border-radius: 12px;
+    padding: 16px;
+    position: absolute;
+    top: -20px;
+    right: 70px;
+    box-shadow: rgba(0, 0, 0, 0.08) 0 6px 16px;
+}
+
+.referral-CodeBtn {
+    background-color: rgba(78, 160, 242, 0.5);
+    border-radius: 12px;
+    font-size: 14px;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.referral-CodeBtn :hover {
+    background-color: #5191fd;
+}
+
+.referral-Code-info span {
+    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+}
+
+.referral-Code {
+    border: 1px dashed #141415;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.referral-Code:hover {
+    background-color: rgba(137, 137, 137, 0.1);
+}
+
+
+.tweet-card {
+    max-height: 2000px;
+    display: block;
+    min-height: 100px;
+    overflow: hidden;
+    background-color: #fff;
+    border: 1px solid #F7F8F9;
+    border-top: none;
+    padding: 16px;
+    transition: max-height 0.3s ease;
+    position: relative;
+}
+
+.tweet-card:hover {
+    background-color: rgba(114, 166, 241, 0.03);
+    background-color: white;
+}
+
+.twitterAvatar {
+    width: 52px;
+    margin-right: 8px;
+    border-radius: 50%;
+    position: relative;
+}
+
+.elderFlagOnAvatar {
+    width: 22px;
+    display: none;
+    position: absolute;
+    top: 30px;
+    left: 30px;
+}
+
+.tweet-action-vote {
+    background: linear-gradient(to right, rgba(114, 166, 241, 0.55), #ffffff);
+    color: #141415;
+    padding: 10px 16px;
+    margin-left: 8px;
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.tweet-action-vote span {
+    margin-right: 4px;
+    font-weight: 400;
+}
+
+.tweet-action-vote:hover {
+    background: linear-gradient(to right, rgba(114, 166, 241, 0.9), #ffffff);
+}
+
+.show-more {
+    right: 0;
+    bottom: 0;
+    color: #72A6F1;
+    cursor: pointer;
+    margin: 0 0 0 56px;
+    font-size: 14px;
+    border: none;
+}
+
+.show-more:hover {
+    color: #72A6F1;
+}
+
+.tweet-content-collapsed,
+.tweet-content {
+    font-size: 15px;
+    line-height: 25px;
+    font-weight: 350;
+    color: #141415;
+}
+
+.tweet-content {
+    margin-left: 60px;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+}
+
+.tweet-content-collapsed {
+    overflow: hidden;
+    cursor: pointer;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    position: relative;
+    word-wrap: break-word;
+}
+
+.tweet-text {
+    font-size: 15px;
+    line-height: 25px;
+    font-weight: 350;
+    color: #141415;
+    margin: 8px 0 8px 60px;
+    word-wrap: break-word;
+}
+
+.tweetPaymentDelete {
+    display: none;
+    background-color: transparent; /* 例如，红色背景 */
+    color: #7E7F82;
+    padding: 6px 12px;
+    margin: 4px 2px;
+    border: none;
+    cursor: pointer;
+}
+
+.tweetPaymentDelete.show {
+    display: inline-block;
+}
+
+.tweetPaymentRetry {
+    display: none;
+    background-color: #72A6F1E5;
+    color: white;
+    padding: 6px 12px;
+    margin: 4px 2px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.tweetPaymentRetry.show {
+    display: inline-block;
+}
+
+.team-card {
+    margin: auto;
+}
+
+.team-leader-info {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically */
+    padding: 16px;
+}
+
+.team-leader {
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: flex-start; /* Centers vertically */
+}
+
+.team-leader div span {
+    display: inline-block;
+}
+
+.team-info {
+    margin: 4px;
+}
+
+.team-info span {
+    font-size: 14px;
+    color: #7E7F82;
+    background: #E4E4DF;
+    padding: 4px 8px;
+    border-radius: 8px;
+}
+
+.team-id {
+    font-size: 14px;
+    color: #7E7F82;
+    display: flex;
+
+}
+
+.team-id-txt {
+    max-width: 80%; /* Ensures the div doesn't extend beyond its container */
+    word-wrap: break-word; /* Allows the text to wrap inside the container */
+}
+
+.team-id:hover {
+    color: #72A6F1E5;
+}
+
+.team-action {
+    text-align: right;
+}
+
+.team-action button {
+    white-space: nowrap;
+    padding: 8px 16px;
+    border-radius: 18px;
+    border: none;
+    margin: 4px 0;
+}
+
+.join-team {
+    background: #72A6F1E5;
+    color: #fff;
+}
+
+.show-team-mates {
+    color: #72A6F1E5;
+}
+
+
+.team-members {
+    list-style-type: none;
+    padding: 0;
+    margin: auto;
+}
+
+.team-membersName,
+.user-voted-count {
+    line-height: 80px;
+    height: 80px;
+}
+
+.team-members li {
+    position: relative;
+    height: 80px; /* 根据需要调整高度 */
+    border: 1px solid #F7F8F9;
+    border-top: none;
+    background-color: white;
+}
+
+.team-membersAvatar {
+    position: absolute;
+    top: 16px;
+    left: 50px; /* 根据需要调整位置 */
+}
+
+.team-membersName {
+    position: absolute;
+    top: 0;
+    left: 108px; /* 根据需要调整位置 */
+}
+
+.user-voted-count {
+    position: absolute;
+    top: 2px;
+    right: 16px;
+    width: 52px;
+    font-size: 24px;
+    text-align: left;
+}
+
+
+.tweet-detail-info {
+    display: none;
+    margin-top: 16px;
+    flex-direction: column;
+    padding: 16px;
+    background-color: #F4F5F6;
+    border-radius: 6px;
+    margin-left: 60px;
+}
+
+.tweet-text-info-img {
+    transform: rotate(-90deg);
+}
+
+.back-button {
+    background-color: #F7F8F9;
+    padding: 12px 24px;
+    border-radius: 999px;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    color: #1B1B1D;
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.back-button img {
+    margin-right: 6px;
+}
+
+.tweet-detail-info {
+    font-size: 14px;
+    color: #7E7F82;
+}
+
+.tweet-detail {
+    padding: 16px;
+    border-left: solid 1px #F7F8F9;
+    border-right: solid 1px #F7F8F9;
+    background-color: white;
+}
+
+.tweet-payment_status {
+    color: #4EA0F2;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.tweet-prefixed-hash,
+.tweet-signature,
+.tweet-web3_id {
+    color: #1B1B1D;
+    display: block; /* 确保它是块级元素 */
+    word-wrap: break-word; /* 允许在单词内断行 */
+    max-width: 510px; /* 限制最大宽度，您可以根据需要调整这个值 */
+}
+
+.team-member-card-header {
+    cursor: pointer;
+    height: 100%;
+}
+
+
+.hidden-tweet-for-img {
+    position: absolute;
+    left: -9999px;
+    width: 552px;
+    background-color: #DAE5F5;
+    margin: 20px auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column; /* 设置flex方向为垂直 */
+    align-items: center; /* 水平居中对齐子元素 */
+    justify-content: center; /* 垂直居中对齐子元素 */
+}
+
+.hidden-tweet-txt {
+    padding: 24px;
+    width: 90%;
+    font-size: 15px;
+    font-weight: 350;
+    border: 3px solid #cfdff1; /* 边框 */
+    resize: none;
+    min-height: 4em; /* 至少容纳3行文字的高度 */
+    word-wrap: break-word; /* 如果单词太长，允许它们断行 */
+    overflow-wrap: break-word; /* 同上，保证长单词或URL可以正确断行 */
+    overflow-y: hidden; /* 隐藏垂直滚动条 */
+    white-space: pre-wrap;
+    line-height: 26px;
+    margin-bottom: 6px;
+    background-image: url("assets/file/hidden-logo.png");
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+input, textarea, [contenteditable] {
+    caret-color: #4EA0F2;
+}
+
+
+.split-tweet-content {
+    border-radius: 12px;
+    border: 1px solid #d3d5d6;
+    padding: 12px 12px 6px 12px;
+}
+
+.tweets-content-txt-area {
+    min-height: 80px;
+    max-height: 32vh;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.5;
+    outline: none;
+    font-size: 15px;
+    font-weight: 350;
+    direction: ltr; /* CSS method */
+    text-align: left; /* Ensure text alignment is left */
+    margin: 12px 0;
+    border-left: 1px solid rgba(211, 213, 214, 0.2);
+    position: relative;
+}
+
+.tweets-content-txt-area:empty::before {
+    content: attr(data-placeholder);
+    color: #ccc;
+    position: absolute;
+    top: 0px; /* Adjust based on padding */
+    left: 0;
+    pointer-events: none; /* Ensures that the placeholder text is not selectable */
+}
+
+/* 设置所有输入框的光标颜色 */
+input, textarea {
+    caret-color: #4EA0F2;
+}
+
+
+.tweet-content-txt-item {
+    display: flex;
+    justify-content: left;
+    position: relative;
+    overflow: auto;
+}
+
+.tweet-over-flow-red {
+    background-color: rgba(255, 77, 77, .25);
+}
+
+.tweet-edit-custom-menu {
+    position: absolute;
+    z-index: 1000;
+    padding: 8px;
+    background: white;
+    box-shadow: 3px 3px 5px #888888;
+    display: none;
+    border-radius: 12px;
+}
+
+.tweet-edit-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: transparent;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 12px;
+}
+
+.tweet-content-btn {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: rgba(211, 213, 214, 0.2);
+    width: 100%;
+    border-radius: 12px;
+    padding: 2px 8px;
+    margin-top: 12px;
+}
+
+.tweet-edit-btn:hover {
+    background-color: rgba(228, 228, 223, 0.5);
+}
+
+.titles-line-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 12px;
+}
+
+.titles-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #d3d5d6; /* 设置边框来创建圆圈 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.titles-line {
+    width: 2px;
+    background-color: #d3d5d6;
+    flex-grow: 1;
+    margin-top: 8px;
+}
