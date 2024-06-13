@@ -19,7 +19,7 @@
     <div class="container">
         <!-- 登录部分 -->
         <div class="login-section">
-            <h2>获取web3ID</h2>
+            <h2 id="tittle-operation-area">获取web3ID</h2>
             <div class="web3-id-label d-radius2" id="web3-id-label">
                 <strong style="margin-left: 16px; margin-bottom: 4px; display: inline-block; font-size: 14px">Web3
                     ID:</strong>
@@ -201,12 +201,12 @@
     <div class="referral-code-content">
         <span class="tweet-post-close-btn" onclick="closeReferralCode()">&times;</span>
         <div style="display: flex; align-items: center">
-            <h2 style="font-size: 18px">推荐码</h2>
-            <span class="referralTiptext">分享好用使用推荐码，将获得100积分</span>
+            <h2 style="font-size: 18px" id="tittle-referral-txt">推荐码</h2>
+            <span class="referralTiptext" id="tips-referral-txt">分享好用使用推荐码，将获得100积分</span>
         </div>
         <input type="text" id="referral-code-val" placeholder="请填写推荐码">
     </div>
-    <button class="confirm-btn" onclick="setupReferralCode()">确认</button>
+    <button class="confirm-btn" onclick="setupReferralCode()" id="btn-referral-txt">确认</button>
 </div>
 <script>
 
@@ -420,28 +420,26 @@
                     translation: {
                         "title": "SignIn Page",
                         "bridge-title": "Social Meta-Identity Mapping Table",
-                        "road-map-title": "Road Map",
-                        "road-map-step1": "Client-Side Bridging to Web2.0",
-                        "road-map-step2": "Ninja Identity Linking Web2.0, Web3.0, and Blockchain",
-                        "road-map-step3": "Access Layer Protocol",
-                        "road-map-step4": "Routing Layer Protocol",
-                        "road-map-step5": "Launching The Trustless Distributed Routing Network",
-                        "road-map-step6": "Toolset Compatible with Web2.0 Clients and Servers",
                         "bridge-list-sub-tittle": "Blockchain",
+                        "tittle-referral-txt": "Referral code",
+                        "tips-referral-txt": "Use the referral code to get 100 points",
+                        "referral-code-val": "Please enter the referral code.",
+                        "btn-referral-txt": "Confirm",
+                        "tittle-operation-area": "Finding web3ID",
+                        "web3-id-tips": "Connect MetaMask to obtain your Web3 ID",
                     }
                 },
                 zh: {
                     translation: {
                         "title": "登录页面",
                         "bridge-title": "社交元身份桥接表",
-                        "road-map-title": "研发规划路线",
-                        "road-map-step1": "客户端桥接Web2.0",
-                        "road-map-step2": "Ninja身份跨Web2.0 Web3.0 区块链",
-                        "road-map-step3": "接入层协议",
-                        "road-map-step4": "路由层协议",
-                        "road-map-step5": "启动无需信任的分布式路由网络",
-                        "road-map-step6": "兼容Web2.0客户端和服务器的工具集合",
                         "bridge-list-sub-tittle": "区块链",
+                        "tittle-referral-txt": "推荐码",
+                        "tips-referral-txt": "使用推荐码获得100积分",
+                        "referral-code-val": "请填写推荐码",
+                        "btn-referral-txt": "确认",
+                        "tittle-operation-area": "获取web3ID",
+                        "web3-id-tips": "链接MetaMask以获取Web3 ID",
                     }
                 }
             }
@@ -453,6 +451,12 @@
         document.title = i18next.t('title');
         document.getElementById('title-of-bridge-list').textContent = i18next.t('bridge-title');
         document.getElementById('bridge-list-sub-tittle').textContent = i18next.t('bridge-list-sub-tittle');
+        document.getElementById('tittle-referral-txt').textContent = i18next.t('tittle-referral-txt');
+        document.getElementById('tips-referral-txt').textContent = i18next.t('tips-referral-txt');
+        document.getElementById('referral-code-val').placeholder = i18next.t('referral-code-val');
+        document.getElementById('btn-referral-txt').textContent = i18next.t('btn-referral-txt');
+        document.getElementById('tittle-operation-area').textContent = i18next.t('tittle-operation-area');
+        document.getElementById('web3-id-tips').textContent = i18next.t('web3-id-tips');
     }
 
 </script>
