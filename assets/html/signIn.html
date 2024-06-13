@@ -292,7 +292,7 @@
         transform: translate(-50%, -50%);
         background-color: white;
         padding: 8px 32px 24px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         z-index: 1000; /* 确保弹框在最上层 */
         display: block; /* 默认显示，或根据需要调整为 none 并通过JavaScript控制显示 */
         border-radius: 24px;
@@ -363,7 +363,7 @@
     }
 
     .confirm-btn:hover {
-        background-color:  #5191fd; /* 鼠标悬停时改变按钮颜色 */
+        background-color: #5191fd; /* 鼠标悬停时改变按钮颜色 */
     }
 
 </style>
@@ -550,40 +550,34 @@
                     href="/">Ninja Protocol</a></div>
     </div>
 </div>
-<div class="referral-code-popup">
+<div class="referral-code-popup" style="display: none">
     <div class="referral-code-content">
-        <span class="tweet-post-close-btn" onclick="closePostTweetDiv()">&times;</span>
+        <span class="tweet-post-close-btn" onclick="closeReferralCode()">&times;</span>
         <div style="display: flex; align-items: center">
             <h2 style="font-size: 18px">推荐码</h2>
             <span class="referralTiptext">分享好用使用推荐码，将获得100积分</span>
         </div>
-        <input type="text" placeholder="请填写推荐码">
+        <input type="text" id="referral-code-val" placeholder="请填写推荐码">
     </div>
-    <button class="confirm-btn">确认</button>
+    <button class="confirm-btn" onclick="setupReferralCode()">确认</button>
 </div>
 <script>
 
-    // 监听窗口大小变化事件
-    window.addEventListener('resize', function() {
-        // 获取.container元素
+    window.addEventListener('resize', function () {
         const container = document.querySelector('.container');
-        // 获取.container元素距离视窗右侧的距离
         const containerRightDistance = window.innerWidth - container.getBoundingClientRect().right;
-
-        // 如果.container元素距离视窗右侧小于等于300px，则固定右侧距离为一个特定值
         const minRightDistance = 300;
         if (containerRightDistance <= minRightDistance) {
-            // 设置.container元素右侧距离为固定值
             container.style.right = minRightDistance + 'px';
         } else {
-            // 否则，保持原有的右侧距离百分比设置
             container.style.right = '20vw';
         }
     });
 
     class SignInData {
-        constructor(ethAddr, signTim) {
+        constructor(ethAddr, referrer_code, signTim) {
             this.eth_addr = ethAddr;
+            this.referrer_code = referrer_code;
             if (!signTim) {
                 this.sign_time = (new Date()).getTime();
             } else {
@@ -608,11 +602,14 @@
         const signInDiv = document.getElementById("sign-in-div");
         const metamaskDiv = document.getElementById("metamask-div");
         const web3Id = document.getElementById("web3-id");
+        const refererDiv = document.querySelector(".referral-code-popup");
+
         if (!web3ID) {
             web3IdTips.style.display = 'block';
             signInDiv.style.display = 'none';
             metamaskDiv.style.display = 'block';
             web3Id.style.display = 'none';
+            refererDiv.style.display = 'none';
             showError(null);
             return;
         }
@@ -624,11 +621,19 @@
         document.getElementById("logo-container-arbitrum").classList.add("active")
         document.getElementById("logo-container-eth").classList.add("active")
 
-        const savedUserInfo = await NJUserBasicInfo.loadNjBasic(web3ID);
+        const savedUserInfo = await loadNJUserInfoFromSrv(web3ID);
         if (!savedUserInfo) {
+            refererDiv.style.display = 'block';
             return;
         }
-        let tw_data = await TwitterBasicInfo.loadTwBasicInfo(savedUserInfo.tw_id)
+
+        if (!savedUserInfo.referrer_code){
+            refererDiv.style.display = 'block';
+        }else{
+            refererDiv.style.display = 'none';
+        }
+
+        let tw_data = await TwitterBasicInfo.loadTwBasicInfo(savedUserInfo.tw_id);
         if (!tw_data) {
             return;
         }
@@ -636,9 +641,9 @@
         document.getElementById("logo-container-twitter").classList.add("active")
     }
 
-    document.addEventListener("DOMContentLoaded", initElmStatus);
+    document.addEventListener("DOMContentLoaded", initPageElem);
 
-    async function initElmStatus() {
+    async function initPageElem() {
         await initDatabase();
 
         if (typeof window.ethereum === 'undefined') {
@@ -661,15 +666,33 @@
                 await showSignBtn(null);
                 return
             }
-            await  showSignBtn(accounts[0]);
+            await showSignBtn(accounts[0]);
         } catch (err) {
             console.error("Error checking MetaMask status:", err);
             showError(err);
         }
     }
 
+    function closeReferralCode() {
+        document.querySelector(".referral-code-popup").style.display = 'none';
+    }
+
+    function setupReferralCode() {
+        const val = document.getElementById("referral-code-val").value;
+        if (val.length !== 6) {
+            showDialog(DLevel.Tips, "referral code length invalid")
+            return;
+        }
+        const referrerInfo = loadNJUserByReferrer(val);
+        if (!referrerInfo){
+            showDialog(DLevel.Tips, "no such referrer!")
+            return;
+        }
+        document.querySelector(".referral-code-popup").style.display = 'none';
+    }
+
     async function connectToMetamask() {
-        if (!window.ethereum||!window.ethereum.isMetaMask) {
+        if (!window.ethereum || !window.ethereum.isMetaMask) {
             window.open('https://metamask.io/download/', '_blank');
             return;
         }
@@ -695,8 +718,12 @@
             showError("no valid web3 id selected");
             return;
         }
+        const val = document.getElementById("referral-code-val").value;
 
         const signParam = new SignInData(web3Id)
+        if (val.length === 6) {
+            signParam.referrer_code = val;
+        }
         const message = JSON.stringify(signParam);
         try {
             const signature = await window.ethereum.request({

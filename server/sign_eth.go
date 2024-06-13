@@ -8,9 +8,9 @@ import (
 )
 
 type SignInObj struct {
-	EthAddr string `json:"eth_addr"`
-	SignTim int64  `json:"sign_time"`
-	Referer string `json:"referer"`
+	EthAddr      string `json:"eth_addr"`
+	SignTim      int64  `json:"sign_time"`
+	ReferrerCode string `json:"referrer_code"`
 }
 
 func (so *SignInObj) String() string {
@@ -41,7 +41,7 @@ func signInByEth(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInf
 		return
 	}
 	util.LogInst().Info().Str("eth-addr", obj.EthAddr).Int64("sign-time", obj.SignTim).Msg("sign in success")
-	nu := database.DbInst().NjUserSignIn(obj.EthAddr, obj.Referer)
+	nu := database.DbInst().NjUserSignIn(obj.EthAddr, obj.ReferrerCode)
 	if nu == nil {
 		util.LogInst().Warn().Str("eth-addr", obj.EthAddr).Msgf("no user found")
 		http.Error(w, "database error", http.StatusNotFound)

@@ -4,27 +4,53 @@ import (
 	"encoding/json"
 	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"net/http"
 )
 
-func queryNjBasicByID(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+func queryNjBasicByReferrer(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	var refCode = r.URL.Query().Get("referrer_code")
+	if len(refCode) == 0 {
+		util.LogInst().Warn().Str("referrer_code", refCode).
+			Str("eth-addr", nu.EthAddr).Msg("invalid web3 id param")
+		http.Error(w, "web3 id invalid", http.StatusBadRequest)
+		return
+	}
+	obj, err := database.DbInst().QueryNjUsrByReferrer(refCode)
+	if err != nil && status.Code(err) != codes.NotFound {
+		util.LogInst().Err(err).Msg("query ninja user data  failed")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if obj != nil {
+		json.NewEncoder(w).Encode(obj)
+	}
+}
+
+func queryNjBasicByID(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {
 	var web3ID = r.URL.Query().Get("web3_id")
 	if len(web3ID) == 0 {
-		util.LogInst().Warn().Str("web3-id", web3ID).
-			Str("eth-addr", nu.EthAddr).Msg("invalid web3 id param")
+		util.LogInst().Warn().Str("web3-id", web3ID).Msg("invalid web3 id param")
 		http.Error(w, "web3 id invalid", http.StatusBadRequest)
 		return
 	}
 
 	obj, err := database.DbInst().QueryNjUsrById(web3ID)
-	if err != nil {
+	if err != nil && status.Code(err) != codes.NotFound {
 		util.LogInst().Err(err).Msg("query ninja user data  failed")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(obj.RawData())
+	if obj != nil {
+		json.NewEncoder(w).Encode(obj)
+	}
 }
 
 func mostVotedKol(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {

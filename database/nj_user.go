@@ -25,7 +25,7 @@ type NinjaUsrInfo struct {
 	BeVotedCount int    `json:"be_voted_count" firestore:"be_voted_count"`
 	Points       int    `json:"points"  firestore:"points"`
 	IsElder      bool   `json:"is_elder" firestore:"is_elder"`
-	Referrer     string `json:"referrer" firestore:"referrer"`
+	ReferrerCode string `json:"referrer_code" firestore:"referrer_code"`
 	SelfRefCode  string `json:"self_ref_code" firestore:"self_ref_code"`
 }
 
@@ -75,8 +75,8 @@ func (dm *DbManager) NjUserSignIn(ethAddr, Referer string) *NinjaUsrInfo {
 		if len(nu.SelfRefCode) == 0 {
 			updateOps = append(updateOps, firestore.Update{Path: "self_ref_code", Value: ethAddr[len(ethAddr)-6:]})
 		}
-		if len(Referer) > 0 && len(nu.Referrer) == 0 {
-			updateOps = append(updateOps, firestore.Update{Path: "referrer", Value: Referer})
+		if len(Referer) > 0 && len(nu.ReferrerCode) == 0 {
+			updateOps = append(updateOps, firestore.Update{Path: "referrer_code", Value: Referer})
 		}
 		_, _ = docRef.Update(opCtx, updateOps)
 		nu.SignInAt = signInTime
@@ -96,7 +96,7 @@ func (dm *DbManager) NjUserSignIn(ethAddr, Referer string) *NinjaUsrInfo {
 	}
 
 	if len(Referer) > 0 {
-		nu.Referrer = Referer
+		nu.ReferrerCode = Referer
 	}
 	_, err = docRef.Set(opCtx, nu)
 	if err != nil {
@@ -105,6 +105,28 @@ func (dm *DbManager) NjUserSignIn(ethAddr, Referer string) *NinjaUsrInfo {
 	}
 	util.LogInst().Debug().Str("eth-addr", ethAddr).Msg("firestore create ninja user success")
 	return nu
+}
+
+func (dm *DbManager) QueryNjUsrByReferrer(referrer string) (*NinjaUsrInfo, error) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+	query := dm.fileCli.Collection(DBTableNJUser).Where("self_ref_code", "==", referrer).Limit(1)
+	iter := query.Documents(opCtx)
+	defer iter.Stop()
+
+	doc, err := iter.Next()
+	if err != nil {
+		util.LogInst().Err(err).Str("self_ref_code", referrer).Msg("query ninja user by referrer failed")
+		return nil, err
+	}
+
+	var nu NinjaUsrInfo
+	err = doc.DataTo(&nu)
+	if err != nil {
+		util.LogInst().Err(err).Str("self_ref_code", referrer).Msg("data to nj user err")
+		return nil, err
+	}
+	return &nu, nil
 }
 
 func (dm *DbManager) QueryNjUsrById(web3ID string) (*NinjaUsrInfo, error) {
@@ -123,7 +145,6 @@ func (dm *DbManager) QueryNjUsrById(web3ID string) (*NinjaUsrInfo, error) {
 		return nil, err
 	}
 	return &nu, nil
-
 }
 
 func (dm *DbManager) MostVotedKol(pageSize int, startID int64, vote bool) ([]*NinjaUsrInfo, error) {

@@ -39,95 +39,6 @@ function startCountdown(callback) {
     }, 1000);
 }
 
-//
-// function PostToSrvByJson(url, data) {
-//     const requestOptions = {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(data)
-//     };
-//
-//     const csrfToken = document.getElementById('csrf_token');
-//     if (csrfToken) {
-//         requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
-//         // console.log("CSRF-Token=>",csrfToken.value);
-//     }
-//
-//     return new Promise((resolve, reject) => {
-//         fetch(url, requestOptions)
-//             .then(response => {
-//                 if (response.redirected) {
-//                     window.location = response.url;
-//                     return;
-//                 }
-//                 if (!response.ok) {
-//
-//                     if (response.status === 302 || response.status === 301) {
-//                         window.location = response.url;
-//                         return;
-//                     }
-//
-//                     return response.text().then(text => {
-//                         console.log(text)
-//                         throw new Error('\tserver responded with an error:' + response.status);
-//                     });
-//                 }
-//                 if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
-//                     return {};
-//                 }
-//                 return response.json();
-//             })
-//             .then(data => {
-//                 resolve(data);
-//             })
-//             .catch(error => {
-//                 console.log(error);
-//                 reject(error);
-//             });
-//     });
-// }
-//
-// async function GetToSrvByJson(url) {
-//     const requestOptions = {
-//         method: 'GET',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//     };
-//     const csrfToken = document.getElementById('csrf_token');
-//     if (csrfToken) {
-//         requestOptions.headers['X-CSRF-Token'] = csrfToken.value;
-//     }
-//
-//     try {
-//         const response = await fetch(url, requestOptions);
-//         if (response.redirected) {
-//             window.location = response.url;
-//             return;
-//         }
-//         if (!response.ok) {
-//             if ([301, 302, 303, 307, 308].includes(response.status)) {
-//                 window.location = response.url;
-//                 return;
-//             }
-//             const text = await response.text();
-//             console.log(text);
-//             throw new Error('Server responded with an error: ' + response.status);
-//         }
-//         if (response.headers.get("Content-Length") === "0" || !response.headers.get("Content-Type").includes("application/json")) {
-//             return {};
-//         }
-//
-//         return await response.json();
-//     } catch (error) {
-//         console.error('Error during fetch:', error);
-//         throw error;
-//     }
-// }
-
-
 async function fetchFromSrv(url, options) {
     const csrfToken = document.getElementById('csrf_token');
     if (csrfToken) {
@@ -158,7 +69,7 @@ async function fetchFromSrv(url, options) {
         return await response.json();
     } catch (error) {
         console.error('Error during fetch:', error);
-        if(!error.toString().includes("NetworkError")){
+        if (!error.toString().includes("NetworkError")) {
             throw error;
         }
     }
@@ -423,7 +334,8 @@ class TwitterBasicInfo {
 class NJUserBasicInfo {
 
     constructor(address, eth_addr, create_at, tw_id, update_at,
-                tweet_count, vote_count, be_voted_count, is_elder) {
+                tweet_count, vote_count, be_voted_count, is_elder,
+                referrer_code, self_ref_code) {
         this.address = address;
         this.eth_addr = eth_addr;
         this.create_at = create_at;
@@ -433,8 +345,9 @@ class NJUserBasicInfo {
         this.vote_count = vote_count;
         this.be_voted_count = be_voted_count;
         this.is_elder = is_elder;
+        this.referrer_code = referrer_code;
+        this.self_ref_code = self_ref_code;
     }
-
 
     static async loadNjBasic(ethAddr) {
         const storedData = await getItemWithTimestamp(DbKeyForNjUserData(ethAddr.toLowerCase()))
@@ -443,15 +356,22 @@ class NJUserBasicInfo {
         }
         const nuObj = JSON.parse(storedData);
         return new NJUserBasicInfo(nuObj.address, nuObj.eth_addr, nuObj.create_at, nuObj.tw_id,
-            nuObj.update_at, nuObj.tweet_count, nuObj.vote_count, nuObj.be_voted_count, nuObj.is_elder);
+            nuObj.update_at, nuObj.tweet_count, nuObj.vote_count,
+            nuObj.be_voted_count, nuObj.is_elder, nuObj.referrer_code, nuObj.self_ref_code);
     }
 
     static cacheNJUsrObj(obj) {
         if (!obj.eth_addr) {
             throw new Error("invalid twitter basic info")
         }
-
         setItemWithTimestamp(DbKeyForNjUserData(obj.eth_addr.toLowerCase()), JSON.stringify(obj));
+    }
+
+    static cacheNJUsrObjByReferrer(obj) {
+        if (!obj.self_ref_code) {
+            throw new Error("invalid twitter basic info")
+        }
+        setItemWithTimestamp(DbKeyForNjUserData(obj.self_ref_code.toLowerCase()), JSON.stringify(obj));
     }
 }
 
@@ -666,11 +586,65 @@ async function __shareVoteToTweet(create_time, vote_count, slogan) {
     });
 }
 
+async function loadNJUserInfoFromSrv(ethAddr, useCache = true) {
+    try {
+        if (!useCache) {
+            const response = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
+            if (!response) {
+                return null;
+            }
+            NJUserBasicInfo.cacheNJUsrObj(response);
+            return response;
+        }
+
+        let nj_data = await NJUserBasicInfo.loadNjBasic(ethAddr);
+        if (nj_data) {
+            return nj_data;
+        }
+
+        nj_data = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
+        if (nj_data) {
+            NJUserBasicInfo.cacheNJUsrObj(nj_data);
+        }
+        return nj_data;
+    } catch (err) {
+        console.log("queryTwBasicById err:", err)
+        return null;
+    }
+}
+
+async function loadNJUserByReferrer(referrer, useCache = true) {
+    try {
+        if (!useCache) {
+            const response = await GetToSrvByJson("/queryNjBasicByReferrer?referrer_code=" + referrer.toLowerCase());
+            if (!response) {
+                return null;
+            }
+            NJUserBasicInfo.cacheNJUsrObjByReferrer(response);
+            return response;
+        }
+
+        let nj_data = await NJUserBasicInfo.loadNjBasic(referrer);
+        if (nj_data) {
+            return nj_data;
+        }
+
+        nj_data = await GetToSrvByJson("/queryNjBasicByReferrer?referrer_code=" + referrer.toLowerCase());
+        if (nj_data) {
+            NJUserBasicInfo.cacheNJUsrObjByReferrer(nj_data);
+        }
+        return nj_data;
+    } catch (err) {
+        console.log("queryTwBasicById err:", err)
+        return null;
+    }
+}
+
 function checkMetamaskErr(err) {
     console.error("Transaction error: ", err);
     hideLoading();
 
-    if(err.code === -32603 || err.message === "Internal JSON-RPC error."){
+    if (err.code === -32603 || err.message === "Internal JSON-RPC error.") {
         showDialog(DLevel.Warning, "metamask invalid right now.");
         return null
     }
@@ -695,12 +669,11 @@ function checkMetamaskErr(err) {
         return null;
     }
 
-
     if (!err.data || !err.data.message) {
-        if(code){
+        if (code) {
             code = code + err.message;
-        }else{
-            code =  err.message;
+        } else {
+            code = err.message;
         }
     } else {
         code = "code:" + err.data.code + " " + err.data.message
@@ -786,35 +759,6 @@ function readFileAsBlob(file) {
         };
         reader.readAsDataURL(file);
     });
-}
-
-function tweetSubString(str, maxLength) {
-    if (maxLength >= str.length) {
-        return {result: str, remaining: ''};
-    }
-
-    let pattern = /[\u4e00-\u9fa5]|[\w\-']+[^\s]*|\s+|[\uff00-\uffff]/g;
-    let tokens = str.match(pattern) || [];
-    let endIndex = 0;
-    let tweetLen = 0;
-
-    for (let i = 0; i < tokens.length; i++) {
-        let token = tokens[i];
-        let tokenLength = twttr.txt.getTweetLength(token);
-
-        if (tweetLen + tokenLength > maxLength) {
-            console.log("last length:=>", token.length, endIndex, tokenLength, tweetLen);
-            break;
-        }
-
-        endIndex += token.length;
-        tweetLen += tokenLength;
-        console.log(token.length, endIndex, tokenLength, tweetLen);
-    }
-
-    let result = str.substring(0, endIndex);
-    let remaining = str.substring(endIndex);
-    return {result, remaining};
 }
 
 function safeSubstring(str, maxLength) {

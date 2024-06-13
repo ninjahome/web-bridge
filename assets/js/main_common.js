@@ -86,7 +86,7 @@ async function showHoverCard(event, twitterObj, web3ID, offset) {
     const hoverCard = document.getElementById('hover-card');
     const rect = event.currentTarget.getBoundingClientRect();
 
-    const njUsrInfo = await loadNJUserInfoFromSrv(web3ID, true);
+    const njUsrInfo = await loadNJUserInfoFromSrv(web3ID);
 
     if (twitterObj) {
         document.getElementById('hover-avatar').src = twitterObj.profile_image_url;
@@ -168,7 +168,7 @@ async function TweetsQuery(param, newest, cacheObj) {
 
 async function __setOnlyHeader(tweetHeader, twitter_id, web3ID) {
     const twitterObj = await TwitterBasicInfo.loadTwBasicInfo(twitter_id);
-    const njUsrInfo = await loadNJUserInfoFromSrv(web3ID, true);
+    const njUsrInfo = await loadNJUserInfoFromSrv(web3ID);
 
     if (twitterObj) {
         tweetHeader.querySelector('.twitterAvatar').src = twitterObj.profile_image_url;
@@ -479,34 +479,6 @@ async function updateVoteStatusToSrv(create_time, vote_count, txHash) {
         tx_hash: txHash,
     });
 }
-
-async function loadNJUserInfoFromSrv(ethAddr, useCache) {
-    try {
-        if (!useCache) {
-            const response = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
-            if (!response) {
-                return null;
-            }
-            NJUserBasicInfo.cacheNJUsrObj(response);
-            return response;
-        }
-
-        let nj_data = await NJUserBasicInfo.loadNjBasic(ethAddr);
-        if (nj_data) {
-            return nj_data;
-        }
-
-        nj_data = await GetToSrvByJson("/queryNjBasicByID?web3_id=" + ethAddr.toLowerCase());
-        if (nj_data) {
-            NJUserBasicInfo.cacheNJUsrObj(nj_data);
-        }
-        return nj_data;
-    } catch (err) {
-        console.log("queryTwBasicById err:", err)
-        return null;
-    }
-}
-
 
 async function withdrawAction(contract) {
     try {
