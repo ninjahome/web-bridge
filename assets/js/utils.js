@@ -670,24 +670,29 @@ function checkMetamaskErr(err) {
     console.error("Transaction error: ", err);
     hideLoading();
 
+    if(err.code === -32603 || err.message === "Internal JSON-RPC error."){
+        showDialog(DLevel.Warning, "metamask invalid right now.");
+        return null
+    }
+
     if (err.code === 4001 || err.code === "ACTION_REJECTED") {
         return null;
     }
 
     if (err.code === 4100) {
         showDialog(DLevel.Warning, "open metamask first");
-        return;
+        return null;
     }
 
     if (err.code === -32603) {
         showDialog(DLevel.Warning, "check your metamask please");
-        return;
+        return null;
     }
 
     let code = err.code;
     if (code === "CALL_EXCEPTION" && err.action === "estimateGas" && !err.reason) {
         showDialog(DLevel.Warning, "insufficient funds");
-        return;
+        return null;
     }
 
 
@@ -705,7 +710,7 @@ function checkMetamaskErr(err) {
     }
     if (code.includes("insufficient funds")) {
         showDialog(DLevel.Warning, "insufficient funds");
-        return
+        return null
     }
     showDialog(DLevel.Warning, code);
     return code;
