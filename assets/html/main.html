@@ -376,6 +376,50 @@
             margin-top: 8px;
         }
 
+        .referral-Code-info {
+            display: none;
+            background-color: white;
+            border-radius: 12px;
+            padding: 16px;
+            position: absolute;
+            top: -20px;
+            right: 70px;
+            box-shadow: rgba(0, 0, 0, 0.08) 0 6px 16px;
+        }
+
+        .referral-CodeBtn {
+            background-color: rgba(78, 160, 242, 0.5);
+            border-radius: 12px;
+            font-size: 14px;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        .referral-CodeBtn :hover {
+            background-color: #5191fd;
+        }
+
+        .referral-Code-info span {
+            white-space: nowrap;
+            display: flex;
+            justify-content: center;
+        }
+
+        .referral-Code {
+            border: 1px dashed #141415;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .referral-Code:hover{
+            background-color: rgba(137, 137, 137, 0.1);
+        }
+
     </style>
     <style about="tweet card">
 
@@ -1446,9 +1490,9 @@
         }
 
         .about-twitter div span {
-            color: #271D1E;
-            font-size: 18px;
-            font-weight: 500;
+            font-size: 14px;
+            font-weight: 400;
+            color: #898989;
         }
 
         .user-twitter-avatar img {
@@ -2000,9 +2044,8 @@
             </div>
             <div id="tweets-voted-by-user" class="tweets-park"></div>
         </div>
-        <div id="middle-div-about-user" class="content-in-middle-area">
+        <div id="middle-div-about-user" class="content-in-middle-area active">
             <div class="user-settings">
-
                 <div class="user-settings-tab">
                     <button title="Sync Twitter Meta" onclick="refreshTwitterInfo()" class="user-syncTwitter"
                             id="user-setting-sync-twitter">
@@ -2018,16 +2061,25 @@
                     </div>
                 </div>
                 <div class="user-info">
-                    <div class="about-twitter">
-                        <div class="user-twitter-avatar"><img id="user-twitter-avatar" src="/assets/file/logo.png"
-                                                              alt="twitter-avatar"></div>
-                        <div style="margin-left: 4px;">
+                    <div style="display: flex;justify-content: space-between; align-items: center">
+                        <div class="about-twitter">
+                            <div class="user-twitter-avatar"><img id="user-twitter-avatar" src="/assets/file/logo.png"
+                                                                  alt="twitter-avatar"></div>
+                            <div style="margin-left: 4px;">
                                 <span class="user-twitter-name name twitterName"><span
                                             id="user-setting-name"> </span></span>
-                            <span style="color: #898989; font-size:16px; font-weight: normal"><span
-                                        id="user-setting-user-name"> </span></span>
-                            <br>
-                            <span>Web3 ID:<span id="basic-web3-id" class="user-web3-id">0x123...</span></span>
+                                <span style="color: #898989; font-size:16px; font-weight: normal"><span
+                                            id="user-setting-user-name"> </span></span>
+                                <br>
+                                <span>Web3 ID:<span id="basic-web3-id" class="user-web3-id">0x87a43eeda49f2ec52c581573489743f86d8c8649</span></span>
+                            </div>
+                        </div>
+                        <div style="margin-left: 12px; position: relative">
+                            <button class="referral-CodeBtn">推荐码</button>
+                            <div class="referral-Code-info" >
+                                <span class="referral-Code">123456</span>
+                                <span style="font-size: 12px;color: #898989; font-weight: normal">点击复制推荐码</span>
+                            </div>
                         </div>
                     </div>
 
