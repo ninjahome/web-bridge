@@ -1063,6 +1063,7 @@
             font-size: 14px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             border-bottom: 1px dashed rgba(20, 20, 21, 0.65);
             margin-bottom: 22px;
         }
@@ -2260,13 +2261,21 @@
         <div class="lottery-game-info" id="lottery-game-info">
             <div class="lottery-round-info">
                 <div class="bonus-for-points">
-                    <div class="bonus-for-points-sub-tittle">
-                        <span class="bonus-for-points-tittle" id="bonus-for-points-tittle">积分奖池</span>
-                    </div>
-                    <div class="bonus-for-points-bonus">
+                    <div style="display: flex; align-items: center">
+                        <div class="bonus-for-points-sub-tittle">
+                            <span class="bonus-for-points-tittle" id="bonus-for-points-tittle">积分奖池</span>
+                        </div>
+                        <div class="bonus-for-points-bonus">
                         <span class="bonus-for-points-tittle"><span class="bonus-for-points-value"
                                                                     id="bonus-for-points-value">0.00</span> ETH</span>
+                        </div>
                     </div>
+
+                    <div style="display: flex; flex-direction: column; align-items: flex-end">
+                        <span style="font-size: 20px; color: #efd97d; font-weight: 500; line-height: 18px">+200<span style="font-size: 12px">积分</span></span>
+                        <span style="font-size: 14px">下轮奖励</span>
+                    </div>
+
                 </div>
                 <div class="lottery-round"><span id="lottery-round-tittle-1">第</span><span
                             class="lottery-game-round-no" style="font-size:18px; font-weight: 500;"> 0 </span><span
