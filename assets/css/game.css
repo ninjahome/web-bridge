@@ -1,0 +1,476 @@
+
+html, body {
+    margin: 0; /* Reset default margin */
+    padding: 0;
+    display: flex; /* Enable Flexbox */
+    justify-content: center; /* Center horizontally */
+    overflow-x: hidden; /* Hide horizontal scrollbar at the body level */
+}
+
+body {
+    background-image: url("/assets/file/lottery-bgimage.png");
+    background-repeat: no-repeat;
+    background-color: #F4F5F6;
+}
+.main-container {
+    width: auto;
+    margin: 0 auto; /* Center the container */
+}
+
+@media (max-width: 1000px) {
+    body {
+        overflow-x: auto; /* Enable horizontal scrollbar when viewport width is less than 1000px */
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Baloo Chettan 2", Helvetica, Arial, sans-serif, "Alibaba PuHuiTi";
+}
+
+.main-container {
+    margin-top: 64px;
+}
+
+.rule-info-btn:hover {
+    color: #4EA0F2;
+}
+
+.return-main-btn {
+    color: #898989;
+    background-color: #ffffff;
+    padding: 8px 24px;
+    border: none;
+    border-radius: 999px;
+}
+
+h3, h4, p, ul {
+    margin: 0;
+    padding: 0;
+}
+
+.user-section,
+.game-section,
+.history-section {
+    max-width: 734px;
+    background-color: white;
+    padding: 16px 24px;
+    border: 1px solid #EDEEF2;
+    margin: 8px 0;
+    border-radius: 6px;
+    color: #1B1B1D;
+
+}
+
+.withdraw-btn,
+.betting-btn,
+.query-btn {
+    border-radius: 12px;
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 8px 24px;
+    flex-shrink: 0; /* 防止按钮在小屏幕上缩小 */
+}
+
+.withdraw-btn,
+.query-btn {
+    background-color: #141415;
+}
+
+.betting-btn {
+    background-color: #F3D86D;
+    color: #141415;
+}
+
+.betting-btn:hover {
+    background-color: #e1c24f;
+}
+
+.withdraw-btn:hover,
+.query-btn:hover {
+    background-color: #232326;
+}
+
+.ticket-price-for-outer-user {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.rule-info-btn,
+.game-algorithm-btn,
+.game-rule-btn {
+    border: none;
+    background-color: transparent;
+    color: #898989;
+    padding: 0;
+}
+
+h3 {
+    margin: 8px 0;
+}
+
+
+/* 当内容过长时，取消 text-overflow 和显示所有文本 */
+.tickets-detail:hover .team-id-txt,
+.team-detail:hover .team-id-txt {
+    white-space: normal; /* 允许文字换行 */
+    text-overflow: clip; /* 取消省略号 */
+    overflow: visible; /* 显示所有文本 */
+}
+
+.team-id-txt {
+    white-space: normal; /* 允许文字换行 */
+    word-break: break-all; /* 允许单词内换行 */
+}
+
+.team-detail-for-one-header {
+    border-top: 1px solid #D3D5D6;
+    padding: 8px 0;
+}
+
+.user-balance {
+    display: flex;
+}
+
+/* 使用 Flexbox 排列元素在同一行 */
+.user-balance {
+    display: flex; /* 使用 Flexbox 布局 */
+    align-items: center; /* 垂直居中对齐按钮和文本 */
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.balance-value {
+    margin-right: 6px; /* 添加一些右侧间距，以分隔数值和按钮 */
+    font-weight: bold;
+    font-size: 36px;
+}
+
+.ticket-action {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    list-style-type: none;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #E8E8E8;
+    position: relative; /* 设置相对定位，为伪元素定位做准备 */
+}
+
+
+.ticket-action::after {
+    content: ""; /* 伪元素内容为空 */
+    position: absolute; /* 绝对定位，相对于其最近的相对定位祖先（.ticket-action） */
+    left: 50%; /* 定位到容器的中央 */
+    transform: translateX(-50%); /* 确保准确居中 */
+    top: 16px; /* 从顶部开始 */
+    bottom: 0; /* 延伸到底部 */
+    width: 1px; /* 分割线宽度 */
+    background-color: #E8E8E8; /* 分割线颜色 */
+}
+
+.user-tickets,
+.user-team,
+.rule-info,
+.round-history,
+.winning-history,
+.game-algorithm-info {
+    background-color: #F8F8F8;
+    border-radius: 16px;
+    margin: 12px 0;
+}
+
+.user-team,
+.rule-info,
+.round-history,
+.winning-history,
+.game-algorithm-info {
+    padding: 16px;
+}
+
+.team-detail-for-one {
+    margin-top: 12px;
+    padding-top: 12px;
+}
+
+.tickets-detail {
+    border-collapse: separate;
+    border-spacing: 24px 12px; /* Horizontal spacing is 12px, vertical spacing is 0 */
+}
+
+.tickets-num td {
+    width: 83px;
+    height: 38px;
+    border: 1px solid #D3D5D6;
+    font-size: 14px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.team-detail {
+    border-collapse: collapse; /* Removes space between borders */
+    width: 100%; /* Optional: Adjusts the width of the table */
+}
+
+.team-detail th,
+.team-detail td {
+    border: 1px solid #D3D5D6; /* Optional: Adds a border to each cell */
+    height: 38px;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+.team-detail .team-id-txt {
+    word-break: break-all; /* Ensures long text in this class breaks to prevent overflow */
+}
+
+.team-detail td {
+    border: 1px solid #D3D5D6;
+    height: 38px;
+
+}
+.winner-history-list,
+.history-data-list {
+    max-height: 632px;
+    overflow-y: auto;
+}
+:root {
+    --main-text-color: #1B1B1D;
+
+    --font-size-large: 26px;
+    --font-size-normal: 14px;
+    --primary-color: #DE4033;
+    --secondary-color: #898989;
+}
+
+.round-title-betting,
+.round-title-number,
+.round-time-betting {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.round-summary {
+    width: 703px;
+    height: 85px;
+    border: 1px dashed #271D1E;
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 16px;
+}
+
+.prize-pool-value {
+    font-size: var(--font-size-large);
+    font-weight: bold;
+    color: var(--main-text-color);
+    display: inline-block;
+    align-items: center; /* 垂直居中 */
+}
+
+ul {
+    margin-top: 6px;
+}
+
+ul li {
+    font-size: var(--font-size-normal);
+    line-height: 1.5;
+    list-style-type: none;
+}
+
+
+.history-query {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.round-query-input {
+    flex-grow: 1; /* 让 input 元素占据所有可用空间 */
+    margin-right: 8px; /* 右边距设置为 8px */
+    height: 42px;
+    border-radius: 12px;
+    outline: none;
+    border: 1px solid #D3D5D6;
+    background-color: #F1F2F3;
+    padding-left: 8px;
+}
+
+.round-query-input:focus {
+    border-color: #4EA0F2;
+}
+
+.round-history ul li span {
+    color: #1B1B1D;
+}
+
+.load-history-btn,
+.history-data-list-more-btn {
+    cursor: pointer;
+    color: #898989;
+    background-color: #F1F2F3;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 999px;
+    margin: 4px 0;
+}
+
+.load-history-btn:hover,
+.history-data-list-more-btn:hover {
+    color: #4EA0F2;
+}
+
+.game-rules-open,
+.game-algorithm-open {
+    padding: 12px 6px;
+    margin: 2px;
+}
+
+.game-rules-open:hover,
+.game-algorithm-open:hover {
+    background-color: #F1F2F3;
+    border-radius: 12px;
+
+}
+
+.contract-code-btn {
+    cursor: pointer;
+    background-color: white;
+    border-radius: 999px;
+    color: #1B1B1D;
+    border: none;
+    padding: 4px 12px 4px 4px;
+    display: flex;
+    align-items: center;
+}
+
+.vote-chose-modal-class {
+    display: none; /* 默认隐藏 */
+    position: fixed; /* 固定位置 */
+    z-index: 1; /* 置于顶层 */
+    left: 0;
+    top: 0;
+    width: 100%; /* 宽度 */
+    height: 100%; /* 高度 */
+    overflow: auto; /* 启用滚动条 */
+    background-color: rgb(0, 0, 0); /* 背景颜色 */
+    background-color: rgba(0, 0, 0, 0.4); /* 黑色背景透明度 */
+}
+
+.vote-no-modal-header {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.vote-no-modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% 从顶部开始 */
+    padding: 16px 32px 32px;
+    border-radius: 12px;
+    width: 326px; /* 宽度 */
+}
+
+.vote-no-modal-body {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+}
+
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    margin-top: 24px;
+}
+
+.quantity-selector button {
+    width: 42px;
+    height: 42px;
+    font-size: 16px;
+    padding: 0;
+    border: none;
+    background-color: #F1F2F3;
+}
+
+.quantity-selector button:hover {
+    background-color: #D3D5D6; /* 鼠标经过时的背景色 */
+}
+
+.quantity-selector button:active {
+    background-color: #B0B2B3; /* 鼠标点击时的背景色 */
+    color: #4EA0F2;
+}
+
+.quantity-selector input {
+    height: 40px;
+    width: 188px;
+    text-align: center;
+    border: 1px solid #F1F2F3;
+    padding: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* 隐藏默认加减箭头 */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* 关闭按钮 */
+.vote-no-close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.vote-no-close:hover,
+.vote-no-close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.vote-no-modal-footer {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 24px;
+}
+
+.cancel-btn,
+.confirm-btn{
+    margin: 0 8px;
+    padding: 12px 52px;
+    border-radius: 12px;
+    font-size: 14px;
+}
+
+.cancel-btn {
+    background-color: transparent;
+    border: 1px solid rgb(221, 221, 222);
+    color: #7E7F82
+}
+
+.confirm-btn {
+    border: none;
+    background-color: #141415;
+    color: #ffffff;
+}
