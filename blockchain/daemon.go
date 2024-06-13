@@ -8,18 +8,21 @@ import (
 )
 
 type BCConf struct {
-	TweetContract         string `json:"tweet_vote_contract_address"`
-	GameContract          string `json:"game_plugin_contract_address"`
-	KolKeyContractAddress string `json:"kol_key_contract_address"`
-	InfuraUrl             string `json:"infura_url"`
-	GameTimeInMinute      int    `json:"game_time_in_minute,omitempty"`
-	TxCheckerInSeconds    int    `json:"tx_checker_in_seconds,omitempty"`
-	ChainID               int64  `json:"chain_id,omitempty"`
-	CheckTimeInSecond     int    `json:"check_time_in_second"`
+	TweetContract           string `json:"tweet_vote_contract_address"`
+	GameContract            string `json:"game_plugin_contract_address"`
+	KolKeyContractAddress   string `json:"kol_key_contract_address"`
+	InfuraUrl               string `json:"infura_url"`
+	GameTimeInMinute        int    `json:"game_time_in_minute,omitempty"`
+	TxCheckerInSeconds      int    `json:"tx_checker_in_seconds,omitempty"`
+	ChainID                 int64  `json:"chain_id,omitempty"`
+	ElderCheckTimeInSec     int    `json:"elder_check_time_in_sec"`
+	PointBonusCheckInMin    int    `json:"point_bonus_check_in_min"`
+	PointBonusIntervalInMin int    `json:"point_bonus_interval_in_min"`
 }
 
 func (c *BCConf) String() string {
 	s := "\n------block chain config------"
+
 	s += "\ntweet vote:" + c.TweetContract
 	s += "\ngame:" + c.GameContract
 	s += "\nkol key:" + c.KolKeyContractAddress
@@ -27,18 +30,36 @@ func (c *BCConf) String() string {
 	s += "\ngame check time(minutes):" + fmt.Sprintf("%d", c.GameTimeInMinute)
 	s += "\ntransaction check time(seconds):" + fmt.Sprintf("%d", c.TxCheckerInSeconds)
 	s += "\nchain id:" + fmt.Sprintf("%d", c.ChainID)
+	s += "\nelder check time(seconds):" + fmt.Sprintf("%d", c.ElderCheckTimeInSec)
+	s += "\npoint bonus check time(minutes):" + fmt.Sprintf("%d", c.PointBonusCheckInMin)
+	s += "\npoint bonus interval time(minutes):" + fmt.Sprintf("%d", c.PointBonusIntervalInMin)
+
 	s += "\n--------------------------"
 	return s
 }
 
 type DaemonProc struct {
-	checkTicker *time.Ticker
+	elderCheck       *time.Ticker
+	pointsBonusCheck *time.Ticker
+	nextBonusTime    time.Time
 }
+
+const (
+	DefaultElderChecker  = 2
+	DefaultBonusChecker  = 5
+	DefaultBonusInterval = 8 * 60
+)
 
 func InitConf(cf *BCConf) {
 	__conf = cf
-	if __conf.CheckTimeInSecond == 0 {
-		__conf.CheckTimeInSecond = 2
+	if __conf.ElderCheckTimeInSec == 0 {
+		__conf.ElderCheckTimeInSec = DefaultElderChecker
+	}
+	if __conf.PointBonusCheckInMin == 0 {
+		__conf.PointBonusCheckInMin = DefaultBonusChecker
+	}
+	if __conf.PointBonusIntervalInMin == 0 {
+		__conf.PointBonusIntervalInMin = DefaultBonusInterval
 	}
 }
 
@@ -46,7 +67,9 @@ var __conf *BCConf
 
 func NewDaemon() *DaemonProc {
 	var dp = &DaemonProc{
-		checkTicker: time.NewTicker(time.Duration(__conf.CheckTimeInSecond) * time.Second),
+		elderCheck:       time.NewTicker(time.Duration(__conf.ElderCheckTimeInSec) * time.Second),
+		pointsBonusCheck: time.NewTicker(time.Duration(__conf.PointBonusCheckInMin) * time.Minute),
+		nextBonusTime:    time.Now().Add(time.Duration(__conf.PointBonusIntervalInMin) * time.Minute),
 	}
 	return dp
 }
@@ -54,9 +77,22 @@ func NewDaemon() *DaemonProc {
 func (dp *DaemonProc) Monitor() {
 	for {
 		select {
-		case <-dp.checkTicker.C:
-			util.LogInst().Debug().Msg("time to check block chain data")
+		case <-dp.elderCheck.C:
 			go database.DbInst().CheckKolElder()
+			break
+		case <-dp.pointsBonusCheck.C:
+			go dp.checkPointBonus()
+			break
 		}
 	}
+}
+
+func (dp *DaemonProc) checkPointBonus() {
+	util.LogInst().Debug().Msg("start to check point bonus")
+	now := time.Now()
+	if now.Before(dp.nextBonusTime) {
+		util.LogInst().Debug().Msg("Points reward time has not arrived")
+		return
+	}
+
 }

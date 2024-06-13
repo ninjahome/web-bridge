@@ -198,13 +198,15 @@ func (dm *DbManager) updateNjUserForTweet(web3ID string, opCtx context.Context) 
 		return err
 	}
 	nu.TweetCount += 1
-	nu.Points += __dbConf.PointForPost
 	_, err = docRef.Update(opCtx, []firestore.Update{
 		{Path: "tweet_count", Value: nu.TweetCount},
-		{Path: "points", Value: nu.Points},
 	})
 
-	return nil
+	go dm.ProcSystemPoints(web3ID, func(sp *SysPoints) {
+		pointsWithReferrerBonus(sp, __dbConf.PointForPost)
+	})
+
+	return err
 }
 
 func (dm *DbManager) SaveTweet(content *NinjaTweet) error {

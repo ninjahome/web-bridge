@@ -9,7 +9,6 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"strings"
 	"time"
 )
 
@@ -81,20 +80,26 @@ func (dm *DbManager) queryVoteStatus(voter, sameOwner bool, target string, tx *f
 	if nu.IsElder {
 		multiPly = 2
 	}
+
+	var points float32
 	if sameOwner {
-		nu.Points += __dbConf.PointForVote * vote.VoteCount
-		nu.Points += __dbConf.PointForBeVote * vote.VoteCount * multiPly
+		points += __dbConf.PointForVote * float32(vote.VoteCount)
+		points += __dbConf.PointForBeVote * float32(vote.VoteCount*multiPly)
 		nu.VoteCount += vote.VoteCount
 		nu.BeVotedCount += vote.VoteCount
 	} else {
 		if voter {
 			nu.VoteCount += vote.VoteCount
-			nu.Points += __dbConf.PointForVote * vote.VoteCount
+			points += __dbConf.PointForVote * float32(vote.VoteCount)
 		} else {
 			nu.BeVotedCount += vote.VoteCount
-			nu.Points += __dbConf.PointForBeVote * vote.VoteCount * multiPly
+			points += __dbConf.PointForBeVote * float32(vote.VoteCount*multiPly)
 		}
 	}
+
+	go dm.ProcSystemPoints(target, func(sp *SysPoints) {
+		pointsWithReferrerBonus(sp, points)
+	})
 
 	return njDoc, &nu, nil
 }
@@ -144,7 +149,6 @@ func (dm *DbManager) updateStatus(status *voteStatusForDb, tx *firestore.Transac
 
 	voterUpdates := []firestore.Update{
 		{Path: "vote_count", Value: status.voterObj.VoteCount},
-		{Path: "points", Value: status.voterObj.Points},
 	}
 
 	err = tx.Update(status.voterDoc, voterUpdates)
@@ -155,7 +159,6 @@ func (dm *DbManager) updateStatus(status *voteStatusForDb, tx *firestore.Transac
 
 	votedUpdates := []firestore.Update{
 		{Path: "be_voted_count", Value: status.votedObj.BeVotedCount},
-		{Path: "points", Value: status.votedObj.Points},
 	}
 
 	err = tx.Update(status.votedDoc, votedUpdates)
@@ -167,30 +170,11 @@ func (dm *DbManager) updateStatus(status *voteStatusForDb, tx *firestore.Transac
 	return nil
 }
 
-func (dm *DbManager) UpdatePointsForSingleBets(vote *TweetVoteAction, voter string) error {
-	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
-	defer cancel()
-
-	docRef := dm.fileCli.Collection(DBTableNJUser).Doc(strings.ToLower(voter))
-	doc, err := docRef.Get(opCtx)
-	if err != nil {
-		util.LogInst().Err(err).Str("web3-id", voter).Msg("query nj user data err")
-		return err
-	}
-
-	var nu NinjaUsrInfo
-	err = doc.DataTo(&nu)
-	if err != nil {
-		util.LogInst().Err(err).Str("web3-id", voter).Msg("data to nj user err")
-		return err
-	}
-
-	nu.Points += __dbConf.PointForVote * vote.VoteCount
-
-	_, err = docRef.Update(opCtx, []firestore.Update{
-		{Path: "points", Value: nu.Points},
+func (dm *DbManager) UpdatePointsForSingleBets(vote *TweetVoteAction, voter string) {
+	dm.ProcSystemPoints(voter, func(sp *SysPoints) {
+		points := __dbConf.PointForVote * float32(vote.VoteCount)
+		pointsWithReferrerBonus(sp, points)
 	})
-	return err
 }
 
 func (dm *DbManager) UpdateTweetVoteStatic(vote *TweetVoteAction, voter string) error {

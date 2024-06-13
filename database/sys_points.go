@@ -6,16 +6,18 @@ import (
 	"github.com/ninjahome/web-bridge/util"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"math"
 	"strings"
 )
 
 type SysPoints struct {
-	EthAddr    string `json:"eth_addr" firestore:"eth_addr"`
-	Points     int    `json:"points"  firestore:"points"`
-	BonusToWin int    `json:"bonus_to_win" firestore:"bonus_to_win"`
+	EthAddr    string  `json:"eth_addr" firestore:"eth_addr"`
+	Points     float32 `json:"points"  firestore:"points"`
+	BonusToWin float32 `json:"bonus_to_win" firestore:"bonus_to_win"`
 }
+type PointLogic func(sp *SysPoints)
 
-func (dm *DbManager) ProcSystemPoints(ethAddr string, points, bonus int) {
+func (dm *DbManager) ProcSystemPoints(ethAddr string, call PointLogic) {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()
 
@@ -25,7 +27,10 @@ func (dm *DbManager) ProcSystemPoints(ethAddr string, points, bonus int) {
 
 		if err != nil {
 			if status.Code(err) == codes.NotFound {
-				sp := &SysPoints{EthAddr: ethAddr, Points: points, BonusToWin: bonus}
+				sp := &SysPoints{EthAddr: ethAddr}
+				if call != nil {
+					call(sp)
+				}
 				return tx.Set(docRef, sp)
 			}
 			return err
@@ -35,12 +40,13 @@ func (dm *DbManager) ProcSystemPoints(ethAddr string, points, bonus int) {
 		if err := doc.DataTo(&sp); err != nil {
 			return err
 		}
-		newPoints := sp.Points + points
-		newBonus := sp.BonusToWin - bonus
+		if call != nil {
+			call(&sp)
+		}
 
 		return tx.Update(docRef, []firestore.Update{
-			{Path: "points", Value: newPoints},
-			{Path: "bonus_to_win", Value: newBonus},
+			{Path: "points", Value: sp.Points},
+			{Path: "bonus_to_win", Value: sp.BonusToWin},
 		})
 	})
 
@@ -68,4 +74,14 @@ func (dm *DbManager) QuerySystemPoints(web3ID string) (*SysPoints, error) {
 		return nil, err
 	}
 	return &sp, nil
+}
+
+func pointsWithReferrerBonus(sp *SysPoints, points float32) {
+	if sp.BonusToWin > 0 {
+		reward := float32(math.Min(float64(sp.BonusToWin), float64(points*2)))
+		sp.BonusToWin = sp.BonusToWin - reward
+		sp.Points += reward
+	} else {
+		sp.Points += points
+	}
 }

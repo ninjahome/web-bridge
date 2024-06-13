@@ -76,6 +76,9 @@ func (dm *DbManager) NjUserSignIn(ethAddr, Referer string) *NinjaUsrInfo {
 		}
 		if len(Referer) > 0 && len(nu.ReferrerCode) == 0 {
 			updateOps = append(updateOps, firestore.Update{Path: "referrer_code", Value: Referer})
+			go dm.ProcSystemPoints(ethAddr, func(sp *SysPoints) {
+				sp.BonusToWin = __dbConf.BonusForReferer
+			})
 		}
 		_, _ = docRef.Update(opCtx, updateOps)
 		nu.SignInAt = signInTime
@@ -102,6 +105,9 @@ func (dm *DbManager) NjUserSignIn(ethAddr, Referer string) *NinjaUsrInfo {
 		util.LogInst().Err(err).Str("eth-addr", ethAddr).Msg("Set firestore data as NinjaUsrInfo failed")
 		return nil
 	}
+
+	go dm.ProcSystemPoints(ethAddr, nil)
+
 	util.LogInst().Debug().Str("eth-addr", ethAddr).Msg("firestore create ninja user success")
 	return nu
 }

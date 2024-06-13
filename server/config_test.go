@@ -49,7 +49,7 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			GameTimeInMinute:      5,
 			TxCheckerInSeconds:    15,
 			ChainID:               42161,
-			CheckTimeInSecond:     10,
+			ElderCheckTimeInSec:   10,
 		},
 	}
 

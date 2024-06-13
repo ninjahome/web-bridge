@@ -48,6 +48,7 @@ var (
 		"/searchTwitterUsr":          {searchTwitterUsr, true},
 		"/tweetImgRaw":               {tweetImgRaw, false},
 		"/tweetImgThumb":             {tweetImgThumb, false},
+		"/pointsForNJUsr":            {pointsForNJUsr, false},
 	}
 
 	cfgHtmlFileRouter = map[string]string{

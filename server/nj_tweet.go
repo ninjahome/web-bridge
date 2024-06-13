@@ -204,14 +204,7 @@ func updatePointsForSingleBets(w http.ResponseWriter, r *http.Request, nu *datab
 		return
 	}
 
-	err = database.DbInst().UpdatePointsForSingleBets(vote, nu.EthAddr)
-	if err != nil {
-		util.LogInst().Err(err).Int64("create_time", vote.CreateTime).
-			Int("vote_count", vote.VoteCount).
-			Msg("failed to update points for single bets")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	database.DbInst().UpdatePointsForSingleBets(vote, nu.EthAddr)
 
 	w.WriteHeader(http.StatusOK)
 	util.LogInst().Info().Int64("create_time", vote.CreateTime).
