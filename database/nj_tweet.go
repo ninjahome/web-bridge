@@ -51,7 +51,7 @@ type NinjaTweet struct {
 	VoteCount     int        `json:"vote_count" firestore:"vote_count"`
 }
 
-type TweetQueryParm struct {
+type TweetQueryParam struct {
 	StartID  int64    `json:"start_id"`
 	Web3ID   string   `json:"web3_id"`
 	VotedIDs []int64  `json:"voted_ids"`
@@ -64,7 +64,7 @@ type TweetImgRaw struct {
 	Hash string `json:"hash" firestore:"hash"`
 }
 
-func (p *TweetQueryParm) String() string {
+func (p *TweetQueryParam) String() string {
 	bts, _ := json.Marshal(p)
 	return string(bts)
 }
@@ -75,7 +75,7 @@ type TweetPaymentStatus struct {
 	Status     TxStatus `json:"status,omitempty"  firestore:"status"`
 }
 
-func (p *TweetQueryParm) createFilter(pageSize int, doc *firestore.CollectionRef, opCtx context.Context) *firestore.DocumentIterator {
+func (p *TweetQueryParam) createFilter(pageSize int, doc *firestore.CollectionRef, opCtx context.Context) *firestore.DocumentIterator {
 
 	if len(p.VotedIDs) > 0 {
 		return doc.Where("create_time", "in", p.VotedIDs).OrderBy("create_time", firestore.Desc).Documents(opCtx)
@@ -202,7 +202,7 @@ func (dm *DbManager) updateNjUserForTweet(web3ID string, opCtx context.Context) 
 		{Path: "tweet_count", Value: nu.TweetCount},
 	})
 
-	go dm.ProcSystemPoints(web3ID, func(sp *SysPoints) {
+	go dm.ProcSystemPoints(web3ID, func(sp *SysPoints, _ bool) {
 		pointsWithReferrerBonus(sp, __dbConf.PointForPost)
 	})
 
@@ -225,7 +225,7 @@ func (dm *DbManager) SaveTweet(content *NinjaTweet) error {
 	return err
 }
 
-func (dm *DbManager) QueryTweetsByFilter(pageSize int, param *TweetQueryParm) ([]*NinjaTweet, error) {
+func (dm *DbManager) QueryTweetsByFilter(pageSize int, param *TweetQueryParam) ([]*NinjaTweet, error) {
 
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
 	defer cancel()

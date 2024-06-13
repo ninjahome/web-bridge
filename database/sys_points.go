@@ -18,7 +18,7 @@ type SysPoints struct {
 	BonusToWin float32 `json:"bonus_to_win" firestore:"bonus_to_win"`
 }
 
-type PointLogic func(sp *SysPoints)
+type PointLogic func(sp *SysPoints, isNew bool)
 
 func (dm *DbManager) ProcSystemPoints(ethAddr string, call PointLogic) {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
@@ -32,7 +32,7 @@ func (dm *DbManager) ProcSystemPoints(ethAddr string, call PointLogic) {
 			if status.Code(err) == codes.NotFound {
 				sp := &SysPoints{EthAddr: ethAddr}
 				if call != nil {
-					call(sp)
+					call(sp, true)
 				}
 				return tx.Set(docRef, sp)
 			}
@@ -44,7 +44,7 @@ func (dm *DbManager) ProcSystemPoints(ethAddr string, call PointLogic) {
 			return err
 		}
 		if call != nil {
-			call(&sp)
+			call(&sp, false)
 		}
 
 		return tx.Update(docRef, []firestore.Update{

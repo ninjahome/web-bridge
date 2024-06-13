@@ -97,7 +97,7 @@ func (dm *DbManager) queryVoteStatus(voter, sameOwner bool, target string, tx *f
 		}
 	}
 
-	go dm.ProcSystemPoints(target, func(sp *SysPoints) {
+	go dm.ProcSystemPoints(target, func(sp *SysPoints, _ bool) {
 		pointsWithReferrerBonus(sp, points)
 	})
 
@@ -171,7 +171,7 @@ func (dm *DbManager) updateStatus(status *voteStatusForDb, tx *firestore.Transac
 }
 
 func (dm *DbManager) UpdatePointsForSingleBets(vote *TweetVoteAction, voter string) {
-	dm.ProcSystemPoints(voter, func(sp *SysPoints) {
+	dm.ProcSystemPoints(voter, func(sp *SysPoints, _ bool) {
 		points := __dbConf.PointForVote * float32(vote.VoteCount)
 		pointsWithReferrerBonus(sp, points)
 	})

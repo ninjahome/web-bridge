@@ -54,7 +54,7 @@ func queryNjBasicByID(w http.ResponseWriter, r *http.Request, _ *database.NinjaU
 }
 
 func mostVotedKol(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
-	var para database.TweetQueryParm
+	var para database.TweetQueryParam
 	var err = util.ReadRequest(r, &para)
 	if err != nil {
 		util.LogInst().Err(err).Str("param", para.String()).

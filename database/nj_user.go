@@ -76,8 +76,10 @@ func (dm *DbManager) NjUserSignIn(ethAddr, Referer string) *NinjaUsrInfo {
 		}
 		if len(Referer) > 0 && len(nu.ReferrerCode) == 0 {
 			updateOps = append(updateOps, firestore.Update{Path: "referrer_code", Value: Referer})
-			go dm.ProcSystemPoints(ethAddr, func(sp *SysPoints) {
-				sp.BonusToWin = __dbConf.BonusForReferer
+			go dm.ProcSystemPoints(ethAddr, func(sp *SysPoints, isNew bool) {
+				if isNew {
+					sp.BonusToWin = __dbConf.BonusForReferer
+				}
 			})
 		}
 		_, _ = docRef.Update(opCtx, updateOps)

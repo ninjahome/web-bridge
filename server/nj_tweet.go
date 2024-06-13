@@ -21,7 +21,7 @@ const (
 
 func globalTweetQuery(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 
-	var para database.TweetQueryParm
+	var para database.TweetQueryParam
 	var err = util.ReadRequest(r, &para)
 	if err != nil {
 		util.LogInst().Err(err).Str("param", para.String()).
@@ -251,7 +251,7 @@ func updateTweetVoteStatus(w http.ResponseWriter, r *http.Request, nu *database.
 
 func votedTweetsQuery(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 
-	var para database.TweetQueryParm
+	var para database.TweetQueryParam
 	var err = util.ReadRequest(r, &para)
 	if err != nil {
 		util.LogInst().Err(err).Str("param", para.String()).
@@ -302,7 +302,7 @@ func removeUnpaidTweet(w http.ResponseWriter, r *http.Request, nu *database.Ninj
 }
 
 func mostVotedTweet(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
-	var para database.TweetQueryParm
+	var para database.TweetQueryParam
 	var err = util.ReadRequest(r, &para)
 	if err != nil {
 		util.LogInst().Err(err).Str("param", para.String()).

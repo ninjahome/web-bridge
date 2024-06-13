@@ -3,15 +3,26 @@ package main
 import (
 	"cloud.google.com/go/firestore"
 	"context"
+	"errors"
 	"fmt"
+	"github.com/ninjahome/web-bridge/database"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"log"
 	"os"
+	"strings"
 )
 
 func main() {
-	queryNoOfCollection("ninja-user")
+	//queryNoOfCollection("ninja-user")
+	err := refactorPoints("dessage", "dessage-alpha")
+	if err != nil {
+		panic(err)
+	}
 }
+
 func test() {
 	ctx := context.Background()
 	os.Setenv("FIRESTORE_EMULATOR_HOST", "localhost:8080")
@@ -79,4 +90,57 @@ func queryNoOfCollection(table string) {
 	}
 
 	fmt.Println("total count:", count)
+}
+
+func refactorPoints(projectID, databaseID string) error {
+	ctx := context.Background()
+	saPath := "dessage-c3b5c95267fb.json"
+	client, err := firestore.NewClientWithDatabase(ctx, projectID,
+		databaseID, option.WithCredentialsFile(saPath))
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	iter := client.Collection(database.DBTableNJUser).Documents(ctx)
+	defer iter.Stop()
+
+	for {
+		doc, err := iter.Next()
+		if err != nil {
+			if errors.Is(err, iterator.Done) {
+				break
+			}
+			return err
+		}
+
+		points := doc.Data()["points"].(int64)
+		addr := strings.ToLower(doc.Data()["eth_addr"].(string))
+
+		docRef := client.Collection(database.DBTableUserPoints).Doc(addr)
+		_, err = docRef.Get(ctx)
+		if err == nil {
+			fmt.Println("no need updating for user:", addr)
+			continue
+		}
+
+		if status.Code(err) != codes.NotFound {
+			return err
+		}
+
+		sp := &database.SysPoints{
+			EthAddr: addr,
+			Points:  float32(points),
+		}
+
+		_, err = docRef.Set(ctx, sp)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("success update for user:", addr, points)
+	}
+
+	fmt.Println("process success")
+	return nil
 }
