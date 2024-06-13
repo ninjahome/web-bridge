@@ -23,7 +23,6 @@ type NinjaUsrInfo struct {
 	TweetCount   int    `json:"tweet_count" firestore:"tweet_count"`
 	VoteCount    int    `json:"vote_count" firestore:"vote_count"`
 	BeVotedCount int    `json:"be_voted_count" firestore:"be_voted_count"`
-	Points       int    `json:"points"  firestore:"points"`
 	IsElder      bool   `json:"is_elder" firestore:"is_elder"`
 	ReferrerCode string `json:"referrer_code" firestore:"referrer_code"`
 	SelfRefCode  string `json:"self_ref_code" firestore:"self_ref_code"`
