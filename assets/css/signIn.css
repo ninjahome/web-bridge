@@ -304,7 +304,7 @@ ul {
 }
 
 .referral-code-content input[type="text"] {
-    width: 370px;
+    width: 380px;
     padding: 12px;
     margin-top: 10px;
     box-sizing: border-box; /* 输入框内填充不增加宽度 */
