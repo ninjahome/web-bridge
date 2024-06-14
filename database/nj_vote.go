@@ -81,19 +81,19 @@ func (dm *DbManager) queryVoteStatus(voter, sameOwner bool, target string, tx *f
 		multiPly = 2
 	}
 
-	var points float32
+	var points float64
 	if sameOwner {
-		points += __dbConf.PointForVote * float32(vote.VoteCount)
-		points += __dbConf.PointForBeVote * float32(vote.VoteCount*multiPly)
+		points += __dbConf.PointForVote * float64(vote.VoteCount)
+		points += __dbConf.PointForBeVote * float64(vote.VoteCount*multiPly)
 		nu.VoteCount += vote.VoteCount
 		nu.BeVotedCount += vote.VoteCount
 	} else {
 		if voter {
 			nu.VoteCount += vote.VoteCount
-			points += __dbConf.PointForVote * float32(vote.VoteCount)
+			points += __dbConf.PointForVote * float64(vote.VoteCount)
 		} else {
 			nu.BeVotedCount += vote.VoteCount
-			points += __dbConf.PointForBeVote * float32(vote.VoteCount*multiPly)
+			points += __dbConf.PointForBeVote * float64(vote.VoteCount*multiPly)
 		}
 	}
 
@@ -172,7 +172,7 @@ func (dm *DbManager) updateStatus(status *voteStatusForDb, tx *firestore.Transac
 
 func (dm *DbManager) UpdatePointsForSingleBets(vote *TweetVoteAction, voter string) {
 	dm.ProcSystemPoints(voter, func(sp *SysPoints, _ bool) {
-		points := __dbConf.PointForVote * float32(vote.VoteCount)
+		points := __dbConf.PointForVote * float64(vote.VoteCount)
 		pointsWithReferrerBonus(sp, points)
 	})
 }

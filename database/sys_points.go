@@ -13,9 +13,10 @@ import (
 )
 
 type SysPoints struct {
-	EthAddr    string  `json:"eth_addr" firestore:"eth_addr"`
-	Points     float32 `json:"points"  firestore:"points"`
-	BonusToWin float32 `json:"bonus_to_win" firestore:"bonus_to_win"`
+	EthAddr        string  `json:"eth_addr" firestore:"eth_addr"`
+	Points         float64 `json:"points"  firestore:"points"`
+	BonusToWin     float64 `json:"bonus_to_win" firestore:"bonus_to_win"`
+	CurTotalPoints float64 `json:"cur_total_points"`
 }
 
 type PointLogic func(sp *SysPoints, isNew bool)
@@ -79,9 +80,9 @@ func (dm *DbManager) QuerySystemPoints(web3ID string) (*SysPoints, error) {
 	return &sp, nil
 }
 
-func pointsWithReferrerBonus(sp *SysPoints, points float32) {
+func pointsWithReferrerBonus(sp *SysPoints, points float64) {
 	if sp.BonusToWin > 0 {
-		reward := float32(math.Min(float64(sp.BonusToWin), float64(points*2)))
+		reward := math.Min(sp.BonusToWin, points*2)
 		sp.BonusToWin = sp.BonusToWin - reward
 		sp.Points += reward
 	} else {
@@ -89,32 +90,11 @@ func pointsWithReferrerBonus(sp *SysPoints, points float32) {
 	}
 }
 
-func (dm *DbManager) RewardForOneRound() {
-	ctx := context.Background()
-	var totalPoints float32 = 0
+func (dm *DbManager) RewardForOneRound(totalPoints float64) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut*10)
+	defer cancel()
 
-	iter := dm.fileCli.Collection(DBTableUserPoints).Select("points").Documents(ctx)
-	for {
-		doc, err := iter.Next()
-		if err != nil {
-			if errors.Is(err, iterator.Done) {
-				break
-			}
-			util.LogInst().Err(err).Msg("timer:failed to calculate total points")
-			return
-		}
-		points := doc.Data()["points"].(float32)
-		totalPoints += points
-	}
-
-	if totalPoints == 0 {
-		util.LogInst().Info().Msg("total pints is zero")
-		return
-	}
-
-	util.LogInst().Info().Float32("points", totalPoints).Msg("total points process success")
-
-	err := dm.fileCli.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
 		iter := tx.Documents(dm.fileCli.Collection(DBTableUserPoints))
 		defer iter.Stop()
 
@@ -146,8 +126,8 @@ func (dm *DbManager) RewardForOneRound() {
 			}
 
 			util.LogInst().Debug().Str("web3id", sp.EthAddr).
-				Float32("newPoints", newPoints).
-				Float32("delta", pointsDelta).
+				Float64("newPoints", newPoints).
+				Float64("delta", pointsDelta).
 				Msg("update reward points success")
 		}
 		return nil
@@ -159,4 +139,27 @@ func (dm *DbManager) RewardForOneRound() {
 	}
 
 	util.LogInst().Info().Msg("pints timer transaction succeeded")
+}
+
+func (dm *DbManager) PointsAtSnapshot() float64 {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut*10)
+	defer cancel()
+	var totalPoints float64 = 0
+
+	iter := dm.fileCli.Collection(DBTableUserPoints).Select("points").Documents(opCtx)
+	for {
+		doc, err := iter.Next()
+		if err != nil {
+			if errors.Is(err, iterator.Done) {
+				break
+			}
+			util.LogInst().Err(err).Msg("timer:failed to calculate total points")
+			return totalPoints
+		}
+		points := doc.Data()["points"].(float64)
+		totalPoints += points
+	}
+
+	util.LogInst().Info().Float64("points", totalPoints).Msg("total points process success")
+	return totalPoints
 }

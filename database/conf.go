@@ -17,13 +17,13 @@ type FileStoreConf struct {
 	KeyFilePath             string  `json:"key_file_path"`
 	TweetsPageSize          int     `json:"tweets_page_size"`
 	LocalRun                bool    `json:"local_run"`
-	PointForPost            float32 `json:"point_for_post"`
-	PointForVote            float32 `json:"point_for_vote"`
-	PointForBeVote          float32 `json:"point_for_be_vote"`
+	PointForPost            float64 `json:"point_for_post"`
+	PointForVote            float64 `json:"point_for_vote"`
+	PointForBeVote          float64 `json:"point_for_be_vote"`
 	ElderNoFirstGot         int     `json:"elder_no_first_got"`
-	BonusForReferer         float32 `json:"bonus_for_referer"`
-	BonusRateForReferred    float32 `json:"bonus_rate_for_referred"`
-	RewardPointsForOneRound float32 `json:"reward_points_for_one_round"`
+	BonusForReferer         float64 `json:"bonus_for_referer"`
+	BonusRateForReferred    float64 `json:"bonus_rate_for_referred"`
+	RewardPointsForOneRound float64 `json:"reward_points_for_one_round"`
 }
 
 func (c *FileStoreConf) String() string {

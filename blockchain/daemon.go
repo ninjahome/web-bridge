@@ -4,7 +4,14 @@ import (
 	"fmt"
 	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
+	"sync"
 	"time"
+)
+
+const (
+	DefaultElderChecker  = 2
+	DefaultBonusChecker  = 5
+	DefaultBonusInterval = 8 * 60
 )
 
 type BCConf struct {
@@ -42,13 +49,8 @@ type DaemonProc struct {
 	elderCheck       *time.Ticker
 	pointsBonusCheck *time.Ticker
 	nextBonusTime    time.Time
+	pointSumSnapshot float64
 }
-
-const (
-	DefaultElderChecker  = 2
-	DefaultBonusChecker  = 5
-	DefaultBonusInterval = 8 * 60
-)
 
 func InitConf(cf *BCConf) {
 	__conf = cf
@@ -65,7 +67,7 @@ func InitConf(cf *BCConf) {
 
 var __conf *BCConf
 
-func NewDaemon() *DaemonProc {
+func newDaemon() *DaemonProc {
 	var dp = &DaemonProc{
 		elderCheck:       time.NewTicker(time.Duration(__conf.ElderCheckTimeInSec) * time.Second),
 		pointsBonusCheck: time.NewTicker(time.Duration(__conf.PointBonusCheckInMin) * time.Minute),
@@ -74,7 +76,19 @@ func NewDaemon() *DaemonProc {
 	return dp
 }
 
+var _dSyncOnce sync.Once
+var _dInst *DaemonProc
+
+func DaemonInst() *DaemonProc {
+	_dSyncOnce.Do(func() {
+		_dInst = newDaemon()
+	})
+	return _dInst
+}
+
 func (dp *DaemonProc) Monitor() {
+
+	dp.pointSumSnapshot = database.DbInst().PointsAtSnapshot()
 	for {
 		select {
 		case <-dp.elderCheck.C:
@@ -95,5 +109,9 @@ func (dp *DaemonProc) checkPointBonus() {
 		return
 	}
 
-	database.DbInst().RewardForOneRound()
+	database.DbInst().RewardForOneRound(dp.pointSumSnapshot)
+}
+
+func (dp *DaemonProc) PointSumAtCurrentRound() float64 {
+	return dp.pointSumSnapshot
 }

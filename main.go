@@ -71,9 +71,8 @@ func mainRun(_ *cobra.Command, _ []string) {
 		basisSrv.Start()
 	}()
 
-	var daemon = blockchain.NewDaemon()
 	go func() {
-		daemon.Monitor()
+		blockchain.DaemonInst().Monitor()
 	}()
 
 	waitShutdownSignal()

@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"github.com/ninjahome/web-bridge/blockchain"
 	"github.com/ninjahome/web-bridge/database"
 	"github.com/ninjahome/web-bridge/util"
 	"google.golang.org/grpc/codes"
@@ -94,6 +95,7 @@ func pointsForNJUsr(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsr
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	obj.CurTotalPoints = blockchain.DaemonInst().PointSumAtCurrentRound()
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
