@@ -282,12 +282,12 @@
         this.classList.add('active');
     }
 
-    document.addEventListener("DOMContentLoaded", initMainPage);
-
-    async function initMainPage() {
+    document.addEventListener("DOMContentLoaded", initKolKeyPage);
+    async function initKolKeyPage() {
         await checkMetaMaskEnvironment(initBlockChainContract);
         await loadUserIncomeFromKey();
     }
+
 </script>
 </body>
 </html>

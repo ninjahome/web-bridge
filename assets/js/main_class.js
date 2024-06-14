@@ -91,14 +91,6 @@ class TweetQueryParam {
     }
 }
 
-class TeamDetailOnBlockChain {
-    constructor(tweetHash, memCount, voteCount) {
-        this.tweetHash = tweetHash;
-        this.memCount = memCount;
-        this.voteCount = voteCount;
-    }
-}
-
 const dbKeyCachedRawImg = "__db_key_cached_tweet_raw_img__"
 
 class ImageRawData {

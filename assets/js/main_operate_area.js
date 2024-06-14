@@ -42,3 +42,31 @@ function initTimerOfCounterDown() {
         setupGameInfo();
     });
 }
+
+async function loadUserPointsInfos() {
+
+    const userPoints = await GetToSrvByJson("/pointsForNJUsr?web3_id=" + ninjaUserObj.eth_addr.toLowerCase());
+    if (!userPoints) {
+        return;
+    }
+
+    document.getElementById("dessage-web3-token").innerText = userPoints.points;
+    document.getElementById("point-bonus-this-round").innerText = userPoints.points;
+    document.getElementById("point-bonus-annual-interest").innerText = userPoints.points;
+}
+
+function showSelfReferralCode() {
+    const div = document.getElementById("referral-Code-info");
+    div.style.display = "block";
+}
+
+function copyReferralCode() {
+    navigator.clipboard.writeText(this.innerText).then(function () {
+        const div = document.getElementById("referral-Code-info");
+        div.style.display = "none";
+        showTmpTips("Copy Success");
+    }).catch(function (err) {
+        console.error("Failed to copy the text: ", err);
+        showTmpTips("Copy Failed")
+    });
+}

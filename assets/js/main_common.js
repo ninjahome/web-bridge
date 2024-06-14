@@ -116,7 +116,6 @@ async function showHoverCard(event, twitterObj, web3ID, offset) {
         hoverCard.style.display = 'none';
         showUserProfile(njUsrInfo);
     };
-
     detailBtn.textContent = i18next.t("show-details-button");
     document.getElementById('hover-tweet-count').textContent = njUsrInfo.tweet_count;
     document.getElementById('hover-vote-count').textContent = njUsrInfo.vote_count;
@@ -124,7 +123,6 @@ async function showHoverCard(event, twitterObj, web3ID, offset) {
 }
 
 function hideHoverCard(obj) {
-
     const hoverCard = document.getElementById('hover-card');
     setTimeout(() => {
         if (!hoverCard.matches(':hover') && !obj.matches(':hover')) {
@@ -252,29 +250,6 @@ async function loadTweetImgThumb(hash) {
     ImageRawData.sycToDb(obj);
     // console.log('found from server =>', obj)
     return obj;
-}
-
-
-function fulfillTweetImages(tweet, tweetHeader) {
-    const div = tweetHeader.querySelector('.tweet-images');
-    div.innerHTML = '';
-
-    if (!tweet.images) {
-        return;
-    }
-
-    for (let i = 0; i < tweet.images.length; i++) {
-        const img = tweet.images[i];
-        const imgDiv = tweetHeader.querySelector('.image-item-in-tweet').cloneNode(true)
-        imgDiv.style.display = 'block';
-        imgDiv.id = null;
-        const imgElm = imgDiv.querySelector('.image-src-to-show')
-        imgElm.src = img;
-        if (tweet.image_hash) {
-            imgElm.setAttribute('data-hash', tweet.image_hash[i]);
-        }
-        div.appendChild(imgDiv);
-    }
 }
 
 async function procTweetTxt(text) {
@@ -458,13 +433,17 @@ async function voteToTheTweet(obj, callback) {
             obj.vote_count = newVote.vote_count;
             __updateVoteNumberForTweet(obj, newVote).then(() => {
             });
-            reloadSelfNjData().then(() => {
-            });
+
             if (shareToTweet && ninjaUserObj.tw_id) {
                 const slogan = i18next.t('slogan_1') + gameContractMeta.totalBonus + " ETH. " + i18next.t('voter-slogan');
-                __shareVoteToTweet(create_time, vote_count, slogan).then(() => {
-                });
+                await  __shareVoteToTweet(create_time, vote_count, slogan);
             }
+            reloadSelfNjData().then(() => {
+            });
+            loadUserPointsInfos().then(r=>{
+                console.log("load user points success")
+            });
+
             if (callback) {
                 callback(newVote);
             }
@@ -520,51 +499,6 @@ async function reloadSelfNjData() {
         console.log(err)
         showDialog(DLevel.Warning, "reload session failed:" + err.toString())
     }
-}
-
-
-const TweetTimerInterval = 30_000
-
-function initTweetTimer() {
-    document.addEventListener('DOMContentLoaded', (event) => {
-        // 初始检测页面可见性
-        function handleVisibilityChange() {
-            if (document.hidden) {
-                console.log("Page is hidden, stop updating content.");
-                // 停止自动更新内容
-                stopAutoUpdate();
-            } else {
-                console.log("Page is visible, start updating content.");
-                // 开始自动更新内容
-                startAutoUpdate();
-            }
-        }
-
-        // 监听 visibilitychange 事件
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-
-        // 模拟自动更新内容的功能
-        let updateInterval;
-
-        function startAutoUpdate() {
-            if (!updateInterval) {
-                updateInterval = setInterval(async () => {
-                    console.log("Fetching new content...");
-                    await __loadTweetsAtHomePage(true);
-                }, TweetTimerInterval); // 每30秒获取一次新内容
-            }
-        }
-
-        function stopAutoUpdate() {
-            if (updateInterval) {
-                clearInterval(updateInterval);
-                updateInterval = null;
-            }
-        }
-
-        // 页面加载时检查初始状态
-        handleVisibilityChange();
-    });
 }
 
 function showTmpTips(msg) {
