@@ -212,6 +212,17 @@
     </div>
 </div>
 <script>
+    // 根据环境变量加载相应的文件
+    const env = '{{ENV}}'; // 这个变量可以通过模板引擎或后端渲染时设置
+
+    if (env === 'production') {
+        document.write('<script src="assets/js/database.min.js"><\/script>');
+    } else {
+        document.write('<script src="assets/js/database.js"><\/script>');
+    }
+</script>
+
+<script>
     window.addEventListener('resize', function () {
         const container = document.querySelector('.container');
         const containerRightDistance = window.innerWidth - container.getBoundingClientRect().right;

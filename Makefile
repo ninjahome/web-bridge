@@ -23,13 +23,17 @@ else
 	OS=linux
 endif
 
-# enable second expansion
+
+JS_DIR := assets/js
+JS_FILES := $(shell find $(JS_DIR) -name '*.js' ! -name '*.min.js')
+
 .SECONDEXPANSION:
 
 .PHONY: all
 .PHONY: pbs
 .PHONY: test
 .PHONY: contract
+.PHONY: js
 
 BINDIR=./bin
 
@@ -57,6 +61,15 @@ linux:
 	GOOS=linux GOARCH=amd64 go build -ldflags '-w -s' -o $(BINDIR)/$(NAME).lnx  -ldflags="$(LD_FLAGS)"
 win:
 	GOOS=windows GOARCH=amd64 go build -ldflags '-w -s' -o $(BINDIR)/$(NAME).exe  -ldflags="$(LD_FLAGS)"
+js:
+	cd assets/js &&	terser database.js -o database.min.js  --compress --mangle
+
+js: $(JS_FILES)
+	@for file in $(JS_FILES); do \
+		minified=$${file%.js}.min.js; \
+		echo "Compressing $$file to $$minified"; \
+		terser $$file -o $$minified --compress --mangle; \
+	done
 
 clean:
 	rm $(BINDIR)/$(NAME).*  $(BINDIR)/assets.tar.gz
