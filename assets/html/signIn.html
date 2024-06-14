@@ -200,19 +200,18 @@
 
 <div class="referral-code-popup" style="display: none">
     <div class="referral-code-bgd">
-    <div class="referral-code-content">
-        <span class="tweet-post-close-btn" onclick="closeReferralCode()">&times;</span>
-        <div style="display: flex; align-items: center">
-            <h2 style="font-size: 18px" id="tittle-referral-txt">推荐码</h2>
-            <span class="referralTiptext" id="tips-referral-txt">分享好用使用推荐码，将获得100积分</span>
+        <div class="referral-code-content">
+            <span class="tweet-post-close-btn" onclick="closeReferralCode()">&times;</span>
+            <div style="display: flex; align-items: center">
+                <h2 style="font-size: 18px" id="tittle-referral-txt">推荐码</h2>
+                <span class="referralTiptext" id="tips-referral-txt">分享好用使用推荐码，将获得100积分</span>
+            </div>
+            <input type="text" id="referral-code-val" placeholder="请填写推荐码">
         </div>
-        <input type="text" id="referral-code-val" placeholder="请填写推荐码">
-    </div>
-    <button class="confirm-btn" onclick="setupReferralCode()" id="btn-referral-txt">确认</button>
+        <button class="confirm-btn" onclick="setupReferralCode()" id="btn-referral-txt">确认</button>
     </div>
 </div>
 <script>
-
     window.addEventListener('resize', function () {
         const container = document.querySelector('.container');
         const containerRightDistance = window.innerWidth - container.getBoundingClientRect().right;
@@ -225,9 +224,10 @@
     });
 
     class SignInData {
-        constructor(ethAddr, referrer_code, signTim) {
+        constructor(ethAddr, referrer_code, signTim, refererID) {
             this.eth_addr = ethAddr;
             this.referrer_code = referrer_code;
+            this.referrer_id = refererID
             if (!signTim) {
                 this.sign_time = (new Date()).getTime();
             } else {
@@ -328,18 +328,30 @@
     }
 
     async function setupReferralCode() {
-        const val = document.getElementById("referral-code-val").value;
+        const referralInput = document.getElementById("referral-code-val");
+        const val = referralInput.value;
         if (val.length !== referrerCodeLen) {
             showDialog(DLevel.Tips, "referral code length is:" + referrerCodeLen)
             return;
         }
+        showWaiting("checking referral code");
         const referrerInfo = await loadNJUserByReferrer(val);
         if (!referrerInfo) {
             showDialog(DLevel.Tips, "no such referrer!")
             document.getElementById("referral-code-val").value = '';
+            hideLoading();
             return;
         }
+
+        hideLoading();
+        const web3Id = document.getElementById("web3-id").textContent;
+        if (referrerInfo.eth_addr === web3Id) {
+            showDialog(DLevel.Tips, "Referrer should not be yourself")
+            return;
+        }
+
         document.querySelector(".referral-code-popup").style.display = 'none';
+        referralInput.dataset.ethAddr = referrerInfo.eth_addr;
     }
 
     async function connectToMetamask() {
@@ -369,11 +381,13 @@
             showError("no valid web3 id selected");
             return;
         }
-        const val = document.getElementById("referral-code-val").value;
+        const referralInput = document.getElementById("referral-code-val");
+        const val = referralInput.value;
 
         const signParam = new SignInData(web3Id)
         if (val.length === referrerCodeLen) {
             signParam.referrer_code = val;
+            signParam.referrer_id = referralInput.dataset.ethAddr;
         }
         const message = JSON.stringify(signParam);
         try {

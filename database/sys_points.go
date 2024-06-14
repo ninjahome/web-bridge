@@ -12,10 +12,15 @@ import (
 	"strings"
 )
 
+const (
+	MultiplierForBonus = 2
+)
+
 type SysPoints struct {
 	EthAddr        string  `json:"eth_addr" firestore:"eth_addr"`
 	Points         float64 `json:"points"  firestore:"points"`
 	BonusToWin     float64 `json:"bonus_to_win" firestore:"bonus_to_win"`
+	ReferrerAddr   string  `json:"referrer_addr" firestore:"referrer_addr"`
 	CurTotalPoints float64 `json:"cur_total_points"`
 }
 
@@ -82,12 +87,17 @@ func (dm *DbManager) QuerySystemPoints(web3ID string) (*SysPoints, error) {
 
 func pointsWithReferrerBonus(sp *SysPoints, points float64) {
 	if sp.BonusToWin > 0 {
-		reward := math.Min(sp.BonusToWin, points*2)
+		reward := math.Min(sp.BonusToWin, points*MultiplierForBonus)
 		sp.BonusToWin = sp.BonusToWin - reward
 		sp.Points += reward
 	} else {
 		sp.Points += points
 	}
+	if len(sp.ReferrerAddr) == 0 {
+		return
+	}
+	rewardPoints := points * __dbConf.BonusRateForReferred
+	go DbInst().updateSingleUserPoints(sp.ReferrerAddr, rewardPoints)
 }
 
 func (dm *DbManager) RewardForOneRound(totalPoints float64) {
@@ -162,4 +172,32 @@ func (dm *DbManager) PointsAtSnapshot() float64 {
 
 	util.LogInst().Info().Float64("points", totalPoints).Msg("total points process success")
 	return totalPoints
+}
+
+func (dm *DbManager) updateSingleUserPoints(ethAddr string, points float64) {
+	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut)
+	defer cancel()
+
+	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
+		docRef := dm.fileCli.Collection(DBTableUserPoints).Doc(strings.ToLower(ethAddr))
+		doc, err := tx.Get(docRef)
+
+		if err != nil {
+			util.LogInst().Err(err).Str("web3-id", ethAddr).Msg("no such user's point data")
+			return err
+		}
+		var sp SysPoints
+		if err := doc.DataTo(&sp); err != nil {
+			return err
+		}
+		return tx.Update(docRef, []firestore.Update{
+			{Path: "points", Value: sp.Points + points},
+		})
+	})
+
+	if err != nil {
+		util.LogInst().Err(err).Str("web3-id", ethAddr).Float64("points", points).Msg("update single user's point failed")
+	} else {
+		util.LogInst().Info().Str("web3-id", ethAddr).Float64("points", points).Msg("update single user's point success")
+	}
 }

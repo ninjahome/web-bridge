@@ -51,7 +51,7 @@ func NJUsrInfoMust(data []byte) (*NinjaUsrInfo, error) {
 	return nu, err
 }
 
-func (dm *DbManager) NjUserSignIn(ethAddr, Referer string) *NinjaUsrInfo {
+func (dm *DbManager) NjUserSignIn(ethAddr, referrerCode, referrerID string) *NinjaUsrInfo {
 	ethAddr = strings.ToLower(ethAddr)
 	signInTime := time.Now().UnixMilli()
 	nu := &NinjaUsrInfo{
@@ -74,11 +74,12 @@ func (dm *DbManager) NjUserSignIn(ethAddr, Referer string) *NinjaUsrInfo {
 		if len(nu.SelfRefCode) == 0 {
 			updateOps = append(updateOps, firestore.Update{Path: "self_ref_code", Value: ethAddr[len(ethAddr)-6:]})
 		}
-		if len(Referer) > 0 && len(nu.ReferrerCode) == 0 {
-			updateOps = append(updateOps, firestore.Update{Path: "referrer_code", Value: Referer})
+		if len(referrerCode) > 0 && len(nu.ReferrerCode) == 0 {
+			updateOps = append(updateOps, firestore.Update{Path: "referrer_code", Value: referrerCode})
 			go dm.ProcSystemPoints(ethAddr, func(sp *SysPoints, isNew bool) {
 				if isNew {
 					sp.BonusToWin = __dbConf.BonusForReferer
+					sp.ReferrerAddr = referrerID
 				}
 			})
 		}
@@ -99,8 +100,8 @@ func (dm *DbManager) NjUserSignIn(ethAddr, Referer string) *NinjaUsrInfo {
 		SelfRefCode: ethAddr[len(ethAddr)-6:],
 	}
 
-	if len(Referer) > 0 {
-		nu.ReferrerCode = Referer
+	if len(referrerCode) > 0 {
+		nu.ReferrerCode = referrerCode
 	}
 	_, err = docRef.Set(opCtx, nu)
 	if err != nil {
@@ -108,7 +109,13 @@ func (dm *DbManager) NjUserSignIn(ethAddr, Referer string) *NinjaUsrInfo {
 		return nil
 	}
 
-	go dm.ProcSystemPoints(ethAddr, nil)
+	go dm.ProcSystemPoints(ethAddr, func(sp *SysPoints, isNew bool) {
+		if !isNew || len(referrerID) == 0 {
+			return
+		}
+		sp.ReferrerAddr = referrerID
+		sp.BonusToWin = __dbConf.BonusForReferer
+	})
 
 	util.LogInst().Debug().Str("eth-addr", ethAddr).Msg("firestore create ninja user success")
 	return nu
