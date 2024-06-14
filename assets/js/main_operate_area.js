@@ -43,6 +43,16 @@ function initTimerOfCounterDown() {
     });
 }
 
+function calculateAnnualYield(currentPoints, totalPoints) {
+    if (currentPoints <= 0 || totalPoints <= 0) {
+        return 0;
+    }
+    const hourlyRate = (currentPoints / totalPoints) * 0.20;
+    const eightHourRate = hourlyRate * 100.0;
+    const dailyRate = eightHourRate * 3;
+    return dailyRate * 365;
+}
+
 async function loadUserPointsInfos() {
 
     const userPoints = await GetToSrvByJson("/pointsForNJUsr?web3_id=" + ninjaUserObj.eth_addr.toLowerCase());
@@ -52,8 +62,16 @@ async function loadUserPointsInfos() {
 
     document.getElementById("dessage-web3-token").innerText = userPoints.points;
     document.getElementById("dessage-token-bonus").innerText = userPoints.bonus_to_win;
-    document.getElementById("point-bonus-this-round").innerText = userPoints.points;
-    document.getElementById("point-bonus-annual-interest").innerText = userPoints.points;
+
+    console.log(userPoints);
+    if (userPoints.points <= 0 || userPoints.snapshot_points <= 0 || userPoints.cur_total_points <= 0) {
+        return;
+    }
+    const profitThisRound = userPoints.snapshot_points * pointBonusOneRound / userPoints.cur_total_points;
+    const profitRate = profitThisRound * 100 * 3 * 365 / userPoints.snapshot_points;
+
+    document.getElementById("point-bonus-this-round").innerText = profitThisRound.toFixed(2);
+    document.getElementById("point-bonus-annual-interest").innerText = profitRate.toFixed(2) + "%";
 }
 
 function showSelfReferralCode() {

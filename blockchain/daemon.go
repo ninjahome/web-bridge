@@ -109,7 +109,12 @@ func (dp *DaemonProc) checkPointBonus() {
 		return
 	}
 
-	database.DbInst().RewardForOneRound(dp.pointSumSnapshot)
+	newTotal := database.DbInst().RewardForOneRound(dp.pointSumSnapshot)
+	if newTotal <= 0 {
+		util.LogInst().Error().Msg("calculate new points sum failed")
+		return
+	}
+	dp.pointSumSnapshot = newTotal
 }
 
 func (dp *DaemonProc) PointSumAtCurrentRound() float64 {

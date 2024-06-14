@@ -114,7 +114,10 @@ func refactorPoints(projectID, databaseID string) error {
 			return err
 		}
 
-		points := doc.Data()["points"].(int64)
+		var points int64 = 0
+		if doc.Data()["points"] != nil {
+			points = doc.Data()["points"].(int64)
+		}
 		addr := strings.ToLower(doc.Data()["eth_addr"].(string))
 
 		docRef := client.Collection(database.DBTableUserPoints).Doc(addr)
@@ -129,8 +132,9 @@ func refactorPoints(projectID, databaseID string) error {
 		}
 
 		sp := &database.SysPoints{
-			EthAddr: addr,
-			Points:  float32(points),
+			EthAddr:        addr,
+			Points:         float64(points),
+			SnapshotPoints: float64(points),
 		}
 
 		_, err = docRef.Set(ctx, sp)

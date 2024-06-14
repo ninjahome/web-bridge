@@ -19,6 +19,7 @@ const (
 type SysPoints struct {
 	EthAddr        string  `json:"eth_addr" firestore:"eth_addr"`
 	Points         float64 `json:"points"  firestore:"points"`
+	SnapshotPoints float64 `json:"snapshot_points"  firestore:"snapshot_points"`
 	BonusToWin     float64 `json:"bonus_to_win" firestore:"bonus_to_win"`
 	ReferrerAddr   string  `json:"referrer_addr" firestore:"referrer_addr"`
 	CurTotalPoints float64 `json:"cur_total_points"`
@@ -100,10 +101,10 @@ func pointsWithReferrerBonus(sp *SysPoints, points float64) {
 	go DbInst().updateSingleUserPoints(sp.ReferrerAddr, rewardPoints)
 }
 
-func (dm *DbManager) RewardForOneRound(totalPoints float64) {
+func (dm *DbManager) RewardForOneRound(snapPointSum float64) float64 {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut*10)
 	defer cancel()
-
+	var newTotalPoints = 0.0
 	err := dm.fileCli.RunTransaction(opCtx, func(ctx context.Context, tx *firestore.Transaction) error {
 		iter := tx.Documents(dm.fileCli.Collection(DBTableUserPoints))
 		defer iter.Stop()
@@ -114,27 +115,32 @@ func (dm *DbManager) RewardForOneRound(totalPoints float64) {
 				break
 			}
 			if err != nil {
+				util.LogInst().Err(err).Msg("points timer: iterator failed")
 				return err
 			}
 
 			var sp SysPoints
 			if err := doc.DataTo(&sp); err != nil {
+				util.LogInst().Err(err).Msg("points timer: parse to system points failed")
 				return err
 			}
 			if sp.Points <= 0 {
+				util.LogInst().Debug().Str("web3id", sp.EthAddr).Msg("points timer: no need update this user")
 				continue
 			}
 
-			pointsDelta := sp.Points / totalPoints * __dbConf.RewardPointsForOneRound
+			pointsDelta := sp.SnapshotPoints * __dbConf.RewardPointsForOneRound / snapPointSum
 			newPoints := sp.Points + pointsDelta
+			newTotalPoints += newPoints
 
 			err = tx.Update(doc.Ref, []firestore.Update{
 				{Path: "points", Value: newPoints},
+				{Path: "snapshot_points", Value: newPoints},
 			})
 			if err != nil {
+				util.LogInst().Err(err).Msg("points timer: update new points failed")
 				return err
 			}
-
 			util.LogInst().Debug().Str("web3id", sp.EthAddr).
 				Float64("newPoints", newPoints).
 				Float64("delta", pointsDelta).
@@ -145,10 +151,13 @@ func (dm *DbManager) RewardForOneRound(totalPoints float64) {
 
 	if err != nil {
 		util.LogInst().Err(err).Msg("pints timer failed")
-		return
+		return 0.0
 	}
 
-	util.LogInst().Info().Msg("pints timer transaction succeeded")
+	util.LogInst().Info().Float64("new-snap-points", newTotalPoints).
+		Float64("old-snap-points", snapPointSum).Msg("pints timer transaction succeeded")
+
+	return newTotalPoints
 }
 
 func (dm *DbManager) PointsAtSnapshot() float64 {
@@ -156,7 +165,7 @@ func (dm *DbManager) PointsAtSnapshot() float64 {
 	defer cancel()
 	var totalPoints float64 = 0
 
-	iter := dm.fileCli.Collection(DBTableUserPoints).Select("points").Documents(opCtx)
+	iter := dm.fileCli.Collection(DBTableUserPoints).Select("snapshot_points").Documents(opCtx)
 	for {
 		doc, err := iter.Next()
 		if err != nil {
@@ -166,11 +175,12 @@ func (dm *DbManager) PointsAtSnapshot() float64 {
 			util.LogInst().Err(err).Msg("timer:failed to calculate total points")
 			return totalPoints
 		}
-		points := doc.Data()["points"].(float64)
+
+		points := doc.Data()["snapshot_points"].(float64)
 		totalPoints += points
 	}
 
-	util.LogInst().Info().Float64("points", totalPoints).Msg("total points process success")
+	util.LogInst().Info().Float64("SnapshotPoints", totalPoints).Msg("total points process success")
 	return totalPoints
 }
 
