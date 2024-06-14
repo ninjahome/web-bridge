@@ -172,15 +172,12 @@ body {
 .bonus-for-points-value {
     font-size: 26px;
     font-weight: bold;
-    margin-left: 6px;
+    margi: 6px 0 0 0;
+    line-height: 26px;
 }
 
 .bonus-for-points-sub-tittle {
     color: #898989;
-}
-
-.bonus-for-points-sub-tittle .bonus-for-points-tittle {
-    margin-left: 16px;
 }
 
 .lottery-game-info {
@@ -231,6 +228,21 @@ body {
     flex-wrap: nowrap;
     align-items: baseline;
     margin: 4px 0;
+}
+
+.bonus-for-points-line {
+    display: flex;
+    align-content: flex-start;
+    flex-direction: column;
+    justify-content: center;
+}
+.bonus-for-points-line::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 1px solid rgba(0, 0, 0, 0.2);
+    height: 32px;
 }
 
 .lottery-timer {

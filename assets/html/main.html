@@ -513,7 +513,7 @@
         <div class="lottery-game-info" id="lottery-game-info">
             <div class="lottery-round-info" style="background-image: url(/assets/file/myLottery-bgimg.png)">
                 <div class="bonus-for-points">
-                    <div style="display: flex; align-items: center">
+                    <div  class="bonus-for-points-line" style="display: flex; align-items: flex-start; flex-direction: column">
                         <div class="bonus-for-points-sub-tittle">
                             <span class="bonus-for-points-tittle" id="bonus-for-points-tittle">积分奖池</span>
                         </div>
@@ -523,14 +523,14 @@
                         </div>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; align-items: flex-end">
+                    <div style="display: flex; flex-direction: column-reverse; align-items: flex-end">
                        <span style="font-size: 20px; color: #efd97d; font-weight: 500; line-height: 18px">
                              +<span id="point-bonus-this-round">0.0</span>
                            <span style="font-size: 12px" id="point-bonus-unit">积分</span>
                        </span>
-                        <span style="font-size: 14px">
+                        <span style="font-size: 14px; color: #898989">
                             <span id="point-bonus-annual-tittle">年化利率</span>
-                            <span id="point-bonus-annual-interest"></span>
+                            <span id="point-bonus-annual-interest">0.0%</span>
                         </span>
                     </div>
 
