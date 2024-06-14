@@ -49,12 +49,9 @@ var (
 		"/tweetImgRaw":               {tweetImgRaw, false},
 		"/tweetImgThumb":             {tweetImgThumb, false},
 		"/pointsForNJUsr":            {pointsForNJUsr, false},
-	}
-
-	cfgHtmlFileRouter = map[string]string{
-		"/signIn": "html/signIn.html",
-		"/":       "html/index.html",
-		"/app":    "html/signIn.html",
+		"/signIn":                    {signInHtml, false},
+		"/app":                       {signInHtml, false},
+		"/":                          {indexHtml, false},
 	}
 
 	_globalCfg *SysConf
@@ -104,6 +101,7 @@ type SysConf struct {
 	LogFile  string `json:"log_file"`
 	UrlHome  string `json:"url_home"`
 	HttpPort string `json:"http_port"`
+	JSEnv    string `json:"js_env"`
 	*HttpConf
 	*TwitterConf
 	*database.FileStoreConf
@@ -118,6 +116,7 @@ func (c *SysConf) String() any {
 	s += "\nlocal mode:" + fmt.Sprintf("%t", c.LocalRun)
 	s += "\nhome:" + c.UrlHome
 	s += "\nhttp port:" + c.HttpPort
+	s += "\njs env:" + c.JSEnv
 	s += "\n" + c.HttpConf.String()
 	s += "\n" + c.TwitterConf.String()
 	s += "\n" + c.FileStoreConf.String()
@@ -208,4 +207,11 @@ func (c *SysConf) GetNjVoteAd(NjTwID int64, web3Id, slogan string) string {
 
 func (c *SysConf) GetNjProtocolAd(NjTwID int64, slogan string) string {
 	return fmt.Sprintf("\r\n"+slogan+c.UrlHome+"/buyRights?"+NjTweetID+"=%d", NjTwID)
+}
+
+type PageData struct {
+	NinjaUsrInfoJson template.JS
+	TargetTweet      template.JS
+	CSRFToken        string
+	JSEnv            string
 }

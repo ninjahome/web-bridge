@@ -2,6 +2,8 @@ let lotteryGameContract = null;
 let gameSettings = null;
 let personalData = null
 
+document.addEventListener("DOMContentLoaded", initGamePage);
+
 class GameSettings {
     constructor(roundNo, bonus, voteNo, tickPrice, tickPriceInEth, isOpen) {
         this.roundNo = roundNo;

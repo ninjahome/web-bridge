@@ -50,7 +50,7 @@ sol:
 
 target:=mac
 
-tar:
+tar: js
 	tar -czvf  $(BINDIR)/assets.tar.gz assets
 
 mac:
@@ -61,8 +61,6 @@ linux:
 	GOOS=linux GOARCH=amd64 go build -ldflags '-w -s' -o $(BINDIR)/$(NAME).lnx  -ldflags="$(LD_FLAGS)"
 win:
 	GOOS=windows GOARCH=amd64 go build -ldflags '-w -s' -o $(BINDIR)/$(NAME).exe  -ldflags="$(LD_FLAGS)"
-js:
-	cd assets/js &&	terser database.js -o database.min.js  --compress --mangle
 
 js: $(JS_FILES)
 	@for file in $(JS_FILES); do \

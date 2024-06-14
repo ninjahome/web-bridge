@@ -10,9 +10,7 @@
 
     <script src="/assets/js/ethers.umd.min.js"></script>
     <script src="/assets/conf.js"></script>
-    <script src="/assets/js/abi_game_lottery.js"></script>
-    <script src="/assets/js/utils.js"></script>
-    <script src="/assets/js/game.js"></script>
+    <script src="/assets/js/abi_game_lottery.min.js"></script>
     <script src="/assets/js/i18next.min.js"></script>
     <script src="/assets/js/i18nextBrowserLanguageDetector.min.js"></script>
 </head>
@@ -371,7 +369,16 @@
 
 <script>
     const ninjaUserObj = {{ .NinjaUsrInfoJson }};
-    document.addEventListener("DOMContentLoaded", initGamePage);
+    let env = {{ .JSEnv}};
+    console.log("evn =",env)
+    if (env === 'production') {
+        document.write('<script src="/assets/js/utils.min.js"><\/script>');
+        document.write('<script src="/assets/js/game.min.js"><\/script>');
+    } else {
+        document.write('<script src="/assets/js/utils.js"><\/script>');
+        document.write('<script src="/assets/js/game.js"><\/script>');
+    }
+
 </script>
 
 <script about="zh-en">

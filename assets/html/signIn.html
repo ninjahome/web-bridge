@@ -8,9 +8,7 @@
     <link rel="stylesheet" href="/assets/css/signIn.css">
 
     <script src="/assets/conf.js"></script>
-    <script src="/assets/js/utils.js"></script>
     <script src="/assets/js/i18next.min.js"></script>
-    <script src="/assets/js/database.js"></script>
     <script src="/assets/js/i18nextBrowserLanguageDetector.min.js"></script>
 
 </head>
@@ -212,18 +210,19 @@
     </div>
 </div>
 <script>
-    // 根据环境变量加载相应的文件
-    const env = '{{ENV}}'; // 这个变量可以通过模板引擎或后端渲染时设置
-
+    let env = {{ .JSEnv}};
+    console.log("evn =",env)
     if (env === 'production') {
+        document.write('<script src="/assets/js/utils.min.js"><\/script>');
+        document.write('<script src="/assets/js/database.min.js"><\/script>');
         document.write('<script src="/assets/js/signIn.min.js"><\/script>');
     } else {
+        document.write('<script src="/assets/js/utils.js"><\/script>');
+        document.write('<script src="/assets/js/database.js"><\/script>');
         document.write('<script src="/assets/js/signIn.js"><\/script>');
     }
 </script>
 
-<script>
-</script>
 
 <script about="zh-en">
     i18next

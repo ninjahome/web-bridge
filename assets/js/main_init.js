@@ -1,3 +1,7 @@
+
+let curScrollContentID = 0;
+document.addEventListener("DOMContentLoaded", initMainPage);
+
 function showGameRule() {
     const rule_div = document.getElementById('gameRuleInfo')
     if (rule_div.style.display === 'none') {

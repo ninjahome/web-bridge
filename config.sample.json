@@ -3,6 +3,7 @@
 	"log_file": "srv.log",
 	"url_home": "https://dessage.xyz",
 	"http_port": "8880",
+	"js_env": "production",
 	"refresh_content": true,
 	"use_https": false,
 	"ssl_cert_file": "",
@@ -22,6 +23,9 @@
 	"point_for_vote": 2,
 	"point_for_be_vote": 1,
 	"elder_no_first_got": 100,
+	"bonus_for_referer": 100,
+	"bonus_rate_for_referred": 0.2,
+	"reward_points_for_one_round": 100,
 	"tweet_vote_contract_address": "0x63713037a9E337D7Db5D383070199B948598e0Da",
 	"game_plugin_contract_address": "0x57F0bbE85f5822911003A8fa425D5595D139FDFe",
 	"kol_key_contract_address": "",
@@ -29,5 +33,7 @@
 	"game_time_in_minute": 5,
 	"tx_checker_in_seconds": 15,
 	"chain_id": 42161,
-	"check_time_in_second": 10
+	"elder_check_time_in_sec": 10,
+	"point_bonus_check_in_min": 5,
+	"point_bonus_interval_in_min": 480
 }

@@ -11,24 +11,14 @@
 
     <script src="/assets/js/ethers.umd.min.js"></script>
     <script src="/assets/conf.js"></script>
-    <script src="/assets/js/abi_tweet_vote.js"></script>
-    <script src="/assets/js/abi_game_lottery.js"></script>
+    <script src="/assets/js/abi_tweet_vote.min.js"></script>
+    <script src="/assets/js/abi_game_lottery.min.js"></script>
     <script src="/assets/js/purify.min.js"></script>
-    <script src="/assets/js/database.js"></script>
     <script src="/assets/js/i18next.min.js"></script>
     <script src="/assets/js/twitter-text-3.0.1.min.js"></script>
     <script src="/assets/js/html2canvas.min.js"></script>
     <script src="/assets/js/i18nextBrowserLanguageDetector.min.js"></script>
 
-    <script src="/assets/js/utils.js"></script>
-    <script src="/assets/js/main_init.js"></script>
-    <script src="/assets/js/main_class.js"></script>
-    <script src="/assets/js/main_common.js"></script>
-    <script src="/assets/js/main_metamask.js"></script>
-    <script src="/assets/js/main_twitter.js"></script>
-    <script src="/assets/js/main_user_tweets.js"></script>
-    <script src="/assets/js/main_top.js"></script>
-    <script src="/assets/js/main_operate_area.js"></script>
 </head>
 <body>
 <input type="hidden" name="csrf_token" id="csrf_token" value="{{ .CSRFToken }}">
@@ -731,8 +721,33 @@
 <script>
     let ninjaUserObj = {{ .NinjaUsrInfoJson}};
     const targetTweet = {{.TargetTweet}};
-    let curScrollContentID = 0;
-    document.addEventListener("DOMContentLoaded", initMainPage);
+    let env = {{ .JSEnv}};
+    console.log("evn =",env)
+
+    if (env === 'production') {
+        document.write('<script src="/assets/js/utils.min.js"><\/script>');
+        document.write('<script src="/assets/js/database.min.js"><\/script>');
+        document.write('<script src="/assets/js/main_init.min.js"><\/script>');
+        document.write('<script src="/assets/js/main_class.min.js"><\/script>');
+        document.write('<script src="/assets/js/main_common.min.js"><\/script>');
+        document.write('<script src="/assets/js/main_metamask.min.js"><\/script>');
+        document.write('<script src="/assets/js/main_twitter.min.js"><\/script>');
+        document.write('<script src="/assets/js/main_user_tweets.min.js"><\/script>');
+        document.write('<script src="/assets/js/main_top.min.js"><\/script>');
+        document.write('<script src="/assets/js/main_operate_area.min.js"><\/script>');
+    } else {
+        document.write('<script src="/assets/js/utils.js"><\/script>');
+        document.write('<script src="/assets/js/database.js"><\/script>');
+        document.write('<script src="/assets/js/main_init.js"><\/script>');
+        document.write('<script src="/assets/js/main_class.js"><\/script>');
+        document.write('<script src="/assets/js/main_common.js"><\/script>');
+        document.write('<script src="/assets/js/main_metamask.js"><\/script>');
+        document.write('<script src="/assets/js/main_twitter.js"><\/script>');
+        document.write('<script src="/assets/js/main_user_tweets.js"><\/script>');
+        document.write('<script src="/assets/js/main_top.js"><\/script>');
+        document.write('<script src="/assets/js/main_operate_area.js"><\/script>');
+    }
+
 </script>
 
 </body>

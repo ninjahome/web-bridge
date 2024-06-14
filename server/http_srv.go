@@ -40,12 +40,6 @@ func NewMainService() *MainService {
 	r.PathPrefix("/" + staticFileDir + "/").HandlerFunc(bh.assetsRouter)
 	r.PathPrefix("/" + staticFileDir + "/").Handler(http.StripPrefix("/"+staticFileDir+"/", http.FileServer(http.Dir(staticFileDir))))
 
-	for route, fileName := range cfgHtmlFileRouter {
-		var url, file = route, fileName
-		r.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
-			bh.assetsStaticFile(w, r, file)
-		})
-	}
 	CSRF := csrf.Protect([]byte(_globalCfg.SessionKey), csrf.FieldName("X-CSRF-Token"), csrf.Secure(true)) // 在生产中启用 Secure
 	securedRouter := r.PathPrefix("/").Subrouter()
 	securedRouter.Use(CSRF)

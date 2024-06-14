@@ -226,14 +226,12 @@ func mainPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo)
 		}
 	}
 
-	data := struct {
-		NinjaUsrInfoJson template.JS
-		TargetTweet      template.JS
-		CSRFToken        string
-	}{
+	data := PageData{
 		NinjaUsrInfoJson: template.JS(nu.RawData()),
 		CSRFToken:        csrf.Token(r),
+		JSEnv:            _globalCfg.JSEnv,
 	}
+
 	if tweet != nil {
 		data.TargetTweet = template.JS(tweet.String())
 	} else {
@@ -250,12 +248,10 @@ func mainPage(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo)
 
 func showLotteryMain(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
 
-	data := struct {
-		NinjaUsrInfoJson template.JS
-		CSRFToken        string
-	}{
+	data := PageData{
 		CSRFToken:        csrf.Token(r),
 		NinjaUsrInfoJson: template.JS(nu.RawData()),
+		JSEnv:            _globalCfg.JSEnv,
 	}
 	var err = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "lottery_game.html", data)
 	if err != nil {
@@ -395,4 +391,17 @@ func queryWinHistory(w http.ResponseWriter, r *http.Request, nu *database.NinjaU
 	w.Write(bts)
 
 	util.LogInst().Debug().Int("len", len(data)).Msg("query winner history success")
+}
+
+func signInHtml(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	data := PageData{JSEnv: _globalCfg.JSEnv}
+	err := _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "signIn.html", data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
+	}
+}
+
+func indexHtml(w http.ResponseWriter, r *http.Request, nu *database.NinjaUsrInfo) {
+	data := PageData{JSEnv: _globalCfg.JSEnv}
+	_ = _globalCfg.htmlTemplateManager.ExecuteTemplate(w, "index.html", data)
 }
