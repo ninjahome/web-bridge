@@ -249,14 +249,21 @@ ul {
 /* 推荐码弹框样式 */
 .referral-code-popup {
     position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.referral-code-bgd {
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: white;
     padding: 8px 32px 24px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    z-index: 1000; /* 确保弹框在最上层 */
-    display: block; /* 默认显示，或根据需要调整为 none 并通过JavaScript控制显示 */
     border-radius: 24px;
 }
 
