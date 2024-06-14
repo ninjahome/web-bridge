@@ -199,7 +199,6 @@ body {
 .lottery-round-info {
     width: 354px;
     height: 314px;
-    background-image: url("/assets/file/myLottery-bgimg.png");
     background-repeat: no-repeat;
     background-position: center center;
     color: #271D1E;
