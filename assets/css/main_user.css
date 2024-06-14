@@ -561,6 +561,12 @@ input, textarea, [contenteditable] {
     border-top: 1px solid rgba(255, 255, 255, 0.35);
 }
 
+.about-ninja-number {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
 .user-web3-id,
 .user-ninja-noun,
 .income-val {
