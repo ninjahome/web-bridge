@@ -219,7 +219,9 @@ function translatePage() {
                         "hidden-appoint-tips": "Powered By Dessage",
                         "point-bonus-annual-tittle": "Annual Interest",
                         "referral-code-btn-txt": "Referral Code",
-                        "referral-code-tips": "Click to copy the referral code", }
+                        "referral-code-tips": "Click to copy the referral code",
+                        "user-setting-bonus": "Unclaimed reward",
+                    }
                 },
                 zh: {
                     translation: {
@@ -307,6 +309,8 @@ function translatePage() {
                         "point-bonus-annual-tittle": "年化利率",
                         "referral-code-btn-txt": "推荐码",
                         "referral-code-tips": "点击复制推荐码",
+                        "user-setting-bonus": "未兑奖励",
+
                     }
                 }
             }
@@ -362,6 +366,7 @@ function updateContent() {
     document.getElementById('user-setting-quit').textContent = i18next.t('user-setting-quit');
     document.getElementById('user-setting-clear').textContent = i18next.t('user-setting-clear');
     document.getElementById('user-setting-points').textContent = i18next.t('user-setting-points');
+    document.getElementById('user-setting-bonus').textContent = i18next.t('user-setting-bonus');
     document.getElementById('user-setting-my-voted').textContent = i18next.t('user-setting-my-voted');
     document.getElementById('user-setting-be-voted').textContent = i18next.t('user-setting-be-voted');
     document.getElementById('user-setting-tweet-no').textContent = i18next.t('user-setting-tweet-no');

@@ -51,6 +51,7 @@ async function loadUserPointsInfos() {
     }
 
     document.getElementById("dessage-web3-token").innerText = userPoints.points;
+    document.getElementById("dessage-token-bonus").innerText = userPoints.bonus_to_win;
     document.getElementById("point-bonus-this-round").innerText = userPoints.points;
     document.getElementById("point-bonus-annual-interest").innerText = userPoints.points;
 }
