@@ -214,6 +214,8 @@ function translatePage() {
                         "lottery-info-content-13": "*Points are not only usable for participating in the distribution of the points prize pool, but they can also be used to obtain other rights and interests in Dessage in the future.",
                         "lottery-info-content-14": "To post a tweet participating in the game, you need to bind your Arbitrum address and Twitter account. Then, by clicking to tweet on this platform, your tweet will be synchronously forwarded to your Twitter account. Other users can then vote and tip under your tweet, allowing you to earn creator income.",
                         "lottery-info-content-15": "6. During Chapter 1, the first 10 KOLs to reach 100 votes can receive the Elder Medal. When any tweet posted by these 10 KOLs receives votes, the Elder can earn twice the points for votes compared to ordinary creators.",
+                        "lottery-info-content-16": "7.Referral System: Users who log in to the system using a referral code can receive a 100-point reward. This reward is not given all at once but accumulates as the user earns other points until reaching 100 points. Additionally, the referrer will receive a 20% bonus of the points earned by the referred user.",
+                        "lottery-info-content-17": "8.Points Mining: The system distributes 100 points every 8 hours. The system takes a snapshot of the points every 8 hours. The user's mining reward is equal to the proportion of the user's points to the total points at the time of the snapshot, and the 100 points are divided based on that proportion.",
                         "bonus-for-points-tittle": "Points Prize Pool",
                         "voter-slogan": "Come to this blockchain social network to grab lottery tickets!",
                         "slogan_1": "Current Prize Pool: ",
@@ -304,6 +306,8 @@ function translatePage() {
                         "lottery-info-content-13": "*积分不仅仅可用于参与积分奖池的分配，后续还能获得Dessage的其他权益",
                         "lottery-info-content-14": "要发布参与游戏的推文，需绑定你的arbitrum地址和推特账号，然后在本平台点击发推即可，推文会同步转发至你的推特账号，其他用户即可在你的推文下投票打赏，你可获得创作者收益",
                         "lottery-info-content-15": "6.chapter 1进行中，获得投票数率先达到100的前10位创作者可以获得元老勋章，这10位创作者的所有推文被投票时，元老可以获得2倍于普通创作的被投票积分。",
+                        "lottery-info-content-16": "7.推荐制度:使用推荐码登录本系统的用户，可以获得100积分奖励，该积分不是一次性奖励，而是在获取其它积分的时候，奖励同样的积分并累积到100为止。同时推荐人可以在被推荐人获取积分时，获取该积分的20%的积分奖励。",
+                        "lottery-info-content-17": "8.积分挖矿:系统每8小时发放100积分，系统会每8小时取一次积分快照，用户挖矿奖励等于快照时用户的积分占总积分的比例，根据该比例瓜分100积分。",
                         "bonus-for-points-tittle": "积分奖池",
                         "slogan_1": "当前彩池: ",
                         "tweet-detail-in-details": "推文信息",
@@ -416,6 +420,8 @@ function updateContent() {
     document.getElementById("lottery-info-content-13").textContent = i18next.t('lottery-info-content-13');
     document.getElementById("lottery-info-content-14").textContent = i18next.t('lottery-info-content-14');
     document.getElementById("lottery-info-content-15").textContent = i18next.t('lottery-info-content-15');
+    document.getElementById("lottery-info-content-16").textContent = i18next.t('lottery-info-content-16');
+    document.getElementById("lottery-info-content-17").textContent = i18next.t('lottery-info-content-17');
 
     document.getElementById("user-tweet-btn-goon-pay").textContent = i18next.t('user-tweet-btn-goon-pay');
     document.getElementById("tweet-post-with-eth-btn-txt-1").textContent = i18next.t('btn-tittle-post-tweet');
