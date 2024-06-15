@@ -60,18 +60,18 @@ async function loadUserPointsInfos() {
         return;
     }
 
-    document.getElementById("dessage-web3-token").innerText = userPoints.points;
-    document.getElementById("dessage-token-bonus").innerText = userPoints.bonus_to_win;
+    document.getElementById("dessage-web3-token").innerText = userPoints.points.toFixed(2);
+    document.getElementById("dessage-token-bonus").innerText = userPoints.bonus_to_win.toFixed(2);
 
     console.log(userPoints);
     if (userPoints.points <= 0 || userPoints.snapshot_points <= 0 || userPoints.cur_total_points <= 0) {
         return;
     }
     const profitThisRound = userPoints.snapshot_points * pointBonusOneRound / userPoints.cur_total_points;
-    const profitRate = profitThisRound * 100 * 3 * 365 / userPoints.snapshot_points;
+    const profitRate = profitThisRound * 100 * 3 * 365
 
     document.getElementById("point-bonus-this-round").innerText = profitThisRound.toFixed(2);
-    document.getElementById("point-bonus-annual-interest").innerText = profitRate.toFixed(2) + "%";
+    document.getElementById("point-bonus-annual-interest").innerText = profitRate.toFixed(2) ;
 }
 
 function showSelfReferralCode() {

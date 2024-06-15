@@ -314,7 +314,7 @@ function translatePage() {
                         "slogan_2": "ETH，给本推文投票并参与彩池 链接:",
                         "vote-price-in-modal-uint": "票",
                         "hidden-appoint-tips": "来自 Dessage",
-                        "point-bonus-annual-tittle": "年化收益率:",
+                        "point-bonus-annual-tittle": "年化积分:",
                         "referral-code-btn-txt": "推荐码",
                         "referral-code-tips": "点击复制推荐码",
                         "user-setting-bonus": "未兑奖励",

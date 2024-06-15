@@ -825,4 +825,4 @@ const TimeIntervalForBlockChain = 30;
 const MaxTweetsPerPost = 5;
 const delimiter = ',';
 const referrerCodeLen = 6;
-const pointBonusOneRound = 100.0;
+const pointBonusOneRound = 200.0;

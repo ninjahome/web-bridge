@@ -12,10 +12,6 @@ import (
 	"strings"
 )
 
-const (
-	MultiplierForBonus = 2
-)
-
 type SysPoints struct {
 	EthAddr        string  `json:"eth_addr" firestore:"eth_addr"`
 	Points         float64 `json:"points"  firestore:"points"`
@@ -54,10 +50,7 @@ func (dm *DbManager) ProcSystemPoints(ethAddr string, call PointLogic) {
 			call(&sp, false)
 		}
 
-		return tx.Update(docRef, []firestore.Update{
-			{Path: "points", Value: sp.Points},
-			{Path: "bonus_to_win", Value: sp.BonusToWin},
-		})
+		return tx.Set(docRef, sp)
 	})
 
 	if err != nil {
@@ -88,9 +81,9 @@ func (dm *DbManager) QuerySystemPoints(web3ID string) (*SysPoints, error) {
 
 func pointsWithReferrerBonus(sp *SysPoints, points float64) {
 	if sp.BonusToWin > 0 {
-		reward := math.Min(sp.BonusToWin, points*MultiplierForBonus)
+		reward := math.Min(sp.BonusToWin, points)
 		sp.BonusToWin = sp.BonusToWin - reward
-		sp.Points += reward
+		sp.Points += reward + points
 	} else {
 		sp.Points += points
 	}
