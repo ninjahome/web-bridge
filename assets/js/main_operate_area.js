@@ -68,10 +68,10 @@ async function loadUserPointsInfos() {
         return;
     }
     const profitThisRound = userPoints.snapshot_points * pointBonusOneRound / userPoints.cur_total_points;
-    const profitRate = profitThisRound * 3 * 365
+    const profitRate = pointBonusOneRound * 3 * 365 * 100 / userPoints.cur_total_points;
 
     document.getElementById("point-bonus-this-round").innerText = profitThisRound.toFixed(2);
-    document.getElementById("point-bonus-annual-interest").innerText = profitRate.toFixed(2) ;
+    document.getElementById("point-bonus-annual-interest").innerText = profitRate.toFixed(2) +"%";
 }
 
 function showSelfReferralCode() {
