@@ -263,12 +263,12 @@ ul {
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: white;
-    padding: 8px 32px 24px;
+    padding: 16px 32px 24px;
     border-radius: 24px;
 }
 
 .referral-code-content {
-    margin: 10px 0;
+    margin: 16px 0;
 }
 
 
@@ -319,12 +319,22 @@ ul {
     border-color: #4EA0F2; /* 聚焦时边框颜色为蓝色 */
 }
 
+.cancel-btn,
 .confirm-btn {
-    display: block;
-    margin: auto;
-    padding: 11px 62px;
+    margin: 0 8px;
+    padding: 10px 42px;
     border-radius: 12px;
     font-size: 14px;
+}
+
+.cancel-btn {
+    background-color: transparent;
+    border: 1px solid rgb(221, 221, 222);
+    color: #7E7F82
+}
+
+
+.confirm-btn {
     border: none;
     background-color: #4EA0F2;
     color: #ffffff;
