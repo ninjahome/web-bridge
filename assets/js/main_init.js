@@ -224,7 +224,7 @@ function translatePage() {
                         "vote-price-in-modal-uint": "Vote",
                         "hidden-appoint-tips": "Powered By Dessage",
                         "point-bonus-annual-tittle": "Annualized:",
-                        "referral-code-btn-txt": "Referral Code",
+                        "referral-code-btn-txt": "Generate Referral Code",
                         "referral-code-tips": "Click to copy the referral code",
                         "user-setting-bonus": "Unclaimed reward",
                     }
@@ -315,7 +315,7 @@ function translatePage() {
                         "vote-price-in-modal-uint": "票",
                         "hidden-appoint-tips": "来自 Dessage",
                         "point-bonus-annual-tittle": "年化积分:",
-                        "referral-code-btn-txt": "推荐码",
+                        "referral-code-btn-txt": "生成我的推荐码",
                         "referral-code-tips": "点击复制推荐码",
                         "user-setting-bonus": "未兑奖励",
 
