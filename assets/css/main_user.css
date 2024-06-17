@@ -537,12 +537,6 @@ input, textarea, [contenteditable] {
     padding: 5px;
 }
 
-.about-twitter div span {
-    font-size: 14px;
-    font-weight: 400;
-    color: #898989;
-}
-
 .user-twitter-avatar img {
     width: 46px; /* 调整为适合的尺寸 */
     height: 46px;
@@ -567,13 +561,19 @@ input, textarea, [contenteditable] {
     justify-content: center;
     flex-direction: column;
 }
-.user-web3-id,
+
 .user-ninja-noun,
 .income-val {
     font-size: 26px;
     font-weight: 600;
     color: #271D1E;
     line-height: 30px;
+}
+
+.user-web3-id {
+    font-size: 14px;
+    font-weight: 400;
+    color: #898989;
 }
 
 .user-setting-action {
