@@ -267,7 +267,7 @@ function translatePage() {
                         "user-setting-clear": "清除缓存",
                         "user-setting-quit": "退出",
                         "user-setting-sync-twitter": "同步推特",
-                        "user-setting-points": "积分(dsg)",
+                        "user-setting-points": "积分",
                         "user-setting-my-voted": "投票数",
                         "twee-switch-area-his-tweet": "他发布推文",
                         "twee-switch-area-his-vote": "他投票推文",
