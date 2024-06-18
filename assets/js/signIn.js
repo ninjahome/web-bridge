@@ -124,7 +124,8 @@ async function setupReferralCode() {
     const referrerInfo = await loadNJUserByReferrer(val);
     if (!referrerInfo) {
         showDialog(DLevel.Tips, "no such referrer!")
-        document.getElementById("referral-code-val").value = '';
+        referralInput.value = '';
+        referralInput.dataset.ethAddr = '';
         hideLoading();
         return;
     }
@@ -132,7 +133,9 @@ async function setupReferralCode() {
     hideLoading();
     const web3Id = document.getElementById("web3-id").textContent;
     if (referrerInfo.eth_addr === web3Id) {
-        showDialog(DLevel.Tips, "Referrer should not be yourself")
+        showDialog(DLevel.Tips, "Referrer should not be yourself");
+        referralInput.value = '';
+        referralInput.dataset.ethAddr = '';
         return;
     }
 
