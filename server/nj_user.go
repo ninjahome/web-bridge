@@ -30,6 +30,7 @@ func queryNjBasicByReferrer(w http.ResponseWriter, r *http.Request, nu *database
 	if obj != nil {
 		json.NewEncoder(w).Encode(obj)
 	}
+	util.LogInst().Info().Str("referral-code", refCode).Msg("query ninja user data success")
 }
 
 func queryNjBasicByID(w http.ResponseWriter, r *http.Request, _ *database.NinjaUsrInfo) {

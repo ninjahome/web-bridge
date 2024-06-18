@@ -75,10 +75,14 @@ function contentScroll() {
 }
 
 function clearCachedData() {
-    databaseDeleteTable(__constCachedItem);
-    localStorage.clear();
-    sessionStorage.clear();
-    window.location.href = "/signIn";
+    databaseDeleteTable(__constCachedItem).then(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = "/signIn";
+    }).catch((error) => {
+        console.error('Failed to clear cached data:', error);
+        window.location.href = "/signIn";
+    });
 }
 
 async function showHoverCard(event, twitterObj, web3ID, offset) {

@@ -270,26 +270,30 @@ function databaseCleanByFilter(storeName, newData, conditionFn) {
 }
 
 function databaseDeleteTable(tableName) {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open(__databaseName);
 
-    const request = indexedDB.open(__databaseName);
+        request.onsuccess = function (event) {
+            const db = event.target.result;
+            const transaction = db.transaction(tableName, 'readwrite');
+            const objectStore = transaction.objectStore(tableName);
 
-    request.onsuccess = function (event) {
-        const db = event.target.result;
-        const transaction = db.transaction(tableName, 'readwrite');
-        const objectStore = transaction.objectStore(tableName);
+            const clearRequest = objectStore.clear();
 
-        const clearRequest = objectStore.clear();
+            clearRequest.onsuccess = function () {
+                console.log(`${tableName} has been cleared`);
+                resolve();
+            };
 
-        clearRequest.onsuccess = function () {
-            console.log(`${tableName} has been cleared`);
+            clearRequest.onerror = function (event) {
+                console.error('Clear object store error:', event.target.error);
+                reject(event.target.error);
+            };
         };
 
-        clearRequest.onerror = function (event) {
-            console.error('Clear object store error:', event.target.error);
+        request.onerror = function (event) {
+            console.error('Database error:', event.target.error);
+            reject(event.target.error);
         };
-    };
-
-    request.onerror = function (event) {
-        console.error('Database error:', event.target.error);
-    };
+    });
 }

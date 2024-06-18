@@ -196,7 +196,7 @@
     </div>
 </div>
 
-<div class="referral-code-popup" style="display: block">
+<div class="referral-code-popup" style="display: none">
     <div class="referral-code-bgd">
         <div class="referral-code-content">
             <div style="display: flex; align-items: center">
@@ -206,7 +206,7 @@
             <input type="text" id="referral-code-val" placeholder="请填写推荐码">
         </div>
         <div style="display: flex; justify-content: center; align-items: center; margin-top: 8px">
-            <button class="cancel-btn" onclick="closeReferralCode()" >忽略</button>
+            <button class="cancel-btn" onclick="closeReferralCode()" id="btn-referral-cancel">忽略</button>
             <button class="confirm-btn" onclick="setupReferralCode()" id="btn-referral-txt">确认</button>
         </div>
 
@@ -245,6 +245,7 @@
                         "btn-referral-txt": "Confirm",
                         "tittle-operation-area": "Finding web3ID",
                         "web3-id-tips": "Connect MetaMask to obtain your Web3 ID",
+                        "btn-referral-cancel": "Ignore",
                     }
                 },
                 zh: {
@@ -258,6 +259,7 @@
                         "btn-referral-txt": "确认",
                         "tittle-operation-area": "获取web3ID",
                         "web3-id-tips": "链接MetaMask以获取Web3 ID",
+                        "btn-referral-cancel": "忽略",
                     }
                 }
             }
@@ -275,6 +277,7 @@
         document.getElementById('btn-referral-txt').textContent = i18next.t('btn-referral-txt');
         document.getElementById('tittle-operation-area').textContent = i18next.t('tittle-operation-area');
         document.getElementById('web3-id-tips').textContent = i18next.t('web3-id-tips');
+        document.getElementById('btn-referral-cancel').textContent = i18next.t('btn-referral-cancel');
     }
 
 </script>
