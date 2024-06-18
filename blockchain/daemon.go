@@ -115,6 +115,7 @@ func (dp *DaemonProc) checkPointBonus() {
 		return
 	}
 	dp.pointSumSnapshot = newTotal
+	dp.nextBonusTime = time.Now().Add(time.Duration(__conf.PointBonusIntervalInMin) * time.Minute)
 }
 
 func (dp *DaemonProc) PointSumAtCurrentRound() float64 {
