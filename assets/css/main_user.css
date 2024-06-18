@@ -378,8 +378,7 @@ input, textarea, [contenteditable] {
 
 
 .income-tweet-area,
-.income-game-area,
-.user-settings {
+.income-game-area {
     background-color: #ffffff;
     padding: 16px;
     border-radius: 6px;
@@ -388,6 +387,8 @@ input, textarea, [contenteditable] {
 .user-settings {
     border: 1px solid #F2F4F6;
     background: linear-gradient(to bottom, rgba(114, 166, 241, 0.55), #ffffff);
+    padding: 16px 16px 0;
+    border-radius: 6px;
 }
 
 .user-settings-tab {
@@ -545,8 +546,8 @@ input, textarea, [contenteditable] {
 
 /* Web3 ID 和 积分信息样式 */
 .about-ninja {
-    padding: 8px; /* 添加一些内边距，使内容不紧贴边框 */
-    display: flex; /* 使背景色和边框只包裹内容 */
+    padding: 16px 8px;
+    display: flex;
     justify-content: space-between;
     align-items: center;
     word-wrap: break-word; /* 在超出宽度时自动换行 */
@@ -564,8 +565,8 @@ input, textarea, [contenteditable] {
 
 .user-ninja-noun,
 .income-val {
-    font-size: 26px;
-    font-weight: 600;
+    font-size: 24px;
+    font-weight: 500;
     color: #271D1E;
     line-height: 30px;
 }
