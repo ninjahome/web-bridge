@@ -125,7 +125,18 @@ func (dm *DbManager) queryStatus(createTime, voter, voted string, tx *firestore.
 		return nil, err
 	}
 
-	votedDoc, votedObj, err := dm.queryVoteStatus(false, sameOwner, voted, tx, vote)
+	if sameOwner {
+		return &voteStatusForDb{
+			statusDoc: statusDoc,
+			voterDoc:  voterDoc,
+			votedDoc:  voterDoc,
+			statusObj: statusObj,
+			voterObj:  voterObj,
+			votedObj:  voterObj,
+		}, nil
+	}
+
+	votedDoc, votedObj, err := dm.queryVoteStatus(false, false, voted, tx, vote)
 	if err != nil {
 		return nil, err
 	}
