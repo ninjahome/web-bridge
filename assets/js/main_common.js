@@ -96,6 +96,12 @@ async function showHoverCard(event, twitterObj, web3ID, offset) {
         document.getElementById('hover-avatar').src = twitterObj.profile_image_url;
         document.getElementById('hover-name').textContent = twitterObj.name;
         document.getElementById('hover-user-name').textContent = '@' + twitterObj.username;
+        if (njUsrInfo.is_elder){
+            hoverCard.querySelector(".elderFlagOnAvatar").style.display = 'block';
+        }else{
+            hoverCard.querySelector(".elderFlagOnAvatar").style.display = 'none';
+        }
+
     } else {
         document.getElementById('hover-name').textContent = web3ID;
     }
