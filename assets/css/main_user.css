@@ -538,12 +538,6 @@ input, textarea, [contenteditable] {
     padding: 5px;
 }
 
-.user-twitter-avatar img {
-    width: 46px; /* 调整为适合的尺寸 */
-    height: 46px;
-    border-radius: 50%;
-}
-
 /* Web3 ID 和 积分信息样式 */
 .about-ninja {
     padding: 16px 8px;
