@@ -101,6 +101,11 @@ async function setupUserBasicInfoInSetting() {
     document.getElementById("user-twitter-avatar").src = twitterInfo.profile_image_url;
     document.getElementById("user-setting-name").innerText = twitterInfo.name;
     document.getElementById("user-setting-user-name").innerText = twitterInfo.username;
+    if (ninjaUserObj.is_elder){
+        document.getElementById("user-twitter-avatar-elder").style.display = 'block';
+    }else{
+        document.getElementById("user-twitter-avatar-elder").style.display = 'none';
+    }
 }
 
 async function initAboutUserPage() {
