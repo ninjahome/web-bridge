@@ -63,7 +63,7 @@ async function loadUserPointsInfos() {
     document.getElementById("dessage-web3-token").innerText = userPoints.points.toFixed(2);
     document.getElementById("dessage-token-bonus").innerText = userPoints.bonus_to_win.toFixed(2);
 
-    console.log(userPoints);
+    // console.log(userPoints);
     if (userPoints.points <= 0 || userPoints.snapshot_points <= 0 || userPoints.cur_total_points <= 0) {
         return;
     }

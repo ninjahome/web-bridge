@@ -176,6 +176,8 @@ async function __setOnlyHeader(tweetHeader, twitter_id, web3ID) {
         tweetHeader.querySelector('.twitterAvatar').src = twitterObj.profile_image_url;
         if (njUsrInfo && njUsrInfo.is_elder) {
             tweetHeader.querySelector('.elderFlagOnAvatar').style.display = 'block';
+        }else{
+            tweetHeader.querySelector('.elderFlagOnAvatar').style.display = 'none';
         }
         tweetHeader.querySelector('.twitterName').textContent = twitterObj.name;
         tweetHeader.querySelector('.twitterUserName').textContent = '@' + twitterObj.username;
@@ -188,8 +190,11 @@ async function __setOnlyHeader(tweetHeader, twitter_id, web3ID) {
         return null;
     }
     tweetHeader.querySelector('.twitterAvatar').src = newObj.profile_image_url;
+    // console.log(njUsrInfo);
     if (njUsrInfo && njUsrInfo.is_elder) {
         tweetHeader.querySelector('.elderFlagOnAvatar').style.display = 'block';
+    }else{
+        tweetHeader.querySelector('.elderFlagOnAvatar').style.display = 'none';
     }
     tweetHeader.querySelector('.twitterName').textContent = newObj.name;
     tweetHeader.querySelector('.twitterUserName').textContent = '@' + newObj.username;
