@@ -52,7 +52,7 @@ async function loadTwitterUserInfoFromSrv(twitterID, useCache, syncFromTwitter) 
         if (!response) {
             return null;
         }
-        return TwitterBasicInfo.cacheTwBasicInfo(response);
+        return  TwitterBasicInfo.cacheTwBasicInfo(response);
     } catch (err) {
         console.log("queryTwBasicById err:", err)
         return null;

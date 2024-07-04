@@ -35,8 +35,10 @@ class TweetVoteContractSetting {
         this.feeRate = feeRate;
     }
 
-    static sycToDb(obj) {
-        setItemWithTimestamp(TweetVoteContractSetting.DBKey(), JSON.stringify(obj));
+    static  sycToDb(obj) {
+         setItemWithTimestamp(TweetVoteContractSetting.DBKey(), JSON.stringify(obj)).catch(err=>{
+             console.log(err);
+         });
     }
 
     static DBKey() {
@@ -100,8 +102,10 @@ class ImageRawData {
         this.thumb_nail = thumbnail;
     }
 
-    static sycToDb(obj) {
-        setItemWithTimestamp(ImageRawData.DBKey(obj.hash), JSON.stringify(obj));
+     static sycToDb(obj) {
+         setItemWithTimestamp(ImageRawData.DBKey(obj.hash), JSON.stringify(obj)).catch(err=>{
+             console.log(err);
+         });
     }
 
     static DBKey(hash) {

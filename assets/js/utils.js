@@ -322,11 +322,13 @@ class TwitterBasicInfo {
             twObj.profile_image_url, twObj.description);
     }
 
-    static cacheTwBasicInfo(obj) {
+    static  cacheTwBasicInfo(obj) {
         if (!obj.id) {
             throw new Error("invalid twitter basic info")
         }
-        setItemWithTimestamp(lclDbKeyForTwitterUserData(obj.id), JSON.stringify(obj));
+         setItemWithTimestamp(lclDbKeyForTwitterUserData(obj.id), JSON.stringify(obj)).catch(err=>{
+             console.log(err)
+         });
         return obj;
     }
 }
@@ -364,14 +366,18 @@ class NJUserBasicInfo {
         if (!obj.eth_addr) {
             throw new Error("invalid twitter basic info")
         }
-        setItemWithTimestamp(DbKeyForNjUserData(obj.eth_addr.toLowerCase()), JSON.stringify(obj));
+        setItemWithTimestamp(DbKeyForNjUserData(obj.eth_addr.toLowerCase()), JSON.stringify(obj)).catch(err=>{
+            console.log(err);
+        });
     }
 
     static cacheNJUsrObjByReferrer(obj) {
         if (!obj.self_ref_code) {
             throw new Error("invalid twitter basic info")
         }
-        setItemWithTimestamp(DbKeyForNjUserData(obj.self_ref_code.toLowerCase()), JSON.stringify(obj));
+        setItemWithTimestamp(DbKeyForNjUserData(obj.self_ref_code.toLowerCase()), JSON.stringify(obj)).catch(err=>{
+            console.log(err);
+        });
     }
 }
 
@@ -405,8 +411,12 @@ function createDialogElement(imageSrc) {
         `;
     return dialog;
 }
-
+let ___dialog__showing__ = false;
 function showDialog(type, msg, confirmCB, cancelCB) {
+    if (___dialog__showing__){
+        return;
+    }
+    ___dialog__showing__ = true;
     hideLoading();
     let imageSrc;
     switch (type) {
@@ -425,29 +435,37 @@ function showDialog(type, msg, confirmCB, cancelCB) {
     }
 
     const dialog = createDialogElement(imageSrc);
-    document.body.appendChild(dialog);
-    const dialogMessage = document.getElementById('dialog-message');
+    try {
+        document.body.appendChild(dialog);
+        const dialogMessage = document.getElementById('dialog-message');
 
-    const dialogCloseButton = document.getElementById('dialog-close');
-    const dialogConfirmButton = document.getElementById('dialog-confirm');
+        const dialogCloseButton = document.getElementById('dialog-close');
+        const dialogConfirmButton = document.getElementById('dialog-confirm');
 
-    dialogMessage.textContent = msg;
+        dialogMessage.textContent = msg;
 
-    dialogCloseButton.addEventListener('click', function () {
-        document.body.removeChild(dialog);
-        if (cancelCB) {
-            cancelCB();
-        }
-    });
-
-    if (confirmCB) {
-        dialogConfirmButton.style.display = 'block';
-        dialogConfirmButton.addEventListener('click', function () {
+        dialogCloseButton.addEventListener('click', function () {
             document.body.removeChild(dialog);
-            confirmCB();
+            ___dialog__showing__ = false
+            if (cancelCB) {
+                cancelCB();
+            }
         });
-    } else {
-        dialogConfirmButton.style.display = 'none';
+
+        if (confirmCB) {
+            dialogConfirmButton.style.display = 'block';
+            dialogConfirmButton.addEventListener('click', function () {
+                document.body.removeChild(dialog);
+                ___dialog__showing__ = false
+                confirmCB();
+            });
+        } else {
+            dialogConfirmButton.style.display = 'none';
+        }
+    } catch (e) {
+        console.log(e)
+        document.body.removeChild(dialog);
+        ___dialog__showing__ = false
     }
 }
 
@@ -784,13 +802,9 @@ function safeSubstring(str, maxLength) {
     return str.substring(0, endIndex);
 }
 
-function setItemWithTimestamp(key, value) {
+async function setItemWithTimestamp(key, value) {
     const item = new CacheItem(key, value);
-    databaseAddOrUpdate(__constCachedItem, item).then(result => {
-        // console.log(result);
-    }).catch(err => {
-        console.log(err);
-    });
+    await databaseAddOrUpdate(__constCachedItem, item);
 }
 
 async function getItemWithTimestamp(key) {
