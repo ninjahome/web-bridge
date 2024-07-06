@@ -110,6 +110,7 @@ func (dp *DaemonProc) checkPointBonus() {
 	}
 
 	newTotal := database.DbInst().RewardForOneRound(dp.pointSumSnapshot)
+	util.LogInst().Info().Float64("snap-points", newTotal).Msg("prepare to distribute point timely")
 	if newTotal <= 0 {
 		util.LogInst().Error().Msg("calculate new points sum failed")
 		return

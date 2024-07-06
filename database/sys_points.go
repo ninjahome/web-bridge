@@ -127,9 +127,14 @@ func (dm *DbManager) RewardForOneRound(snapPointSum float64) float64 {
 				util.LogInst().Debug().Str("web3id", sp.EthAddr).Msg("points timer: no need update this user")
 				continue
 			}
-
-			pointsDelta := sp.SnapshotPoints * __dbConf.RewardPointsForOneRound / snapPointSum
-			newPoints := sp.Points + pointsDelta
+			var newPoints = sp.Points
+			var logEvn = util.LogInst().Debug().Str("web3id", sp.EthAddr).
+				Float64("before update", newPoints)
+			if sp.SnapshotPoints > 0 {
+				pointsDelta := sp.SnapshotPoints * __dbConf.RewardPointsForOneRound / snapPointSum
+				newPoints = sp.Points + pointsDelta
+				logEvn = logEvn.Float64("delta", pointsDelta)
+			}
 			newTotalPoints += newPoints
 
 			err = tx.Update(doc.Ref, []firestore.Update{
@@ -140,10 +145,7 @@ func (dm *DbManager) RewardForOneRound(snapPointSum float64) float64 {
 				util.LogInst().Err(err).Msg("points timer: update new points failed")
 				return err
 			}
-			util.LogInst().Debug().Str("web3id", sp.EthAddr).
-				Float64("newPoints", newPoints).
-				Float64("delta", pointsDelta).
-				Msg("update reward points success")
+			logEvn.Float64("after update", newPoints).Msg("update reward points success")
 		}
 		return nil
 	})
@@ -162,7 +164,7 @@ func (dm *DbManager) RewardForOneRound(snapPointSum float64) float64 {
 func (dm *DbManager) PointsAtSnapshot() float64 {
 	opCtx, cancel := context.WithTimeout(dm.ctx, DefaultDBTimeOut*10)
 	defer cancel()
-	var totalPoints float64 = 0
+	var totalPoints float64 = 1
 
 	iter := dm.fileCli.Collection(DBTableUserPoints).Select("snapshot_points").Documents(opCtx)
 	for {
