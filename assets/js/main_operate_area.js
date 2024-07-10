@@ -89,3 +89,16 @@ function copyReferralCode() {
         showTmpTips("Copy Failed")
     });
 }
+
+function copyRecommenderCode() {
+    const spanElm = document.getElementById("user-setting-referrer-val");
+    if (!spanElm.innerText){
+        return;
+    }
+    navigator.clipboard.writeText(spanElm.innerText).then(function () {
+        showTmpTips("Copy Success");
+    }).catch(function (err) {
+        console.error("Failed to copy the text: ", err);
+        showTmpTips("Copy Failed")
+    });
+}

@@ -1,4 +1,3 @@
-
 let curScrollContentID = 0;
 document.addEventListener("DOMContentLoaded", initMainPage);
 
@@ -89,6 +88,7 @@ async function setupUserBasicInfoInSetting() {
     document.getElementById("referral-Code").innerText = ninjaUserObj.eth_addr.slice(-6);
     document.getElementById("dessage-my-vote").innerText = ninjaUserObj.vote_count;
     document.getElementById("dessage-be-vote").innerText = ninjaUserObj.be_voted_count;
+    document.getElementById("user-setting-referrer-val").innerText = ninjaUserObj.referrer_code;
 
     if (!ninjaUserObj.tw_id) {
         return;
@@ -101,9 +101,9 @@ async function setupUserBasicInfoInSetting() {
     document.getElementById("user-twitter-avatar").src = twitterInfo.profile_image_url;
     document.getElementById("user-setting-name").innerText = twitterInfo.name;
     document.getElementById("user-setting-user-name").innerText = twitterInfo.username;
-    if (ninjaUserObj.is_elder){
+    if (ninjaUserObj.is_elder) {
         document.getElementById("user-twitter-avatar-elder").style.display = 'block';
-    }else{
+    } else {
         document.getElementById("user-twitter-avatar-elder").style.display = 'none';
     }
 }
@@ -123,7 +123,7 @@ async function initAboutUserPage() {
         }
         ninjaUserObj = obj;
         await setupUserBasicInfoInSetting();
-        loadUserPointsInfos().then(r=>{
+        loadUserPointsInfos().then(r => {
             console.log("load user points success")
         });
     } catch (err) {
@@ -229,9 +229,10 @@ function translatePage() {
                         "vote-price-in-modal-uint": "Vote",
                         "hidden-appoint-tips": "Powered By Dessage",
                         "point-bonus-annual-tittle": "Annualized:",
-                        "referral-code-btn-txt": "Generate Referral Code",
+                        "referral-code-btn-txt": "My Referral Code",
                         "referral-code-tips": "Click to copy the referral code",
                         "user-setting-bonus": "Unclaimed reward",
+                        "user-setting-referrer": "My Recommender",
                     }
                 },
                 zh: {
@@ -320,10 +321,10 @@ function translatePage() {
                         "vote-price-in-modal-uint": "票",
                         "hidden-appoint-tips": "来自 Dessage",
                         "point-bonus-annual-tittle": "年化积分:",
-                        "referral-code-btn-txt": "生成我的推荐码",
+                        "referral-code-btn-txt": "我的推荐码",
                         "referral-code-tips": "点击复制推荐码",
                         "user-setting-bonus": "未兑奖励",
-
+                        "user-setting-referrer": "我的推荐人",
                     }
                 }
             }
@@ -439,5 +440,6 @@ function updateContent() {
     document.getElementById('point-bonus-annual-tittle').textContent = i18next.t('point-bonus-annual-tittle');
     document.getElementById('referral-code-btn-txt').textContent = i18next.t('referral-code-btn-txt');
     document.getElementById('referral-code-tips').textContent = i18next.t('referral-code-tips');
+    document.getElementById('user-setting-referrer').textContent = i18next.t('user-setting-referrer');
 
 }
