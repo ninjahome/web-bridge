@@ -465,7 +465,7 @@ input, textarea, [contenteditable] {
     font-size: 14px;
 }
 
-.user-tooltip ul li :hover {
+.user-tooltip ul li a:hover {
     background-color: #F1F2F3;
     padding: 12px 32px 12px 12px;
     border-radius: 999px;
