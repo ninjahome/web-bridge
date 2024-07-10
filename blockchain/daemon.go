@@ -110,7 +110,7 @@ func (dp *DaemonProc) checkPointBonus() {
 		util.LogInst().Info().Msg("I'm not master no need to check point bonus")
 		return
 	}
-	util.LogInst().Debug().Msg("start to check point bonus")
+	util.LogInst().Info().Msg("start to check point bonus")
 	now := time.Now()
 	if now.Before(dp.nextBonusTime) {
 		util.LogInst().Debug().Msg("Points reward time has not arrived")
