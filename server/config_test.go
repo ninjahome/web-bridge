@@ -56,6 +56,7 @@ func TestCreateDefaultConfigFile(t *testing.T) {
 			ElderCheckTimeInSec:     10,
 			PointBonusCheckInMin:    5,
 			PointBonusIntervalInMin: 480,
+			IsMaster:                true,
 		},
 	}
 

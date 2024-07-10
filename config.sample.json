@@ -35,5 +35,6 @@
 	"chain_id": 42161,
 	"elder_check_time_in_sec": 10,
 	"point_bonus_check_in_min": 5,
-	"point_bonus_interval_in_min": 480
+	"point_bonus_interval_in_min": 480,
+	"is_master": true
 }
