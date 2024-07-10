@@ -96,7 +96,7 @@ func pointsWithReferrerBonus(sp *SysPoints, points float64) {
 		return
 	}
 	rewardPoints := points * __dbConf.BonusRateForReferred
-	util.LogInst().Debug().Float64("reward points", rewardPoints).Msg("reward to referral")
+	util.LogInst().Debug().Float64("reward points", rewardPoints).Str("referrer", sp.ReferrerAddr).Msg("reward to referral")
 	go DbInst().updateSingleUserPoints(sp.ReferrerAddr, rewardPoints)
 }
 

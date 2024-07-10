@@ -97,9 +97,11 @@ func (dm *DbManager) queryVoteStatus(voter, sameOwner bool, target string, tx *f
 		}
 	}
 
-	go dm.ProcSystemPoints(target, func(sp *SysPoints, _ bool) {
-		pointsWithReferrerBonus(sp, points)
-	})
+	if sameOwner || voter {
+		go dm.ProcSystemPoints(target, func(sp *SysPoints, _ bool) {
+			pointsWithReferrerBonus(sp, points)
+		})
+	}
 
 	return njDoc, &nu, nil
 }
