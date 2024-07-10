@@ -1,1 +1,0 @@
-scp -i ~/Documents/conf/dessage_release dessage-twitter.lnx assets.tar.gz game_lottery/game_lottery.lnx wesley@35.220.156.3:~/
