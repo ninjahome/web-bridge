@@ -66,6 +66,7 @@ func mainRun(_ *cobra.Command, _ []string) {
 	}
 
 	initConfig(param.config)
+
 	var basisSrv = server.NewMainService()
 	go func() {
 		basisSrv.Start()

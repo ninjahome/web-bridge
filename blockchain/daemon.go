@@ -107,7 +107,7 @@ func (dp *DaemonProc) Monitor() {
 
 func (dp *DaemonProc) checkPointBonus() {
 	if !dp.isMaster {
-		util.LogInst().Debug().Msg("I'm not master no need to check point bonus")
+		util.LogInst().Info().Msg("I'm not master no need to check point bonus")
 		return
 	}
 	util.LogInst().Debug().Msg("start to check point bonus")
