@@ -25,6 +25,7 @@ type BCConf struct {
 	ElderCheckTimeInSec     int    `json:"elder_check_time_in_sec"`
 	PointBonusCheckInMin    int    `json:"point_bonus_check_in_min"`
 	PointBonusIntervalInMin int    `json:"point_bonus_interval_in_min"`
+	IsMaster                bool   `json:"is_master"`
 }
 
 func (c *BCConf) String() string {
@@ -40,6 +41,7 @@ func (c *BCConf) String() string {
 	s += "\nelder check time(seconds):" + fmt.Sprintf("%d", c.ElderCheckTimeInSec)
 	s += "\npoint bonus check time(minutes):" + fmt.Sprintf("%d", c.PointBonusCheckInMin)
 	s += "\npoint bonus interval time(minutes):" + fmt.Sprintf("%d", c.PointBonusIntervalInMin)
+	s += "\nis master:" + fmt.Sprintf("%t", c.IsMaster)
 
 	s += "\n--------------------------"
 	return s
@@ -50,6 +52,7 @@ type DaemonProc struct {
 	pointsBonusCheck *time.Ticker
 	nextBonusTime    time.Time
 	pointSumSnapshot float64
+	isMaster         bool
 }
 
 func InitConf(cf *BCConf) {
@@ -72,6 +75,7 @@ func newDaemon() *DaemonProc {
 		elderCheck:       time.NewTicker(time.Duration(__conf.ElderCheckTimeInSec) * time.Second),
 		pointsBonusCheck: time.NewTicker(time.Duration(__conf.PointBonusCheckInMin) * time.Minute),
 		nextBonusTime:    time.Now().Add(time.Duration(__conf.PointBonusIntervalInMin) * time.Minute),
+		isMaster:         __conf.IsMaster,
 	}
 	return dp
 }
@@ -102,6 +106,10 @@ func (dp *DaemonProc) Monitor() {
 }
 
 func (dp *DaemonProc) checkPointBonus() {
+	if !dp.isMaster {
+		util.LogInst().Debug().Msg("I'm not master no need to check point bonus")
+		return
+	}
 	util.LogInst().Debug().Msg("start to check point bonus")
 	now := time.Now()
 	if now.Before(dp.nextBonusTime) {
